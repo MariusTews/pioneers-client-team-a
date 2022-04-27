@@ -1,4 +1,4 @@
-package com.aviumauctores.pioneers;
+package com.aviumauctores.pioneers.controller;
 
 import javafx.scene.Parent;
 

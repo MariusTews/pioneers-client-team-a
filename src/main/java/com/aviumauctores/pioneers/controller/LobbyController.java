@@ -1,6 +1,5 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.Controller;
 import javafx.scene.Parent;
 
 public class LobbyController implements Controller {
