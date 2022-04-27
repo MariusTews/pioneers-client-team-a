@@ -10,17 +10,17 @@ import java.util.List;
 
 public interface GroupsApiService {
     @GET("groups")
-    Call<List<Group>> listGroups(@Header("Authorization:") String authToken, @Query("members") String members);
+    Call<List<Group>> listGroups(@Header("Authorization") String authToken, @Query("members") String members);
 
     @POST("groups")
-    Call<Group> createGroup(@Header("Authorization:") String authToken, @Body CreateGroupDto createGroupDto);
+    Call<Group> createGroup(@Header("Authorization") String authToken, @Body CreateGroupDto createGroupDto);
 
     @GET("groups/{id}")
-    Call<Group> getGroup(@Header("Authorization:") String authToken, @Path("id") String id);
+    Call<Group> getGroup(@Header("Authorization") String authToken, @Path("id") String id);
 
     @PATCH("groups/{id}")
-    Call<Group> updateGroup(@Header("Authorization:") String authToken, @Path("id") String id, @Body UpdateGroupDto updateGroupDto);
+    Call<Group> updateGroup(@Header("Authorization") String authToken, @Path("id") String id, @Body UpdateGroupDto updateGroupDto);
 
     @DELETE("groups/{id}")
-    Call<Group> deleteGroup(@Header("Authorization:") String authToken, @Path("id") String id);
+    Call<Group> deleteGroup(@Header("Authorization") String authToken, @Path("id") String id);
 }

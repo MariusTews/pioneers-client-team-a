@@ -17,5 +17,5 @@ public interface AuthenticationApiService {
     Call<LoginResult> refresh(@Body RefreshDto refreshDto);
 
     @POST("auth/logout")
-    Call<ResponseBody> logout(@Header("Authorization:") String authToken);
+    Call<ResponseBody> logout(@Header("Authorization") String authToken);
 }
