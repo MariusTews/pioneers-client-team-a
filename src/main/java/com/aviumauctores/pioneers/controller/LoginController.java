@@ -2,12 +2,11 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.service.LoginService;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-
-import java.awt.*;
 
 public class LoginController implements Controller {
 
@@ -35,11 +34,10 @@ public class LoginController implements Controller {
         final Label passwordLabel = new Label("Password");
         final PasswordField passwordInput = new PasswordField();
         final Button login = new Button("Login");
-        /*login.setOnAction(event -> {
+        login.setOnAction(event -> {
             loginService.login(usernameInput.getText(), passwordInput.getText());
-        });*/
-        return null;
-        //return new VBox(5, usernameLabel, usernameInput, passwordLabel, passwordInput, login);
+        });
+        return new VBox(5, usernameLabel, usernameInput, passwordLabel, passwordInput);
         //Macht er in Vorlesung 3 ab 1:36:00
     }
 
