@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.service.LoginService;
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -43,5 +44,17 @@ public class LoginController implements Controller {
 
     public void login(String username, String password){
         loginService.login(username, password);
+    }
+
+    public void login(ActionEvent event) {
+
+    }
+
+    public void rememberMeToggle(ActionEvent event) {
+
+    }
+
+    public void toRegister(ActionEvent event) {
+
     }
 }
