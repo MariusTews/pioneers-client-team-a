@@ -9,20 +9,22 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.PasswordField?>
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="400.0" prefWidth="600.0" spacing="25.0" xmlns="http://javafx.com/javafx/18"
+      prefHeight="400.0" prefWidth="600.0" spacing="25.0" xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.aviumauctores.pioneers.controller.CreateAnAccountController">
-
    <HBox prefHeight="52.0" prefWidth="600.0"/>
-   <VBox alignment="TOP_CENTER" prefHeight="59.0" prefWidth="600.0" spacing="5.0">
+   <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username"/>
-      <TextField id="textfieldUsername" fx:id="textfieldUsername" prefHeight="25.0" prefWidth="200.0"
-                 promptText="Input Username">
-         <VBox.margin>
-            <Insets left="200.0" right="200.0"/>
-         </VBox.margin>
-      </TextField>
+      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+         <TextField id="textfieldUsername" fx:id="textfieldUsername" alignment="TOP_LEFT" prefHeight="25.0"
+                    prefWidth="200.0" promptText="Input Username">
+            <opaqueInsets>
+               <Insets/>
+            </opaqueInsets>
+         </TextField>
+      </HBox>
    </VBox>
    <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Passwort"/>
@@ -30,12 +32,12 @@
          <padding>
             <Insets left="115.0"/>
          </padding>
-         <TextField id="textfieldPasswort" fx:id="textfieldPasswort" alignment="TOP_LEFT" prefHeight="25.0"
-                    prefWidth="200.0" promptText="Input Password">
+         <PasswordField id="textfieldPasswort" fx:id="textfieldPasswort" alignment="TOP_LEFT" prefHeight="25.0"
+                    prefWidth="200.0" promptText="Input Passwort">
             <opaqueInsets>
                <Insets/>
             </opaqueInsets>
-         </TextField>
+         </PasswordField>
          <HBox prefHeight="68.0" prefWidth="98.0">
             <ImageView fitHeight="22.0" fitWidth="22.0">
                <Image url="@Schloss.png"/>

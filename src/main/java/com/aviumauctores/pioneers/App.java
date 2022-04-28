@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
+import com.aviumauctores.pioneers.controller.CreateAnAccountController;
 import com.aviumauctores.pioneers.controller.LoginController;
 import com.aviumauctores.pioneers.service.LoginService;
 import javafx.application.Application;
@@ -36,8 +37,9 @@ public class App extends Application {
 
         primaryStage.show();
 
-        final LoginService loginService = new LoginService();
-        show(new LoginController(loginService));
+        //final LoginService loginService = new LoginService();
+        //show(new LoginController(loginService));
+        show(new CreateAnAccountController());
     }
 
     private void setAppIcon(Stage stage){
