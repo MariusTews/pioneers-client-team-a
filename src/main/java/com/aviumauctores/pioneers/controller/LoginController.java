@@ -76,7 +76,7 @@ public class LoginController implements Controller {
             else {
                 usernameErrorLabel.setText("");
             }
-            if(password.isEmpty()) {
+            if(passwordEmpty) {
                 passwordErrorLabel.setText("Keine valide Eingabe.");
             }
             else {
