@@ -37,7 +37,7 @@ public class App extends Application {
         primaryStage.show();
 
         final LoginService loginService = new LoginService();
-        show(new LoginController(loginService));
+        show(new LoginController(this, loginService));
     }
 
     private void setAppIcon(Stage stage){

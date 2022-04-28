@@ -1,11 +1,15 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+
+import java.io.IOException;
 
 public class LobbyController implements Controller {
 
@@ -33,8 +37,16 @@ public class LobbyController implements Controller {
     }
 
     public Parent render(){
-        return new Parent(){
-        };
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/lobbyScreen.fxml"));
+        loader.setControllerFactory(c -> this);
+        final Parent parent;
+        try {
+            parent = loader.load();
+        }catch(IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return parent;
     }
 
     public void toCreateGame(ActionEvent event) {

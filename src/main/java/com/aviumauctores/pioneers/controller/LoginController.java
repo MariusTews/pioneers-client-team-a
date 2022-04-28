@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.LoginService;
 import javafx.event.ActionEvent;
@@ -13,6 +14,7 @@ import java.io.IOException;
 
 public class LoginController implements Controller {
 
+    private final App app;
     private final LoginService loginService;
 
     @FXML public TextField usernameInput;
@@ -25,8 +27,13 @@ public class LoginController implements Controller {
 
     @FXML public Button registerButton;
 
+    @FXML public Label usernameErrorLabel;
 
-    public LoginController(LoginService loginService){
+    @FXML public Label passwordErrorLabel;
+
+
+    public LoginController(App app, LoginService loginService){
+        this.app = app;
         this.loginService = loginService;
     }
 
@@ -55,7 +62,33 @@ public class LoginController implements Controller {
     }
 
     public void login(ActionEvent event) {
+        String username = usernameInput.getText();
+        String password = passwordInput.getText();
+        loginService.login(username, password);
 
+        //maybe placeholder (rest of this method; can be moved to loginService later maybe)
+        Boolean usernameEmpty = username.isEmpty();
+        Boolean passwordEmpty = password.isEmpty();
+        if(usernameEmpty || passwordEmpty) {
+            if(usernameEmpty) {
+                usernameErrorLabel.setText("Keine valide Eingabe.");
+            }
+            else {
+                usernameErrorLabel.setText("");
+            }
+            if(password.isEmpty()) {
+                passwordErrorLabel.setText("Keine valide Eingabe.");
+            }
+            else {
+                passwordErrorLabel.setText("");
+            }
+        }
+        else {
+            usernameErrorLabel.setText("");
+            passwordErrorLabel.setText("");
+            final LobbyController controller = new LobbyController();
+            app.show(controller);
+        }
     }
 
     public void rememberMeToggle(ActionEvent event) {
@@ -63,6 +96,8 @@ public class LoginController implements Controller {
     }
 
     public void toRegister(ActionEvent event) {
-
+        //maybe placeholder
+        final RegisterController controller = new RegisterController();
+        app.show(controller);
     }
 }
