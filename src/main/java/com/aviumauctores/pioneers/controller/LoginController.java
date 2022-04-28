@@ -1,14 +1,20 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.LoginService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
+
 public class LoginController implements Controller {
 
+    private final App app;
     private final LoginService loginService;
 
     @FXML public TextField usernameInput;
@@ -21,8 +27,13 @@ public class LoginController implements Controller {
 
     @FXML public Button registerButton;
 
+    @FXML public Label usernameErrorLabel;
 
-    public LoginController(LoginService loginService){
+    @FXML public Label passwordErrorLabel;
+
+
+    public LoginController(App app, LoginService loginService){
+        this.app = app;
         this.loginService = loginService;
     }
 
@@ -38,25 +49,46 @@ public class LoginController implements Controller {
 
     @Override
     public Parent render(){
-        final Label usernameLabel = new Label("Username");
-        usernameLabel.setId("usernameLabel");
-        final TextField usernameInput = new TextField();
-        final Label passwordLabel = new Label("Password");
-        final PasswordField passwordInput = new PasswordField();
-        final Button login = new Button("Login");
-        login.setOnAction(event -> {
-            loginService.login(usernameInput.getText(), passwordInput.getText());
-        });
-        return new VBox(5, usernameLabel, usernameInput, passwordLabel, passwordInput);
-        //Macht er in Vorlesung 3 ab 1:36:00
-    }
-
-    public void login(String username, String password){
-        loginService.login(username, password);
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"));
+        loader.setControllerFactory(c -> this);
+        final Parent parent;
+        try {
+            parent = loader.load();
+        }catch(IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return parent;
     }
 
     public void login(ActionEvent event) {
+        String username = usernameInput.getText();
+        String password = passwordInput.getText();
+        loginService.login(username, password);
 
+        //maybe placeholder (rest of this method; can be moved to loginService later maybe)
+        Boolean usernameEmpty = username.isEmpty();
+        Boolean passwordEmpty = password.isEmpty();
+        if(usernameEmpty || passwordEmpty) {
+            if(usernameEmpty) {
+                usernameErrorLabel.setText("Keine valide Eingabe.");
+            }
+            else {
+                usernameErrorLabel.setText("");
+            }
+            if(passwordEmpty) {
+                passwordErrorLabel.setText("Keine valide Eingabe.");
+            }
+            else {
+                passwordErrorLabel.setText("");
+            }
+        }
+        else {
+            usernameErrorLabel.setText("");
+            passwordErrorLabel.setText("");
+            final LobbyController controller = new LobbyController();
+            app.show(controller);
+        }
     }
 
     public void rememberMeToggle(ActionEvent event) {
@@ -64,6 +96,8 @@ public class LoginController implements Controller {
     }
 
     public void toRegister(ActionEvent event) {
-
+        //maybe placeholder
+        final RegisterController controller = new RegisterController();
+        app.show(controller);
     }
 }
