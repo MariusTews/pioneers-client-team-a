@@ -1,11 +1,15 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.LoginService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+
+import java.io.IOException;
 
 public class LoginController implements Controller {
 
@@ -38,21 +42,16 @@ public class LoginController implements Controller {
 
     @Override
     public Parent render(){
-        final Label usernameLabel = new Label("Username");
-        usernameLabel.setId("usernameLabel");
-        final TextField usernameInput = new TextField();
-        final Label passwordLabel = new Label("Password");
-        final PasswordField passwordInput = new PasswordField();
-        final Button login = new Button("Login");
-        login.setOnAction(event -> {
-            loginService.login(usernameInput.getText(), passwordInput.getText());
-        });
-        return new VBox(5, usernameLabel, usernameInput, passwordLabel, passwordInput);
-        //Macht er in Vorlesung 3 ab 1:36:00
-    }
-
-    public void login(String username, String password){
-        loginService.login(username, password);
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"));
+        loader.setControllerFactory(c -> this);
+        final Parent parent;
+        try {
+            parent = loader.load();
+        }catch(IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return parent;
     }
 
     public void login(ActionEvent event) {

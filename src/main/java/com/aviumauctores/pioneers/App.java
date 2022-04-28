@@ -21,9 +21,9 @@ public class App extends Application {
     private Controller controller;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage){
         this.stage = primaryStage;
-        stage.setWidth(SCREEN_HEIGHT);
+        stage.setWidth(SCREEN_WIDTH);
         stage.setHeight(SCREEN_HEIGHT);
         stage.setTitle(GAME_TITLE);
 
@@ -58,7 +58,7 @@ public class App extends Application {
         }
     }
     @Override
-    public void stop() throws Exception{
+    public void stop(){
         cleanup();
     }
 
