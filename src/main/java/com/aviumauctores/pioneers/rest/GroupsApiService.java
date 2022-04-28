@@ -8,19 +8,21 @@ import retrofit2.http.*;
 
 import java.util.List;
 
+import static com.aviumauctores.pioneers.Constants.*;
+
 public interface GroupsApiService {
-    @GET("groups")
-    Call<List<Group>> listGroups(@Header("Authorization") String authToken, @Query("members") String members);
+    @GET(LIST_GROUPS_URL)
+    Call<List<Group>> listGroups(@Header(HEADER_AUTH) String authToken, @Query(QUERY_MEMBERS) String members);
 
-    @POST("groups")
-    Call<Group> createGroup(@Header("Authorization") String authToken, @Body CreateGroupDto createGroupDto);
+    @POST(CREATE_GROUP_URL)
+    Call<Group> createGroup(@Header(HEADER_AUTH) String authToken, @Body CreateGroupDto createGroupDto);
 
-    @GET("groups/{id}")
-    Call<Group> getGroup(@Header("Authorization") String authToken, @Path("id") String id);
+    @GET(GET_GROUP_URL)
+    Call<Group> getGroup(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
 
-    @PATCH("groups/{id}")
-    Call<Group> updateGroup(@Header("Authorization") String authToken, @Path("id") String id, @Body UpdateGroupDto updateGroupDto);
+    @PATCH(UPDATE_GROUP_URL)
+    Call<Group> updateGroup(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id, @Body UpdateGroupDto updateGroupDto);
 
-    @DELETE("groups/{id}")
-    Call<Group> deleteGroup(@Header("Authorization") String authToken, @Path("id") String id);
+    @DELETE(DELETE_GROUP_URL)
+    Call<Group> deleteGroup(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
 }

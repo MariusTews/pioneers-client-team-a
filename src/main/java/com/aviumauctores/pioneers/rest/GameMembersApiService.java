@@ -8,33 +8,35 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface GameMembersApiService {
-    @GET("games/{gameId}/members")
-    Call<List<Member>> listMembers(@Header("Authorization") String authToken, @Path("gameId") String gameId);
+import static com.aviumauctores.pioneers.Constants.*;
 
-    @POST("games/{gameId}/members")
+public interface GameMembersApiService {
+    @GET(LIST_MEMBERS_URL)
+    Call<List<Member>> listMembers(@Header(HEADER_AUTH) String authToken, @Path(PATH_GAME_ID) String gameId);
+
+    @POST(CREATE_MEMBER_URL)
     Call<Member> createMember(
-            @Header("Authorization") String authToken,
-            @Path("gameId") String gameId,
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_GAME_ID) String gameId,
             @Body CreateMemberDto createMemberDto
     );
 
-    @GET("games/{gameId}/members/{userId}")
+    @GET(GET_MEMBER_URL)
     Call<Member> getMember(
-            @Header("Authorization") String authToken,
-            @Path("gameId") String gameId, @Path("userId") String userId
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId
     );
 
-    @PATCH("games/{gameId}/members/{userId}")
+    @PATCH(UPDATE_MEMBER_URL)
     Call<Member> updateMember(
-            @Header("Authorization") String authToken,
-            @Path("gameId") String gameId, @Path("userId") String userId,
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId,
             @Body UpdateMemberDto updateMemberDto
     );
 
-    @DELETE("games/{gameId}/members/{userId}")
+    @DELETE()
     Call<Member> deleteMember(
-            @Header("Authorization") String authToken,
-            @Path("gameId") String gameId, @Path("userId") String userId
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId
     );
 }

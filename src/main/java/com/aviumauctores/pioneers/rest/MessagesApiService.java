@@ -8,37 +8,39 @@ import retrofit2.http.*;
 
 import java.util.List;
 
+import static com.aviumauctores.pioneers.Constants.*;
+
 public interface MessagesApiService {
-    @GET("{namespace}/{parent}/messages")
+    @GET(LIST_MESSAGES_URL)
     Call<List<Message>> listMessages(
-            @Header("Authorization") String authToken,
-            @Path("namespace") String namespace, @Path("parent") String parent,
-            @Query("createdBefore") String createdBefore, @Query("limit") int limit
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_NAMESPACE) String namespace, @Path(PATH_PARENT) String parent,
+            @Query(QUERY_CREATED_BEFORE) String createdBefore, @Query(QUERY_LIMIT) int limit
     );
 
-    @POST("{namespace}/{parent}/messages")
+    @POST(SEND_MESSAGE_URL)
     Call<Message> sendMessage(
-            @Header("Authorization") String authToken,
-            @Path("namespace") String namespace, @Path("parent") String parent,
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_NAMESPACE) String namespace, @Path(PATH_PARENT) String parent,
             @Body CreateMessageDto createMessageDto
     );
 
-    @GET("{namespace}/{parent}/messages/{id}")
+    @GET(GET_MESSAGE_URL)
     Call<Message> getMessage(
-            @Header("Authorization") String authToken,
-            @Path("namespace") String namespace, @Path("parent") String parent, @Path("id") String id
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_NAMESPACE) String namespace, @Path(PATH_PARENT) String parent, @Path(PATH_ID) String id
     );
 
-    @PATCH("{namespace}/{parent}/messages/{id}")
+    @PATCH(UPDATE_MESSAGE_URL)
     Call<Message> updateMessage(
-            @Header("Authorization") String authToken,
-            @Path("namespace") String namespace, @Path("parent") String parent, @Path("id") String id,
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_NAMESPACE) String namespace, @Path(PATH_PARENT) String parent, @Path(PATH_ID) String id,
             @Body UpdateMessageDto updateMessageDto
     );
 
-    @DELETE("{namespace}/{parent}/messages/{id}")
+    @DELETE(DELETE_MESSAGE_URL)
     Call<Message> deleteMessage(
-            @Header("Authorization") String authToken,
-            @Path("namespace") String namespace, @Path("parent") String parent, @Path("id") String id
+            @Header(HEADER_AUTH) String authToken,
+            @Path(PATH_NAMESPACE) String namespace, @Path(PATH_PARENT) String parent, @Path(PATH_ID) String id
     );
 }

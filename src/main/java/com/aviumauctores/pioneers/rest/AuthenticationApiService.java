@@ -9,13 +9,15 @@ import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 
+import static com.aviumauctores.pioneers.Constants.*;
+
 public interface AuthenticationApiService {
-    @POST("auth/login")
+    @POST(LOGIN_URL)
     Call<LoginResult> login(@Body LoginDto loginDto);
 
-    @POST("auth/refresh")
+    @POST(REFRESH_URL)
     Call<LoginResult> refresh(@Body RefreshDto refreshDto);
 
-    @POST("auth/logout")
-    Call<ResponseBody> logout(@Header("Authorization") String authToken);
+    @POST(LOGOUT_URL)
+    Call<ResponseBody> logout(@Header(HEADER_AUTH) String authToken);
 }

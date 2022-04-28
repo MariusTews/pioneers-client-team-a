@@ -8,19 +8,21 @@ import retrofit2.http.*;
 
 import java.util.List;
 
+import static com.aviumauctores.pioneers.Constants.*;
+
 public interface GamesApiService {
-    @GET("games")
-    Call<List<Game>> listGames(@Header("Authorization") String authToken);
+    @GET(LIST_GAMES_URL)
+    Call<List<Game>> listGames(@Header(HEADER_AUTH) String authToken);
 
-    @POST("games")
-    Call<Game> createGame(@Header("Authorization") String authToken, @Body CreateGameDto createGameDto);
+    @POST(CREATE_GAME_URL)
+    Call<Game> createGame(@Header(HEADER_AUTH) String authToken, @Body CreateGameDto createGameDto);
 
-    @GET("games/{id}")
-    Call<Game> getGame(@Header("Authorization") String authToken, @Path("id") String id);
+    @GET(GET_GAME_URL)
+    Call<Game> getGame(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
 
-    @PATCH("games/{id}")
-    Call<Game> updateGame(@Header("Authorization") String authToken, @Path("id") String id, @Body UpdateGameDto updateGameDto);
+    @PATCH(UPDATE_GAME_URL)
+    Call<Game> updateGame(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id, @Body UpdateGameDto updateGameDto);
 
-    @DELETE("games/{id}")
-    Call<Game> deleteGame(@Header("Authorization") String authToken, @Path("id") String id);
+    @DELETE(DELETE_GAME_URL)
+    Call<Game> deleteGame(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
 }

@@ -8,19 +8,21 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface UsersApiService {
-    @GET("users")
-    Call<List<User>> listUsers(@Header("Authorization") String authToken, @Query("status") String status, @Query("ids") String ids);
+import static com.aviumauctores.pioneers.Constants.*;
 
-    @POST("users")
+public interface UsersApiService {
+    @GET(LIST_USERS_URL)
+    Call<List<User>> listUsers(@Header(HEADER_AUTH) String authToken, @Query(QUERY_STATUS) String status, @Query(QUERY_IDS) String ids);
+
+    @POST(CREATE_USER_URL)
     Call<User> createUser(@Body CreateUserDto createUserDto);
 
-    @GET("users/{id}")
-    Call<User> getUser(@Header("Authorization") String authToken, @Path("id") String id);
+    @GET(GET_USER_URL)
+    Call<User> getUser(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
 
-    @PATCH("users/{id}")
-    Call<User> updateUser(@Header("Authorization") String authToken, @Path("id") String id, UpdateUserDto updateUserDto);
+    @PATCH(UPDATE_USER_URL)
+    Call<User> updateUser(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id, UpdateUserDto updateUserDto);
 
-    @DELETE("users/{id}")
-    Call<User> deleteUser(@Header("Authorization") String authToken, @Path("id") String id);
+    @DELETE(DELETE_USER_URL)
+    Call<User> deleteUser(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
 }
