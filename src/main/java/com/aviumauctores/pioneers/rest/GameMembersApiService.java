@@ -34,7 +34,7 @@ public interface GameMembersApiService {
             @Body UpdateMemberDto updateMemberDto
     );
 
-    @DELETE()
+    @DELETE(DELETE_MEMBER_URL)
     Call<Member> deleteMember(
             @Header(HEADER_AUTH) String authToken,
             @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId
