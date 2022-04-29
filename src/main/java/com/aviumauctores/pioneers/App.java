@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers;
 import com.aviumauctores.pioneers.controller.Controller;
 import com.aviumauctores.pioneers.controller.LoginController;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.UserService;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -22,6 +23,8 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage){
+        final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
+
         this.stage = primaryStage;
         stage.setWidth(SCREEN_WIDTH);
         stage.setHeight(SCREEN_HEIGHT);
@@ -36,8 +39,7 @@ public class App extends Application {
 
         primaryStage.show();
 
-        final LoginService loginService = new LoginService();
-        show(new LoginController(this, loginService));
+        show(mainComponent.loginController());
     }
 
     private void setAppIcon(Stage stage){

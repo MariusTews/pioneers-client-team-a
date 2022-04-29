@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers;
 
+import com.aviumauctores.pioneers.rest.AuthenticationApiService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,5 +29,10 @@ public class MainModule {
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .build();
+    }
+
+    @Provides
+    static AuthenticationApiService authenticationApiService(Retrofit retrofit) {
+        return retrofit.create(AuthenticationApiService.class);
     }
 }

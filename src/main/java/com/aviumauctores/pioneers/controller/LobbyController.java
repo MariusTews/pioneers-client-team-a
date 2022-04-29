@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
 public class LobbyController implements Controller {
@@ -26,6 +27,10 @@ public class LobbyController implements Controller {
     @FXML public Button chatButton;
 
     @FXML public Button quitButton;
+    @Inject
+    public LobbyController(){
+
+    }
 
 
     public void init(){
