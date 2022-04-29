@@ -14,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
 import java.io.IOException;
 
 public class CreateAnAccountController implements Controller {
@@ -70,6 +69,7 @@ public class CreateAnAccountController implements Controller {
                                 textfieldPasswort.getText().trim().isEmpty(), textfieldPasswort.textProperty()))
         );
 
+        //TODO not in use because of an error (maybe because login not implemented)
         //take username and password from login screen
         //textfieldUsername.textProperty().bindBidirectional(username);
         //textfieldPasswort.textProperty().bindBidirectional(passwort);
