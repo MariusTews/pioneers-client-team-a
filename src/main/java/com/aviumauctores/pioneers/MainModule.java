@@ -15,7 +15,7 @@ import javax.inject.Singleton;
 public class MainModule {
     @Provides
     @Singleton
-    static ObjectMapper mapper() {
+    ObjectMapper mapper() {
         return new ObjectMapper()
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -24,7 +24,7 @@ public class MainModule {
 
     @Provides
     @Singleton
-    static Retrofit retrofit(ObjectMapper mapper) {
+    Retrofit retrofit(ObjectMapper mapper) {
         return new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
@@ -32,7 +32,7 @@ public class MainModule {
     }
 
     @Provides
-    static AuthenticationApiService authenticationApiService(Retrofit retrofit) {
+    AuthenticationApiService authenticationApiService(Retrofit retrofit) {
         return retrofit.create(AuthenticationApiService.class);
     }
 }
