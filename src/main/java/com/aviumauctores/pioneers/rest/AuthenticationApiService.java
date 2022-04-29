@@ -9,8 +9,6 @@ import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 
-import javax.inject.Inject;
-
 import static com.aviumauctores.pioneers.Constants.*;
 
 public interface AuthenticationApiService {
