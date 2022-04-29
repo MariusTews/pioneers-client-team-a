@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.service.UserService;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 
@@ -11,6 +12,9 @@ public class RegisterController implements Controller{
 
     private final UserService userService;
     private final Provider<LoginController> loginController;
+
+    public final SimpleStringProperty username = new SimpleStringProperty();
+    public final SimpleStringProperty password = new SimpleStringProperty();
     @Inject
     public RegisterController(UserService userService, Provider<LoginController> loginController){
 
