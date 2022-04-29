@@ -6,7 +6,6 @@ import com.aviumauctores.pioneers.dto.auth.RefreshDto;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -19,5 +18,5 @@ public interface AuthenticationApiService {
     Call<LoginResult> refresh(@Body RefreshDto refreshDto);
 
     @POST(LOGOUT_URL)
-    Call<ResponseBody> logout(@Header(HEADER_AUTH) String authToken);
+    Call<ResponseBody> logout();
 }

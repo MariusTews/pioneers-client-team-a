@@ -12,31 +12,27 @@ import static com.aviumauctores.pioneers.Constants.*;
 
 public interface GameMembersApiService {
     @GET(LIST_MEMBERS_URL)
-    Call<List<Member>> listMembers(@Header(HEADER_AUTH) String authToken, @Path(PATH_GAME_ID) String gameId);
+    Call<List<Member>> listMembers(@Path(PATH_GAME_ID) String gameId);
 
     @POST(CREATE_MEMBER_URL)
     Call<Member> createMember(
-            @Header(HEADER_AUTH) String authToken,
             @Path(PATH_GAME_ID) String gameId,
             @Body CreateMemberDto createMemberDto
     );
 
     @GET(GET_MEMBER_URL)
     Call<Member> getMember(
-            @Header(HEADER_AUTH) String authToken,
             @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId
     );
 
     @PATCH(UPDATE_MEMBER_URL)
     Call<Member> updateMember(
-            @Header(HEADER_AUTH) String authToken,
             @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId,
             @Body UpdateMemberDto updateMemberDto
     );
 
     @DELETE(DELETE_MEMBER_URL)
     Call<Member> deleteMember(
-            @Header(HEADER_AUTH) String authToken,
             @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId
     );
 }

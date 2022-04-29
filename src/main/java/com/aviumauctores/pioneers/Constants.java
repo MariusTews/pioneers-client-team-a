@@ -11,6 +11,7 @@ public class Constants {
 
     // URL params
     public static final String HEADER_AUTH = "Authorization";
+    public static final String HEADER_AUTH_BEARER = "Bearer";
     public static final String PATH_ID = "id";
     public static final String PATH_GAME_ID = "gameId";
     public static final String PATH_USER_ID = "userId";

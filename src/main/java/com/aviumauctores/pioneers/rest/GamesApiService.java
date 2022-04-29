@@ -12,17 +12,17 @@ import static com.aviumauctores.pioneers.Constants.*;
 
 public interface GamesApiService {
     @GET(LIST_GAMES_URL)
-    Call<List<Game>> listGames(@Header(HEADER_AUTH) String authToken);
+    Call<List<Game>> listGames();
 
     @POST(CREATE_GAME_URL)
-    Call<Game> createGame(@Header(HEADER_AUTH) String authToken, @Body CreateGameDto createGameDto);
+    Call<Game> createGame(@Body CreateGameDto createGameDto);
 
     @GET(GET_GAME_URL)
-    Call<Game> getGame(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
+    Call<Game> getGame(@Path(PATH_ID) String id);
 
     @PATCH(UPDATE_GAME_URL)
-    Call<Game> updateGame(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id, @Body UpdateGameDto updateGameDto);
+    Call<Game> updateGame(@Path(PATH_ID) String id, @Body UpdateGameDto updateGameDto);
 
     @DELETE(DELETE_GAME_URL)
-    Call<Game> deleteGame(@Header(HEADER_AUTH) String authToken, @Path(PATH_ID) String id);
+    Call<Game> deleteGame(@Path(PATH_ID) String id);
 }
