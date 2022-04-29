@@ -3,7 +3,9 @@ package com.aviumauctores.pioneers;
 import com.aviumauctores.pioneers.controller.Controller;
 import com.aviumauctores.pioneers.controller.CreateAnAccountController;
 import com.aviumauctores.pioneers.controller.LoginController;
+import com.aviumauctores.pioneers.rest.UsersApiService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.UserService;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -39,7 +41,9 @@ public class App extends Application {
 
         //final LoginService loginService = new LoginService();
         //show(new LoginController(loginService));
-        show(new CreateAnAccountController());
+        UserService userservice = new UserService();
+        LoginService loginService = new LoginService();
+        show(new CreateAnAccountController(this,userservice, loginService));
     }
 
     private void setAppIcon(Stage stage){

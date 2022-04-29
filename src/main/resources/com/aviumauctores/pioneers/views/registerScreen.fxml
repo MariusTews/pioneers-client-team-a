@@ -10,6 +10,7 @@
 <?import javafx.scene.text.Text?>
 
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Label?>
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="400.0" prefWidth="600.0" spacing="25.0" xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -46,6 +47,7 @@
                     style="-fx-background-color: #b0ffc0;" text="Anzeigen"/>
          </HBox>
       </HBox>
+      <Label fx:id="showPassword"/>
    </VBox>
    <Button id="accountErstellenButton" fx:id="accountErstellenButton" mnemonicParsing="false"
            onAction="#accountErstellen" style="-fx-background-color: #b0ffc0;" text="Account erstellen"/>
