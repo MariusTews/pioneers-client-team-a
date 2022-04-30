@@ -14,7 +14,7 @@
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="400.0" prefWidth="600.0" spacing="25.0" xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.aviumauctores.pioneers.controller.CreateAnAccountController">
+      fx:controller="com.aviumauctores.pioneers.controller.RegisterController">
    <HBox prefHeight="52.0" prefWidth="600.0"/>
    <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username"/>

@@ -2,11 +2,11 @@ package com.aviumauctores.pioneers.controller;
 
 import org.junit.jupiter.api.Test;
 
-class CreateAnAccountControllerTest {
+class RegisterControllerTest {
 
     @Test
-    void CreateAccountControllerTest()
-    {
+    void testRegisterController(){
 
     }
+
 }
