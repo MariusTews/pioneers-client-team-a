@@ -2,12 +2,20 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.LoginService;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -74,14 +82,16 @@ public class LoginController implements Controller {
 
         Boolean usernameEmpty = username.isEmpty();
         Boolean passwordEmpty = password.isEmpty();
-        if(usernameEmpty || passwordEmpty) {
-            if(usernameEmpty) {
+
+        //check whether username or password is empty
+        if (usernameEmpty || passwordEmpty) {
+            if (usernameEmpty) {
                 usernameErrorLabel.setText("Keine valide Eingabe.");
             }
             else {
                 usernameErrorLabel.setText("");
             }
-            if(passwordEmpty) {
+            if (passwordEmpty) {
                 passwordErrorLabel.setText("Keine valide Eingabe.");
             }
             else {
@@ -94,10 +104,19 @@ public class LoginController implements Controller {
 
             loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
-                    .subscribe(result -> {
-                        final LobbyController controller = lobbyController.get();
-                        app.show(controller);
-                    });
+                    .subscribe(
+                            result -> {
+                                //I dont know how to pass the user to the LobbyController yet
+                                User user = new User(result._id(), result.name(), result.status(), result.avatar());
+                                final LobbyController controller = lobbyController.get();
+                                app.show(controller);
+                            },
+                            error -> {
+                                Platform.runLater(() -> {
+                                    app.showErrorOnLoginPopup(error);
+                                });
+                            }
+                    );
         }
     }
 
