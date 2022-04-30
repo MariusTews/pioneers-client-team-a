@@ -3,18 +3,17 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.UserService;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class LoginController implements Controller {
 
@@ -93,12 +92,12 @@ public class LoginController implements Controller {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
-            loginService.login(username, password, result -> {
-                Platform.runLater(() -> {
-                    final LobbyController controller = lobbyController.get();
-                    app.show(controller);
-                });
-            });
+            loginService.login(username, password)
+                    .subscribeOn(FX_SCHEDULER)
+                    .subscribe(result -> {
+                        final LobbyController controller = lobbyController.get();
+                        app.show(controller);
+                    });
         }
     }
 
