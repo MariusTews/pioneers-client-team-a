@@ -65,6 +65,7 @@ public class ChatController implements Controller {
     }
 
     public void leave() {
+        // back to LobbyScreen
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
