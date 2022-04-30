@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 @ClientEndpoint
 public class WebsocketClient {
-    Session session;
+    private Session session;
 
     private final List<Consumer<String>> messageHandlers = Collections.synchronizedList(new ArrayList<>());
 
@@ -35,8 +35,8 @@ public class WebsocketClient {
 
     @OnMessage
     public void onMessage(String message) {
-        for (final Consumer<String> hanlder : messageHandlers) {
-            hanlder.accept(message);
+        for (final Consumer<String> handler : messageHandlers) {
+            handler.accept(message);
         }
     }
 
@@ -70,5 +70,9 @@ public class WebsocketClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean hasMessageHandlers() {
+        return !messageHandlers.isEmpty();
     }
 }

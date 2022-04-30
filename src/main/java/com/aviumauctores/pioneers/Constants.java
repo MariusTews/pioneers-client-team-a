@@ -68,5 +68,14 @@ public class Constants {
     public static final String UPDATE_GAME_URL = "games/{id}";
     public static final String DELETE_GAME_URL = "games/{id}";
 
+    public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v1/events";
+    public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
+
+    public static final String JSON_EVENT = "event";
+    public static final String JSON_EVENT_SUBSCRIBE = "subscribe";
+    public static final String JSON_EVENT_UNSUBSCRIBE = "unsubscribe";
+
+    public static final String JSON_DATA = "data";
+
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }
