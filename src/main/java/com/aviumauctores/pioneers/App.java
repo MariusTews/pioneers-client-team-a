@@ -39,11 +39,9 @@ public class App extends Application {
 
         primaryStage.show();
 
-        //final LoginService loginService = new LoginService();
-        //show(new LoginController(loginService));
-        UserService userservice = new UserService();
-        LoginService loginService = new LoginService();
-        show(new CreateAnAccountController(this,userservice, loginService));
+        final LoginService loginService = new LoginService();
+        show(new LoginController(loginService));
+
     }
 
     private void setAppIcon(Stage stage){

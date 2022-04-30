@@ -1,6 +1,12 @@
 package com.aviumauctores.pioneers.controller;
 
-class CreateAnAccountControllerTest
-{
+import org.junit.jupiter.api.Test;
 
+class CreateAnAccountControllerTest {
+
+    @Test
+    void CreateAccountControllerTest()
+    {
+
+    }
 }
