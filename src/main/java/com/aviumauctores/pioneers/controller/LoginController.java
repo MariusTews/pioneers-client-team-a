@@ -3,6 +3,8 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.UserService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,12 +12,16 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 public class LoginController implements Controller {
 
     private final App app;
     private final LoginService loginService;
+    private final Provider<RegisterController> registerController;
+    private final Provider<LobbyController> lobbyController;
 
     @FXML public TextField usernameInput;
 
@@ -31,10 +37,12 @@ public class LoginController implements Controller {
 
     @FXML public Label passwordErrorLabel;
 
-
-    public LoginController(App app, LoginService loginService){
+    @Inject
+    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController){
         this.app = app;
         this.loginService = loginService;
+        this.registerController = registerController;
+        this.lobbyController = lobbyController;
     }
 
     @Override
@@ -64,9 +72,7 @@ public class LoginController implements Controller {
     public void login(ActionEvent event) {
         String username = usernameInput.getText();
         String password = passwordInput.getText();
-        loginService.login(username, password);
 
-        //maybe placeholder (rest of this method; can be moved to loginService later maybe)
         Boolean usernameEmpty = username.isEmpty();
         Boolean passwordEmpty = password.isEmpty();
         if(usernameEmpty || passwordEmpty) {
@@ -86,8 +92,13 @@ public class LoginController implements Controller {
         else {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
-            final LobbyController controller = new LobbyController(app);
-            app.show(controller);
+
+            loginService.login(username, password, result -> {
+                Platform.runLater(() -> {
+                    final LobbyController controller = lobbyController.get();
+                    app.show(controller);
+                });
+            });
         }
     }
 
@@ -97,7 +108,7 @@ public class LoginController implements Controller {
 
     public void toRegister(ActionEvent event) {
         //maybe placeholder
-        final RegisterController controller = new RegisterController();
+        final RegisterController controller = registerController.get();
         app.show(controller);
     }
 }
