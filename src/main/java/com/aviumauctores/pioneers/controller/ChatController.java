@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 
 import java.io.IOException;
 
+
 public class ChatController implements Controller {
 
     @FXML public TextField chatTextField;
@@ -38,6 +39,14 @@ public class ChatController implements Controller {
             e.printStackTrace();
             return null;
         }
+        sendButton.setOnAction(event -> sendMessage());
+
         return parent;
+    }
+
+    public void sendMessage() {
+        // clear the field
+        String message = chatTextField.getText();
+        chatTextField.clear();
     }
 }
