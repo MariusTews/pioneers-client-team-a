@@ -1,15 +1,21 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 
 public class ChatController implements Controller {
+
+    private final App app;
+    private final Provider<LobbyController> lobbyController;
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
@@ -20,6 +26,12 @@ public class ChatController implements Controller {
     @FXML public Label onlinePlayerLabel;
     @FXML public Tab allTab;
     @FXML public TabPane chatTabPane;
+
+    @Inject
+    public ChatController(App app, Provider<LobbyController> lobbyController) {
+        this.app = app;
+        this.lobbyController = lobbyController;
+    }
 
     public void init(){
 
@@ -40,6 +52,7 @@ public class ChatController implements Controller {
             return null;
         }
         sendButton.setOnAction(event -> sendMessage());
+        leaveButton.setOnAction(event -> leave());
 
         return parent;
     }
@@ -48,5 +61,11 @@ public class ChatController implements Controller {
         // clear the field
         String message = chatTextField.getText();
         chatTextField.clear();
+
+    }
+
+    public void leave() {
+        final LobbyController controller = lobbyController.get();
+        app.show(controller);
     }
 }
