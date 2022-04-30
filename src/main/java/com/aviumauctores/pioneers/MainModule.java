@@ -1,21 +1,24 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
+import com.aviumauctores.pioneers.service.TokenStorage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-
 import javax.inject.Singleton;
 
 @Module
 public class MainModule {
     @Provides
     @Singleton
-    static ObjectMapper mapper() {
+    ObjectMapper mapper() {
         return new ObjectMapper()
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -24,15 +27,34 @@ public class MainModule {
 
     @Provides
     @Singleton
-    static Retrofit retrofit(ObjectMapper mapper) {
+    OkHttpClient client(TokenStorage tokenStorage) {
+        return new OkHttpClient.Builder().addInterceptor(chain -> {
+            final String token = tokenStorage.getToken();
+            if (token == null) {
+                return chain.proceed(chain.request());
+            }
+            final Request request = chain
+                    .request()
+                    .newBuilder()
+                    .addHeader(Constants.HEADER_AUTH, Constants.HEADER_AUTH_BEARER + token)
+                    .build();
+            return chain.proceed(request);
+        }).build();
+    }
+
+    @Provides
+    @Singleton
+    Retrofit retrofit(ObjectMapper mapper) {
         return new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build();
     }
 
     @Provides
-    static AuthenticationApiService authenticationApiService(Retrofit retrofit) {
+    @Singleton
+    AuthenticationApiService authenticationApiService(Retrofit retrofit) {
         return retrofit.create(AuthenticationApiService.class);
     }
 }
