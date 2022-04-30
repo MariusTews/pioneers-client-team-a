@@ -1,6 +1,8 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.service.LoginService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +15,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 public class LobbyController implements Controller {
+
+    private final App app;
 
     @FXML public Label gameLabel;
 
@@ -28,9 +32,11 @@ public class LobbyController implements Controller {
 
     @FXML public Button quitButton;
     @Inject
-    public LobbyController(){
-
+    public LobbyController(App app){
+        this.app = app;
     }
+
+
 
 
     public void init(){
@@ -58,8 +64,10 @@ public class LobbyController implements Controller {
 
     }
 
+    
     public void toChat(ActionEvent event) {
 
+        app.show(new ChatController());
     }
 
     public void quit(ActionEvent event) {

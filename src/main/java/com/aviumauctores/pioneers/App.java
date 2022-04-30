@@ -1,9 +1,6 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
-import com.aviumauctores.pioneers.controller.LoginController;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.UserService;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -44,6 +41,7 @@ public class App extends Application {
         setTaskBarIcon();
 
         primaryStage.show();
+
 
         show(mainComponent.loginController());
     }
