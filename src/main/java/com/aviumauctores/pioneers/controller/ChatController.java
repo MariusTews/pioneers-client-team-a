@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -61,6 +62,9 @@ public class ChatController implements Controller {
         // clear the field
         String message = chatTextField.getText();
         chatTextField.clear();
+        // placeholder, later with websocket
+        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren().add(new Label(message));
+
 
     }
 
@@ -69,4 +73,5 @@ public class ChatController implements Controller {
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
+
 }
