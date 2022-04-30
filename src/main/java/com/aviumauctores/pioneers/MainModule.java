@@ -12,7 +12,6 @@ import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-
 import javax.inject.Singleton;
 
 @Module
@@ -54,6 +53,7 @@ public class MainModule {
     }
 
     @Provides
+    @Singleton
     AuthenticationApiService authenticationApiService(Retrofit retrofit) {
         return retrofit.create(AuthenticationApiService.class);
     }

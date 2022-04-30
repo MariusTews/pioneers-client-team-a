@@ -106,8 +106,11 @@ public class LoginController implements Controller {
     }
 
     public void toRegister(ActionEvent event) {
-        //maybe placeholder
+        String username = usernameInput.getText();
+        String password = passwordInput.getText();
         final RegisterController controller = registerController.get();
+        controller.username.set(username);
+        controller.password.set(password);
         app.show(controller);
     }
 }
