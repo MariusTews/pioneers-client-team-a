@@ -77,5 +77,12 @@ public class Constants {
 
     public static final String JSON_DATA = "data";
 
+    // Response Codes
+    // (the single space after the code is necessary)
+    public static final String HTTP_400 = "HTTP 400 ";
+    public static final String HTTP_401 = "HTTP 401 ";
+    public static final String HTTP_429 = "HTTP 429 ";
+
+
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }
