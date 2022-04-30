@@ -1,5 +1,9 @@
 package com.aviumauctores.pioneers;
 
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import javafx.application.Platform;
+
 public class Constants {
 
     public static final int SCREEN_WIDTH = 640;
@@ -11,6 +15,7 @@ public class Constants {
 
     // URL params
     public static final String HEADER_AUTH = "Authorization";
+    public static final String HEADER_AUTH_BEARER = "Bearer";
     public static final String PATH_ID = "id";
     public static final String PATH_GAME_ID = "gameId";
     public static final String PATH_USER_ID = "userId";
@@ -62,4 +67,6 @@ public class Constants {
     public static final String GET_GAME_URL = "games/{id}";
     public static final String UPDATE_GAME_URL = "games/{id}";
     public static final String DELETE_GAME_URL = "games/{id}";
+
+    public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }
