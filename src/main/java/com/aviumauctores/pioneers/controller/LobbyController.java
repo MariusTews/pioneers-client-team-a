@@ -35,7 +35,7 @@ public class LobbyController implements Controller {
 
     @FXML public Button quitButton;
     @Inject
-    public LobbyController(App app, Provider<LoginController> loginController){
+    public LobbyController(App app, Provider<LoginController> loginController, Provider<ChatController> chatController){
         this.app = app;
         this.loginController = loginController;
         this.chatController = chatController;
