@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,10 +11,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 public class LobbyController implements Controller {
 
+    private final App app;
+    private final Provider<LoginController> loginController;
     @FXML public Label gameLabel;
 
     @FXML public ListView gameListView;
@@ -28,8 +32,9 @@ public class LobbyController implements Controller {
 
     @FXML public Button quitButton;
     @Inject
-    public LobbyController(){
-
+    public LobbyController(App app, Provider<LoginController> loginController){
+        this.app = app;
+        this.loginController = loginController;
     }
 
 
@@ -63,6 +68,8 @@ public class LobbyController implements Controller {
     }
 
     public void quit(ActionEvent event) {
-
+        //maybe dont go to login but instead directly quit the application?
+        final LoginController controller = loginController.get();
+        app.show(controller);
     }
 }

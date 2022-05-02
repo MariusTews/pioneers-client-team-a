@@ -1,11 +1,8 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
-import com.aviumauctores.pioneers.controller.LoginController;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.UserService;
 import javafx.application.Application;
-import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,8 +20,8 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class App extends Application {
 
     private Stage stage;
-    private Stage popupStage;
-    private Scene popupScene;
+    private Stage dialogStage;
+    private Scene dialogScene;
     private Controller controller;
 
     @Override
@@ -78,51 +75,25 @@ public class App extends Application {
 
     }
 
-    public void showErrorOnLoginPopup(Throwable error) {
-        popupStage = new Stage();
-        popupStage.setTitle("Fehler");
-        setAppIcon(popupStage);
-
-        VBox vBox = new VBox(18);
-        vBox.setAlignment(Pos.CENTER);
-
-        Label label = new Label();
-        label.setFont(new Font(18));
+    public void showErrorOnLoginDialog(VBox vBox, double width) {
+        dialogStage = new Stage();
+        dialogStage.setTitle("Fehler");
+        setAppIcon(dialogStage);
 
         Button button = new Button("OK");
         button.setFont(new Font(12));
         button.setPrefWidth(120);
         button.setOnAction(e ->
         {
-            popupStage.close();
+            dialogStage.close();
         });
 
-        vBox.getChildren().add(label);
         vBox.getChildren().add(button);
 
-        int width;
+        dialogScene = new Scene(vBox, width, 130);
+        dialogStage.setScene(dialogScene);
 
-        if (error.getMessage().equals(HTTP_400)) {
-            label.setText("Validierung fehlgeschlagen.");
-            width = 300;
-        }
-        else if (error.getMessage().equals(HTTP_401)) {
-            label.setText("Falscher Benutzername oder falsches Passwort.");
-            width = 400;
-        }
-        else if (error.getMessage().equals(HTTP_429)) {
-            label.setText("Bitte warten Sie einen Moment und versuchen es dann erneut.");
-            width = 540;
-        }
-        else {
-            label.setText("Keine Verbindung zum Server.");
-            width = 300;
-        }
-
-        popupScene = new Scene(vBox, width, 130);
-        popupStage.setScene(popupScene);
-
-        popupStage.show();
+        dialogStage.show();
     }
 
     private void cleanup(){
