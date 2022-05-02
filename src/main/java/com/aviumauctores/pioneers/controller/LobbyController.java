@@ -19,6 +19,8 @@ public class LobbyController implements Controller {
 
     private final App app;
     private final Provider<LoginController> loginController;
+    private final Provider<ChatController> chatController;
+
     @FXML public Label gameLabel;
 
     @FXML public ListView gameListView;
@@ -36,6 +38,7 @@ public class LobbyController implements Controller {
     public LobbyController(App app, Provider<LoginController> loginController){
         this.app = app;
         this.loginController = loginController;
+        this.chatController = chatController;
     }
 
 
@@ -67,7 +70,8 @@ public class LobbyController implements Controller {
 
     public void toChat(ActionEvent event) {
 
-        app.show(new ChatController());
+        final ChatController controller = chatController.get();
+        app.show(controller);
     }
 
     public void quit(ActionEvent event) {

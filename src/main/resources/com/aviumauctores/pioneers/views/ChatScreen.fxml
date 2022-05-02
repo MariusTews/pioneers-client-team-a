@@ -12,13 +12,19 @@
 <?import javafx.scene.text.Font?>
 
 
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.ChatController">
     <children>
         <TabPane fx:id="chatTabPane" layoutX="14.0" layoutY="14.0" prefHeight="364.0" prefWidth="296.0" style="-fx-border-color: #346b32;" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab fx:id="allTab" closable="false" text="Alle">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="333.0" prefWidth="296.0" />
+                        <ScrollPane>
+                            <content>
+                                <VBox />
+                            </content>
+                        </ScrollPane>
                     </content>
                 </Tab>
             </tabs>
