@@ -86,7 +86,7 @@ public class LoginController implements Controller {
         else {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
-            final LobbyController controller = new LobbyController();
+            final LobbyController controller = new LobbyController(app);
             app.show(controller);
         }
     }
