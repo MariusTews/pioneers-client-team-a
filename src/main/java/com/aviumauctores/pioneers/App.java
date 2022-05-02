@@ -42,6 +42,7 @@ public class App extends Application {
 
         primaryStage.show();
 
+
         show(mainComponent.loginController());
     }
 

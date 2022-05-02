@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.service.LoginService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -63,8 +64,10 @@ public class LobbyController implements Controller {
 
     }
 
+
     public void toChat(ActionEvent event) {
 
+        app.show(new ChatController());
     }
 
     public void quit(ActionEvent event) {
