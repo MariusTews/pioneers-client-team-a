@@ -82,7 +82,7 @@ public class RegisterController implements Controller{
         return parent;
     }
 
-    public void anzeigen(ActionEvent event) {
+    public void showPassword(ActionEvent event) {
         if(showPassword.getText().isEmpty()){
             String input = textfieldPasswort.getText();
             showPassword.setText("Ihr Passwort: "+ input);
@@ -92,13 +92,13 @@ public class RegisterController implements Controller{
         }
     }
 
-    public void verlassen(ActionEvent event) {
+    public void leave(ActionEvent event) {
         final LoginController controller = loginController.get();
         app.show(controller);
 
     }
 
-    public void accountErstellen(ActionEvent event) {
+    public void createAccount(ActionEvent event) {
         userService.register(textfieldUsername.getText(), textfieldPasswort.getText());
     }
 }
