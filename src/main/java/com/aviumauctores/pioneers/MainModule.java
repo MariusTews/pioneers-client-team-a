@@ -44,9 +44,10 @@ public class MainModule {
 
     @Provides
     @Singleton
-    Retrofit retrofit(ObjectMapper mapper) {
+    Retrofit retrofit(OkHttpClient client, ObjectMapper mapper) {
         return new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
+                .client(client)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build();
