@@ -111,7 +111,7 @@ public class ChatController implements Controller {
     public Label createMessageLabel(String message) {
         Label msgLabel = new Label(message);
         msgLabel.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
+            if (event.getButton() == MouseButton.SECONDARY) {
                 // Alert: do you want to delete this message?
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Delete");
