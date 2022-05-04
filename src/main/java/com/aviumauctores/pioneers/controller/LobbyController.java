@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.LoginService;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,9 +16,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+
 public class LobbyController implements Controller {
 
     private final App app;
+    private final LoginService loginService;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
 
@@ -34,9 +38,13 @@ public class LobbyController implements Controller {
     @FXML public Button chatButton;
 
     @FXML public Button quitButton;
+
+    private CompositeDisposable disposables = new CompositeDisposable();
+
     @Inject
-    public LobbyController(App app, Provider<LoginController> loginController, Provider<ChatController> chatController){
+    public LobbyController(App app, LoginService loginService, Provider<LoginController> loginController, Provider<ChatController> chatController){
         this.app = app;
+        this.loginService = loginService;
         this.loginController = loginController;
         this.chatController = chatController;
     }
@@ -47,7 +55,10 @@ public class LobbyController implements Controller {
     }
 
     public void destroy(){
-
+        if (disposables != null) {
+            disposables.dispose();
+            disposables = null;
+        }
     }
 
     public Parent render(){
@@ -75,8 +86,10 @@ public class LobbyController implements Controller {
     }
 
     public void quit(ActionEvent event) {
-        //maybe dont go to login but instead directly quit the application?
-        final LoginController controller = loginController.get();
-        app.show(controller);
+        disposables.add(loginService.logout()
+                .subscribeOn(FX_SCHEDULER)
+                .subscribe(() -> app.show(loginController.get()),
+                        // TODO Show error message
+                        Throwable::printStackTrace));
     }
 }
