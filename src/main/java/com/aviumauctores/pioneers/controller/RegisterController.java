@@ -2,25 +2,29 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 
-public class RegisterController implements Controller{
+import static com.aviumauctores.pioneers.Constants.*;
+
+public class RegisterController implements Controller {
     private final App app;
     private final UserService userService;
 
@@ -40,11 +44,12 @@ public class RegisterController implements Controller{
     private final Provider<LoginController> loginController;
 
     @Inject
-    public RegisterController(App app, UserService userService, Provider<LoginController> loginController){
+    public RegisterController(App app, UserService userService, Provider<LoginController> loginController) {
         this.app = app;
         this.userService = userService;
         this.loginController = loginController;
     }
+
     @Override
     public void init() {
 
@@ -83,11 +88,10 @@ public class RegisterController implements Controller{
     }
 
     public void showPassword(ActionEvent event) {
-        if(showPassword.getText().isEmpty()){
+        if (showPassword.getText().isEmpty()) {
             String input = textfieldPasswort.getText();
-            showPassword.setText("Ihr Passwort: "+ input);
-        }
-        else {
+            showPassword.setText("Ihr Passwort: " + input);
+        } else {
             showPassword.setText("");
         }
     }
@@ -99,6 +103,50 @@ public class RegisterController implements Controller{
     }
 
     public void createAccount(ActionEvent event) {
-        userService.register(textfieldUsername.getText(), textfieldPasswort.getText());
+        userService.register(textfieldUsername.getText(), textfieldPasswort.getText())
+                .subscribeOn(FX_SCHEDULER)
+                .subscribe(
+                        result -> {
+                            //User user = new User(result._id(), result.name(), result.status(), result.avatar());
+                            final LoginController controller = loginController.get();
+                            app.show(controller);
+                        },
+                        error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
+                );
     }
+
+    private void createDialog(String message) {
+        VBox vBox = new VBox(18);
+        vBox.setAlignment(Pos.CENTER);
+
+        Label label = new Label();
+        label.setFont(new Font(14));
+
+        double width;
+
+        switch (message) {
+            case HTTP_400 -> {
+                label.setText("Validierung fehlgeschlagen. (Passwort zu kurz)");
+                width = 300;
+            }
+            case HTTP_409 -> {
+                label.setText("Username schon vergeben");
+                width = 400;
+            }
+            case HTTP_429 -> {
+                label.setText("Bitte warten Sie einen Moment und versuchen es dann erneut.");
+                width = 540;
+            }
+            default -> {
+                label.setText("Keine Verbindung zum Server.");
+                width = 300;
+            }
+        }
+
+        vBox.getChildren().add(label);
+
+        app.showErrorOnLoginDialog(vBox, width);
+    }
+
+
 }

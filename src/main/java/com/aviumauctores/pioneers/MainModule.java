@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
+import com.aviumauctores.pioneers.rest.UsersApiService;
 import com.aviumauctores.pioneers.service.TokenStorage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -57,5 +58,11 @@ public class MainModule {
     @Singleton
     AuthenticationApiService authenticationApiService(Retrofit retrofit) {
         return retrofit.create(AuthenticationApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    UsersApiService usersApiService(Retrofit retrofit) {
+        return retrofit.create(UsersApiService.class);
     }
 }
