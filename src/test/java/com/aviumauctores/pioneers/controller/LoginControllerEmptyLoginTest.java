@@ -32,7 +32,7 @@ class LoginControllerEmptyLoginTest extends ApplicationTest {
         write("\t");
         type(KeyCode.SPACE);
 
-        verifyThat("#usernameErrorLabel", LabeledMatchers.hasText("Keine valide Eingabe."));
-        verifyThat("#passwordErrorLabel", LabeledMatchers.hasText("Keine valide Eingabe."));
+        verifyThat("#usernameErrorLabel", LabeledMatchers.hasText("Invalid input."));
+        verifyThat("#passwordErrorLabel", LabeledMatchers.hasText("Invalid input."));
     }
 }

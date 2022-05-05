@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.util.Objects;
 
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -55,7 +56,7 @@ public class App extends Application {
     }
 
     private void setAppIcon(Stage stage){
-        final Image image = new Image(getClass().getResource("settlement.png").toString());
+        final Image image = new Image(Objects.requireNonNull(getClass().getResource("settlement.png")).toString());
         stage.getIcons().add(image);
     }
 
@@ -65,7 +66,7 @@ public class App extends Application {
         }
         try{
             final Taskbar taskbar = Taskbar.getTaskbar();
-            final java.awt.Image image = ImageIO.read(Main.class.getResource("settlement.png"));
+            final java.awt.Image image = ImageIO.read(Objects.requireNonNull(Main.class.getResource("settlement.png")));
             taskbar.setIconImage(image);
         }catch (Exception ignored){
 
@@ -86,16 +87,13 @@ public class App extends Application {
 
     public void showDialogWithOkButton(VBox vBox, double width) {
         dialogStage = new Stage();
-        dialogStage.setTitle("Fehler");
+        dialogStage.setTitle("Error");
         setAppIcon(dialogStage);
 
         Button button = new Button("OK");
         button.setFont(new Font(12));
         button.setPrefWidth(120);
-        button.setOnAction(e ->
-        {
-            dialogStage.close();
-        });
+        button.setOnAction(e -> dialogStage.close());
 
         vBox.getChildren().add(button);
 

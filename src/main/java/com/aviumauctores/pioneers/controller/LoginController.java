@@ -30,6 +30,8 @@ public class LoginController implements Controller {
     private final Provider<RegisterController> registerController;
     private final Provider<LobbyController> lobbyController;
 
+    private Disposable disposable;
+
     @FXML public TextField usernameInput;
 
     @FXML public PasswordField passwordInput;
@@ -59,7 +61,7 @@ public class LoginController implements Controller {
 
     @Override
     public void destroy(){
-
+        disposable.dispose();
     }
 
     @Override
@@ -86,13 +88,13 @@ public class LoginController implements Controller {
         //check whether username or password is empty
         if (usernameEmpty || passwordEmpty) {
             if (usernameEmpty) {
-                usernameErrorLabel.setText("Keine valide Eingabe.");
+                usernameErrorLabel.setText("Invalid input.");
             }
             else {
                 usernameErrorLabel.setText("");
             }
             if (passwordEmpty) {
-                passwordErrorLabel.setText("Keine valide Eingabe.");
+                passwordErrorLabel.setText("Invalid input.");
             }
             else {
                 passwordErrorLabel.setText("");
@@ -102,7 +104,7 @@ public class LoginController implements Controller {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
-            loginService.login(username, password)
+            disposable = loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
@@ -111,12 +113,9 @@ public class LoginController implements Controller {
                                 final LobbyController controller = lobbyController.get();
                                 app.show(controller);
                             },
-                            error -> {
-                                System.out.println(error.toString());
-                                Platform.runLater(() -> {
-                                    this.createDialog(error.getMessage());
-                                });
-                            }
+                            error -> Platform.runLater(() -> {
+                                this.createDialog(error.getMessage());
+                            })
                     );
         }
     }
@@ -132,19 +131,19 @@ public class LoginController implements Controller {
         double width;
 
         if (message.equals(HTTP_400)) {
-            label.setText("Validierung fehlgeschlagen.");
+            label.setText("Validation failed.");
             width = 300;
         }
         else if (message.equals(HTTP_401)) {
-            label.setText("Falscher Benutzername oder falsches Passwort.");
+            label.setText("Invalid username or password.");
             width = 400;
         }
         else if (message.equals(HTTP_429)) {
-            label.setText("Bitte warten Sie einen Moment und versuchen es dann erneut.");
+            label.setText("Rate limit reached.");
             width = 540;
         }
         else {
-            label.setText("Keine Verbindung zum Server.");
+            label.setText("No connection to the Server.");
             width = 300;
         }
 

@@ -9,21 +9,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
 
 import java.util.concurrent.TimeoutException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.testfx.api.FxAssert.verifyThat;
 
 @ExtendWith(MockitoExtension.class)
 class LoginControllerErrorTest extends ApplicationTest {
 
     @Mock
     LoginService loginService;
-    @Mock
+    @Spy
     App app;
 
     @InjectMocks
@@ -43,13 +46,7 @@ class LoginControllerErrorTest extends ApplicationTest {
         write("1\t");
         type(KeyCode.SPACE);
 
-//        FxRobot robot = new FxRobot();
-//        Boolean condition = robot.lookup("#dialogLabel").tryQuery().isPresent();
-//        Callable<Boolean> callable = () -> condition;
-//        waitFor(10, TimeUnit.SECONDS, callable);
-//
-//        verifyThat("Falscher Benutzername oder falsches Passwort.", NodeMatchers.isVisible());
+        verifyThat("Validation failed.", NodeMatchers.isVisible());
         verify(loginService).login("Struppi", "1");
-
     }
 }
