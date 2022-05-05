@@ -4,9 +4,6 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.CreateGameService;
 import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.UserService;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 
@@ -27,6 +26,7 @@ public class CreateGameController implements Controller {
 
     public final SimpleStringProperty gameName = new SimpleStringProperty();
     public final SimpleStringProperty password = new SimpleStringProperty();
+    private final Provider<LobbyController> lobbyController;
 
     private boolean hidePassword = true;
 
@@ -40,8 +40,10 @@ public class CreateGameController implements Controller {
 
     @FXML public TextField gameNameInput;
 
-    public CreateGameController(App app){
+    @Inject
+    public CreateGameController(App app, Provider<LobbyController> lobbyController){
         this.app = app;
+        this.lobbyController = lobbyController;
 
     }
 
@@ -73,12 +75,12 @@ public class CreateGameController implements Controller {
     public void createGame(ActionEvent actionEvent){
 
         //TODO: Create a game and transmit it to the Server
-        GameReadyController controller = new GameReadyController(app);
+        GameReadyController controller = new GameReadyController(app,lobbyController);
         app.show(controller);
     }
 
     public void cancel(ActionEvent actionEvent) {
-        final LobbyController controller = new LobbyController(app);
+        final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
 

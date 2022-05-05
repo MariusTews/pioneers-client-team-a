@@ -14,12 +14,15 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 public class GameReadyController implements Controller {
 
 
     private final App app;
+    private final Provider<LobbyController> lobbyController;
 
     @FXML public Button startGameButton;
 
@@ -37,8 +40,11 @@ public class GameReadyController implements Controller {
 
     @FXML public TitledPane playerListPane;
 
-    public GameReadyController(App app){
+    @Inject
+    public GameReadyController(App app, Provider<LobbyController> lobbyController){
+
         this.app = app;
+        this.lobbyController = lobbyController;
     }
 
     public void init(){
@@ -71,7 +77,7 @@ public class GameReadyController implements Controller {
     }
 
     public void leaveGame(ActionEvent actionEvent) {
-        final CreateGameController controller = new CreateGameController(app);
+        final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
 
