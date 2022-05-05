@@ -23,9 +23,17 @@ public class App extends Application {
     private Scene dialogScene;
     private Controller controller;
 
+    public App(){
+        final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
+        controller = mainComponent.loginController();
+    }
+
+    public App(Controller controller){
+        this.controller = controller;
+    }
+
     @Override
     public void start(Stage primaryStage){
-        final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
 
         this.stage = primaryStage;
         stage.setWidth(SCREEN_WIDTH);
@@ -41,8 +49,9 @@ public class App extends Application {
 
         primaryStage.show();
 
-
-        show(mainComponent.loginController());
+        if (controller != null){
+            show(controller);
+        }
     }
 
     private void setAppIcon(Stage stage){
@@ -75,7 +84,7 @@ public class App extends Application {
 
     }
 
-    public void showErrorOnLoginDialog(VBox vBox, double width) {
+    public void showDialogWithOkButton(VBox vBox, double width) {
         dialogStage = new Stage();
         dialogStage.setTitle("Fehler");
         setAppIcon(dialogStage);

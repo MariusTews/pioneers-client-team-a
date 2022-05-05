@@ -13,18 +13,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 
 import static com.aviumauctores.pioneers.Constants.*;
-import static com.aviumauctores.pioneers.Constants.HTTP_429;
 
 public class LoginController implements Controller {
 
@@ -115,6 +112,7 @@ public class LoginController implements Controller {
                                 app.show(controller);
                             },
                             error -> {
+                                System.out.println(error.toString());
                                 Platform.runLater(() -> {
                                     this.createDialog(error.getMessage());
                                 });
@@ -129,6 +127,7 @@ public class LoginController implements Controller {
 
         Label label = new Label();
         label.setFont(new Font(18));
+        label.setId("dialogLabel");
 
         double width;
 
@@ -151,7 +150,7 @@ public class LoginController implements Controller {
 
         vBox.getChildren().add(label);
 
-        app.showErrorOnLoginDialog(vBox, width);
+        app.showDialogWithOkButton(vBox, width);
     }
 
     public void rememberMeToggle(ActionEvent event) {
