@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.service.LoginService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.input.KeyCode;
@@ -12,17 +13,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
-import java.util.concurrent.TimeoutException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class LoginControllerErrorTest extends ApplicationTest {
+class LoginControllerTest extends ApplicationTest {
 
     @Mock
     LoginService loginService;
+
     @Mock
     App app;
 
@@ -31,25 +31,17 @@ class LoginControllerErrorTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage){
-        app = new App(loginController);
-        app.start(stage);
+        new App(loginController).start(stage);
     }
 
     @Test
-    void login(){
-        when(loginService.login(any(), any())).thenReturn(Observable.error(new Throwable("HTTP 400 ")));
+    void login() {
+        when(loginService.login(any(), any())).thenReturn(Observable.just(new LoginResult("1", "Struppi", "online", null, "a", "r")));
 
         write("Struppi\t");
-        write("1\t");
+        write("12345678\t");
         type(KeyCode.SPACE);
 
-//        FxRobot robot = new FxRobot();
-//        Boolean condition = robot.lookup("#dialogLabel").tryQuery().isPresent();
-//        Callable<Boolean> callable = () -> condition;
-//        waitFor(10, TimeUnit.SECONDS, callable);
-//
-//        verifyThat("Falscher Benutzername oder falsches Passwort.", NodeMatchers.isVisible());
-        verify(loginService).login("Struppi", "1");
-
+        verify(loginService).login("Struppi", "12345678");
     }
 }
