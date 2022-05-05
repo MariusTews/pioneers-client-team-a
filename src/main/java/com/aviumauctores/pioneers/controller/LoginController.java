@@ -47,6 +47,8 @@ public class LoginController implements Controller {
 
     @FXML public Label passwordErrorLabel;
 
+    private Disposable disposable;
+
     @Inject
     public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController){
         this.app = app;
@@ -62,7 +64,9 @@ public class LoginController implements Controller {
 
     @Override
     public void destroy(){
-
+        if (this.disposable != null) {
+            disposable.dispose();
+        }
     }
 
     @Override
@@ -105,7 +109,7 @@ public class LoginController implements Controller {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
-            loginService.login(username, password)
+            disposable = loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {

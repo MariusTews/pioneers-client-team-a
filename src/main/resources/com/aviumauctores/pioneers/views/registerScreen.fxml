@@ -57,7 +57,7 @@
                </font></Button>
          </HBox>
       </HBox>
-      <Label fx:id="showPassword" />
+      <Label id="showPassword" fx:id="showPassword" />
    </VBox>
    <Button id="accountErstellenButton" fx:id="accountErstellenButton" mnemonicParsing="false" onAction="#createAccount" text="Account erstellen">
       <font>

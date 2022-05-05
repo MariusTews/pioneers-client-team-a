@@ -23,6 +23,15 @@ public class App extends Application {
     private Scene dialogScene;
     private Controller controller;
 
+    public App(){
+        final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
+        controller = component.loginController();
+    }
+
+    public App(Controller controller){
+        this.controller = controller;
+    }
+
     @Override
     public void start(Stage primaryStage){
         final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
@@ -41,8 +50,9 @@ public class App extends Application {
 
         primaryStage.show();
 
-
-        show(mainComponent.loginController());
+        if(controller != null){
+            show(controller);
+        }
     }
 
     private void setAppIcon(Stage stage){

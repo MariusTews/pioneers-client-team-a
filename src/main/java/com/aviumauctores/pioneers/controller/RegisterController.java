@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.UserService;
+import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -43,6 +44,8 @@ public class RegisterController implements Controller {
     public Label showPassword;
     private final Provider<LoginController> loginController;
 
+    private Disposable disposable;
+
     @Inject
     public RegisterController(App app, UserService userService, Provider<LoginController> loginController) {
         this.app = app;
@@ -52,12 +55,13 @@ public class RegisterController implements Controller {
 
     @Override
     public void init() {
-
     }
 
     @Override
     public void destroy() {
-
+        if (this.disposable != null) {
+            disposable.dispose();
+        }
     }
 
     @Override
@@ -72,6 +76,17 @@ public class RegisterController implements Controller {
             return null;
         }
 
+        //take username and password from login screen
+        textfieldUsername.textProperty().bindBidirectional(username);
+        textfieldPasswort.textProperty().bindBidirectional(password);
+
+        //only because of the test
+        if (textfieldUsername.getText() == null) {
+            textfieldUsername.setText("");
+        }
+        if (textfieldPasswort.getText() == null) {
+            textfieldPasswort.setText("");
+        }
         //disable accountErstellenButton when one or both textfields are empty
         accountErstellenButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
@@ -80,14 +95,11 @@ public class RegisterController implements Controller {
                                 textfieldPasswort.getText().trim().isEmpty(), textfieldPasswort.textProperty()))
         );
 
-        //take username and password from login screen
-        textfieldUsername.textProperty().bindBidirectional(username);
-        textfieldPasswort.textProperty().bindBidirectional(password);
-
         return parent;
     }
 
     public void showPassword(ActionEvent event) {
+        //TODO make prettier
         if (showPassword.getText().isEmpty()) {
             String input = textfieldPasswort.getText();
             showPassword.setText("Ihr Passwort: " + input);
@@ -103,15 +115,16 @@ public class RegisterController implements Controller {
     }
 
     public void createAccount(ActionEvent event) {
-        userService.register(textfieldUsername.getText(), textfieldPasswort.getText())
-                .subscribeOn(FX_SCHEDULER)
+        //TODO fix closed application runs in console after server communication
+        disposable = userService.register(textfieldUsername.getText(), textfieldPasswort.getText())
+                .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> {
-                            //User user = new User(result._id(), result.name(), result.status(), result.avatar());
                             final LoginController controller = loginController.get();
                             app.show(controller);
                         },
                         error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
+
                 );
     }
 
@@ -147,6 +160,7 @@ public class RegisterController implements Controller {
 
         app.showErrorOnLoginDialog(vBox, width);
     }
+
 
 
 }
