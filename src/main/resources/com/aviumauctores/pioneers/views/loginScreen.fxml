@@ -26,7 +26,7 @@
             <Font size="18.0" />
          </font>
       </TextField>
-      <Label fx:id="usernameErrorLabel" textFill="RED" />
+      <Label fx:id="usernameErrorLabel" id="usernameErrorLabel" textFill="RED" />
       <Label text="Passwort:">
          <font>
             <Font size="18.0" />
@@ -40,7 +40,7 @@
             <Font size="18.0" />
          </font>
       </PasswordField>
-      <Label fx:id="passwordErrorLabel" textFill="RED" />
+      <Label fx:id="passwordErrorLabel" id="passwordErrorLabel" textFill="RED" />
       <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login" text="Anmelden">
          <VBox.margin>
             <Insets top="15.0" />
