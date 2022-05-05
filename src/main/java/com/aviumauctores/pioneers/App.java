@@ -23,18 +23,17 @@ public class App extends Application {
     private Scene dialogScene;
     private Controller controller;
 
-    public App(){
-        final MainComponent component = DaggerMainComponent.builder().mainApp(this).build();
-        controller = component.loginController();
+    public App() {
+        final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
+        controller = mainComponent.loginController();
     }
 
-    public App(Controller controller){
+    public App(Controller controller) {
         this.controller = controller;
     }
 
     @Override
     public void start(Stage primaryStage){
-        final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
 
         this.stage = primaryStage;
         stage.setWidth(SCREEN_WIDTH);
@@ -50,9 +49,11 @@ public class App extends Application {
 
         primaryStage.show();
 
-        if(controller != null){
+        if (controller != null) {
             show(controller);
         }
+
+
     }
 
     private void setAppIcon(Stage stage){
@@ -102,6 +103,7 @@ public class App extends Application {
 
         dialogScene = new Scene(vBox, width, 130);
         dialogStage.setScene(dialogScene);
+
         dialogStage.show();
     }
 
