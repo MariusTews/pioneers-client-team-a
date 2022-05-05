@@ -67,14 +67,15 @@ public class CreateGameController implements Controller {
             return null;
         }
 
-       //TODO: Disable Button if one or more input fields are empty
+
+
         return parent;
 
     }
 
     public void createGame(ActionEvent actionEvent){
 
-        //TODO: Create a game and transmit it to the Server
+
         GameReadyController controller = new GameReadyController(app,lobbyController);
         app.show(controller);
     }
