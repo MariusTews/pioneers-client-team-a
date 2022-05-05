@@ -1,8 +1,25 @@
 package com.aviumauctores.pioneers.service;
 
+import com.aviumauctores.pioneers.dto.auth.LoginDto;
+import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.rest.AuthenticationApiService;
+import io.reactivex.rxjava3.core.Observable;
+
+import javax.inject.Inject;
+
 public class LoginService {
 
-    public void login(String username, String password){
-        System.out.println("Login" + username + " " + "*".repeat(password.length()));
+    private final AuthenticationApiService authenticationApiService;
+    private final TokenStorage tokenStorage;
+
+    @Inject
+    public LoginService(AuthenticationApiService authenticationApiService, TokenStorage tokenStorage){
+        this.authenticationApiService = authenticationApiService;
+        this.tokenStorage = tokenStorage;
+    }
+
+    public Observable<LoginResult> login(String username, String password){
+        return authenticationApiService.login(new LoginDto(username, password))
+                .doOnNext(result -> tokenStorage.setToken(result.accessToken()));
     }
 }
