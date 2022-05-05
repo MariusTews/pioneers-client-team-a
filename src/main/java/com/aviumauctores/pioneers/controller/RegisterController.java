@@ -12,12 +12,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -44,6 +46,7 @@ public class RegisterController implements Controller {
     public PasswordField textfieldPassword;
     private final Provider<LoginController> loginController;
     public TextField textfieldPassword_show;
+    public Label errorLabel;
 
     private Disposable disposable;
 
@@ -81,6 +84,9 @@ public class RegisterController implements Controller {
         textfieldUsername.textProperty().bindBidirectional(username);
         textfieldPassword.textProperty().bindBidirectional(password);
 
+        //click enter to register
+        createAccountButton.setDefaultButton(true);
+
         //only because of the test
         if (textfieldUsername.getText() == null) {
             textfieldUsername.setText("");
@@ -88,6 +94,7 @@ public class RegisterController implements Controller {
         if (textfieldPassword.getText() == null) {
             textfieldPassword.setText("");
         }
+
         //disable accountErstellenButton when one or both textfields are empty
         createAccountButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
@@ -100,13 +107,11 @@ public class RegisterController implements Controller {
     }
 
     public void showPassword(ActionEvent event) {
-        //TODO make prettier
-        if (textfieldPassword.isVisible() && !Objects.equals(textfieldPassword.getText(), "")){
+        if (textfieldPassword.isVisible() && !Objects.equals(textfieldPassword.getText(), "")) {
             textfieldPassword.setVisible(false);
             textfieldPassword_show.setText(textfieldPassword.getText());
             textfieldPassword_show.setVisible(true);
-        }
-        else if (!textfieldPassword.isVisible()) {
+        } else if (!textfieldPassword.isVisible()) {
             textfieldPassword_show.setVisible(false);
             textfieldPassword.setVisible(true);
         }
@@ -119,11 +124,11 @@ public class RegisterController implements Controller {
     }
 
     public void createAccount(ActionEvent event) {
-        //TODO fix closed application runs in console after server communication
         disposable = userService.register(textfieldUsername.getText(), textfieldPassword.getText())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> {
+                            errorLabel.setText("");
                             final LoginController controller = loginController.get();
                             app.show(controller);
                         },
@@ -138,6 +143,7 @@ public class RegisterController implements Controller {
 
         Label label = new Label();
         label.setFont(new Font(14));
+        label.setId("errorLabel");
 
         double width;
 
@@ -161,10 +167,24 @@ public class RegisterController implements Controller {
         }
 
         vBox.getChildren().add(label);
-
-        app.showErrorOnLoginDialog(vBox, width);
+        this.showErrorOnLoginDialog(vBox, width);
     }
 
+    public void showErrorOnLoginDialog(VBox vBox, double width) {
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("Fehler");
+        Button button = new Button("OK");
+        button.setFont(new Font(12));
+        button.setPrefWidth(120);
+
+        button.setOnAction(e ->
+                dialogStage.close());
+        vBox.getChildren().add(button);
+
+        Scene dialogScene = new Scene(vBox, width, 130);
+        dialogStage.setScene(dialogScene);
+        dialogStage.show();
+    }
 
 
 }

@@ -102,7 +102,6 @@ public class App extends Application {
 
         dialogScene = new Scene(vBox, width, 130);
         dialogStage.setScene(dialogScene);
-
         dialogStage.show();
     }
 
