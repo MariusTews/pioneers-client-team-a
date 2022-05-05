@@ -2,7 +2,12 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.service.CreateGameService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.UserService;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +24,10 @@ public class CreateGameController implements Controller {
 
     private final App app;
 
+
+    public final SimpleStringProperty gameName = new SimpleStringProperty();
+    public final SimpleStringProperty password = new SimpleStringProperty();
+
     private boolean hidePassword = true;
 
     @FXML public TextField gamePasswordText;
@@ -33,6 +42,7 @@ public class CreateGameController implements Controller {
 
     public CreateGameController(App app){
         this.app = app;
+
     }
 
     public void init(){
@@ -54,11 +64,17 @@ public class CreateGameController implements Controller {
             e.printStackTrace();
             return null;
         }
+
+       //TODO: Disable Button if one or more input fields are empty
         return parent;
 
     }
 
-    public void createGame(ActionEvent actionEvent) {
+    public void createGame(ActionEvent actionEvent){
+
+        //TODO: Create a game and transmit it to the Server
+        GameReadyController controller = new GameReadyController(app);
+        app.show(controller);
     }
 
     public void cancel(ActionEvent actionEvent) {
@@ -67,12 +83,14 @@ public class CreateGameController implements Controller {
     }
 
     public void showPassword(ActionEvent actionEvent) {
+        if(gamePasswordInput.getText().isEmpty()){
+            return;
+        }
         if(hidePassword){
             String password = gamePasswordInput.getText();
             gamePasswordText.setVisible(true);
             gamePasswordInput.setVisible(false);
             gamePasswordText.setText(password);
-            System.out.println(password);
             hidePassword = false;
             return;
         }
