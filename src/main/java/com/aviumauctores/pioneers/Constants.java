@@ -15,7 +15,7 @@ public class Constants {
 
     // URL params
     public static final String HEADER_AUTH = "Authorization";
-    public static final String HEADER_AUTH_BEARER = "Bearer";
+    public static final String HEADER_AUTH_BEARER = "Bearer ";
     public static final String PATH_ID = "id";
     public static final String PATH_GAME_ID = "gameId";
     public static final String PATH_USER_ID = "userId";
@@ -82,6 +82,8 @@ public class Constants {
     public static final String HTTP_400 = "HTTP 400 ";
     public static final String HTTP_401 = "HTTP 401 ";
     public static final String HTTP_429 = "HTTP 429 ";
+
+    public static final String HTTP_409 = "HTTP 409 ";
 
 
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);

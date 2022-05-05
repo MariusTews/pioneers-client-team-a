@@ -20,6 +20,7 @@ public class LobbyController implements Controller {
     private final App app;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
+    private final Provider<CreateGameController> createGameController;
 
     @FXML public Label gameLabel;
 
@@ -35,11 +36,14 @@ public class LobbyController implements Controller {
 
     @FXML public Button quitButton;
     @Inject
-    public LobbyController(App app, Provider<LoginController> loginController, Provider<ChatController> chatController){
+    public LobbyController(App app, Provider<LoginController> loginController, Provider<ChatController> chatController, Provider<CreateGameController> createGameController){
         this.app = app;
         this.loginController = loginController;
         this.chatController = chatController;
+        this.createGameController = createGameController;
     }
+
+
 
 
     public void init(){
@@ -64,7 +68,8 @@ public class LobbyController implements Controller {
     }
 
     public void toCreateGame(ActionEvent event) {
-
+        final CreateGameController controller = createGameController.get();
+        app.show(controller);
     }
 
 

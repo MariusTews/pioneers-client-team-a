@@ -1,61 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
-
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.Label?>
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="400.0" prefWidth="600.0" spacing="25.0" xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.aviumauctores.pioneers.controller.RegisterController">
-   <HBox prefHeight="52.0" prefWidth="600.0"/>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="25.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.RegisterController">
+   <HBox prefHeight="52.0" prefWidth="600.0" />
    <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username"/>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username">
+         <font>
+            <Font size="14.0" />
+         </font></Text>
       <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-         <TextField id="textfieldUsername" fx:id="textfieldUsername" alignment="TOP_LEFT" prefHeight="25.0"
-                    prefWidth="200.0" promptText="Input Username">
+         <TextField id="textfieldUsername" fx:id="textfieldUsername" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="200.0" promptText="Input Username">
             <opaqueInsets>
-               <Insets/>
+               <Insets />
             </opaqueInsets>
+            <font>
+               <Font size="14.0" />
+            </font>
          </TextField>
       </HBox>
    </VBox>
    <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Passwort"/>
-      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Passwort">
+         <font>
+            <Font size="14.0" />
+         </font></Text>
+      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <Pane prefHeight="30.0" prefWidth="200.0">
+            <PasswordField id="textfieldPassword" fx:id="textfieldPassword" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="200.0" promptText="Input Passwort">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </PasswordField>
+            <TextField id="textfieldPassword_show" fx:id="textfieldPassword_show" editable="false" prefHeight="25.0" prefWidth="200.0" visible="false">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+         </Pane>
+         <Pane prefHeight="50.0" prefWidth="15.0" />
+         <ImageView fitHeight="29.0" fitWidth="29.0">
+            <Image url="@Schloss.png" />
+         </ImageView>
+         <Button id="showPasswordButton" fx:id="showPasswordButton" mnemonicParsing="false" onAction="#showPassword" prefHeight="30.0" prefWidth="92.0" text="Anzeigen">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
          <padding>
-            <Insets left="115.0"/>
+            <Insets left="135.0" />
          </padding>
-         <PasswordField id="textfieldPasswort" fx:id="textfieldPasswort" alignment="TOP_LEFT" prefHeight="25.0"
-                    prefWidth="200.0" promptText="Input Passwort">
-            <opaqueInsets>
-               <Insets/>
-            </opaqueInsets>
-         </PasswordField>
-         <HBox prefHeight="68.0" prefWidth="98.0">
-            <ImageView fitHeight="22.0" fitWidth="22.0">
-               <Image url="@Schloss.png"/>
-            </ImageView>
-            <Button id="anzeigenButton" fx:id="anzeigenButton" mnemonicParsing="false" onAction="#anzeigen"
-                    style="-fx-background-color: #b0ffc0;" text="Anzeigen"/>
-         </HBox>
       </HBox>
-      <Label fx:id="showPassword"/>
+      <HBox alignment="TOP_CENTER" prefHeight="33.0" prefWidth="600.0" spacing="20.0">
+         <padding>
+            <Insets left="150.0" />
+         </padding>
+      </HBox>
    </VBox>
-   <Button id="accountErstellenButton" fx:id="accountErstellenButton" mnemonicParsing="false"
-           onAction="#accountErstellen" style="-fx-background-color: #b0ffc0;" text="Account erstellen"/>
+   <VBox alignment="TOP_CENTER" prefHeight="99.0" prefWidth="600.0" spacing="5.0">
+      <Button id="createAccountButton" fx:id="createAccountButton" mnemonicParsing="false" onAction="#createAccount"
+              text="Account erstellen">
+         <font>
+            <Font size="14.0"/>
+         </font>
+      </Button>
+   </VBox>
    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
       <padding>
-         <Insets right="60.0"/>
+         <Insets right="60.0" />
       </padding>
-      <Button id="verlassenButton" fx:id="verlassenButton" mnemonicParsing="false" onAction="#verlassen"
-              style="-fx-background-color: #b0ffc0;" text="Verlassen"/>
+      <Button id="leaveButton" fx:id="leaveButton" mnemonicParsing="false" onAction="#leave" text="Verlassen">
+         <font>
+            <Font size="14.0" />
+         </font></Button>
    </HBox>
 </VBox>

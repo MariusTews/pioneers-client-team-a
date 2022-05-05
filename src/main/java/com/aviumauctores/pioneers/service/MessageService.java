@@ -6,19 +6,22 @@ import com.aviumauctores.pioneers.rest.MessagesApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
-import java.util.function.Consumer;
+
+
 
 public class MessageService {
-    private final MessagesApiService messageApiService;
+    private final MessagesApiService messagesApiService;
 
     @Inject
     public MessageService(MessagesApiService messagesApiService) {
-        this.messageApiService = messagesApiService;
+        this.messagesApiService = messagesApiService;
     }
 
+    //
+    public void /*Observable<String>*/ send(String message) {
 
-    public void send(String message, Consumer<? super Observable<Message>> callback) {
-
+        /*return messagesApiService.sendMessage("string", message, new CreateMessageDto(message))
+                .map(Message::body);*/
     }
 
 

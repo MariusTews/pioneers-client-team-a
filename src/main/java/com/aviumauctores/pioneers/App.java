@@ -53,6 +53,7 @@ public class App extends Application {
         if (controller != null){
             show(controller);
         }
+
     }
 
     private void setAppIcon(Stage stage){
