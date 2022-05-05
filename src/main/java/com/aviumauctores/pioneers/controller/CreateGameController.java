@@ -2,21 +2,25 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.service.CreateGameService;
-import com.aviumauctores.pioneers.service.LoginService;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 public class CreateGameController implements Controller {
@@ -26,9 +30,12 @@ public class CreateGameController implements Controller {
 
     public final SimpleStringProperty gameName = new SimpleStringProperty();
     public final SimpleStringProperty password = new SimpleStringProperty();
+
     private final Provider<LobbyController> lobbyController;
 
     private boolean hidePassword = true;
+
+    @FXML public Button showPasswordButton;
 
     @FXML public TextField gamePasswordText;
 
@@ -56,6 +63,7 @@ public class CreateGameController implements Controller {
 
     }
 
+    @Override
     public Parent render(){
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"));
         loader.setControllerFactory(c -> this);
@@ -66,16 +74,23 @@ public class CreateGameController implements Controller {
             e.printStackTrace();
             return null;
         }
+        createGameButton.disableProperty().bind(
+                Bindings.createBooleanBinding(() ->
+                                gameNameInput.getText().trim().isEmpty(), gameNameInput.textProperty())
+                        .or(Bindings.createBooleanBinding(() ->
+                                gamePasswordInput.getText().trim().isEmpty(), gamePasswordInput.textProperty()))
+        );
 
-
-
+        //take username and password from login screen
+        gameNameInput.textProperty().bindBidirectional(gameName);
+        gamePasswordInput.textProperty().bindBidirectional(password);
         return parent;
 
     }
 
     public void createGame(ActionEvent actionEvent){
 
-
+        //TODO: Create a game and transmit it to the Server
         GameReadyController controller = new GameReadyController(app,lobbyController);
         app.show(controller);
     }
@@ -89,18 +104,30 @@ public class CreateGameController implements Controller {
         if(gamePasswordInput.getText().isEmpty()){
             return;
         }
+
+        Image image;
         if(hidePassword){
+            image = new Image(Main.class.getResource("views/hidePassword.png").toString());
             String password = gamePasswordInput.getText();
             gamePasswordText.setVisible(true);
             gamePasswordInput.setVisible(false);
             gamePasswordText.setText(password);
             hidePassword = false;
-            return;
+        }else{
+            image = new Image(Main.class.getResource("views/showPassword.png").toString());
+            gamePasswordText.setText("");
+            gamePasswordText.setVisible(false);
+            gamePasswordInput.setVisible(true);
+            hidePassword = true;
         }
-        gamePasswordText.setText("");
-        gamePasswordText.setVisible(false);
-        gamePasswordInput.setVisible(true);
-        hidePassword = true;
+
+        ImageView view = new ImageView(image);
+        view.setFitHeight(23.0);
+        view.setFitWidth(25.0);
+        showPasswordButton.setGraphic(view);
+
+
+
 
     }
 }
