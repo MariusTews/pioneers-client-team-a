@@ -35,14 +35,13 @@ public class RegisterController implements Controller {
     @FXML
     public TextField textfieldUsername;
     @FXML
-    public Button accountErstellenButton;
+    public Button createAccountButton;
     @FXML
-    public Button verlassenButton;
+    public Button leaveButton;
     @FXML
-    public Button anzeigenButton;
+    public Button showPasswordButton;
     @FXML
     public PasswordField textfieldPassword;
-    public Label showPassword;
     private final Provider<LoginController> loginController;
     public TextField textfieldPassword_show;
 
@@ -90,7 +89,7 @@ public class RegisterController implements Controller {
             textfieldPassword.setText("");
         }
         //disable accountErstellenButton when one or both textfields are empty
-        accountErstellenButton.disableProperty().bind(
+        createAccountButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
                                 textfieldUsername.getText().trim().isEmpty(), textfieldUsername.textProperty())
                         .or(Bindings.createBooleanBinding(() ->

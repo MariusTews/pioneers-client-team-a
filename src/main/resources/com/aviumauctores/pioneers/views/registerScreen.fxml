@@ -48,7 +48,7 @@
                   <Font size="14.0" />
                </font>
             </PasswordField>
-            <TextField id="textfieldPassword" fx:id="textfieldPassword_show" editable="false" prefHeight="25.0" prefWidth="200.0" visible="false">
+            <TextField id="textfieldPassword_show" fx:id="textfieldPassword_show" editable="false" prefHeight="25.0" prefWidth="200.0" visible="false">
                <font>
                   <Font size="14.0" />
                </font>
@@ -58,7 +58,7 @@
          <ImageView fitHeight="29.0" fitWidth="29.0">
             <Image url="@Schloss.png" />
          </ImageView>
-         <Button id="anzeigenButton" fx:id="anzeigenButton" mnemonicParsing="false" onAction="#showPassword" prefHeight="30.0" prefWidth="92.0" text="Anzeigen">
+         <Button id="showPasswordButton" fx:id="showPasswordButton" mnemonicParsing="false" onAction="#showPassword" prefHeight="30.0" prefWidth="92.0" text="Anzeigen">
             <font>
                <Font size="14.0" />
             </font>
@@ -73,7 +73,7 @@
          </padding>
       </HBox>
    </VBox>
-   <Button id="accountErstellenButton" fx:id="accountErstellenButton" mnemonicParsing="false" onAction="#createAccount" text="Account erstellen">
+   <Button id="createAccountButton" fx:id="createAccountButton" mnemonicParsing="false" onAction="#createAccount" text="Account erstellen">
       <font>
          <Font size="14.0" />
       </font></Button>
@@ -81,7 +81,7 @@
       <padding>
          <Insets right="60.0" />
       </padding>
-      <Button id="verlassenButton" fx:id="verlassenButton" mnemonicParsing="false" onAction="#leave" text="Verlassen">
+      <Button id="leaveButton" fx:id="leaveButton" mnemonicParsing="false" onAction="#leave" text="Verlassen">
          <font>
             <Font size="14.0" />
          </font></Button>
