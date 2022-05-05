@@ -2,7 +2,15 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.GroupService;
 import com.aviumauctores.pioneers.service.MessageService;
+import com.aviumauctores.pioneers.service.UserService;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,8 +22,14 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import com.aviumauctores.pioneers.ws.EventListener;
+
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 
@@ -24,6 +38,18 @@ public class ChatController implements Controller {
     private final App app;
     private final Provider<LobbyController> lobbyController;
     private final MessageService messageService;
+
+    private final UserService userService;
+
+    private final GroupService groupService;
+
+    private final ObservableList<User> users = FXCollections.observableArrayList();
+
+    private final EventListener eventListener;
+
+    private Disposable disposable;
+
+    private List<String> usersIdList  = new ArrayList<>();
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
@@ -36,18 +62,34 @@ public class ChatController implements Controller {
     @FXML public TabPane chatTabPane;
 
     @Inject
-    public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService) {
+    public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
+                          EventListener eventListener, UserService userService, GroupService groupService) {
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
+        this.eventListener = eventListener;
+        this.userService = userService;
+        this.groupService = groupService;
     }
 
     public void init(){
-
+        userService.findAll().observeOn(Schedulers.from(Platform::runLater)).subscribe(result -> {this.users.setAll(result);
+            usersIdList = getAllUserIDs(users);
+            groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
+        });
+        disposable = eventListener.listen("users.*.*", User.class)
+                .observeOn(Schedulers.from(Platform::runLater))
+                .subscribe(event -> {
+                    if (event.event().endsWith(".created")) {
+                        //update AllGroup
+                        usersIdList.add(event.data()._id());
+                        groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
+                    }
+                });
     }
 
     public void destroy(){
-
+        disposable.dispose();
     }
 
     public Parent render() {
@@ -81,16 +123,16 @@ public class ChatController implements Controller {
             return;
         }
         //
-        /*messageService.send(message)
+        messageService.send(message)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result ->
                 // later with websocket
-                ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren().add(new Label(result)));
-        */
+                ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren().add(createMessageLabel(result)));
+
 
         // add a new Label with the message
-        Label msgLabel = createMessageLabel(message);
-        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren().add(msgLabel);
+        //Label msgLabel = createMessageLabel(message);
+        //((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren().add(msgLabel);
 
 
 
@@ -129,5 +171,14 @@ public class ChatController implements Controller {
         });
         return msgLabel;
     }
+
+    public List<String> getAllUserIDs(ObservableList<User> users) {
+        List<String> IDs = new ArrayList<>();
+        for (User u : users) {
+            IDs.add(u._id());
+        }
+        return IDs;
+    }
+
 
 }
