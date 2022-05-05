@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.aviumauctores.pioneers.Constants.*;
 
@@ -40,9 +41,10 @@ public class RegisterController implements Controller {
     @FXML
     public Button anzeigenButton;
     @FXML
-    public PasswordField textfieldPasswort;
+    public PasswordField textfieldPassword;
     public Label showPassword;
     private final Provider<LoginController> loginController;
+    public TextField textfieldPassword_show;
 
     private Disposable disposable;
 
@@ -78,21 +80,21 @@ public class RegisterController implements Controller {
 
         //take username and password from login screen
         textfieldUsername.textProperty().bindBidirectional(username);
-        textfieldPasswort.textProperty().bindBidirectional(password);
+        textfieldPassword.textProperty().bindBidirectional(password);
 
         //only because of the test
         if (textfieldUsername.getText() == null) {
             textfieldUsername.setText("");
         }
-        if (textfieldPasswort.getText() == null) {
-            textfieldPasswort.setText("");
+        if (textfieldPassword.getText() == null) {
+            textfieldPassword.setText("");
         }
         //disable accountErstellenButton when one or both textfields are empty
         accountErstellenButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
                                 textfieldUsername.getText().trim().isEmpty(), textfieldUsername.textProperty())
                         .or(Bindings.createBooleanBinding(() ->
-                                textfieldPasswort.getText().trim().isEmpty(), textfieldPasswort.textProperty()))
+                                textfieldPassword.getText().trim().isEmpty(), textfieldPassword.textProperty()))
         );
 
         return parent;
@@ -100,11 +102,14 @@ public class RegisterController implements Controller {
 
     public void showPassword(ActionEvent event) {
         //TODO make prettier
-        if (showPassword.getText().isEmpty()) {
-            String input = textfieldPasswort.getText();
-            showPassword.setText("Ihr Passwort: " + input);
-        } else {
-            showPassword.setText("");
+        if (textfieldPassword.isVisible() && !Objects.equals(textfieldPassword.getText(), "")){
+            textfieldPassword.setVisible(false);
+            textfieldPassword_show.setText(textfieldPassword.getText());
+            textfieldPassword_show.setVisible(true);
+        }
+        else if (!textfieldPassword.isVisible()) {
+            textfieldPassword_show.setVisible(false);
+            textfieldPassword.setVisible(true);
         }
     }
 
@@ -116,7 +121,7 @@ public class RegisterController implements Controller {
 
     public void createAccount(ActionEvent event) {
         //TODO fix closed application runs in console after server communication
-        disposable = userService.register(textfieldUsername.getText(), textfieldPasswort.getText())
+        disposable = userService.register(textfieldUsername.getText(), textfieldPassword.getText())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> {
