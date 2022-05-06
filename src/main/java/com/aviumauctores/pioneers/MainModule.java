@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
+import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import com.aviumauctores.pioneers.rest.MessagesApiService;
 import com.aviumauctores.pioneers.rest.UsersApiService;
 import com.aviumauctores.pioneers.service.TokenStorage;
@@ -71,5 +72,11 @@ public class MainModule {
     @Singleton
     UsersApiService usersApiService(Retrofit retrofit) {
         return retrofit.create(UsersApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    GameMembersApiService gameMembersApiService(Retrofit retrofit) {
+        return retrofit.create(GameMembersApiService.class);
     }
 }

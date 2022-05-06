@@ -2,6 +2,8 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.service.CreateGameService;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,10 +17,14 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+
 public class JoinGameController implements Controller {
 
     private final App app;
+    private final CreateGameService createGameService;
     private final Provider<LobbyController> lobbyController;
+    private final Provider<GameReadyController> gameReadyController;
     @FXML public Label gameNameLabel;
     @FXML public PasswordField passwordTextField;
     @FXML public TextField showPasswordTextField;
@@ -26,10 +32,15 @@ public class JoinGameController implements Controller {
     @FXML public Button joinGameButton;
     @FXML public Button leaveButton;
 
+    private CompositeDisposable disposables = new CompositeDisposable();
+
     @Inject
-    public JoinGameController(App app, Provider<LobbyController> lobbyController) {
+    public JoinGameController(App app, CreateGameService createGameService, Provider<LobbyController> lobbyController,
+                              Provider<GameReadyController> gameReadyController) {
         this.app = app;
+        this.createGameService = createGameService;
         this.lobbyController = lobbyController;
+        this.gameReadyController = gameReadyController;
     }
 
     public void init(){
@@ -37,7 +48,10 @@ public class JoinGameController implements Controller {
     }
 
     public void destroy(){
-
+        if (disposables != null) {
+            disposables.dispose();
+            disposables = null;
+        }
     }
 
     public Parent render(){
@@ -64,7 +78,9 @@ public class JoinGameController implements Controller {
     }
 
     public void joinGame(ActionEvent actionEvent) {
-
+        disposables.add(createGameService.joinGame(passwordTextField.getText())
+                .subscribeOn(FX_SCHEDULER)
+                .subscribe(member -> app.show(gameReadyController.get())));
     }
 
     public void quit(ActionEvent actionEvent) {
