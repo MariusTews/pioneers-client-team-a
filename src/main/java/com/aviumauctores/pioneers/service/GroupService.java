@@ -23,7 +23,7 @@ public class GroupService {
     }
 
     public Observable<Group> updateGroup(String id,List<String> members) {
-        UpdateGroupDto dto = new UpdateGroupDto(members);
+
         return groupsApiService.updateGroup(id, new UpdateGroupDto(members));
     }
 }

@@ -26,4 +26,8 @@ public class UserService {
     public Observable<List<User>> findAll() {
        return this.usersApiService.findAll();
     }
+
+    public Observable<String> getUserName(String id) {
+        return usersApiService.getUser(id).map(User::name);
+    }
 }
