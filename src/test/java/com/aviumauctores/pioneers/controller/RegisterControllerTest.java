@@ -10,18 +10,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
-import org.testfx.util.WaitForAsyncUtils;
-
 import static com.aviumauctores.pioneers.Constants.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.assertions.api.Assertions.assertThat;
 import static org.testfx.util.NodeQueryUtils.hasText;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +27,11 @@ class RegisterControllerTest extends ApplicationTest {
 
     @Mock
     UserService userService;
+
     @Mock
+    LoginController loginController;
+
+    @Spy
     App app;
 
     @InjectMocks
