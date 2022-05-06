@@ -72,10 +72,12 @@ public class ChatController implements Controller {
     }
 
     public void init(){
+        // get all users, their ids and update the All-Group
         userService.findAll().observeOn(FX_SCHEDULER).subscribe(result -> {this.users.setAll(result);
             usersIdList = getAllUserIDs(users);
             groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
         });
+        // listen for users and put them in the All-Group for the All-Chat
         disposable.add(eventListener.listen("users.*.*", User.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
@@ -85,7 +87,7 @@ public class ChatController implements Controller {
                         groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                 }));
-
+        // listen for incoming messages and show them as a Label
         disposable.add(eventListener.listen("groups.*.messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
@@ -94,7 +96,6 @@ public class ChatController implements Controller {
                         ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
                                 .add(msgLabel);
                     }
-                    //TODO: else-if delete message
                     else if (event.event().endsWith(".deleted")) {
                         ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
                                 .remove(msgLabel);
@@ -103,7 +104,6 @@ public class ChatController implements Controller {
     }
 
     public void destroy(){
-
         disposable.dispose();
     }
 
@@ -125,8 +125,6 @@ public class ChatController implements Controller {
                 sendMessage();
             }
         } );
-
-
         return parent;
     }
 
@@ -137,26 +135,20 @@ public class ChatController implements Controller {
         if (message.isBlank()) {
             return;
         }
-        //
+        // send the message
         messageService.sendAllChat(message)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
-
-
-        // add a new Label with the message
-        //Label msgLabel = createMessageLabel(message);
-        //((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren().add(msgLabel);
-
-
-
     }
 
-    // clicked Label will be removed
+    // delete the message
     public void delete(String id) {
         messageService.deleteMessage(id)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
+
+
 
     public void leave() {
         // back to LobbyScreen
@@ -164,8 +156,11 @@ public class ChatController implements Controller {
         app.show(controller);
     }
 
+
+
     // Function to create a new label for the message with the needed functions
     public Label createMessageLabel(Message message) {
+        // get the username of the sender
         String username = String.valueOf(userService.getUserName(message._id()).observeOn(FX_SCHEDULER).subscribe());
         Label msgLabel = new Label(username + ": " + message.body());
         msgLabel.setOnMouseClicked(event -> {
@@ -187,6 +182,8 @@ public class ChatController implements Controller {
         });
         return msgLabel;
     }
+
+
     //Get all IDs of the created users
     public List<String> getAllUserIDs(ObservableList<User> users) {
         List<String> IDs = new ArrayList<>();
