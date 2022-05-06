@@ -21,7 +21,7 @@ public class JoinGameController implements Controller {
     private final Provider<LobbyController> lobbyController;
     @FXML public Label gameNameLabel;
     @FXML public PasswordField passwordTextField;
-    public TextField showPasswordTextField;
+    @FXML public TextField showPasswordTextField;
     @FXML public Button showPasswordButton;
     @FXML public Button joinGameButton;
     @FXML public Button leaveButton;
