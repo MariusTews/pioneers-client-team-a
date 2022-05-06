@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,16 +11,26 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
 public class JoinGameController implements Controller {
 
+    private final App app;
+    private final Provider<LobbyController> lobbyController;
     @FXML public Label gameNameLabel;
     @FXML public PasswordField passwordTextField;
     public TextField showPasswordTextField;
     @FXML public Button showPasswordButton;
     @FXML public Button joinGameButton;
     @FXML public Button leaveButton;
+
+    @Inject
+    public JoinGameController(App app, Provider<LobbyController> lobbyController) {
+        this.app = app;
+        this.lobbyController = lobbyController;
+    }
 
     public void init(){
 
@@ -57,6 +68,6 @@ public class JoinGameController implements Controller {
     }
 
     public void quit(ActionEvent actionEvent) {
-
+        app.show(lobbyController.get());
     }
 }
