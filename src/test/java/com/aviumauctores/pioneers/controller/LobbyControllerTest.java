@@ -11,26 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
 
-@ExtendWith(MockitoExtension.class)
+
 class LobbyControllerTest extends ApplicationTest {
 
-    @Mock
-    App app;
 
-    @InjectMocks
-    LobbyController lobbyController;
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        new App(lobbyController).start(stage);
-    }
-
-
-    @Test
-    void chatButtonTest() {
-        //TODO: chatButtonTest
-        clickOn("#chatButton");
-
-
-    }
 }
