@@ -161,7 +161,7 @@ public class ChatController implements Controller {
     // Function to create a new label for the message with the needed functions
     public Label createMessageLabel(Message message) {
         // get the username of the sender
-        String username = String.valueOf(userService.getUserName(message._id()).observeOn(FX_SCHEDULER).subscribe());
+        String username = message.sender();
         Label msgLabel = new Label(username + ": " + message.body());
         msgLabel.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
@@ -192,8 +192,4 @@ public class ChatController implements Controller {
         }
         return IDs;
     }
-
-
-
-
 }
