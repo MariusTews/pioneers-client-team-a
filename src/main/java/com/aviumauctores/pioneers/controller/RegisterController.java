@@ -163,7 +163,7 @@ public class RegisterController implements Controller {
         }
 
         vBox.getChildren().add(label);
-        app.showErrorOnLoginDialog(vBox, width);
+        app.showDialogWithOkButton(vBox, width);
     }
 
 
