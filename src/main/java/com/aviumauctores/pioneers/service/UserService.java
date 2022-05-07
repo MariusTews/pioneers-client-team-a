@@ -4,6 +4,9 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.rest.UsersApiService;
 import io.reactivex.rxjava3.core.Observable;
 
+import com.aviumauctores.pioneers.dto.users.CreateUserDto;
+
+
 import javax.inject.Inject;
 import java.util.List;
 
@@ -16,10 +19,8 @@ public class UserService {
         this.usersApiService = usersApiService;
     }
 
-    public void register(String username, String passwort) {
-        //TODO register a new user at the server
-        //TODO catch errors from server and inform user
-        System.out.print(username + " " + passwort);
+    public Observable<User> register(String username, String passwort) {
+        return usersApiService.createUser(new CreateUserDto(username, passwort));
 
     }
 

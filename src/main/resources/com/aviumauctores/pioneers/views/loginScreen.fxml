@@ -26,8 +26,8 @@
             <Font size="18.0" />
          </font>
       </TextField>
-      <Label fx:id="usernameErrorLabel" textFill="RED" />
-      <Label text="Passwort:">
+      <Label fx:id="usernameErrorLabel" id="usernameErrorLabel" textFill="RED" />
+      <Label text="Password:">
          <font>
             <Font size="18.0" />
          </font>
@@ -40,8 +40,8 @@
             <Font size="18.0" />
          </font>
       </PasswordField>
-      <Label fx:id="passwordErrorLabel" textFill="RED" />
-      <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login" text="Anmelden">
+      <Label fx:id="passwordErrorLabel" id="passwordErrorLabel" textFill="RED" />
+      <Button fx:id="loginButton" mnemonicParsing="false" prefWidth="140.0" onAction="#login" text="Login">
          <VBox.margin>
             <Insets top="15.0" />
          </VBox.margin>
@@ -49,7 +49,7 @@
             <Font size="18.0" />
          </font>
       </Button>
-      <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" onAction="#rememberMeToggle" text="User merken">
+      <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" onAction="#rememberMeToggle" text="Remember me">
          <VBox.margin>
             <Insets top="20.0" />
          </VBox.margin>
@@ -57,8 +57,8 @@
    </VBox>
    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
       <VBox alignment="CENTER" prefHeight="95.0" prefWidth="188.0" spacing="8.0">
-         <Label text="Keinen Account?" />
-         <Button fx:id="registerButton" mnemonicParsing="false" onAction="#toRegister" prefHeight="25.0" prefWidth="147.0" text="Account erstellen" />
+         <Label text="No account yet?" />
+         <Button fx:id="registerButton" mnemonicParsing="false" onAction="#toRegister" prefHeight="25.0" prefWidth="140" text="Register" />
       </VBox>
    </HBox>
 </VBox>
