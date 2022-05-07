@@ -128,7 +128,7 @@ public class RegisterController implements Controller {
                             final LoginController controller = loginController.get();
                             app.show(controller);
                         },
-                        error -> Platform.runLater(() -> System.out.println("Error" + error))//this.createDialog(error.getMessage()))
+                        error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
 
                 );
     }
