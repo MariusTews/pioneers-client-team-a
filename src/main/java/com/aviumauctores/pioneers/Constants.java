@@ -85,6 +85,10 @@ public class Constants {
 
     public static final String HTTP_409 = "HTTP 409 ";
 
+    //Allchat_ID
+    //public static final String ALLCHAT_ID = "6273e7d681401100144eff54";
+    public static final String ALLCHAT_ID = "62756e8567968900144280a9";
+
 
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }
