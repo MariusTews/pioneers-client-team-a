@@ -32,7 +32,7 @@ public class JoinGameController implements Controller {
     @FXML public Button joinGameButton;
     @FXML public Button leaveButton;
 
-    private CompositeDisposable disposables = new CompositeDisposable();
+    private CompositeDisposable disposables;
 
     @Inject
     public JoinGameController(App app, CreateGameService createGameService, Provider<LobbyController> lobbyController,
@@ -44,7 +44,7 @@ public class JoinGameController implements Controller {
     }
 
     public void init(){
-
+        disposables = new CompositeDisposable();
     }
 
     public void destroy(){
