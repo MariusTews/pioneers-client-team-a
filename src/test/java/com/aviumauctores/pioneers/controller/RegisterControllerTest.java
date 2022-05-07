@@ -15,6 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
+
+import javax.inject.Provider;
+
 import static com.aviumauctores.pioneers.Constants.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -29,7 +32,7 @@ class RegisterControllerTest extends ApplicationTest {
     UserService userService;
 
     @Mock
-    LoginController loginController;
+    Provider<LoginController> loginController;
 
     @Spy
     App app;
