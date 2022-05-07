@@ -12,14 +12,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -46,7 +44,6 @@ public class RegisterController implements Controller {
     public PasswordField textfieldPassword;
     private final Provider<LoginController> loginController;
     public TextField textfieldPassword_show;
-    public Label errorLabel;
 
     private Disposable disposable;
 
@@ -128,7 +125,6 @@ public class RegisterController implements Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> {
-                            errorLabel.setText("");
                             final LoginController controller = loginController.get();
                             app.show(controller);
                         },
@@ -167,23 +163,7 @@ public class RegisterController implements Controller {
         }
 
         vBox.getChildren().add(label);
-        this.showErrorOnLoginDialog(vBox, width);
-    }
-
-    public void showErrorOnLoginDialog(VBox vBox, double width) {
-        Stage dialogStage = new Stage();
-        dialogStage.setTitle("Fehler");
-        Button button = new Button("OK");
-        button.setFont(new Font(12));
-        button.setPrefWidth(120);
-
-        button.setOnAction(e ->
-                dialogStage.close());
-        vBox.getChildren().add(button);
-
-        Scene dialogScene = new Scene(vBox, width, 130);
-        dialogStage.setScene(dialogScene);
-        dialogStage.show();
+        app.showDialogWithOkButton(vBox, width);
     }
 
 
