@@ -13,18 +13,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 
 import static com.aviumauctores.pioneers.Constants.*;
-import static com.aviumauctores.pioneers.Constants.HTTP_429;
 
 public class LoginController implements Controller {
 
@@ -32,6 +29,8 @@ public class LoginController implements Controller {
     private final LoginService loginService;
     private final Provider<RegisterController> registerController;
     private final Provider<LobbyController> lobbyController;
+
+    private Disposable disposable;
 
     @FXML public TextField usernameInput;
 
@@ -46,8 +45,6 @@ public class LoginController implements Controller {
     @FXML public Label usernameErrorLabel;
 
     @FXML public Label passwordErrorLabel;
-
-    private Disposable disposable;
 
     @Inject
     public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController){
@@ -93,13 +90,13 @@ public class LoginController implements Controller {
         //check whether username or password is empty
         if (usernameEmpty || passwordEmpty) {
             if (usernameEmpty) {
-                usernameErrorLabel.setText("Keine valide Eingabe.");
+                usernameErrorLabel.setText("Invalid input.");
             }
             else {
                 usernameErrorLabel.setText("");
             }
             if (passwordEmpty) {
-                passwordErrorLabel.setText("Keine valide Eingabe.");
+                passwordErrorLabel.setText("Invalid input.");
             }
             else {
                 passwordErrorLabel.setText("");
@@ -118,11 +115,9 @@ public class LoginController implements Controller {
                                 final LobbyController controller = lobbyController.get();
                                 app.show(controller);
                             },
-                            error -> {
-                                Platform.runLater(() -> {
-                                    this.createDialog(error.getMessage());
-                                });
-                            }
+                            error -> Platform.runLater(() -> {
+                                this.createDialog(error.getMessage());
+                            })
                     );
         }
     }
@@ -133,29 +128,30 @@ public class LoginController implements Controller {
 
         Label label = new Label();
         label.setFont(new Font(18));
+        label.setId("dialogLabel");
 
         double width;
 
         if (message.equals(HTTP_400)) {
-            label.setText("Validierung fehlgeschlagen.");
+            label.setText("Validation failed.");
             width = 300;
         }
         else if (message.equals(HTTP_401)) {
-            label.setText("Falscher Benutzername oder falsches Passwort.");
+            label.setText("Invalid username or password.");
             width = 400;
         }
         else if (message.equals(HTTP_429)) {
-            label.setText("Bitte warten Sie einen Moment und versuchen es dann erneut.");
+            label.setText("Rate limit reached.");
             width = 540;
         }
         else {
-            label.setText("Keine Verbindung zum Server.");
+            label.setText("No connection to the Server.");
             width = 300;
         }
 
         vBox.getChildren().add(label);
 
-        app.showErrorOnLoginDialog(vBox, width);
+        app.showDialogWithOkButton(vBox, width);
     }
 
     public void rememberMeToggle(ActionEvent event) {
