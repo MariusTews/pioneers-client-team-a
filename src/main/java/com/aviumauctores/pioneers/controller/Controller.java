@@ -9,4 +9,5 @@ public interface Controller {
     void destroy();
 
     Parent render();
+
 }
