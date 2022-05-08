@@ -71,7 +71,6 @@ public class MainModule {
 
     @Provides
     @Singleton
-<<<<<<<<< Temporary merge branch 1
     UsersApiService usersApiService(Retrofit retrofit) {
         return retrofit.create(UsersApiService.class);
     }
