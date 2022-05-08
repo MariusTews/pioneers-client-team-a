@@ -49,7 +49,7 @@
             <Font size="18.0" />
          </font>
       </Button>
-      <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" onAction="#rememberMeToggle" text="Remember me">
+      <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="Remember me">
          <VBox.margin>
             <Insets top="20.0" />
          </VBox.margin>

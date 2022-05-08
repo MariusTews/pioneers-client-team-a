@@ -4,7 +4,9 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.CryptoService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
@@ -29,8 +31,12 @@ public class LoginController implements Controller {
     private final LoginService loginService;
     private final Provider<RegisterController> registerController;
     private final Provider<LobbyController> lobbyController;
+    private final PreferenceService preferenceService;
+    private final CryptoService cryptoService;
 
     private Disposable disposable;
+    private String username;
+    private String password;
 
     @FXML public TextField usernameInput;
 
@@ -47,16 +53,17 @@ public class LoginController implements Controller {
     @FXML public Label passwordErrorLabel;
 
     @Inject
-    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController){
+    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController, PreferenceService preferenceService, CryptoService cryptoService){
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
         this.lobbyController = lobbyController;
+        this.preferenceService = preferenceService;
+        this.cryptoService = cryptoService;
     }
 
     @Override
     public void init(){
-
     }
 
     @Override
@@ -77,6 +84,15 @@ public class LoginController implements Controller {
             e.printStackTrace();
             return null;
         }
+
+        if (preferenceService.getRememberMe()){
+            username = cryptoService.decode(preferenceService.getUsername());
+            password = cryptoService.decode(preferenceService.getPassword());
+            usernameInput.setText(username);
+            passwordInput.setText(password);
+            rememberMeCheckBox.fire();
+        }
+
         return parent;
     }
 
@@ -112,6 +128,20 @@ public class LoginController implements Controller {
                             result -> {
                                 //I dont know how to pass the user to the LobbyController yet
                                 User user = new User(result._id(), result.name(), result.status(), result.avatar());
+
+                                if (rememberMeCheckBox.isSelected()){
+                                    preferenceService.setRememberMe(true);
+                                    String encodedUsername = cryptoService.encode(username);
+                                    String encodedPassword = cryptoService.encode(password);
+                                    preferenceService.setUsername(encodedUsername);
+                                    preferenceService.setPassword(encodedPassword);
+                                }
+                                else{
+                                    preferenceService.setRememberMe(false);
+                                    preferenceService.setUsername("");
+                                    preferenceService.setPassword("");
+                                }
+
                                 final LobbyController controller = lobbyController.get();
                                 app.show(controller);
                             },
@@ -152,10 +182,6 @@ public class LoginController implements Controller {
         vBox.getChildren().add(label);
 
         app.showDialogWithOkButton(vBox, width);
-    }
-
-    public void rememberMeToggle(ActionEvent event) {
-
     }
 
     public void toRegister(ActionEvent event) {
