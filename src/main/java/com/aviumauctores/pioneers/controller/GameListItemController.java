@@ -31,7 +31,7 @@ public class GameListItemController implements Controller {
 
     @Override
     public void destroy() {
-
+        gameItems.remove(root);
     }
 
     @Override
@@ -62,9 +62,5 @@ public class GameListItemController implements Controller {
         numMembersLabel.setText(numMembers + "/4");
         // Don't let more than four players join
         joinButton.setDisable(numMembers >= 4);
-    }
-
-    public void onGameDeleted() {
-        gameItems.remove(root);
     }
 }

@@ -95,7 +95,7 @@ public class LobbyController implements Controller {
                     } else if (event.endsWith("deleted")) {
                         GameListItemController controller = gameListItemControllers.get(game._id());
                         if (controller != null) {
-                            controller.onGameDeleted();
+                            controller.destroy();
                             gameListItemControllers.remove(game._id());
                         }
                     }
@@ -114,6 +114,9 @@ public class LobbyController implements Controller {
             disposables.dispose();
             disposables = null;
         }
+        // Destroy and delete each sub controller
+        gameListItemControllers.forEach((id, controller) -> controller.destroy());
+        gameListItemControllers.clear();
     }
 
     public Parent render(){
