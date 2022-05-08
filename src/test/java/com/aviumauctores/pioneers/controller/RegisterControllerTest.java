@@ -14,14 +14,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
-import org.testfx.util.WaitForAsyncUtils;
 
-import static com.aviumauctores.pioneers.Constants.*;
+import javax.inject.Provider;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.assertions.api.Assertions.assertThat;
 import static org.testfx.util.NodeQueryUtils.hasText;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +28,10 @@ class RegisterControllerTest extends ApplicationTest {
 
     @Mock
     UserService userService;
+
+    @Mock
+    Provider<LoginController> loginController;
+
     @Mock
     App app;
 
@@ -64,49 +67,4 @@ class RegisterControllerTest extends ApplicationTest {
         verify(userService).register("Jannis", "12345678");
     }
 
-    @Test
-    void testUsernameTaken() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable(HTTP_409)));
-        write("Jannis\t");
-        write("1234\t");
-        write("\t");
-        type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Username schon vergeben"));
-        verify(userService).register("Jannis", "1234");
-    }
-
-    @Test
-    void RateLimitReached() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable(HTTP_429)));
-        write("Jannis\t");
-        write("1234\t");
-        write("\t");
-        type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Bitte warten Sie einen Moment und versuchen es dann erneut."));
-        verify(userService).register("Jannis", "1234");
-
-    }
-
-    @Test
-    void testValidationFailed() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable(HTTP_400)));
-        write("Jannis\t");
-        write("1234\t");
-        write("\t");
-        type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Validierung fehlgeschlagen. (Passwort zu kurz)"));
-        verify(userService).register("Jannis", "1234");
-
-    }
-
-    @Test
-    void testNoServerConnection() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable("HTTP 402 ")));
-        write("Jannis\t");
-        write("1234\t");
-        write("\t");
-        type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Keine Verbindung zum Server."));
-        verify(userService).register("Jannis", "1234");
-    }
 }
