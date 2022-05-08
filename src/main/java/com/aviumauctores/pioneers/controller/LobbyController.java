@@ -69,6 +69,8 @@ public class LobbyController implements Controller {
 
     public void toCreateGame(ActionEvent event) {
         final CreateGameController controller = createGameController.get();
+        controller.gameName.set("");
+        controller.password.set("");
         app.show(controller);
     }
 
