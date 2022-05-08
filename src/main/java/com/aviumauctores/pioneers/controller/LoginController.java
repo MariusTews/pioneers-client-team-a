@@ -35,8 +35,6 @@ public class LoginController implements Controller {
     private final CryptoService cryptoService;
 
     private Disposable disposable;
-    private String username;
-    private String password;
 
     @FXML public TextField usernameInput;
 
@@ -86,8 +84,15 @@ public class LoginController implements Controller {
         }
 
         if (preferenceService.getRememberMe()){
-            username = cryptoService.decode(preferenceService.getUsername());
-            password = cryptoService.decode(preferenceService.getPassword());
+            String username;
+            String password;
+            try {
+                username = cryptoService.decode(preferenceService.getUsername());
+                password = cryptoService.decode(preferenceService.getPassword());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
             usernameInput.setText(username);
             passwordInput.setText(password);
             rememberMeCheckBox.fire();
@@ -145,9 +150,7 @@ public class LoginController implements Controller {
                                 final LobbyController controller = lobbyController.get();
                                 app.show(controller);
                             },
-                            error -> Platform.runLater(() -> {
-                                this.createDialog(error.getMessage());
-                            })
+                            error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
                     );
         }
     }
@@ -162,21 +165,23 @@ public class LoginController implements Controller {
 
         double width;
 
-        if (message.equals(HTTP_400)) {
-            label.setText("Validation failed.");
-            width = 300;
-        }
-        else if (message.equals(HTTP_401)) {
-            label.setText("Invalid username or password.");
-            width = 400;
-        }
-        else if (message.equals(HTTP_429)) {
-            label.setText("Rate limit reached.");
-            width = 540;
-        }
-        else {
-            label.setText("No connection to the Server.");
-            width = 300;
+        switch (message) {
+            case HTTP_400 -> {
+                label.setText("Validation failed.");
+                width = 300;
+            }
+            case HTTP_401 -> {
+                label.setText("Invalid username or password.");
+                width = 400;
+            }
+            case HTTP_429 -> {
+                label.setText("Rate limit reached.");
+                width = 540;
+            }
+            default -> {
+                label.setText("No connection to the Server.");
+                width = 300;
+            }
         }
 
         vBox.getChildren().add(label);

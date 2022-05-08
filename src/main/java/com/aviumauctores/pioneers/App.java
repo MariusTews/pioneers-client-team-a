@@ -20,8 +20,6 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class App extends Application {
 
     private Stage stage;
-    private Stage dialogStage;
-    private Scene dialogScene;
     private Controller controller;
 
     public App(){
@@ -87,7 +85,7 @@ public class App extends Application {
     }
 
     public void showDialogWithOkButton(VBox vBox, double width) {
-        dialogStage = new Stage();
+        Stage dialogStage = new Stage();
         dialogStage.setTitle("Error");
         setAppIcon(dialogStage);
 
@@ -98,7 +96,7 @@ public class App extends Application {
 
         vBox.getChildren().add(button);
 
-        dialogScene = new Scene(vBox, width, 130);
+        Scene dialogScene = new Scene(vBox, width, 130);
         dialogStage.setScene(dialogScene);
 
         dialogStage.show();

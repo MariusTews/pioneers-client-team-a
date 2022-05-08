@@ -2,33 +2,43 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.controller.LoginController;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class CryptoService {
-    private Cipher cipher;
-    private Key secretKey;
+    private final Cipher cipher;
+    private final Key secretKey;
 
     @Inject
     public CryptoService(){
-
+        try {
+            cipher = Cipher.getInstance("AES");
+            String key = "fgd5j0kkBar1A4j5"; // 128 bit key
+            secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     public String encode(String data) throws Exception {
         byte[] dataByte = data.getBytes();
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         byte[] encryptedByte = cipher.doFinal(dataByte);
-        Base64.Encoder encoder = Base64.getEncoder();;
-        String encodedData = encoder.encodeToString(encryptedByte);
-        return encodedData;
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(encryptedByte);
     }
 
-    public String decode(String data){
-        return data;
+    public String decode(String data) throws Exception{
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] dataByte = decoder.decode(data);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decodedByte = cipher.doFinal(dataByte);
+        return new String(decodedByte);
     }
 }
