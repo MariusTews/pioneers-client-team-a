@@ -40,44 +40,4 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ChatControllerTest extends ApplicationTest {
 
-   /* @Mock
-    MessagesApiService messagesApiService;
-
-    @Mock
-    UsersApiService usersApiService;
-
-    @Mock
-    GroupsApiService groupsApiService;
-
-    @Mock
-    UserService userService;
-
-    @Mock
-    App app;
-
-    @InjectMocks
-    ChatController chatController;
-
-    @Override
-    public void start(Stage stage){
-        new App(chatController).start(stage);
-    }
-
-    @Test
-    void sendMessage() {
-        Observable<List<User>> users = ;
-        when(userService.findAll()).thenReturn(Observable.just(users));
-        doNothing().when(groupsApiService.updateGroup(any(), any()));
-        when(messagesApiService.sendMessage(any(), any(), any()))
-                .thenReturn(Observable.just(new Message("3", "3", "3", "123", "hello")));
-
-        write("Hello, my name is ...");
-        type(KeyCode.SPACE);
-
-        verify(messagesApiService).sendMessage("groups","62756e8567968900144280a9",
-                new CreateMessageDto("Hello, my name is ..."));
-
-        FxAssert.verifyThat("#3", LabeledMatchers.hasText("Hello, my name is ..."));
-        FxAssert.verifyThat("#chatTextField", TextMatchers.hasText(""));
-    }*/
 }
