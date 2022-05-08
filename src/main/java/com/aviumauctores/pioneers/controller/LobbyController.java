@@ -32,6 +32,7 @@ public class LobbyController implements Controller {
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
     private final Provider<CreateGameController> createGameController;
+    private final Provider<JoinGameController> joinGameController;
 
     @FXML public Label gameLabel;
 
@@ -57,13 +58,15 @@ public class LobbyController implements Controller {
     public LobbyController(App app, CreateGameService createGameService, EventListener eventListener,
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
-                           Provider<CreateGameController> createGameController){
+                           Provider<CreateGameController> createGameController,
+                           Provider<JoinGameController> joinGameController){
         this.app = app;
         this.createGameService = createGameService;
         this.eventListener = eventListener;
         this.loginController = loginController;
         this.chatController = chatController;
         this.createGameController = createGameController;
+        this.joinGameController = joinGameController;
     }
 
 
@@ -139,6 +142,10 @@ public class LobbyController implements Controller {
         app.show(controller);
     }
 
+    public void toJoinGame(Game game) {
+        createGameService.setCurrentGame(game);
+        app.show(joinGameController.get());
+    }
 
     public void toChat(ActionEvent event) {
 

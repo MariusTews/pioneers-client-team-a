@@ -64,6 +64,8 @@ public class JoinGameController implements Controller {
             e.printStackTrace();
             return null;
         }
+        // Show game name
+        gameNameLabel.setText(createGameService.getCurrentGame().name());
         passwordTextField.textProperty().bindBidirectional(showPasswordTextField.textProperty());
         showPasswordTextField.setManaged(false);
         return parent;

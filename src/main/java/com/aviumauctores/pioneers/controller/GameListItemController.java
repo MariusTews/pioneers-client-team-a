@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.model.Game;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -16,10 +17,12 @@ public class GameListItemController implements Controller {
     private Label numMembersLabel;
     private Button joinButton;
 
+    private final LobbyController parentController;
     private Game game;
     private final ObservableList<Parent> gameItems;
 
     public GameListItemController(LobbyController parentController, Game game, ObservableList<Parent> gameItems) {
+        this.parentController = parentController;
         this.game = game;
         this.gameItems = gameItems;
     }
@@ -43,6 +46,7 @@ public class GameListItemController implements Controller {
         int numMembers = game.members();
         numMembersLabel = new Label(numMembers + "/4");
         joinButton = new Button("Join");
+        joinButton.setOnAction(this::onJoinButtonPressed);
         // Don't let more than four players join
         joinButton.setDisable(numMembers >= 4);
         HBox rightHBox = new HBox(10.0, numMembersLabel, joinButton);
@@ -53,6 +57,10 @@ public class GameListItemController implements Controller {
         BorderPane.setAlignment(rightHBox, Pos.CENTER);
         root.setPadding(new Insets(0.0, 10.0, 0.0, 10.0));
         return root;
+    }
+
+    private void onJoinButtonPressed(ActionEvent event) {
+        parentController.toJoinGame(game);
     }
 
     public void onGameUpdated(Game newGame) {
