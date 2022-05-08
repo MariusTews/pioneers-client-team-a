@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
+import com.aviumauctores.pioneers.rest.GamesApiService;
 import com.aviumauctores.pioneers.rest.MessagesApiService;
 import com.aviumauctores.pioneers.service.TokenStorage;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -64,5 +65,11 @@ public class MainModule {
     @Singleton
     MessagesApiService messagesApiService(Retrofit retrofit) {
         return retrofit.create(MessagesApiService.class);
+    }
+
+    @Provides
+    @Singleton
+    GamesApiService gamesApiService(Retrofit retrofit){
+        return retrofit.create(GamesApiService.class);
     }
 }

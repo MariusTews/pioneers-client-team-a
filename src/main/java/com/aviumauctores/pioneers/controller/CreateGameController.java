@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.service.GameService;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -13,14 +14,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
-
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 
 public class CreateGameController implements Controller {
@@ -32,6 +30,8 @@ public class CreateGameController implements Controller {
     public final SimpleStringProperty password = new SimpleStringProperty();
 
     private final Provider<LobbyController> lobbyController;
+
+    private final GameService gameService;
 
     private boolean hidePassword = true;
 
@@ -48,16 +48,17 @@ public class CreateGameController implements Controller {
     @FXML public TextField gameNameInput;
 
     @Inject
-    public CreateGameController(App app, Provider<LobbyController> lobbyController){
+    public CreateGameController(App app, Provider<LobbyController> lobbyController,
+                                GameService gameService){
         this.app = app;
         this.lobbyController = lobbyController;
-
+        this.gameService = gameService;
     }
 
     public void init(){
-
-
     }
+
+
 
     public void destroy(){
 
@@ -65,6 +66,7 @@ public class CreateGameController implements Controller {
 
     @Override
     public Parent render(){
+        //load createGame FXML
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"));
         loader.setControllerFactory(c -> this);
         final Parent parent;
@@ -74,6 +76,7 @@ public class CreateGameController implements Controller {
             e.printStackTrace();
             return null;
         }
+        //check if one or both input fields are empty
         createGameButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
                                 gameNameInput.getText().trim().isEmpty(), gameNameInput.textProperty())
@@ -85,27 +88,39 @@ public class CreateGameController implements Controller {
         gameNameInput.textProperty().bindBidirectional(gameName);
         gamePasswordInput.textProperty().bindBidirectional(password);
         return parent;
-
     }
 
     public void createGame(ActionEvent actionEvent){
-
-        //TODO: Create a game and transmit it to the Server
-        GameReadyController controller = new GameReadyController(app,lobbyController);
+        //create a new Game
+        String name = gameNameInput.getText();
+        String password = gamePasswordInput.getText();
+        //check if name length is valid
+        if(!(name.length() > 0 && name.length() <= 32)){
+            return;
+        }
+        gameService.create(name, password)
+                .observeOn(FX_SCHEDULER)
+                .subscribe();
+        //show gameReady Screen
+        final GameReadyController controller = new GameReadyController(app,lobbyController);
         app.show(controller);
     }
 
+
+
     public void cancel(ActionEvent actionEvent) {
+        //change view to LobbyScreen
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
 
     public void showPassword(ActionEvent actionEvent) {
+        //check button status
         if(gamePasswordInput.getText().isEmpty()){
             return;
         }
-
         Image image;
+        //set source for Image and show/hide password depending on hidePassword
         if(hidePassword){
             image = new Image(Main.class.getResource("views/hidePassword.png").toString());
             String password = gamePasswordInput.getText();
@@ -120,14 +135,11 @@ public class CreateGameController implements Controller {
             gamePasswordInput.setVisible(true);
             hidePassword = true;
         }
-
+        //set Image to showPasswordButton
         ImageView view = new ImageView(image);
         view.setFitHeight(23.0);
         view.setFitWidth(25.0);
         showPasswordButton.setGraphic(view);
-
-
-
-
     }
+
 }

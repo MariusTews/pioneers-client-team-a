@@ -14,8 +14,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
     // https://mvnrepository.com/artifact/org.testfx/testfx-junit5
     testImplementation group: 'org.testfx', name: 'testfx-junit5', version: '4.0.16-alpha'
@@ -37,10 +37,10 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.2'
 
     implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
-    implementation group: 'javax.json', name: 'javax.json-api', version: '1.1'
-    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1'
-    implementation group: 'org.glassfish.tyrus', name: 'tyrus-client', version: '1.15'
-    implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-client', version: '1.15'
+    implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
+    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+    implementation group: 'org.glassfish.tyrus', name: 'tyrus-client', version: '2.0.2'
+    implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-client', version: '2.0.2'
 
     implementation "io.reactivex.rxjava3:rxjava:3.1.4"
 }
