@@ -84,7 +84,7 @@ public class CreateGameController implements Controller {
                                 gamePasswordInput.getText().trim().isEmpty(), gamePasswordInput.textProperty()))
         );
 
-        //take username and password from login screen
+        //take username and password from Login screen
         gameNameInput.textProperty().bindBidirectional(gameName);
         gamePasswordInput.textProperty().bindBidirectional(password);
         return parent;
