@@ -11,6 +11,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -174,12 +175,15 @@ public class ChatController implements Controller {
                 // delete if "Ok" is clicked
                 if (result.get() == ButtonType.OK){
                     delete(message._id());
+                    ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
+                            .remove(msgLabel);
                     alert.close();
                 } else {
                     alert.close();
                 }
             }
         });
+        msgLabel.setId(message._id());
         return msgLabel;
     }
 
