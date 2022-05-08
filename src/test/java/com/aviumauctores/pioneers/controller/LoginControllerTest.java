@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -23,6 +24,9 @@ class LoginControllerTest extends ApplicationTest {
 
     @Mock
     LoginService loginService;
+
+    @Mock
+    PreferenceService preferenceService;
 
     @Mock
     App app;
