@@ -4,7 +4,9 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.CryptoService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
@@ -29,6 +31,8 @@ public class LoginController implements Controller {
     private final LoginService loginService;
     private final Provider<RegisterController> registerController;
     private final Provider<LobbyController> lobbyController;
+    private final PreferenceService preferenceService;
+    private final CryptoService cryptoService;
 
     private Disposable disposable;
 
@@ -47,16 +51,17 @@ public class LoginController implements Controller {
     @FXML public Label passwordErrorLabel;
 
     @Inject
-    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController){
+    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController, PreferenceService preferenceService, CryptoService cryptoService){
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
         this.lobbyController = lobbyController;
+        this.preferenceService = preferenceService;
+        this.cryptoService = cryptoService;
     }
 
     @Override
     public void init(){
-
     }
 
     @Override
@@ -77,6 +82,22 @@ public class LoginController implements Controller {
             e.printStackTrace();
             return null;
         }
+
+        if (preferenceService.getRememberMe()){
+            String username;
+            String password;
+            try {
+                username = cryptoService.decode(preferenceService.getUsername());
+                password = cryptoService.decode(preferenceService.getPassword());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            usernameInput.setText(username);
+            passwordInput.setText(password);
+            rememberMeCheckBox.fire();
+        }
+
         return parent;
     }
 
@@ -112,12 +133,24 @@ public class LoginController implements Controller {
                             result -> {
                                 //I dont know how to pass the user to the LobbyController yet
                                 User user = new User(result._id(), result.name(), result.status(), result.avatar());
+
+                                if (rememberMeCheckBox.isSelected()){
+                                    preferenceService.setRememberMe(true);
+                                    String encodedUsername = cryptoService.encode(username);
+                                    String encodedPassword = cryptoService.encode(password);
+                                    preferenceService.setUsername(encodedUsername);
+                                    preferenceService.setPassword(encodedPassword);
+                                }
+                                else{
+                                    preferenceService.setRememberMe(false);
+                                    preferenceService.setUsername("");
+                                    preferenceService.setPassword("");
+                                }
+
                                 final LobbyController controller = lobbyController.get();
                                 app.show(controller);
                             },
-                            error -> Platform.runLater(() -> {
-                                this.createDialog(error.getMessage());
-                            })
+                            error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
                     );
         }
     }
@@ -132,21 +165,23 @@ public class LoginController implements Controller {
 
         double width;
 
-        if (message.equals(HTTP_400)) {
-            label.setText("Validation failed.");
-            width = 300;
-        }
-        else if (message.equals(HTTP_401)) {
-            label.setText("Invalid username or password.");
-            width = 400;
-        }
-        else if (message.equals(HTTP_429)) {
-            label.setText("Rate limit reached.");
-            width = 540;
-        }
-        else {
-            label.setText("No connection to the Server.");
-            width = 300;
+        switch (message) {
+            case HTTP_400 -> {
+                label.setText("Validation failed.");
+                width = 300;
+            }
+            case HTTP_401 -> {
+                label.setText("Invalid username or password.");
+                width = 400;
+            }
+            case HTTP_429 -> {
+                label.setText("Rate limit reached.");
+                width = 540;
+            }
+            default -> {
+                label.setText("No connection to the Server.");
+                width = 300;
+            }
         }
 
         vBox.getChildren().add(label);
@@ -154,16 +189,15 @@ public class LoginController implements Controller {
         app.showDialogWithOkButton(vBox, width);
     }
 
-    public void rememberMeToggle(ActionEvent event) {
-
-    }
-
     public void toRegister(ActionEvent event) {
         String username = usernameInput.getText();
         String password = passwordInput.getText();
+
         final RegisterController controller = registerController.get();
+
         controller.username.set(username);
         controller.password.set(password);
+
         app.show(controller);
     }
 }

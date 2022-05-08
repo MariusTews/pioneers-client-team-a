@@ -4,7 +4,7 @@ import dagger.Component;
 
 import javax.inject.Singleton;
 
-@Component(modules = { MainModule.class })
+@Component(modules = { MainModule.class, PreferenceModule.class })
 @Singleton
 public interface TestComponent extends MainComponent{
     @Component.Builder

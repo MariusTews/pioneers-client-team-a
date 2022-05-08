@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import static org.testfx.api.FxAssert.verifyThat;
 @ExtendWith(MockitoExtension.class)
 class LoginControllerEmptyLoginTest extends ApplicationTest {
 
+    @Mock
+    PreferenceService preferenceService;
     @InjectMocks
     LoginController loginController;
 
