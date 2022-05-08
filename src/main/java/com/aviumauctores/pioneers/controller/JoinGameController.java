@@ -81,7 +81,7 @@ public class JoinGameController implements Controller {
 
     public void joinGame(ActionEvent actionEvent) {
         disposables.add(createGameService.joinGame(passwordTextField.getText())
-                .subscribeOn(FX_SCHEDULER)
+                .observeOn(FX_SCHEDULER)
                 .subscribe(member -> app.show(gameReadyController.get())));
     }
 
