@@ -3,7 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.service.CreateGameService;
+import com.aviumauctores.pioneers.service.GameService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
