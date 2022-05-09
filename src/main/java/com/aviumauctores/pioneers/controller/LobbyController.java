@@ -165,7 +165,7 @@ public class LobbyController implements Controller {
 
     public void quit(ActionEvent event) {
         disposables.add(loginService.logout()
-                .subscribeOn(FX_SCHEDULER)
+                .observeOn(FX_SCHEDULER)
                 .subscribe(() -> app.show(loginController.get()),
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
