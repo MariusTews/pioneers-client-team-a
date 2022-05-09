@@ -1,28 +1,39 @@
 package com.aviumauctores.pioneers.service;
 
+import com.aviumauctores.pioneers.dto.groups.CreateGroupDto;
 import com.aviumauctores.pioneers.dto.messages.CreateMessageDto;
+import com.aviumauctores.pioneers.model.Group;
 import com.aviumauctores.pioneers.model.Message;
+import com.aviumauctores.pioneers.rest.GroupsApiService;
 import com.aviumauctores.pioneers.rest.MessagesApiService;
 import io.reactivex.rxjava3.core.Observable;
 
+
 import javax.inject.Inject;
-import java.util.function.Consumer;
+
+import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
+
 
 public class MessageService {
-    private final MessagesApiService messageApiService;
+    private final MessagesApiService messagesApiService;
 
     @Inject
     public MessageService(MessagesApiService messagesApiService) {
-        this.messageApiService = messagesApiService;
+
+        this.messagesApiService = messagesApiService;
+    }
+
+    //
+    public Observable<String> sendAllChat(String message) {
+
+        return messagesApiService.sendMessage("groups", ALLCHAT_ID, new CreateMessageDto(message))
+                .map(Message::body);
     }
 
 
-    public void send(String message, Consumer<? super Observable<Message>> callback) {
 
-    }
+    public Observable<Message> deleteMessage(String id) {
 
-
-    public void deleteMessage() {
-
+        return messagesApiService.deleteMessage("groups", ALLCHAT_ID, id);
     }
 }

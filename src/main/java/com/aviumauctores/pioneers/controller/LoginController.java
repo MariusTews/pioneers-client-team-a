@@ -4,7 +4,9 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.CryptoService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
@@ -13,18 +15,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 
 import static com.aviumauctores.pioneers.Constants.*;
-import static com.aviumauctores.pioneers.Constants.HTTP_429;
 
 public class LoginController implements Controller {
 
@@ -32,6 +31,10 @@ public class LoginController implements Controller {
     private final LoginService loginService;
     private final Provider<RegisterController> registerController;
     private final Provider<LobbyController> lobbyController;
+    private final PreferenceService preferenceService;
+    private final CryptoService cryptoService;
+
+    private Disposable disposable;
 
     @FXML public TextField usernameInput;
 
@@ -48,21 +51,24 @@ public class LoginController implements Controller {
     @FXML public Label passwordErrorLabel;
 
     @Inject
-    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController){
+    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController, PreferenceService preferenceService, CryptoService cryptoService){
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
         this.lobbyController = lobbyController;
+        this.preferenceService = preferenceService;
+        this.cryptoService = cryptoService;
     }
 
     @Override
     public void init(){
-
     }
 
     @Override
     public void destroy(){
-
+        if (this.disposable != null) {
+            disposable.dispose();
+        }
     }
 
     @Override
@@ -76,6 +82,22 @@ public class LoginController implements Controller {
             e.printStackTrace();
             return null;
         }
+
+        if (preferenceService.getRememberMe()){
+            String username;
+            String password;
+            try {
+                username = cryptoService.decode(preferenceService.getUsername());
+                password = cryptoService.decode(preferenceService.getPassword());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            usernameInput.setText(username);
+            passwordInput.setText(password);
+            rememberMeCheckBox.fire();
+        }
+
         return parent;
     }
 
@@ -89,13 +111,13 @@ public class LoginController implements Controller {
         //check whether username or password is empty
         if (usernameEmpty || passwordEmpty) {
             if (usernameEmpty) {
-                usernameErrorLabel.setText("Keine valide Eingabe.");
+                usernameErrorLabel.setText("Invalid input.");
             }
             else {
                 usernameErrorLabel.setText("");
             }
             if (passwordEmpty) {
-                passwordErrorLabel.setText("Keine valide Eingabe.");
+                passwordErrorLabel.setText("Invalid input.");
             }
             else {
                 passwordErrorLabel.setText("");
@@ -105,20 +127,30 @@ public class LoginController implements Controller {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
-            loginService.login(username, password)
+            disposable = loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
                                 //I dont know how to pass the user to the LobbyController yet
                                 User user = new User(result._id(), result.name(), result.status(), result.avatar());
+
+                                if (rememberMeCheckBox.isSelected()){
+                                    preferenceService.setRememberMe(true);
+                                    String encodedUsername = cryptoService.encode(username);
+                                    String encodedPassword = cryptoService.encode(password);
+                                    preferenceService.setUsername(encodedUsername);
+                                    preferenceService.setPassword(encodedPassword);
+                                }
+                                else{
+                                    preferenceService.setRememberMe(false);
+                                    preferenceService.setUsername("");
+                                    preferenceService.setPassword("");
+                                }
+
                                 final LobbyController controller = lobbyController.get();
                                 app.show(controller);
                             },
-                            error -> {
-                                Platform.runLater(() -> {
-                                    this.createDialog(error.getMessage());
-                                });
-                            }
+                            error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
                     );
         }
     }
@@ -129,41 +161,43 @@ public class LoginController implements Controller {
 
         Label label = new Label();
         label.setFont(new Font(18));
+        label.setId("dialogLabel");
 
         double width;
 
-        if (message.equals(HTTP_400)) {
-            label.setText("Validierung fehlgeschlagen.");
-            width = 300;
-        }
-        else if (message.equals(HTTP_401)) {
-            label.setText("Falscher Benutzername oder falsches Passwort.");
-            width = 400;
-        }
-        else if (message.equals(HTTP_429)) {
-            label.setText("Bitte warten Sie einen Moment und versuchen es dann erneut.");
-            width = 540;
-        }
-        else {
-            label.setText("Keine Verbindung zum Server.");
-            width = 300;
+        switch (message) {
+            case HTTP_400 -> {
+                label.setText("Validation failed.");
+                width = 300;
+            }
+            case HTTP_401 -> {
+                label.setText("Invalid username or password.");
+                width = 400;
+            }
+            case HTTP_429 -> {
+                label.setText("Rate limit reached.");
+                width = 540;
+            }
+            default -> {
+                label.setText("No connection to the Server.");
+                width = 300;
+            }
         }
 
         vBox.getChildren().add(label);
 
-        app.showErrorOnLoginDialog(vBox, width);
-    }
-
-    public void rememberMeToggle(ActionEvent event) {
-
+        app.showDialogWithOkButton(vBox, width);
     }
 
     public void toRegister(ActionEvent event) {
         String username = usernameInput.getText();
         String password = passwordInput.getText();
+
         final RegisterController controller = registerController.get();
+
         controller.username.set(username);
         controller.password.set(password);
+
         app.show(controller);
     }
 }
