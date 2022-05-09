@@ -98,6 +98,7 @@ public class JoinGameController implements Controller {
     }
 
     public void quit(ActionEvent actionEvent) {
+        createGameService.setCurrentGame(null);
         app.show(lobbyController.get());
     }
 }
