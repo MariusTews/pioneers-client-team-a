@@ -2,8 +2,10 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.CreateGameService;
 import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,6 +28,7 @@ public class JoinGameController implements Controller {
     private final App app;
     private final CreateGameService createGameService;
     private final ErrorService errorService;
+    private final EventListener eventListener;
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
     @FXML public Label gameNameLabel;
@@ -39,17 +42,35 @@ public class JoinGameController implements Controller {
 
     @Inject
     public JoinGameController(App app, CreateGameService createGameService, ErrorService errorService,
+                              EventListener eventListener,
                               Provider<LobbyController> lobbyController,
                               Provider<GameReadyController> gameReadyController) {
         this.app = app;
         this.createGameService = createGameService;
         this.errorService = errorService;
+        this.eventListener = eventListener;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
     }
 
     public void init(){
         disposables = new CompositeDisposable();
+        disposables.add(createGameService.getCurrentGame()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(game -> gameNameLabel.setText(game.name()), throwable -> toLobbyScreen()));
+        disposables.add(eventListener.listen("games." + createGameService.getCurrentGameID() + ".*", Game.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(gameEventDto -> {
+                    String event = gameEventDto.event();
+                    Game game = gameEventDto.data();
+                    if (event.endsWith("deleted")) {
+                        // Game has been deleted, go back to lobby screen
+                        toLobbyScreen();
+                    } else {
+                        // Game has been updated, update gameNameLabel
+                        gameNameLabel.setText(game.name());
+                    }
+                }));
     }
 
     public void destroy(){
@@ -69,8 +90,6 @@ public class JoinGameController implements Controller {
             e.printStackTrace();
             return null;
         }
-        // Show game name
-        gameNameLabel.setText(createGameService.getCurrentGame().name());
         passwordTextField.textProperty().bindBidirectional(showPasswordTextField.textProperty());
         showPasswordTextField.setManaged(false);
         return parent;
@@ -98,7 +117,11 @@ public class JoinGameController implements Controller {
     }
 
     public void quit(ActionEvent actionEvent) {
-        createGameService.setCurrentGame(null);
+        toLobbyScreen();
+    }
+
+    private void toLobbyScreen() {
+        createGameService.setCurrentGameID(null);
         app.show(lobbyController.get());
     }
 }

@@ -16,7 +16,7 @@ public class CreateGameService {
     private final GameMembersApiService gameMembersApiService;
     private final GamesApiService gamesApiService;
 
-    private Game currentGame;
+    private String currentGameID;
 
     @Inject
     public CreateGameService(GameMembersApiService gameMembersApiService, GamesApiService gamesApiService) {
@@ -24,19 +24,23 @@ public class CreateGameService {
         this.gamesApiService = gamesApiService;
     }
 
-    public Game getCurrentGame() {
-        return currentGame;
+    public String getCurrentGameID() {
+        return currentGameID;
     }
 
-    public void setCurrentGame(Game currentGame) {
-        this.currentGame = currentGame;
+    public void setCurrentGameID(String currentGameID) {
+        this.currentGameID = currentGameID;
     }
 
     public Observable<Member> joinGame(String password) {
-        return gameMembersApiService.createMember(currentGame._id(), new CreateMemberDto(true, password));
+        return gameMembersApiService.createMember(currentGameID, new CreateMemberDto(true, password));
     }
 
     public Observable<List<Game>> listGames() {
         return gamesApiService.listGames();
+    }
+
+    public Observable<Game> getCurrentGame() {
+        return gamesApiService.getGame(currentGameID);
     }
 }

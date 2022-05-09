@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.CreateGameService;
+import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -32,12 +33,17 @@ class JoinGameControllerTest extends ApplicationTest {
     @Mock
     CreateGameService createGameService;
 
+    @Mock
+    EventListener eventListener;
+
     @InjectMocks
     JoinGameController joinGameController;
 
     @Override
     public void start(Stage stage) {
-        when(createGameService.getCurrentGame()).thenReturn(new Game("", "", "1", "testgame", "42", 1));
+        when(createGameService.getCurrentGameID()).thenReturn("1");
+        when(createGameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", 1)));
+        when(eventListener.listen("games.1.*", Game.class)).thenReturn(Observable.empty());
         new App(joinGameController).start(stage);
     }
 

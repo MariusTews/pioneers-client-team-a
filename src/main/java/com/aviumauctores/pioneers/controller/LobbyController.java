@@ -143,7 +143,7 @@ public class LobbyController implements Controller {
     }
 
     public void toJoinGame(Game game) {
-        createGameService.setCurrentGame(game);
+        createGameService.setCurrentGameID(game._id());
         app.show(joinGameController.get());
     }
 
