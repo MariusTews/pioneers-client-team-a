@@ -1,9 +1,12 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -14,6 +17,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.util.Objects;
 
+import java.util.Optional;
 
 import static com.aviumauctores.pioneers.Constants.*;
 
@@ -82,6 +86,28 @@ public class App extends Application {
         controller.init();
         stage.getScene().setRoot(controller.render());
 
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public Optional<ButtonType> showHttpErrorDialog(ErrorResponse errorResponse) {
+        String header = errorResponse.statusCode() + " " + errorResponse.error();
+        String content = errorResponse.message();
+        content = content != null ? content : "";
+        return showErrorDialog(header, content);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public Optional<ButtonType> showConnectionFailedDialog() {
+        return showErrorDialog("Connection failed", "Try later again");
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public Optional<ButtonType> showErrorDialog(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, content);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        setAppIcon((Stage) alert.getDialogPane().getScene().getWindow());
+        return alert.showAndWait();
     }
 
     public void showDialogWithOkButton(VBox vBox, double width) {
