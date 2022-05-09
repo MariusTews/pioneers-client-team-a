@@ -12,6 +12,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,5 +43,18 @@ class LoginServiceTest {
 
         // Ensure LoginService.login calls authApiService.login
         verify(authApiService).login(new LoginDto("Struppi", "12345678"));
+    }
+
+    @Test
+    void logout() {
+        when(authApiService.logout()).thenReturn(Observable.empty());
+
+        loginService.logout().blockingAwait();
+
+        // Token should be set to null
+        assertNull(tokenStorage.getToken());
+
+        // authApiService.login had to be called
+        verify(authApiService).logout();
     }
 }

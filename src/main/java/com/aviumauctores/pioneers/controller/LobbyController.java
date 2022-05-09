@@ -3,7 +3,9 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
@@ -15,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -27,7 +30,9 @@ import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 public class LobbyController implements Controller {
 
     private final App app;
+    private final LoginService loginService;
     private final GameService gameService;
+    private final ErrorService errorService;
     private final EventListener eventListener;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
@@ -55,13 +60,16 @@ public class LobbyController implements Controller {
     private CompositeDisposable disposables;
 
     @Inject
-    public LobbyController(App app, GameService gameService, EventListener eventListener,
+    public LobbyController(App app, LoginService loginService, GameService gameService, ErrorService errorService,
+                           EventListener eventListener,
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
                            Provider<JoinGameController> joinGameController){
         this.app = app;
+        this.loginService = loginService;
         this.gameService = gameService;
+        this.errorService = errorService;
         this.eventListener = eventListener;
         this.loginController = loginController;
         this.chatController = chatController;
@@ -156,8 +164,15 @@ public class LobbyController implements Controller {
     }
 
     public void quit(ActionEvent event) {
-        //maybe dont go to login but instead directly quit the application?
-        final LoginController controller = loginController.get();
-        app.show(controller);
+        disposables.add(loginService.logout()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(() -> app.show(loginController.get()),
+                        throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                app.showHttpErrorDialog(errorService.readErrorMessage(ex));
+                            } else {
+                                app.showConnectionFailedDialog();
+                            }
+                        }));
     }
 }
