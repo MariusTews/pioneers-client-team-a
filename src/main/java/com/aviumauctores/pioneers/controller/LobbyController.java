@@ -3,7 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.service.CreateGameService;
+import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
@@ -27,7 +27,7 @@ import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 public class LobbyController implements Controller {
 
     private final App app;
-    private final CreateGameService createGameService;
+    private final GameService gameService;
     private final EventListener eventListener;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
@@ -55,13 +55,13 @@ public class LobbyController implements Controller {
     private CompositeDisposable disposables;
 
     @Inject
-    public LobbyController(App app, CreateGameService createGameService, EventListener eventListener,
+    public LobbyController(App app, GameService gameService, EventListener eventListener,
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
                            Provider<JoinGameController> joinGameController){
         this.app = app;
-        this.createGameService = createGameService;
+        this.gameService = gameService;
         this.eventListener = eventListener;
         this.loginController = loginController;
         this.chatController = chatController;
@@ -74,7 +74,7 @@ public class LobbyController implements Controller {
 
     public void init(){
         disposables = new CompositeDisposable();
-        disposables.add(createGameService.listGames()
+        disposables.add(gameService.listGames()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(games -> {
                     games.forEach(this::addGameToList);
@@ -145,7 +145,7 @@ public class LobbyController implements Controller {
     }
 
     public void toJoinGame(Game game) {
-        createGameService.setCurrentGameID(game._id());
+        gameService.setCurrentGameID(game._id());
         app.show(joinGameController.get());
     }
 

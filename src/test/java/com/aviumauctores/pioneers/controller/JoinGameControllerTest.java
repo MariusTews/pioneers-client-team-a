@@ -2,7 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.service.CreateGameService;
+import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.PasswordField;
@@ -31,7 +31,7 @@ class JoinGameControllerTest extends ApplicationTest {
     App app;
 
     @Mock
-    CreateGameService createGameService;
+    GameService gameService;
 
     @Mock
     EventListener eventListener;
@@ -41,8 +41,8 @@ class JoinGameControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        when(createGameService.getCurrentGameID()).thenReturn("1");
-        when(createGameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", 1)));
+        when(gameService.getCurrentGameID()).thenReturn("1");
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", 1)));
         when(eventListener.listen("games.1.*", Game.class)).thenReturn(Observable.empty());
         new App(joinGameController).start(stage);
     }
@@ -83,7 +83,7 @@ class JoinGameControllerTest extends ApplicationTest {
 
     @Test
     void joinGameFailed() {
-        when(createGameService.joinGame(anyString())).thenReturn(Observable.error(new Throwable()));
+        when(gameService.joinGame(anyString())).thenReturn(Observable.error(new Throwable()));
 
         write("abcdef");
         type(KeyCode.ENTER);

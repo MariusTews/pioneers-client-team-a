@@ -3,7 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.service.CreateGameService;
+import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -26,7 +26,7 @@ import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 public class JoinGameController implements Controller {
 
     private final App app;
-    private final CreateGameService createGameService;
+    private final GameService gameService;
     private final ErrorService errorService;
     private final EventListener eventListener;
     private final Provider<LobbyController> lobbyController;
@@ -41,12 +41,12 @@ public class JoinGameController implements Controller {
     private CompositeDisposable disposables;
 
     @Inject
-    public JoinGameController(App app, CreateGameService createGameService, ErrorService errorService,
+    public JoinGameController(App app, GameService gameService, ErrorService errorService,
                               EventListener eventListener,
                               Provider<LobbyController> lobbyController,
                               Provider<GameReadyController> gameReadyController) {
         this.app = app;
-        this.createGameService = createGameService;
+        this.gameService = gameService;
         this.errorService = errorService;
         this.eventListener = eventListener;
         this.lobbyController = lobbyController;
@@ -55,10 +55,10 @@ public class JoinGameController implements Controller {
 
     public void init(){
         disposables = new CompositeDisposable();
-        disposables.add(createGameService.getCurrentGame()
+        disposables.add(gameService.getCurrentGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> gameNameLabel.setText(game.name()), throwable -> toLobbyScreen()));
-        disposables.add(eventListener.listen("games." + createGameService.getCurrentGameID() + ".*", Game.class)
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".*", Game.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(gameEventDto -> {
                     String event = gameEventDto.event();
@@ -104,7 +104,7 @@ public class JoinGameController implements Controller {
     }
 
     public void joinGame(ActionEvent actionEvent) {
-        disposables.add(createGameService.joinGame(passwordTextField.getText())
+        disposables.add(gameService.joinGame(passwordTextField.getText())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> app.show(gameReadyController.get()),
                         throwable -> {
@@ -121,7 +121,7 @@ public class JoinGameController implements Controller {
     }
 
     private void toLobbyScreen() {
-        createGameService.setCurrentGameID(null);
+        gameService.setCurrentGameID(null);
         app.show(lobbyController.get());
     }
 }
