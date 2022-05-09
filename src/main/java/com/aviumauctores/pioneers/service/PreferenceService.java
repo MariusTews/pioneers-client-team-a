@@ -20,20 +20,12 @@ public class PreferenceService {
         preferences.putBoolean("rememberMe", rememberMe);
     }
 
-    public String getUsername(){
-        return preferences.get("username", "");
+    public String getRefreshToken(){
+        return preferences.get("token", "");
     }
 
-    public void setUsername(String username){
-        preferences.put("username", username);
-    }
-
-    public String getPassword(){
-        return preferences.get("password", "");
-    }
-
-    public void setPassword(String password){
-        preferences.put("password", password);
+    public void setRefreshToken(String token){
+        preferences.put("token", token);
     }
 
 }

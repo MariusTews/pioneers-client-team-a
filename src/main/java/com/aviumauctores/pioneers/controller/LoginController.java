@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
 
@@ -31,37 +32,49 @@ public class LoginController implements Controller {
     private final LoginService loginService;
     private final Provider<RegisterController> registerController;
     private final Provider<LobbyController> lobbyController;
+    private final Provider<LoginController> loginController;
     private final PreferenceService preferenceService;
     private final CryptoService cryptoService;
+    private final ResourceBundle bundle;
 
     private Disposable disposable;
 
+    @FXML public Button germanButton;
+    @FXML public Button englishButton;
     @FXML public TextField usernameInput;
-
     @FXML public PasswordField passwordInput;
-
     @FXML public Button loginButton;
-
     @FXML public CheckBox rememberMeCheckBox;
-
     @FXML public Button registerButton;
-
     @FXML public Label usernameErrorLabel;
-
     @FXML public Label passwordErrorLabel;
 
     @Inject
-    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController, PreferenceService preferenceService, CryptoService cryptoService){
+    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController,
+                           Provider<LobbyController> lobbyController, Provider<LoginController> loginController,
+                           PreferenceService preferenceService, CryptoService cryptoService, ResourceBundle bundle){
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
         this.lobbyController = lobbyController;
+        this.loginController = loginController;
         this.preferenceService = preferenceService;
         this.cryptoService = cryptoService;
+        this.bundle = bundle;
     }
 
     @Override
     public void init(){
+        if (preferenceService.getRememberMe()){
+            try {
+                String token;
+                token = cryptoService.decode(preferenceService.getRefreshToken());
+                this.tokenLogin(token);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
@@ -73,7 +86,7 @@ public class LoginController implements Controller {
 
     @Override
     public Parent render(){
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -82,22 +95,6 @@ public class LoginController implements Controller {
             e.printStackTrace();
             return null;
         }
-
-        if (preferenceService.getRememberMe()){
-            String username;
-            String password;
-            try {
-                username = cryptoService.decode(preferenceService.getUsername());
-                password = cryptoService.decode(preferenceService.getPassword());
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-            usernameInput.setText(username);
-            passwordInput.setText(password);
-            rememberMeCheckBox.fire();
-        }
-
         return parent;
     }
 
@@ -136,15 +133,12 @@ public class LoginController implements Controller {
 
                                 if (rememberMeCheckBox.isSelected()){
                                     preferenceService.setRememberMe(true);
-                                    String encodedUsername = cryptoService.encode(username);
-                                    String encodedPassword = cryptoService.encode(password);
-                                    preferenceService.setUsername(encodedUsername);
-                                    preferenceService.setPassword(encodedPassword);
+                                    String encodedToken = cryptoService.encode(result.refreshToken());
+                                    preferenceService.setRefreshToken(encodedToken);
                                 }
                                 else{
                                     preferenceService.setRememberMe(false);
-                                    preferenceService.setUsername("");
-                                    preferenceService.setPassword("");
+                                    preferenceService.setRefreshToken("");
                                 }
 
                                 final LobbyController controller = lobbyController.get();
@@ -153,6 +147,20 @@ public class LoginController implements Controller {
                             error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
                     );
         }
+    }
+
+    public void tokenLogin(String token) {
+        loginService.login(token)
+                .subscribeOn(FX_SCHEDULER)
+                .subscribe(
+                        result -> {
+                            //I dont know how to pass the user to the LobbyController yet
+                            User user = new User(result._id(), result.name(), result.status(), result.avatar());
+                            final LobbyController controller = lobbyController.get();
+                            app.show(controller);
+                        },
+                        error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
+                );
     }
 
     private void createDialog(String message) {
@@ -199,5 +207,13 @@ public class LoginController implements Controller {
         controller.password.set(password);
 
         app.show(controller);
+    }
+
+    public void setGerman(ActionEvent event) {
+        app.show(loginController.get());
+    }
+
+    public void setEnglish(ActionEvent event) {
+        app.show(loginController.get());
     }
 }

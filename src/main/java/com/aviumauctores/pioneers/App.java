@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -81,7 +82,6 @@ public class App extends Application {
         this.controller = controller;
         controller.init();
         stage.getScene().setRoot(controller.render());
-
     }
 
     public void showDialogWithOkButton(VBox vBox, double width) {

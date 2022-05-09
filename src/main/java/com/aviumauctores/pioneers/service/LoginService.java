@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.auth.LoginDto;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.dto.auth.RefreshDto;
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
 import io.reactivex.rxjava3.core.Observable;
 
@@ -20,6 +21,11 @@ public class LoginService {
 
     public Observable<LoginResult> login(String username, String password){
         return authenticationApiService.login(new LoginDto(username, password))
+                .doOnNext(result -> tokenStorage.setToken(result.accessToken()));
+    }
+
+    public Observable<LoginResult> login(String token){
+        return authenticationApiService.refresh(new RefreshDto(token))
                 .doOnNext(result -> tokenStorage.setToken(result.accessToken()));
     }
 }
