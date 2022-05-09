@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.util.Objects;
+
 import java.util.Optional;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -22,16 +24,14 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class App extends Application {
 
     private Stage stage;
-    private Stage dialogStage;
-    private Scene dialogScene;
     private Controller controller;
 
-    public App() {
+    public App(){
         final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
         controller = mainComponent.loginController();
     }
 
-    public App(Controller controller) {
+    public App(Controller controller){
         this.controller = controller;
     }
 
@@ -52,15 +52,14 @@ public class App extends Application {
 
         primaryStage.show();
 
-        if (controller != null) {
+        if (controller != null){
             show(controller);
         }
-
 
     }
 
     private void setAppIcon(Stage stage){
-        final Image image = new Image(getClass().getResource("settlement.png").toString());
+        final Image image = new Image(Objects.requireNonNull(getClass().getResource("settlement.png")).toString());
         stage.getIcons().add(image);
     }
 
@@ -70,7 +69,7 @@ public class App extends Application {
         }
         try{
             final Taskbar taskbar = Taskbar.getTaskbar();
-            final java.awt.Image image = ImageIO.read(Main.class.getResource("settlement.png"));
+            final java.awt.Image image = ImageIO.read(Objects.requireNonNull(Main.class.getResource("settlement.png")));
             taskbar.setIconImage(image);
         }catch (Exception ignored){
 
@@ -111,22 +110,19 @@ public class App extends Application {
         return alert.showAndWait();
     }
 
-    public void showErrorOnLoginDialog(VBox vBox, double width) {
-        dialogStage = new Stage();
-        dialogStage.setTitle("Fehler");
+    public void showDialogWithOkButton(VBox vBox, double width) {
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("Error");
         setAppIcon(dialogStage);
 
         Button button = new Button("OK");
         button.setFont(new Font(12));
         button.setPrefWidth(120);
-        button.setOnAction(e ->
-        {
-            dialogStage.close();
-        });
+        button.setOnAction(e -> dialogStage.close());
 
         vBox.getChildren().add(button);
 
-        dialogScene = new Scene(vBox, width, 130);
+        Scene dialogScene = new Scene(vBox, width, 130);
         dialogStage.setScene(dialogScene);
 
         dialogStage.show();

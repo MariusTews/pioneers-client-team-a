@@ -25,4 +25,7 @@ public interface UsersApiService {
 
     @DELETE(DELETE_USER_URL)
     Observable<User> deleteUser(@Path(PATH_ID) String id);
+
+    @GET("users")
+    Observable<List<User>> findAll();
 }

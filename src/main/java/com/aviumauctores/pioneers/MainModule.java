@@ -73,6 +73,12 @@ public class MainModule {
 
     @Provides
     @Singleton
+    GroupsApiService groupsApiService(Retrofit retrofit) {
+        return retrofit.create(GroupsApiService.class);
+    }
+
+    @Provides
+    @Singleton
     GameMembersApiService gameMembersApiService(Retrofit retrofit) {
         return retrofit.create(GameMembersApiService.class);
     }

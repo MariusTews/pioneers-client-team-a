@@ -21,11 +21,16 @@
                   <Font name="System Bold" size="24.0" />
                </font>
             </Text>
-            <Button fx:id="createGameButton" layoutX="207.0" layoutY="277.0" mnemonicParsing="false" onAction="#createGame" prefHeight="52.0" prefWidth="128.0" style="-fx-border-color: #346b32#346b32; -fx-background-color: #b0ffc0#b0ffc0;" text="Create Game" />
+            <Button id="createGameButton" fx:id="createGameButton" layoutX="207.0" layoutY="277.0" mnemonicParsing="false" onAction="#createGame" style="-fx-border-color: #346b32#346b32; -fx-background-color: #b0ffc0#b0ffc0;" text="Create Game" />
             <PasswordField fx:id="gamePasswordInput" layoutX="174.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" promptText="Password" />
-            <Button fx:id="showPasswordButton" layoutX="376.0" layoutY="208.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="23.0" prefWidth="36.0">
-
-            </Button>
+            <Button fx:id="showPasswordButton" layoutX="376.0" layoutY="207.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="18.0" prefWidth="37.0">
+               <graphic>
+                  <ImageView accessibleRole="BUTTON" fitHeight="23.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@showPassword.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
             <TextField fx:id="gamePasswordText" layoutX="174.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" visible="false" />
          </children>
       </Pane>
