@@ -164,7 +164,6 @@ public class ChatController implements Controller {
     // Function to create a new label for the message with the needed functions
     public Label createMessageLabel(Message message) {
         // get the username of the sender
-        //String username = message.sender();
         Label msgLabel = new Label();
         userService.getUserName(message.sender()).observeOn(FX_SCHEDULER).subscribe(result -> {
             username = result;
@@ -172,7 +171,7 @@ public class ChatController implements Controller {
         });
         msgLabel.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
-                // Alert: do you want to delete this message?
+                // Alert for the delete
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Delete");
                 alert.setHeaderText("Delete this Message?");
@@ -194,7 +193,7 @@ public class ChatController implements Controller {
     }
 
 
-    //Get all IDs of the created users
+
     public List<String> getAllUserIDs(ObservableList<User> users) {
         List<String> IDs = new ArrayList<>();
         for (User u : users) {
