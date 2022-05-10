@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
 public class PreferenceService {
@@ -10,6 +11,14 @@ public class PreferenceService {
     public PreferenceService(Preferences preferences){
 
         this.preferences = preferences;
+    }
+
+    public Locale getLocale(){
+        return Locale.forLanguageTag(preferences.get("language", Locale.getDefault().toLanguageTag()));
+    }
+
+    public void setLocale(Locale locale){
+        preferences.put("language", locale.toLanguageTag());
     }
 
     public Boolean getRememberMe(){

@@ -10,15 +10,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LoginController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LoginController">
    <HBox prefHeight="100.0" prefWidth="200.0">
-      <HBox prefHeight="100.0" prefWidth="300.0"/>
+      <HBox prefHeight="100.0" prefWidth="300.0" />
       <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="300.0" spacing="6.0">
          <padding>
-            <Insets right="6.0" top="6.0"/>
+            <Insets right="6.0" top="6.0" />
          </padding>
-         <Button fx:id="englishButton" mnemonicParsing="false" onAction="#setEnglish" text="EN"/>
-         <Button fx:id="germanButton" mnemonicParsing="false" onAction="#setGerman" text="DE"/>
+         <Button fx:id="englishButton" mnemonicParsing="false" onAction="#setEnglish" text="EN" />
+         <Button fx:id="germanButton" mnemonicParsing="false" onAction="#setGerman" text="DE" />
       </HBox>
    </HBox>
    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">

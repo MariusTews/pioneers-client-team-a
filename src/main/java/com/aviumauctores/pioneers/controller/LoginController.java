@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -67,8 +68,8 @@ public class LoginController implements Controller {
     public void init(){
         if (preferenceService.getRememberMe()){
             try {
-                String token;
-                token = cryptoService.decode(preferenceService.getRefreshToken());
+                String token = cryptoService.decode(preferenceService.getRefreshToken());
+                //System.out.println("init: " + token);
                 this.tokenLogin(token);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -86,6 +87,7 @@ public class LoginController implements Controller {
 
     @Override
     public Parent render(){
+        System.out.println(bundle.getLocale());
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
@@ -130,7 +132,7 @@ public class LoginController implements Controller {
                             result -> {
                                 //I dont know how to pass the user to the LobbyController yet
                                 User user = new User(result._id(), result.name(), result.status(), result.avatar());
-
+                                //System.out.println("login: " + result.refreshToken());
                                 if (rememberMeCheckBox.isSelected()){
                                     preferenceService.setRememberMe(true);
                                     String encodedToken = cryptoService.encode(result.refreshToken());
@@ -210,10 +212,12 @@ public class LoginController implements Controller {
     }
 
     public void setGerman(ActionEvent event) {
+        preferenceService.setLocale(Locale.GERMAN);
         app.show(loginController.get());
     }
 
     public void setEnglish(ActionEvent event) {
+        preferenceService.setLocale(Locale.ENGLISH);
         app.show(loginController.get());
     }
 }

@@ -5,6 +5,7 @@ import com.aviumauctores.pioneers.rest.GamesApiService;
 import com.aviumauctores.pioneers.rest.GroupsApiService;
 import com.aviumauctores.pioneers.rest.MessagesApiService;
 import com.aviumauctores.pioneers.rest.UsersApiService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.TokenStorage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -22,8 +23,8 @@ import java.util.ResourceBundle;
 @Module
 public class MainModule {
     @Provides
-    ResourceBundle bundle(){
-        return ResourceBundle.getBundle("com/aviumauctores/pioneers/lang");
+    ResourceBundle bundle(PreferenceService preferenceService){
+        return ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", preferenceService.getLocale());
     }
     @Provides
     @Singleton
