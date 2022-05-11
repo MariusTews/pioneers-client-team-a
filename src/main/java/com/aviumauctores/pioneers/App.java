@@ -1,8 +1,15 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
+import com.aviumauctores.pioneers.controller.LobbyController;
+import com.aviumauctores.pioneers.controller.LoginController;
+import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.model.User;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -25,6 +32,8 @@ public class App extends Application {
 
     private Stage stage;
     private Controller controller;
+
+    private Disposable disposable;
 
     public App(){
         final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
@@ -83,8 +92,35 @@ public class App extends Application {
     public void show(Controller controller){
         cleanup();
         this.controller = controller;
-        controller.init();
-        stage.getScene().setRoot(controller.render());
+
+        //if controller is a logincontroller and remember me is enabled then try to login with the refresh token
+        //if this is not implemented here but in the logincontroller, then the login controller will show shortly
+        //before a successful token login leads to the lobby screen
+        if(controller instanceof LoginController loginController){
+            if(loginController.getRememberMeStatus()){
+                Observable<LoginResult> observable = loginController.tryTokenLogin();
+                disposable = observable.subscribeOn(FX_SCHEDULER)
+                        .subscribe(
+                                //on success show the lobby screen (token login was successful)
+                                loginController::toLobby,
+                                //on error show the login screen (token login was not successful)
+                                error -> {
+                                    loginController.init();
+                                    stage.getScene().setRoot(loginController.render());
+                                }
+                        );
+            }
+            //if remember me is disabled show the login screen
+            else {
+                loginController.init();
+                stage.getScene().setRoot(loginController.render());
+            }
+        }
+        //if controller is not a logincontroller then do a normal controller init and render
+        else{
+            controller.init();
+            stage.getScene().setRoot(controller.render());
+        }
 
     }
 
@@ -129,6 +165,11 @@ public class App extends Application {
     }
 
     private void cleanup(){
+
+        if (this.disposable != null) {
+            disposable.dispose();
+        }
+
         if(controller != null){
             controller.destroy();
             controller = null;

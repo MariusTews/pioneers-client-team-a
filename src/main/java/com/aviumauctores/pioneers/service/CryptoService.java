@@ -1,13 +1,9 @@
 package com.aviumauctores.pioneers.service;
 
-import com.aviumauctores.pioneers.controller.LoginController;
-
-import javax.crypto.*;
+import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class CryptoService {
@@ -29,9 +25,9 @@ public class CryptoService {
     public String encode(String data) throws Exception {
         byte[] dataByte = data.getBytes();
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] encryptedByte = cipher.doFinal(dataByte);
+        byte[] encodedByte = cipher.doFinal(dataByte);
         Base64.Encoder encoder = Base64.getEncoder();
-        return encoder.encodeToString(encryptedByte);
+        return encoder.encodeToString(encodedByte);
     }
 
     public String decode(String data) throws Exception{
