@@ -8,6 +8,7 @@ import com.aviumauctores.pioneers.service.CryptoService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -66,16 +67,7 @@ public class LoginController implements Controller {
 
     @Override
     public void init(){
-        if (preferenceService.getRememberMe()){
-            try {
-                String token = cryptoService.decode(preferenceService.getRefreshToken());
-                //System.out.println("init: " + token);
-                this.tokenLogin(token);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }
+
     }
 
     @Override
@@ -87,7 +79,6 @@ public class LoginController implements Controller {
 
     @Override
     public Parent render(){
-        System.out.println(bundle.getLocale());
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
@@ -98,6 +89,14 @@ public class LoginController implements Controller {
             return null;
         }
         return parent;
+    }
+
+    public Boolean getRememberMeStatus(){
+        return preferenceService.getRememberMe();
+    }
+
+    public Provider<LobbyController> getLobbyController(){
+        return lobbyController;
     }
 
     public void login(ActionEvent event) {
@@ -130,9 +129,6 @@ public class LoginController implements Controller {
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
-                                //I dont know how to pass the user to the LobbyController yet
-                                User user = new User(result._id(), result.name(), result.status(), result.avatar());
-                                //System.out.println("login: " + result.refreshToken());
                                 if (rememberMeCheckBox.isSelected()){
                                     preferenceService.setRememberMe(true);
                                     String encodedToken = cryptoService.encode(result.refreshToken());
@@ -144,6 +140,8 @@ public class LoginController implements Controller {
                                 }
 
                                 final LobbyController controller = lobbyController.get();
+                                User user = new User(result._id(), result.name(), result.status(), result.avatar());
+                                controller.setUser(user);
                                 app.show(controller);
                             },
                             error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
@@ -151,18 +149,16 @@ public class LoginController implements Controller {
         }
     }
 
-    public void tokenLogin(String token) {
-        loginService.login(token)
-                .subscribeOn(FX_SCHEDULER)
-                .subscribe(
-                        result -> {
-                            //I dont know how to pass the user to the LobbyController yet
-                            User user = new User(result._id(), result.name(), result.status(), result.avatar());
-                            final LobbyController controller = lobbyController.get();
-                            app.show(controller);
-                        },
-                        error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
-                );
+    public Observable<LoginResult> tryTokenLogin() {
+        String token = "";
+        try {
+            token = cryptoService.decode(preferenceService.getRefreshToken());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        //System.out.println(token);
+        return loginService.login(token);
     }
 
     private void createDialog(String message) {

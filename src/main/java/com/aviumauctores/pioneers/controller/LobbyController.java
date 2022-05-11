@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.LoginService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +19,8 @@ import java.io.IOException;
 public class LobbyController implements Controller {
 
     private final App app;
+
+    private User user = null;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
     private final Provider<CreateGameController> createGameController;
@@ -44,14 +47,20 @@ public class LobbyController implements Controller {
     }
 
 
-
-
     public void init(){
 
     }
 
     public void destroy(){
 
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user){
+        this.user = user;
     }
 
     public Parent render(){
@@ -76,7 +85,6 @@ public class LobbyController implements Controller {
 
 
     public void toChat(ActionEvent event) {
-
         final ChatController controller = chatController.get();
         app.show(controller);
     }
