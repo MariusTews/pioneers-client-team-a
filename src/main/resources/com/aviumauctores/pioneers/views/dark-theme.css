@@ -1,0 +1,35 @@
+
+
+.root {
+    -fx-background-color: rgb(0, 1, 17)
+}
+
+.label {
+    -fx-font-size: 14;
+    -fx-text-fill: #eee;
+}
+
+
+
+.text-field {
+    -fx-font-size: 14;
+    -fx-background-radius: 8px;
+    -fx-background-color: #545454;
+    -fx-text-fill: #eee;
+}
+
+.button {
+    -fx-background-color: #00496c;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 15px;
+    -fx-font-size: 14;
+}
+
+.button:hover {
+    -fx-background-color: #005f91;
+}
+
+.scroll-bar {
+    -fx-background-color: #00496c;
+    -fx-background-radius: 15px;
+}

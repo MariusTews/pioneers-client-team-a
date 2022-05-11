@@ -16,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -199,5 +200,14 @@ public class LoginController implements Controller {
         controller.password.set(password);
 
         app.show(controller);
+    }
+
+    public void selectLight(MouseEvent mouseEvent) {
+        app.setTheme("light");
+    }
+
+    public void selectDark(MouseEvent mouseEvent) {
+        app.setTheme("dark");
+
     }
 }

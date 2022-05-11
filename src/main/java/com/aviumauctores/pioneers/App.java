@@ -26,17 +26,17 @@ public class App extends Application {
     private Stage stage;
     private Controller controller;
 
-    public App(){
+    public App() {
         final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
         controller = mainComponent.loginController();
     }
 
-    public App(Controller controller){
+    public App(Controller controller) {
         this.controller = controller;
     }
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) {
 
         this.stage = primaryStage;
         stage.setWidth(SCREEN_WIDTH);
@@ -47,45 +47,58 @@ public class App extends Application {
         final Scene scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
+        scene.getStylesheets().add(Main.class.getResource("views/light-theme.css").toString());
+
         setAppIcon(stage);
         setTaskBarIcon();
 
         primaryStage.show();
 
-        if (controller != null){
+        if (controller != null) {
             show(controller);
         }
 
     }
 
-    private void setAppIcon(Stage stage){
+    private void setAppIcon(Stage stage) {
         final Image image = new Image(Objects.requireNonNull(getClass().getResource("settlement.png")).toString());
         stage.getIcons().add(image);
     }
 
-    private void setTaskBarIcon(){
-        if(GraphicsEnvironment.isHeadless()){
+    private void setTaskBarIcon() {
+        if (GraphicsEnvironment.isHeadless()) {
             return;
         }
-        try{
+        try {
             final Taskbar taskbar = Taskbar.getTaskbar();
             final java.awt.Image image = ImageIO.read(Objects.requireNonNull(Main.class.getResource("settlement.png")));
             taskbar.setIconImage(image);
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
     }
+
     @Override
-    public void stop(){
+    public void stop() {
         cleanup();
     }
 
-    public void show(Controller controller){
+    public void show(Controller controller) {
         cleanup();
         this.controller = controller;
         controller.init();
         stage.getScene().setRoot(controller.render());
 
+    }
+
+    public void setTheme(String theme) {
+        if (theme.equals("light")) {
+            stage.getScene().getStylesheets().clear();
+            stage.getScene().getStylesheets().add(Main.class.getResource("views/light-theme.css").toString());
+        } else if (theme.equals("dark")) {
+            stage.getScene().getStylesheets().clear();
+            stage.getScene().getStylesheets().add(Main.class.getResource("views/dark-theme.css").toString());
+        }
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -128,8 +141,8 @@ public class App extends Application {
         dialogStage.show();
     }
 
-    private void cleanup(){
-        if(controller != null){
+    private void cleanup() {
+        if (controller != null) {
             controller.destroy();
             controller = null;
         }
