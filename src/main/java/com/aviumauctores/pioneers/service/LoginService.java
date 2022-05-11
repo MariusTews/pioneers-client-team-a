@@ -4,6 +4,8 @@ import com.aviumauctores.pioneers.dto.auth.LoginDto;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.auth.RefreshDto;
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -27,5 +29,11 @@ public class LoginService {
     public Observable<LoginResult> login(String token){
         return authenticationApiService.refresh(new RefreshDto(token))
                 .doOnNext(result -> tokenStorage.setToken(result.accessToken()));
+    }
+
+    public @NonNull Completable logout() {
+        return authenticationApiService.logout()
+                .doOnComplete(() -> tokenStorage.setToken(null))
+                .ignoreElements();
     }
 }
