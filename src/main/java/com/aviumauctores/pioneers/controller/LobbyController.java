@@ -185,9 +185,11 @@ public class LobbyController implements Controller {
             disposables = null;
         }
         // Destroy and delete each sub controller
+        // We cannot call remove<Name>FromList since it would remove elements from the map while iterating over it
         gameListItemControllers.forEach((id, controller) -> controller.destroy());
         gameListItemControllers.clear();
-        playerListItemControllers.forEach(this::removePlayerFromList);
+        playerListItemControllers.forEach((id, controller) -> controller.destroy());
+        playerListItemControllers.clear();
     }
 
     public Parent render(){
