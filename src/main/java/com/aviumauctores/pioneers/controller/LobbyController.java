@@ -96,7 +96,7 @@ public class LobbyController implements Controller {
                     games.forEach(this::addGameToList);
                     // This might be called before render when gameLabel is not initialized yet
                     if (gameLabel != null) {
-                        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+                        updateGameLabel();
                     }
                 }));
         // Get users via REST
@@ -105,7 +105,7 @@ public class LobbyController implements Controller {
                 .subscribe(users -> {
                     users.forEach(this::addPlayerToList);
                     if (playerLabel != null) {
-                        playerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+                        updatePlayerLabel();
                     }
                 }));
         // Listen to game updates
@@ -124,11 +124,10 @@ public class LobbyController implements Controller {
                     } else if (event.endsWith("deleted")) {
                         GameListItemController controller = gameListItemControllers.get(game._id());
                         if (controller != null) {
-                            controller.destroy();
-                            gameListItemControllers.remove(game._id());
+                            removeGameFromList(game._id(), controller);
                         }
                     }
-                    gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+                    updateGameLabel();
                 }));
         // Listen to user updates
         disposables.add(eventListener.listen("users.*.*", User.class)
@@ -158,7 +157,7 @@ public class LobbyController implements Controller {
                             }
                         }
                     }
-                    playerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+                    updatePlayerLabel();
                 }));
     }
 
@@ -168,10 +167,23 @@ public class LobbyController implements Controller {
         gameItems.add(controller.render());
     }
 
+    private void updateGameLabel() {
+        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+    }
+
+    private void removeGameFromList(String gameID, GameListItemController controller) {
+        controller.destroy();
+        gameListItemControllers.remove(gameID);
+    }
+
     private void addPlayerToList(User user) {
         PlayerListItemController controller = new PlayerListItemController(this, user, playerItems);
         playerListItemControllers.put(user._id(), controller);
         playerItems.add(controller.render());
+    }
+
+    private void updatePlayerLabel() {
+        playerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
     }
 
     private void removePlayerFromList(String userID, PlayerListItemController controller) {
@@ -203,9 +215,9 @@ public class LobbyController implements Controller {
             return null;
         }
         gameListView.setItems(gameItems);
-        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+        updateGameLabel();
         playerListView.setItems(playerItems);
-        playerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+        updatePlayerLabel();
         return parent;
     }
 
