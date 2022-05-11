@@ -88,15 +88,15 @@ public class LoginController implements Controller {
             e.printStackTrace();
             return null;
         }
+
+        //necessary for fast testing; otherwise you would have to move the mouse to the input first, which takes time
+        Platform.runLater(() -> usernameInput.requestFocus());
+
         return parent;
     }
 
     public Boolean getRememberMeStatus(){
         return preferenceService.getRememberMe();
-    }
-
-    public Provider<LobbyController> getLobbyController(){
-        return lobbyController;
     }
 
     public void login(ActionEvent event) {
@@ -139,10 +139,7 @@ public class LoginController implements Controller {
                                     preferenceService.setRefreshToken("");
                                 }
 
-                                final LobbyController controller = lobbyController.get();
-                                User user = new User(result._id(), result.name(), result.status(), result.avatar());
-                                controller.setUser(user);
-                                app.show(controller);
+                                toLobby(result);
                             },
                             error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
                     );
@@ -204,6 +201,13 @@ public class LoginController implements Controller {
         controller.username.set(username);
         controller.password.set(password);
 
+        app.show(controller);
+    }
+
+    public void toLobby(LoginResult result) {
+        final LobbyController controller = lobbyController.get();
+        User user = new User(result._id(), result.name(), result.status(), result.avatar());
+        controller.setUser(user);
         app.show(controller);
     }
 

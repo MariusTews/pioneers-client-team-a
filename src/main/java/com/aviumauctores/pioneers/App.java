@@ -101,10 +101,8 @@ public class App extends Application {
                 Observable<LoginResult> observable = loginController.tryTokenLogin();
                 disposable = observable.subscribeOn(FX_SCHEDULER)
                         .subscribe(
-                                result -> {
-                                    final LobbyController lobbyController = loginController.getLobbyController().get();
-                                    show(lobbyController);
-                                },
+                                //on success show the lobby screen (token login was successful)
+                                loginController::toLobby,
                                 //on error show the login screen (token login was not successful)
                                 error -> {
                                     loginController.init();
