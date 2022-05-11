@@ -14,11 +14,11 @@ public class PlayerListItemController implements Controller {
     private ImageView avatarView;
     private Label playerName;
 
-    private final LobbyController parentController;
+    private final PlayerListController parentController;
     private final User user;
     private final ObservableList<Parent> playerItems;
 
-    public PlayerListItemController(LobbyController parentController, User user, ObservableList<Parent> playerItems) {
+    public PlayerListItemController(PlayerListController parentController, User user, ObservableList<Parent> playerItems) {
         this.parentController = parentController;
         this.user = user;
         this.playerItems = playerItems;

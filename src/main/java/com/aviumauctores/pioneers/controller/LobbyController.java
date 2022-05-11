@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
-public class LobbyController implements Controller {
+public class LobbyController extends PlayerListController {
 
     private final App app;
     private final LoginService loginService;
@@ -58,9 +58,6 @@ public class LobbyController implements Controller {
 
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
     private final Map<String, GameListItemController> gameListItemControllers = new HashMap<>();
-
-    private final ObservableList<Parent> playerItems = FXCollections.observableArrayList();
-    private final Map<String, PlayerListItemController> playerListItemControllers = new HashMap<>();
 
     private CompositeDisposable disposables;
 
@@ -176,19 +173,9 @@ public class LobbyController implements Controller {
         gameListItemControllers.remove(gameID);
     }
 
-    private void addPlayerToList(User user) {
-        PlayerListItemController controller = new PlayerListItemController(this, user, playerItems);
-        playerListItemControllers.put(user._id(), controller);
-        playerItems.add(controller.render());
-    }
-
-    private void updatePlayerLabel() {
+    @Override
+    protected void updatePlayerLabel() {
         playerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
-    }
-
-    private void removePlayerFromList(String userID, PlayerListItemController controller) {
-        controller.destroy();
-        playerListItemControllers.remove(userID);
     }
 
     public void destroy(){
