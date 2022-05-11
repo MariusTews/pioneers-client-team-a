@@ -1,11 +1,9 @@
 package com.aviumauctores.pioneers.service;
 
+import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.rest.UsersApiService;
 import io.reactivex.rxjava3.core.Observable;
-
-import com.aviumauctores.pioneers.dto.users.CreateUserDto;
-
 
 import javax.inject.Inject;
 import java.util.List;
@@ -26,6 +24,10 @@ public class UserService {
 
     public Observable<List<User>> findAll() {
        return this.usersApiService.findAll();
+    }
+
+    public Observable<List<User>> listOnlineUsers() {
+        return usersApiService.listUsers("online", null);
     }
 
     public Observable<String> getUserName(String id) {
