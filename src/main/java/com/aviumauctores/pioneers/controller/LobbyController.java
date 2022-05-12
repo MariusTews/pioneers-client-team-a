@@ -7,6 +7,7 @@ import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
@@ -36,6 +37,7 @@ public class LobbyController implements Controller {
     private final LoginService loginService;
     private final GameService gameService;
     private final ErrorService errorService;
+    private final PreferenceService preferenceService;
     private final EventListener eventListener;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
@@ -63,7 +65,9 @@ public class LobbyController implements Controller {
     private CompositeDisposable disposables;
 
     @Inject
-    public LobbyController(App app, LoginService loginService, GameService gameService, ErrorService errorService,
+    public LobbyController(App app,
+                           LoginService loginService, GameService gameService, ErrorService errorService,
+                           PreferenceService preferenceService,
                            EventListener eventListener,
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
@@ -73,6 +77,7 @@ public class LobbyController implements Controller {
         this.loginService = loginService;
         this.gameService = gameService;
         this.errorService = errorService;
+        this.preferenceService = preferenceService;
         this.eventListener = eventListener;
         this.loginController = loginController;
         this.chatController = chatController;
@@ -174,7 +179,11 @@ public class LobbyController implements Controller {
     public void quit(ActionEvent event) {
         disposables.add(loginService.logout()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(() -> app.show(loginController.get()),
+                .subscribe(() -> {
+                            preferenceService.setRememberMe(false);
+                            preferenceService.setRefreshToken("");
+                            app.show(loginController.get());
+                        },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 app.showHttpErrorDialog(errorService.readErrorMessage(ex));
