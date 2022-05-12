@@ -33,3 +33,46 @@
     -fx-background-color: #00496c;
     -fx-background-radius: 15px;
 }
+
+.list-view {
+    -fx-background-color: #333333;
+    -fx-background-radius: 8px;
+}
+
+.tab-header-background {
+    -fx-background-color: #00496c;
+    -fx-background-radius: 8 8 0 0;
+
+}
+
+
+
+.scroll-pane {
+    -fx-background-color: #545454;
+}
+
+.border-pane {
+    -fx-background-color: #111;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0px;
+}
+
+.scroll-pane {
+    -fx-background-color: #333333;
+    -fx-background-radius: 0 0 8 8;
+}
+
+.tab {
+    -fx-background-color: #333333;
+    -fx-text-base-color: #eee;
+    -fx-background-radius: 8 8 0 0;
+    -fx-focus-color: transparent;
+}
+
+.tab:selected {
+    -fx-background-color: rgba(0, 255, 72, 0.21);
+    -fx-text-base-color: #eee;
+}
