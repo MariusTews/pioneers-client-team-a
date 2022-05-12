@@ -168,6 +168,7 @@ public class LobbyController implements Controller {
 
     public void toChat(ActionEvent event) {
         final ChatController controller = chatController.get();
+        controller.setUser(this.user);
         app.show(controller);
     }
 

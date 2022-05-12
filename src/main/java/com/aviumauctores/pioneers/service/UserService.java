@@ -31,4 +31,9 @@ public class UserService {
     public Observable<String> getUserName(String id) {
         return usersApiService.getUser(id).map(User::name);
     }
+
+
+    public Observable<List<User>> listOnlineUsers() {
+        return usersApiService.listUsers("online", null);
+    }
 }

@@ -25,6 +25,8 @@ import javax.inject.Provider;
 import java.io.IOException;
 import com.aviumauctores.pioneers.ws.EventListener;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,13 +45,15 @@ public class ChatController implements Controller {
 
     private final GroupService groupService;
 
-    private final ObservableList<User> users = FXCollections.observableArrayList();
-
     private final EventListener eventListener;
 
     private CompositeDisposable disposable = new CompositeDisposable();
 
+    private List<User> users = new ArrayList<>();
+
     private List<String> usersIdList  = new ArrayList<>();
+
+    private User user;
 
     private String username;
 
@@ -75,18 +79,25 @@ public class ChatController implements Controller {
     }
 
     public void init(){
+        showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
+
         // get all users, their ids and update the All-Group
-        userService.findAll().observeOn(FX_SCHEDULER).subscribe(result -> {this.users.setAll(result);
+        userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { users = result;
             usersIdList = getAllUserIDs(users);
+            usersIdList.add(user._id());
             groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
         });
         // listen for users and put them in the All-Group for the All-Chat
-        disposable.add(eventListener.listen("users.*.*", User.class)
+        disposable.add(eventListener.listen("users.*.updated", User.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
-                    if (event.event().endsWith(".created")) {
+                    if (event.data().status().equals("online")) {
                         //update AllGroup
                         usersIdList.add(event.data()._id());
+                        groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
+                    }
+                    if (event.data().status().equals("offline")) {
+                        usersIdList.remove(event.data()._id());
                         groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                 }));
@@ -156,6 +167,7 @@ public class ChatController implements Controller {
     public void leave() {
         // back to LobbyScreen
         final LobbyController controller = lobbyController.get();
+        controller.setUser(user);
         app.show(controller);
     }
 
@@ -165,10 +177,11 @@ public class ChatController implements Controller {
     public Label createMessageLabel(Message message) {
         // get the username of the sender
         Label msgLabel = new Label();
-        userService.getUserName(message.sender()).observeOn(FX_SCHEDULER).subscribe(result -> {
+        /*userService.getUserName(message.sender()).observeOn(FX_SCHEDULER).subscribe(result -> {
             username = result;
             msgLabel.setText(username + ": " + message.body());
-        });
+        });*/
+        msgLabel.setText(message.sender() + ": " + message.body());
         msgLabel.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
                 // Alert for the delete
@@ -194,11 +207,27 @@ public class ChatController implements Controller {
 
 
 
-    public List<String> getAllUserIDs(ObservableList<User> users) {
+    public List<String> getAllUserIDs(List<User> users) {
         List<String> IDs = new ArrayList<>();
         for (User u : users) {
             IDs.add(u._id());
         }
         return IDs;
+    }
+
+    public void showOldMessages(String namespace, String pathId, String createdBefore, int limit) {
+        messageService.listMessages(namespace, pathId, createdBefore, limit)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(result -> {
+                    for (Message m : result) {
+                        //createMessageLabel(m);
+                        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
+                                .add(createMessageLabel(m));
+                    }
+                });
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
