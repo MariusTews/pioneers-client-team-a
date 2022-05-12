@@ -1,9 +1,9 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
-import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +30,9 @@ class LobbyControllerTest extends ApplicationTest {
     LoginService loginService;
 
     @Mock
+    UserService userService;
+
+    @Mock
     GameService gameService;
 
     @Mock
@@ -39,7 +44,8 @@ class LobbyControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         when(gameService.listGames()).thenReturn(Observable.empty());
-        when(eventListener.listen("games.*.*", Game.class)).thenReturn(Observable.empty());
+        when(userService.listOnlineUsers()).thenReturn(Observable.empty());
+        when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         new App(lobbyController).start(stage);
     }
 
