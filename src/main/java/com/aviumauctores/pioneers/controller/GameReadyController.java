@@ -17,11 +17,13 @@ import javafx.scene.layout.AnchorPane;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class GameReadyController implements Controller {
 
 
     private final App app;
+    private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
 
     @FXML public Button startGameButton;
@@ -41,9 +43,10 @@ public class GameReadyController implements Controller {
     @FXML public TitledPane playerListPane;
 
     @Inject
-    public GameReadyController(App app, Provider<LobbyController> lobbyController){
+    public GameReadyController(App app, ResourceBundle bundle, Provider<LobbyController> lobbyController){
 
         this.app = app;
+        this.bundle = bundle;
         this.lobbyController = lobbyController;
     }
 
@@ -56,7 +59,7 @@ public class GameReadyController implements Controller {
     }
 
     public Parent render(){
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/gameReadyScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/gameReadyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {

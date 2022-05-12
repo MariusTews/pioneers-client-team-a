@@ -117,16 +117,11 @@ public class App extends Application {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public Optional<ButtonType> showHttpErrorDialog(ErrorResponse errorResponse) {
+    public Optional<ButtonType> showHttpErrorDialog(ErrorResponse errorResponse, String message) {
         String header = errorResponse.statusCode() + " " + errorResponse.error();
-        String content = errorResponse.message();
+        String content = message;
         content = content != null ? content : "";
         return showErrorDialog(header, content);
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public Optional<ButtonType> showConnectionFailedDialog() {
-        return showErrorDialog("Connection failed", "Try later again");
     }
 
     @SuppressWarnings("UnusedReturnValue")

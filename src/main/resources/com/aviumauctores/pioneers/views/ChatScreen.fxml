@@ -4,21 +4,19 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.VBox?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.ChatController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.ChatController">
     <children>
         <TabPane fx:id="chatTabPane" layoutX="14.0" layoutY="14.0" prefHeight="364.0" prefWidth="296.0" style="-fx-border-color: #346b32;" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-                <Tab fx:id="allTab" closable="false" text="Alle">
+                <Tab fx:id="allTab" closable="false" text="%all">
                     <content>
                         <ScrollPane>
                             <content>
@@ -30,24 +28,24 @@
             </tabs>
         </TabPane>
         <TextField fx:id="chatTextField" layoutX="14.0" layoutY="407.0" prefHeight="35.0" prefWidth="232.0" style="-fx-border-color: #346b32;" />
-        <Button fx:id="sendButton" layoutX="255.0" layoutY="407.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="76.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32;" text="Senden">
+        <Button fx:id="sendButton" layoutX="255.0" layoutY="407.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="76.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32;" text="%send">
             <font>
                 <Font size="16.0" />
             </font>
         </Button>
         <ListView fx:id="onlinePlayerList" layoutX="386.0" layoutY="47.0" prefHeight="345.0" prefWidth="200.0" style="-fx-border-color: #346b32;" />
-        <Button fx:id="leaveButton" layoutX="483.0" layoutY="407.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="102.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32;" text="Verlassen">
+        <Button fx:id="leaveButton" layoutX="483.0" layoutY="407.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="102.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32;" text="%leave">
             <font>
                 <Font size="17.0" />
             </font>
         </Button>
         <ScrollBar fx:id="chatScrollBar" layoutX="331.0" layoutY="55.0" orientation="VERTICAL" prefHeight="315.0" prefWidth="15.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32;" />
-        <Label fx:id="hintLabel" layoutX="14.0" layoutY="384.0" prefHeight="17.0" prefWidth="333.0" text="Hinweis: Zum Löschen der eigenen Nachricht Linksklick auf Nachricht">
+        <Label fx:id="hintLabel" layoutX="14.0" layoutY="384.0" prefHeight="17.0" prefWidth="333.0" text="%delete.hint">
             <font>
                 <Font size="11.0" />
             </font>
         </Label>
-        <Label fx:id="onlinePlayerLabel" alignment="CENTER" layoutX="386.0" layoutY="14.0" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32;" text="Online Spieler (0)" textAlignment="CENTER">
+        <Label fx:id="onlinePlayerLabel" alignment="CENTER" layoutX="386.0" layoutY="14.0" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32;" text="%online.players" textAlignment="CENTER">
             <font>
                 <Font size="20.0" />
             </font>

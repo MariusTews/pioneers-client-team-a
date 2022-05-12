@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
 
@@ -43,15 +44,17 @@ public class RegisterController implements Controller {
     @FXML
     public PasswordField textfieldPassword;
     private final Provider<LoginController> loginController;
+    private final ResourceBundle bundle;
     public TextField textfieldPassword_show;
 
     private Disposable disposable;
 
     @Inject
-    public RegisterController(App app, UserService userService, Provider<LoginController> loginController) {
+    public RegisterController(App app, UserService userService, Provider<LoginController> loginController, ResourceBundle bundle) {
         this.app = app;
         this.userService = userService;
         this.loginController = loginController;
+        this.bundle = bundle;
     }
 
     @Override
@@ -67,7 +70,7 @@ public class RegisterController implements Controller {
 
     @Override
     public Parent render() {
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/registerScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/registerScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {

@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.ErrorService;
@@ -26,6 +27,7 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -39,10 +41,13 @@ public class LobbyController implements Controller {
     private final ErrorService errorService;
     private final PreferenceService preferenceService;
     private final EventListener eventListener;
+    private final ResourceBundle bundle;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
     private final Provider<CreateGameController> createGameController;
     private final Provider<JoinGameController> joinGameController;
+
+    private HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML public Label gameLabel;
 
@@ -69,6 +74,7 @@ public class LobbyController implements Controller {
                            LoginService loginService, GameService gameService, ErrorService errorService,
                            PreferenceService preferenceService,
                            EventListener eventListener,
+                           ResourceBundle bundle,
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
@@ -79,6 +85,7 @@ public class LobbyController implements Controller {
         this.errorService = errorService;
         this.preferenceService = preferenceService;
         this.eventListener = eventListener;
+        this.bundle = bundle;
         this.loginController = loginController;
         this.chatController = chatController;
         this.createGameController = createGameController;
@@ -94,7 +101,7 @@ public class LobbyController implements Controller {
                     games.forEach(this::addGameToList);
                     // This might be called before render when gameLabel is not initialized yet
                     if (gameLabel != null) {
-                        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+                        gameLabel.setText(String.format(bundle.getString("games") + " (%d)", gameItems.size()));
                     }
                 }));
         disposables.add(eventListener.listen("games.*.*", Game.class)
@@ -116,12 +123,17 @@ public class LobbyController implements Controller {
                             gameListItemControllers.remove(game._id());
                         }
                     }
-                    gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+                    gameLabel.setText(String.format(bundle.getString("games") + " (%d)", gameItems.size()));
                 }));
+
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+
     }
 
     private void addGameToList(Game game) {
-        GameListItemController controller = new GameListItemController(this, game, gameItems);
+        GameListItemController controller = new GameListItemController(this, game, gameItems, bundle);
         gameListItemControllers.put(game._id(), controller);
         gameItems.add(controller.render());
     }
@@ -145,7 +157,7 @@ public class LobbyController implements Controller {
     }
 
     public Parent render(){
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/lobbyScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/lobbyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -155,7 +167,7 @@ public class LobbyController implements Controller {
             return null;
         }
         gameListView.setItems(gameItems);
-        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+        gameLabel.setText(String.format(bundle.getString("games") + " (%d)", gameItems.size()));
         return parent;
     }
 
@@ -186,9 +198,11 @@ public class LobbyController implements Controller {
                         },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                app.showHttpErrorDialog(errorService.readErrorMessage(ex));
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                app.showHttpErrorDialog(response, message);
                             } else {
-                                app.showConnectionFailedDialog();
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }
                         }));
     }

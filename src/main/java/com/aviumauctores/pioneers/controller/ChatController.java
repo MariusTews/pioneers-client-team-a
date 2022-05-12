@@ -7,11 +7,10 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GroupService;
 import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
-import io.reactivex.rxjava3.core.Observable;
+import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,11 +22,10 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import com.aviumauctores.pioneers.ws.EventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -42,6 +40,7 @@ public class ChatController implements Controller {
     private final UserService userService;
 
     private final GroupService groupService;
+    private final ResourceBundle bundle;
 
     private final ObservableList<User> users = FXCollections.observableArrayList();
 
@@ -65,13 +64,15 @@ public class ChatController implements Controller {
 
     @Inject
     public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
-                          EventListener eventListener, UserService userService, GroupService groupService) {
+                          EventListener eventListener, UserService userService, GroupService groupService,
+                          ResourceBundle bundle) {
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
         this.eventListener = eventListener;
         this.userService = userService;
         this.groupService = groupService;
+        this.bundle = bundle;
     }
 
     public void init(){
@@ -111,7 +112,7 @@ public class ChatController implements Controller {
     }
 
     public Parent render() {
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/ChatScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/ChatScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {

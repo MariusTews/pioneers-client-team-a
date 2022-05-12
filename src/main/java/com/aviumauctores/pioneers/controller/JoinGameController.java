@@ -20,6 +20,7 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -29,6 +30,7 @@ public class JoinGameController implements Controller {
     private final GameService gameService;
     private final ErrorService errorService;
     private final EventListener eventListener;
+    private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
     @FXML public Label gameNameLabel;
@@ -43,12 +45,14 @@ public class JoinGameController implements Controller {
     @Inject
     public JoinGameController(App app, GameService gameService, ErrorService errorService,
                               EventListener eventListener,
+                              ResourceBundle bundle,
                               Provider<LobbyController> lobbyController,
                               Provider<GameReadyController> gameReadyController) {
         this.app = app;
         this.gameService = gameService;
         this.errorService = errorService;
         this.eventListener = eventListener;
+        this.bundle = bundle;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
     }
@@ -81,7 +85,7 @@ public class JoinGameController implements Controller {
     }
 
     public Parent render(){
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/joinGameScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/joinGameScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -109,9 +113,9 @@ public class JoinGameController implements Controller {
                 .subscribe(member -> app.show(gameReadyController.get()),
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                app.showHttpErrorDialog(errorService.readErrorMessage(ex));
+                                app.showHttpErrorDialog(errorService.readErrorMessage(ex), "");
                             } else {
-                                app.showConnectionFailedDialog();
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }
                         }));
     }
