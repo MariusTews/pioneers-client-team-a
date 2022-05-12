@@ -129,33 +129,7 @@ public class LobbyController extends PlayerListController {
         // Listen to user updates
         disposables.add(eventListener.listen("users.*.*", User.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(eventDto -> {
-                    String event = eventDto.event();
-                    User user = eventDto.data();
-                    boolean isOnline = user.status().equals("online");
-                    if (event.endsWith("created") && isOnline) {
-                        addPlayerToList(user);
-                    } else {
-                        PlayerListItemController controller = playerListItemControllers.get(user._id());
-                        if (event.endsWith("updated")) {
-                            if (controller != null) {
-                                if (isOnline) {
-                                    controller.onPlayerUpdated(user);
-                                } else {
-                                    // Don't display offline users
-                                    removePlayerFromList(user._id(), controller);
-                                }
-                            } else if (isOnline) {
-                                addPlayerToList(user);
-                            }
-                        } else if (event.endsWith("deleted")) {
-                            if (controller != null) {
-                                removePlayerFromList(user._id(), controller);
-                            }
-                        }
-                    }
-                    updatePlayerLabel();
-                }));
+                .subscribe(this::onUserEvent));
     }
 
     private void addGameToList(Game game) {

@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,6 +12,34 @@ import java.util.Map;
 public abstract class PlayerListController implements Controller {
     protected final ObservableList<Parent> playerItems = FXCollections.observableArrayList();
     protected final Map<String, PlayerListItemController> playerListItemControllers = new HashMap<>();
+
+    protected void onUserEvent(EventDto<User> eventDto) {
+        String event = eventDto.event();
+        User user = eventDto.data();
+        boolean isOnline = user.status().equals("online");
+        if (event.endsWith("created") && isOnline) {
+            addPlayerToList(user);
+        } else {
+            PlayerListItemController controller = playerListItemControllers.get(user._id());
+            if (event.endsWith("updated")) {
+                if (controller != null) {
+                    if (isOnline) {
+                        controller.onPlayerUpdated(user);
+                    } else {
+                        // Don't display offline users
+                        removePlayerFromList(user._id(), controller);
+                    }
+                } else if (isOnline) {
+                    addPlayerToList(user);
+                }
+            } else if (event.endsWith("deleted")) {
+                if (controller != null) {
+                    removePlayerFromList(user._id(), controller);
+                }
+            }
+        }
+        updatePlayerLabel();
+    }
 
     protected void addPlayerToList(User user) {
         PlayerListItemController controller = new PlayerListItemController(this, user, playerItems);

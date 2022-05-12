@@ -7,11 +7,10 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GroupService;
 import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
-import io.reactivex.rxjava3.core.Observable;
+import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,17 +22,13 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import com.aviumauctores.pioneers.ws.EventListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 
-public class ChatController implements Controller {
+public class ChatController extends PlayerListController {
 
     private final App app;
     private final Provider<LobbyController> lobbyController;
@@ -47,7 +42,7 @@ public class ChatController implements Controller {
 
     private final EventListener eventListener;
 
-    private CompositeDisposable disposable = new CompositeDisposable();
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     private List<String> usersIdList  = new ArrayList<>();
 
@@ -55,7 +50,7 @@ public class ChatController implements Controller {
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
-    @FXML public ListView onlinePlayerList;
+    @FXML public ListView<Parent> onlinePlayerList;
     @FXML public Button leaveButton;
     @FXML public ScrollBar chatScrollBar;
     @FXML public Label hintLabel;
@@ -76,10 +71,16 @@ public class ChatController implements Controller {
 
     public void init(){
         // get all users, their ids and update the All-Group
-        userService.findAll().observeOn(FX_SCHEDULER).subscribe(result -> {this.users.setAll(result);
-            usersIdList = getAllUserIDs(users);
-            groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
-        });
+        disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
+                .subscribe(result -> {
+                    this.users.setAll(result);
+                    usersIdList = getAllUserIDs(users);
+                    groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
+                    result.forEach(this::addPlayerToList);
+                    if (onlinePlayerLabel != null) {
+                        updatePlayerLabel();
+                    }
+                }));
         // listen for users and put them in the All-Group for the All-Chat
         disposable.add(eventListener.listen("users.*.*", User.class)
                 .observeOn(FX_SCHEDULER)
@@ -89,6 +90,8 @@ public class ChatController implements Controller {
                         usersIdList.add(event.data()._id());
                         groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
+                    // Update user list
+                    onUserEvent(event);
                 }));
         // listen for incoming messages and show them as a Label
         disposable.add(eventListener.listen("groups.*.messages.*.*", Message.class)
@@ -104,6 +107,11 @@ public class ChatController implements Controller {
                                 .remove(msgLabel);
                     }
                 }));
+    }
+
+    @Override
+    protected void updatePlayerLabel() {
+        onlinePlayerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
     }
 
     public void destroy(){
@@ -128,6 +136,8 @@ public class ChatController implements Controller {
                 sendMessage();
             }
         } );
+        onlinePlayerList.setItems(playerItems);
+        updatePlayerLabel();
         return parent;
     }
 
