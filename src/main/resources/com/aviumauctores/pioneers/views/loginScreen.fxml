@@ -10,13 +10,22 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LoginController">
-   <HBox prefHeight="100.0" prefWidth="200.0" />
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LoginController">
+   <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox prefHeight="100.0" prefWidth="300.0" />
+      <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="300.0" spacing="6.0">
+         <padding>
+            <Insets right="6.0" top="6.0" />
+         </padding>
+         <Button fx:id="englishButton" mnemonicParsing="false" onAction="#setEnglish" text="EN" />
+         <Button fx:id="germanButton" mnemonicParsing="false" onAction="#setGerman" text="DE" />
+      </HBox>
+   </HBox>
    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
       <padding>
          <Insets left="200.0" right="200.0" />
       </padding>
-      <Label text="Username:">
+      <Label text="%username">
          <font>
             <Font size="18.0" />
          </font>
@@ -26,8 +35,8 @@
             <Font size="18.0" />
          </font>
       </TextField>
-      <Label fx:id="usernameErrorLabel" id="usernameErrorLabel" textFill="RED" />
-      <Label text="Password:">
+      <Label id="usernameErrorLabel" fx:id="usernameErrorLabel" textFill="RED" />
+      <Label text="%password">
          <font>
             <Font size="18.0" />
          </font>
@@ -40,8 +49,8 @@
             <Font size="18.0" />
          </font>
       </PasswordField>
-      <Label fx:id="passwordErrorLabel" id="passwordErrorLabel" textFill="RED" />
-      <Button fx:id="loginButton" mnemonicParsing="false" prefWidth="140.0" onAction="#login" text="Login">
+      <Label id="passwordErrorLabel" fx:id="passwordErrorLabel" textFill="RED" />
+      <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login" prefWidth="140.0" text="%sign.in">
          <VBox.margin>
             <Insets top="15.0" />
          </VBox.margin>
@@ -49,7 +58,7 @@
             <Font size="18.0" />
          </font>
       </Button>
-      <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="Remember me">
+      <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="%remember.me">
          <VBox.margin>
             <Insets top="20.0" />
          </VBox.margin>
@@ -57,8 +66,8 @@
    </VBox>
    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
       <VBox alignment="CENTER" prefHeight="95.0" prefWidth="188.0" spacing="8.0">
-         <Label text="No account yet?" />
-         <Button fx:id="registerButton" mnemonicParsing="false" onAction="#toRegister" prefHeight="25.0" prefWidth="140" text="Register" />
+         <Label text="%no.account" />
+         <Button fx:id="registerButton" mnemonicParsing="false" onAction="#toRegister" prefHeight="25.0" prefWidth="140" text="%create.account" />
       </VBox>
    </HBox>
 </VBox>
