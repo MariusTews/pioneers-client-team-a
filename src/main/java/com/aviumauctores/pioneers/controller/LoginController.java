@@ -4,8 +4,11 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.CryptoService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -20,6 +23,8 @@ import javafx.scene.text.Font;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
 
@@ -29,29 +34,35 @@ public class LoginController implements Controller {
     private final LoginService loginService;
     private final Provider<RegisterController> registerController;
     private final Provider<LobbyController> lobbyController;
+    private final Provider<LoginController> loginController;
+    private final PreferenceService preferenceService;
+    private final CryptoService cryptoService;
+    private final ResourceBundle bundle;
 
     private Disposable disposable;
 
+    @FXML public Button germanButton;
+    @FXML public Button englishButton;
     @FXML public TextField usernameInput;
-
     @FXML public PasswordField passwordInput;
-
     @FXML public Button loginButton;
-
     @FXML public CheckBox rememberMeCheckBox;
-
     @FXML public Button registerButton;
-
     @FXML public Label usernameErrorLabel;
-
     @FXML public Label passwordErrorLabel;
 
     @Inject
-    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController, Provider<LobbyController> lobbyController){
+    public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController,
+                           Provider<LobbyController> lobbyController, Provider<LoginController> loginController,
+                           PreferenceService preferenceService, CryptoService cryptoService, ResourceBundle bundle){
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
         this.lobbyController = lobbyController;
+        this.loginController = loginController;
+        this.preferenceService = preferenceService;
+        this.cryptoService = cryptoService;
+        this.bundle = bundle;
     }
 
     @Override
@@ -68,7 +79,7 @@ public class LoginController implements Controller {
 
     @Override
     public Parent render(){
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -77,7 +88,15 @@ public class LoginController implements Controller {
             e.printStackTrace();
             return null;
         }
+
+        //necessary for fast testing; otherwise you would have to move the mouse to the input first, which takes time
+        Platform.runLater(() -> usernameInput.requestFocus());
+
         return parent;
+    }
+
+    public Boolean getRememberMeStatus(){
+        return preferenceService.getRememberMe();
     }
 
     public void login(ActionEvent event) {
@@ -110,16 +129,33 @@ public class LoginController implements Controller {
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
-                                //I dont know how to pass the user to the LobbyController yet
-                                User user = new User(result._id(), result.name(), result.status(), result.avatar());
-                                final LobbyController controller = lobbyController.get();
-                                app.show(controller);
+                                if (rememberMeCheckBox.isSelected()){
+                                    preferenceService.setRememberMe(true);
+                                    String encodedToken = cryptoService.encode(result.refreshToken());
+                                    preferenceService.setRefreshToken(encodedToken);
+                                }
+                                else{
+                                    preferenceService.setRememberMe(false);
+                                    preferenceService.setRefreshToken("");
+                                }
+
+                                toLobby(result);
                             },
-                            error -> Platform.runLater(() -> {
-                                this.createDialog(error.getMessage());
-                            })
+                            error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
                     );
         }
+    }
+
+    public Observable<LoginResult> tryTokenLogin() {
+        String token = "";
+        try {
+            token = cryptoService.decode(preferenceService.getRefreshToken());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        //System.out.println(token);
+        return loginService.login(token);
     }
 
     private void createDialog(String message) {
@@ -132,21 +168,23 @@ public class LoginController implements Controller {
 
         double width;
 
-        if (message.equals(HTTP_400)) {
-            label.setText("Validation failed.");
-            width = 300;
-        }
-        else if (message.equals(HTTP_401)) {
-            label.setText("Invalid username or password.");
-            width = 400;
-        }
-        else if (message.equals(HTTP_429)) {
-            label.setText("Rate limit reached.");
-            width = 540;
-        }
-        else {
-            label.setText("No connection to the Server.");
-            width = 300;
+        switch (message) {
+            case HTTP_400 -> {
+                label.setText("Validation failed.");
+                width = 300;
+            }
+            case HTTP_401 -> {
+                label.setText("Invalid username or password.");
+                width = 400;
+            }
+            case HTTP_429 -> {
+                label.setText("Rate limit reached.");
+                width = 540;
+            }
+            default -> {
+                label.setText("No connection to the Server.");
+                width = 300;
+            }
         }
 
         vBox.getChildren().add(label);
@@ -154,16 +192,32 @@ public class LoginController implements Controller {
         app.showDialogWithOkButton(vBox, width);
     }
 
-    public void rememberMeToggle(ActionEvent event) {
-
-    }
-
     public void toRegister(ActionEvent event) {
         String username = usernameInput.getText();
         String password = passwordInput.getText();
+
         final RegisterController controller = registerController.get();
+
         controller.username.set(username);
         controller.password.set(password);
+
         app.show(controller);
+    }
+
+    public void toLobby(LoginResult result) {
+        final LobbyController controller = lobbyController.get();
+        User user = new User(result._id(), result.name(), result.status(), result.avatar());
+        controller.setUser(user);
+        app.show(controller);
+    }
+
+    public void setGerman(ActionEvent event) {
+        preferenceService.setLocale(Locale.GERMAN);
+        app.show(loginController.get());
+    }
+
+    public void setEnglish(ActionEvent event) {
+        preferenceService.setLocale(Locale.ENGLISH);
+        app.show(loginController.get());
     }
 }

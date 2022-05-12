@@ -11,6 +11,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -49,6 +50,8 @@ public class ChatController implements Controller {
     private CompositeDisposable disposable = new CompositeDisposable();
 
     private List<String> usersIdList  = new ArrayList<>();
+
+    private String username;
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
@@ -150,8 +153,12 @@ public class ChatController implements Controller {
     // Function to create a new label for the message with the needed functions
     public Label createMessageLabel(Message message) {
         // get the username of the sender
-        String username = message.sender();
-        Label msgLabel = new Label(username + ": " + message.body());
+        //String username = message.sender();
+        Label msgLabel = new Label();
+        userService.getUserName(message.sender()).observeOn(FX_SCHEDULER).subscribe(result -> {
+            username = result;
+            msgLabel.setText(username + ": " + message.body());
+        });
         msgLabel.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
                 // Alert: do you want to delete this message?
@@ -159,16 +166,19 @@ public class ChatController implements Controller {
                 alert.setTitle("Delete");
                 alert.setHeaderText("Delete this Message?");
                 alert.setContentText("Do you want to delete this message?");
-                Optional<ButtonType> result = alert.showAndWait();
+                Optional<ButtonType> res = alert.showAndWait();
                 // delete if "Ok" is clicked
-                if (result.get() == ButtonType.OK){
+                if (res.get() == ButtonType.OK){
                     delete(message._id());
+                    ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
+                            .remove(msgLabel);
                     alert.close();
                 } else {
                     alert.close();
                 }
             }
         });
+        msgLabel.setId(message._id());
         return msgLabel;
     }
 
