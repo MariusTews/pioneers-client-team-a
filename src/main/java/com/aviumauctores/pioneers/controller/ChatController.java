@@ -14,10 +14,12 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -56,6 +58,8 @@ public class ChatController implements Controller {
     private User user;
 
     private String username;
+
+    private Label deleteLabel;
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
@@ -105,14 +109,22 @@ public class ChatController implements Controller {
         disposable.add(eventListener.listen("groups.*.messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
-                    Label msgLabel = createMessageLabel(event.data());
+                    //Label msgLabel = createMessageLabel(event.data());
                     if (event.event().endsWith(".created")) {
+                        Label msgLabel = createMessageLabel(event.data());
                         ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
                                 .add(msgLabel);
                     }
                     else if (event.event().endsWith(".deleted")) {
+                        //search for the Label of the which will be deleted
+                        for (Node l : ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()) {
+                            if (event.data()._id().equals(l.getId())) {
+                                this.deleteLabel = (Label) l;
+                            }
+                        }
                         ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
-                                .remove(msgLabel);
+                                .remove(this.deleteLabel);
+
                     }
                 }));
     }
@@ -182,25 +194,7 @@ public class ChatController implements Controller {
             msgLabel.setText(username + ": " + message.body());
         });*/
         msgLabel.setText(message.sender() + ": " + message.body());
-        msgLabel.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                // Alert for the delete
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Delete");
-                alert.setHeaderText("Delete this Message?");
-                alert.setContentText("Do you want to delete this message?");
-                Optional<ButtonType> res = alert.showAndWait();
-                // delete if "Ok" is clicked
-                if (res.get() == ButtonType.OK){
-                    delete(message._id());
-                    ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
-                            .remove(msgLabel);
-                    alert.close();
-                } else {
-                    alert.close();
-                }
-            }
-        });
+        msgLabel.setOnMouseClicked(this::onMessageClicked);
         msgLabel.setId(message._id());
         return msgLabel;
     }
@@ -208,11 +202,11 @@ public class ChatController implements Controller {
 
 
     public List<String> getAllUserIDs(List<User> users) {
-        List<String> IDs = new ArrayList<>();
+        List<String> ids = new ArrayList<>();
         for (User u : users) {
-            IDs.add(u._id());
+            ids.add(u._id());
         }
-        return IDs;
+        return ids;
     }
 
     public void showOldMessages(String namespace, String pathId, String createdBefore, int limit) {
@@ -229,5 +223,25 @@ public class ChatController implements Controller {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void onMessageClicked(MouseEvent event) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            // Alert for the delete
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete");
+            alert.setHeaderText("Delete this Message?");
+            alert.setContentText("Do you want to delete this message?");
+            Optional<ButtonType> res = alert.showAndWait();
+            // delete if "Ok" is clicked
+            if (res.get() == ButtonType.OK){
+                this.deleteLabel = (Label) event.getSource();
+                delete(this.deleteLabel.getId());
+                alert.close();
+            } else {
+                alert.close();
+            }
+        }
+
     }
 }
