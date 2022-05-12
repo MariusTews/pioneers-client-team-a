@@ -93,30 +93,22 @@ public class App extends Application {
         cleanup();
         this.controller = controller;
 
-        //if controller is a logincontroller and remember me is enabled then try to login with the refresh token
-        //if this is not implemented here but in the logincontroller, then the login controller will show shortly
-        //before a successful token login leads to the lobby screen
-        if(controller instanceof LoginController loginController){
-            if(loginController.getRememberMeStatus()){
-                Observable<LoginResult> observable = loginController.tryTokenLogin();
-                disposable = observable.subscribeOn(FX_SCHEDULER)
-                        .subscribe(
-                                //on success show the lobby screen (token login was successful)
-                                loginController::toLobby,
-                                //on error show the login screen (token login was not successful)
-                                error -> {
-                                    loginController.init();
-                                    stage.getScene().setRoot(loginController.render());
-                                }
-                        );
-            }
-            //if remember me is disabled show the login screen
-            else {
-                loginController.init();
-                stage.getScene().setRoot(loginController.render());
-            }
+        /*if controller is a logincontroller and remember me is enabled then try to login with the refresh token
+        if this is not implemented here but in the logincontroller, then the login controller will show shortly
+        before a successful token login leads to the lobby screen*/
+        if((controller instanceof LoginController loginController) && loginController.getRememberMeStatus()){
+            disposable = loginController.tryTokenLogin().subscribeOn(FX_SCHEDULER)
+                    .subscribe(
+                            //on success show the lobby screen (token login was successful)
+                            loginController::toLobby,
+                            //on error show the login screen (token login was not successful)
+                            error -> {
+                                loginController.init();
+                                stage.getScene().setRoot(loginController.render());
+                            }
+                    );
         }
-        //if controller is not a logincontroller then do a normal controller init and render
+        //if controller is not a logincontroller or remember me is not set then do a normal controller init and render
         else{
             controller.init();
             stage.getScene().setRoot(controller.render());
