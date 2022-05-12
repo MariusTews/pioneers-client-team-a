@@ -7,6 +7,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 
 public class PlayerListItemController implements Controller {
@@ -45,7 +47,16 @@ public class PlayerListItemController implements Controller {
         playerName = new Label(user.name());
         root = new HBox(10.0, avatarView, playerName);
         root.setAlignment(Pos.CENTER_LEFT);
+        root.setOnMouseClicked(this::onItemClicked);
         return root;
+    }
+
+    private void onItemClicked(MouseEvent event) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || event.getClickCount() < 2) {
+            // only listen to double-clicks on primary button
+            return;
+        }
+        parentController.onPlayerItemClicked(user);
     }
 
     public void onPlayerUpdated(User newUser) {

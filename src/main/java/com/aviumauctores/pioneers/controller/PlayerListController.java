@@ -53,4 +53,8 @@ public abstract class PlayerListController implements Controller {
         controller.destroy();
         playerListItemControllers.remove(userID);
     }
+
+    public void onPlayerItemClicked(User selectedUser) {
+        // Do nothing at default
+    }
 }

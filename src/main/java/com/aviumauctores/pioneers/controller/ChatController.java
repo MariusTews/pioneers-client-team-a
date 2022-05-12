@@ -58,6 +58,8 @@ public class ChatController extends PlayerListController {
     @FXML public Tab allTab;
     @FXML public TabPane chatTabPane;
 
+    private final Map<String, Tab> chatTabsByUserID = new HashMap<>();
+
     @Inject
     public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
                           EventListener eventListener, UserService userService, GroupService groupService) {
@@ -116,6 +118,7 @@ public class ChatController extends PlayerListController {
 
     public void destroy(){
         disposable.dispose();
+        chatTabsByUserID.clear();
     }
 
     public Parent render() {
@@ -169,7 +172,28 @@ public class ChatController extends PlayerListController {
         app.show(controller);
     }
 
-
+    @Override
+    public void onPlayerItemClicked(User selectedUser) {
+        Tab userTab = chatTabsByUserID.get(selectedUser._id());
+        if (userTab != null) {
+            // There is already a chat tab
+            chatTabPane.getSelectionModel().select(userTab);
+            return;
+        }
+        disposable.add(groupService.getOrCreateGroup(List.of(userService.getCurrentUserID(), selectedUser._id()), disposable)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(group -> {
+                    disposable.add(eventListener.listen("groups." + group._id() + ".messages.*.*", Message.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(eventDto -> {
+                                // Process message
+                            }));
+                    Tab tab = new Tab(selectedUser.name());
+                    chatTabPane.getTabs().add(tab);
+                    chatTabPane.getSelectionModel().select(tab);
+                    chatTabsByUserID.put(selectedUser._id(), tab);
+                }));
+    }
 
     // Function to create a new label for the message with the needed functions
     public Label createMessageLabel(Message message) {
