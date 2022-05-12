@@ -15,7 +15,7 @@ public class PlayerListItemController implements Controller {
     private Label playerName;
 
     private final PlayerListController parentController;
-    private final User user;
+    private User user;
     private final ObservableList<Parent> playerItems;
 
     public PlayerListItemController(PlayerListController parentController, User user, ObservableList<Parent> playerItems) {
@@ -48,10 +48,11 @@ public class PlayerListItemController implements Controller {
         return root;
     }
 
-    public void onPlayerUpdated(User user) {
-        String avatarUrl = user.avatar();
+    public void onPlayerUpdated(User newUser) {
+        user = newUser;
+        String avatarUrl = newUser.avatar();
         Image newAvatar = avatarUrl == null ? null : new Image(avatarUrl);
         avatarView.setImage(newAvatar);
-        playerName.setText(user.name());
+        playerName.setText(newUser.name());
     }
 }
