@@ -14,23 +14,17 @@
 <?import javafx.scene.text.Font?>
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LoginController">
-   <HBox alignment="CENTER_LEFT" prefHeight="69.0" prefWidth="600.0">
-      <children>
-         <Pane prefHeight="54.0" prefWidth="21.0" />
-         <ImageView fitHeight="38.0" fitWidth="44.0" onMouseClicked="#selectLight" pickOnBounds="true" preserveRatio="true">
-            <image>
-               <Image url="@sun.png" />
-            </image>
-         </ImageView>
-         <Pane layoutX="10.0" layoutY="10.0" prefHeight="62.0" prefWidth="11.0" />
-         <ImageView fitHeight="50.0" fitWidth="50.0" onMouseClicked="#selectDark" pickOnBounds="true" preserveRatio="true">
-            <image>
-               <Image url="@mond.png" />
-            </image>
-         </ImageView>
-      </children></HBox>
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LoginController">
    <HBox prefHeight="100.0" prefWidth="200.0">
+      <Pane prefHeight="200.0" prefWidth="200.0">
+         <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="67.0" layoutY="3.0" onMouseClicked="#selectDark"
+                    pickOnBounds="true" preserveRatio="true">
+            <Image url="@mond.png"/>
+         </ImageView>
+         <ImageView fitHeight="38.0" fitWidth="44.0" layoutX="20.0" layoutY="9.0" onMouseClicked="#selectLight"
+                    pickOnBounds="true" preserveRatio="true">
+            <Image url="@sun.png"/>
+         </ImageView>
+      </Pane>
       <HBox prefHeight="100.0" prefWidth="300.0" />
       <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="300.0" spacing="6.0">
          <padding>
