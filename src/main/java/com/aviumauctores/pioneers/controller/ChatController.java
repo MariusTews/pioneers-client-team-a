@@ -51,7 +51,9 @@ public class ChatController implements Controller {
 
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    private List<User> users = new ArrayList<>();
+    private List<User> onlineUsers = new ArrayList<>();
+
+    private List<User> allUsers = new ArrayList<>();
 
     private List<String> usersIdList  = new ArrayList<>();
 
@@ -83,11 +85,16 @@ public class ChatController implements Controller {
     }
 
     public void init(){
-        showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
+        //get all users for the usernames of the old messages
+        userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
+            allUsers = res;
+            showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
+        });
+        //showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
 
         // get all users, their ids and update the All-Group
-        userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { users = result;
-            usersIdList = getAllUserIDs(users);
+        userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
+            usersIdList = getAllUserIDs(onlineUsers);
             usersIdList.add(user._id());
             groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
         });
@@ -189,11 +196,11 @@ public class ChatController implements Controller {
     public Label createMessageLabel(Message message) {
         // get the username of the sender
         Label msgLabel = new Label();
-        /*userService.getUserName(message.sender()).observeOn(FX_SCHEDULER).subscribe(result -> {
-            username = result;
-            msgLabel.setText(username + ": " + message.body());
-        });*/
-        msgLabel.setText(message.sender() + ": " + message.body());
+        for (User u : allUsers ) {
+            if (u._id().equals(message.sender())) {
+                msgLabel.setText(u.name() + ": " + message.body());
+            }
+        }
         msgLabel.setOnMouseClicked(this::onMessageClicked);
         msgLabel.setId(message._id());
         return msgLabel;
@@ -214,9 +221,12 @@ public class ChatController implements Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     for (Message m : result) {
-                        //createMessageLabel(m);
-                        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
-                                .add(createMessageLabel(m));
+                        Label msgLabel = createMessageLabel(m);
+                        // the label could be Blank if the was deleted
+                        if (!msgLabel.getText().isBlank()) {
+                            ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()
+                                    .add(msgLabel);
+                        }
                     }
                 });
     }
