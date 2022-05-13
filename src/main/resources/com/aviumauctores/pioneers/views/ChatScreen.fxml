@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.ChatController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.ChatController">
     <children>
         <TabPane fx:id="chatTabPane" layoutX="14.0" layoutY="14.0" prefHeight="364.0" prefWidth="296.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
@@ -20,7 +20,7 @@
                     <content>
                         <ScrollPane>
                             <content>
-                                <VBox styleClass="chat" />
+                                <VBox/>
                             </content>
                         </ScrollPane>
                     </content>
