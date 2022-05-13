@@ -1,15 +1,13 @@
 
-
 .root {
-    -fx-background-color: rgb(0, 1, 17)
+    -fx-background-color: rgb(0, 1, 17);
+    -fx-text-fill: #eee;
 }
 
 .label {
     -fx-font-size: 14;
     -fx-text-fill: #eee;
 }
-
-
 
 .text-field {
     -fx-font-size: 14;
@@ -34,25 +32,34 @@
     -fx-background-radius: 15px;
 }
 
+.list-view > .viewport {
+    -fx-background-color: transparent;
+}
+
 .list-view {
     -fx-background-color: #333333;
     -fx-background-radius: 8px;
 }
 
-.tab-header-background {
-    -fx-background-color: #00496c;
-    -fx-background-radius: 8 8 0 0;
-
+.list-cell {
+    -fx-background-color: #333333;
 }
 
-
-
-.scroll-pane {
-    -fx-background-color: #545454;
+.list-cell:selected {
+    -fx-background-color: #494949;
+    -fx-background-radius: 8 8 8 8;
 }
 
-.border-pane {
-    -fx-background-color: #111;
+.list-view .corner {
+    -fx-background-color: transparent ;
+}
+
+.text {
+    -fx-text-fill: #eee;
+}
+
+.check-box {
+    -fx-text-fill: #eee;
 }
 
 .scroll-pane > .viewport {
@@ -63,6 +70,18 @@
 .scroll-pane {
     -fx-background-color: #333333;
     -fx-background-radius: 0 0 8 8;
+}
+
+.tab-header-background {
+    -fx-background-color: #00496c;
+    -fx-background-radius: 8 8 0 0;
+
+}
+
+.scroll-bar {
+    -fx-background-color: #00496c;
+    -fx-background-radius: 15px;
+    -fx-progress-color: #c4c4c4;
 }
 
 .tab {
@@ -76,3 +95,5 @@
     -fx-background-color: rgba(0, 255, 72, 0.21);
     -fx-text-base-color: #eee;
 }
+
+

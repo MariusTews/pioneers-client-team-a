@@ -1,5 +1,4 @@
 
-
 .root {
     -fx-background-color: rgba(0, 130, 141, 0.21);
 }
@@ -30,25 +29,59 @@
     -fx-background-radius: 15px;
 }
 
-
-
-
 .tab-pane {
     -fx-background-radius: 8px;
     -fx-background-color: #00496c;
 }
 
+.list-view > .viewport {
+    -fx-background-color: transparent;
+}
+
 .list-view {
+    -fx-background-radius: 8px;
+    -fx-background-color: #eee;
+}
+
+.list-view .corner {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: #eee;
     -fx-background-radius: 8px;
 }
 
-.tab {
-    -fx-background-color: rgba(0, 130, 141, 0.21);
-    -fx-text-fill: #eee;
+.list-cell:selected {
+    -fx-background-radius: 8px;
+    -fx-background-color: rgb(208, 208, 208);
 }
 
-.vbox.chat {
+.tab {
+    -fx-background-color: rgb(147, 147, 147);
+    -fx-background-radius: 8 8 0 0;
+    -fx-focus-color: transparent;
+}
+
+.tab:selected {
+    -fx-background-color: #eee;
+}
+
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0px;
+}
+
+.scroll-pane {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0 0 8 8;
+}
+
+.tab-header-background {
     -fx-background-color: #00496c;
+    -fx-background-radius: 8 8 0 0;
+
 }
 
 
