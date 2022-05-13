@@ -56,7 +56,6 @@ public class GameListItemController implements Controller {
         BorderPane.setAlignment(numMembersTextLabel, Pos.CENTER);
         BorderPane.setAlignment(rightHBox, Pos.CENTER);
         root.setPadding(new Insets(0.0, 10.0, 0.0, 10.0));
-        //root.setStyle("-fx-background-color: #111; -fx-background-radius: 8px");
         return root;
     }
 
