@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -8,22 +9,16 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<VBox xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.CreateGameController">
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.CreateGameController">
    <children>
       <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
          <children>
-            <TextField fx:id="gameNameInput" layoutX="171.0" layoutY="136.0" prefHeight="30.0" prefWidth="200.0" promptText="Name" />
-            <Button fx:id="cancelButton" layoutX="472.0" layoutY="320.0" mnemonicParsing="false" onAction="#cancel" prefHeight="57.0" prefWidth="103.0" style="-fx-background-color: #d05555#d05555; -fx-border-color: #346b32#346b32;" text="Cancel" />
-            <Text layoutX="132.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create a Game" textAlignment="CENTER" underline="true" wrappingWidth="276.6978635173132">
-               <font>
-                  <Font name="System Bold" size="24.0" />
-               </font>
-            </Text>
-            <Button id="createGameButton" fx:id="createGameButton" layoutX="207.0" layoutY="277.0" mnemonicParsing="false" onAction="#createGame" style="-fx-border-color: #346b32#346b32; -fx-background-color: #b0ffc0#b0ffc0;" text="Create Game" />
-            <PasswordField fx:id="gamePasswordInput" layoutX="174.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" promptText="Password" />
-            <Button fx:id="showPasswordButton" layoutX="376.0" layoutY="207.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="18.0" prefWidth="37.0">
+            <TextField fx:id="gameNameInput" layoutX="200.0" layoutY="134.0" prefHeight="30.0" prefWidth="200.0" promptText="Name" />
+            <Button fx:id="cancelButton" layoutX="472.0" layoutY="320.0" mnemonicParsing="false" onAction="#cancel" text="Cancel" />
+            <Button id="createGameButton" fx:id="createGameButton" layoutX="258.0" layoutY="269.0" mnemonicParsing="false" onAction="#createGame" text="Create Game" />
+            <PasswordField fx:id="gamePasswordInput" layoutX="200.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" promptText="Password" />
+            <Button fx:id="showPasswordButton" layoutX="413.0" layoutY="208.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="18.0" prefWidth="37.0">
                <graphic>
                   <ImageView accessibleRole="BUTTON" fitHeight="23.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -32,6 +27,11 @@
                   </ImageView>
                </graphic></Button>
             <TextField fx:id="gamePasswordText" layoutX="174.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" visible="false" />
+            <Label layoutX="218.0" layoutY="48.0" text="Create a Game" underline="true">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
          </children>
       </Pane>
    </children>
