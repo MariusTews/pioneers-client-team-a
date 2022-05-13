@@ -9,14 +9,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -32,6 +31,7 @@ public class CreateGameController implements Controller {
     private final Provider<LobbyController> lobbyController;
 
     private final GameService gameService;
+    private final Provider<GameReadyController> gameReadyController;
 
     private boolean hidePassword = true;
 
@@ -49,9 +49,10 @@ public class CreateGameController implements Controller {
 
     @Inject
     public CreateGameController(App app, Provider<LobbyController> lobbyController,
-                                GameService gameService){
+                                GameService gameService, Provider<GameReadyController> gameReadyController){
         this.app = app;
         this.lobbyController = lobbyController;
+        this.gameReadyController = gameReadyController;
         this.gameService = gameService;
     }
 
@@ -96,13 +97,21 @@ public class CreateGameController implements Controller {
         String password = gamePasswordInput.getText();
         //check if name length is valid
         if(!(name.length() > 0 && name.length() <= 32)){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Validation Problem");
+            alert.setHeaderText("Invalid format");
+            alert.setContentText("name length needs to be between 1 and 32");
+            Optional<ButtonType> res = alert.showAndWait();
+            if(res.get() == ButtonType.OK){
+                alert.close();
+            }
             return;
         }
         gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
         //show gameReady Screen
-        final GameReadyController controller = new GameReadyController(app,lobbyController);
+        final GameReadyController controller = gameReadyController.get();
         app.show(controller);
     }
 
