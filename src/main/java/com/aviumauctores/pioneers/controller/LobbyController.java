@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
@@ -32,6 +33,8 @@ import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 public class LobbyController extends PlayerListController {
 
     private final App app;
+
+    private User user = null;
     private final LoginService loginService;
     private final UserService userService;
     private final GameService gameService;
@@ -80,8 +83,6 @@ public class LobbyController extends PlayerListController {
         this.createGameController = createGameController;
         this.joinGameController = joinGameController;
     }
-
-
 
 
     public void init(){
@@ -165,6 +166,14 @@ public class LobbyController extends PlayerListController {
         playerListItemControllers.clear();
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user){
+        this.user = user;
+    }
+
     public Parent render(){
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/lobbyScreen.fxml"));
         loader.setControllerFactory(c -> this);
@@ -195,7 +204,6 @@ public class LobbyController extends PlayerListController {
     }
 
     public void toChat(ActionEvent event) {
-
         final ChatController controller = chatController.get();
         app.show(controller);
     }
