@@ -4,9 +4,11 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
@@ -28,12 +30,13 @@ import java.util.Map;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
-public class LobbyController implements Controller {
+public class LobbyController extends PlayerListController {
 
     private final App app;
 
     private User user = null;
     private final LoginService loginService;
+    private final UserService userService;
     private final GameService gameService;
     private final ErrorService errorService;
     private final EventListener eventListener;
@@ -48,7 +51,7 @@ public class LobbyController implements Controller {
 
     @FXML public Label playerLabel;
 
-    @FXML public ListView playerListView;
+    @FXML public ListView<Parent> playerListView;
 
     @FXML public Button createGameButton;
 
@@ -57,13 +60,13 @@ public class LobbyController implements Controller {
     @FXML public Button quitButton;
 
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
-
     private final Map<String, GameListItemController> gameListItemControllers = new HashMap<>();
 
     private CompositeDisposable disposables;
 
     @Inject
-    public LobbyController(App app, LoginService loginService, GameService gameService, ErrorService errorService,
+    public LobbyController(App app, LoginService loginService, UserService userService,
+                           GameService gameService, ErrorService errorService,
                            EventListener eventListener,
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
@@ -71,6 +74,7 @@ public class LobbyController implements Controller {
                            Provider<JoinGameController> joinGameController){
         this.app = app;
         this.loginService = loginService;
+        this.userService = userService;
         this.gameService = gameService;
         this.errorService = errorService;
         this.eventListener = eventListener;
@@ -83,15 +87,26 @@ public class LobbyController implements Controller {
 
     public void init(){
         disposables = new CompositeDisposable();
+        // Get games via REST
         disposables.add(gameService.listGames()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(games -> {
                     games.forEach(this::addGameToList);
                     // This might be called before render when gameLabel is not initialized yet
                     if (gameLabel != null) {
-                        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+                        updateGameLabel();
                     }
                 }));
+        // Get users via REST
+        disposables.add(userService.listOnlineUsers()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(users -> {
+                    users.forEach(this::addPlayerToList);
+                    if (playerLabel != null) {
+                        updatePlayerLabel();
+                    }
+                }));
+        // Listen to game updates
         disposables.add(eventListener.listen("games.*.*", Game.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(eventDto -> {
@@ -107,12 +122,15 @@ public class LobbyController implements Controller {
                     } else if (event.endsWith("deleted")) {
                         GameListItemController controller = gameListItemControllers.get(game._id());
                         if (controller != null) {
-                            controller.destroy();
-                            gameListItemControllers.remove(game._id());
+                            removeGameFromList(game._id(), controller);
                         }
                     }
-                    gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+                    updateGameLabel();
                 }));
+        // Listen to user updates
+        disposables.add(eventListener.listen("users.*.*", User.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(this::onUserEvent));
     }
 
     private void addGameToList(Game game) {
@@ -121,14 +139,31 @@ public class LobbyController implements Controller {
         gameItems.add(controller.render());
     }
 
+    private void updateGameLabel() {
+        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+    }
+
+    private void removeGameFromList(String gameID, GameListItemController controller) {
+        controller.destroy();
+        gameListItemControllers.remove(gameID);
+    }
+
+    @Override
+    protected void updatePlayerLabel() {
+        playerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+    }
+
     public void destroy(){
         if (disposables != null) {
             disposables.dispose();
             disposables = null;
         }
         // Destroy and delete each sub controller
+        // We cannot call remove<Name>FromList since it would remove elements from the map while iterating over it
         gameListItemControllers.forEach((id, controller) -> controller.destroy());
         gameListItemControllers.clear();
+        playerListItemControllers.forEach((id, controller) -> controller.destroy());
+        playerListItemControllers.clear();
     }
 
     public User getUser() {
@@ -150,7 +185,9 @@ public class LobbyController implements Controller {
             return null;
         }
         gameListView.setItems(gameItems);
-        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+        updateGameLabel();
+        playerListView.setItems(playerItems);
+        updatePlayerLabel();
         return parent;
     }
 
