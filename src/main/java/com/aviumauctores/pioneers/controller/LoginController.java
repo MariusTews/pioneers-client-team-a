@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
+import com.aviumauctores.pioneers.dto.error.ValidationErrorResponse;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.CryptoService;
 import com.aviumauctores.pioneers.service.ErrorService;
@@ -15,21 +16,20 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import javafx.scene.input.MouseEvent;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static com.aviumauctores.pioneers.Constants.*;
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class LoginController implements Controller {
 
@@ -45,10 +45,8 @@ public class LoginController implements Controller {
 
     private Disposable disposable;
 
-    private HashMap<String, String> errorCodes = new HashMap<>();
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
-    @FXML public Button germanButton;
-    @FXML public Button englishButton;
     @FXML public TextField usernameInput;
     @FXML public PasswordField passwordInput;
     @FXML public Button loginButton;
@@ -151,11 +149,19 @@ public class LoginController implements Controller {
 
                                 toLobby(result);
                             },
+                            //temporary solution
                             throwable -> {
                                 if (throwable instanceof HttpException ex) {
-                                    ErrorResponse response = errorService.readErrorMessage(ex);
-                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                    app.showHttpErrorDialog(response, message);
+                                    Object object = errorService.readErrorMessage(ex);
+                                    if (object instanceof ErrorResponse response) {
+                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                    }
+                                    else {
+                                        ValidationErrorResponse response = (ValidationErrorResponse) object;
+                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                    }
                                 } else {
                                     app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                                 }
@@ -172,7 +178,6 @@ public class LoginController implements Controller {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        //System.out.println(token);
         return loginService.login(token);
     }
 
@@ -195,12 +200,12 @@ public class LoginController implements Controller {
         app.show(controller);
     }
 
-    public void setGerman(ActionEvent event) {
+    public void setGerman(MouseEvent event) {
         preferenceService.setLocale(Locale.GERMAN);
         app.show(loginController.get());
     }
 
-    public void setEnglish(ActionEvent event) {
+    public void setEnglish(MouseEvent event) {
         preferenceService.setLocale(Locale.ENGLISH);
         app.show(loginController.get());
     }

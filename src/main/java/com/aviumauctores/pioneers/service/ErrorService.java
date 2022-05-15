@@ -1,8 +1,10 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
+import com.aviumauctores.pioneers.dto.error.ValidationErrorResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
 import retrofit2.Response;
@@ -18,7 +20,7 @@ public class ErrorService {
         this.mapper = mapper;
     }
 
-    public ErrorResponse readErrorMessage(HttpException httpException) {
+    public Object readErrorMessage(HttpException httpException) {
         Response<?> response = httpException.response();
         if (response == null) {
             return null;
@@ -28,7 +30,12 @@ public class ErrorService {
                 return null;
             }
             JsonNode node = mapper.readTree(responseBody.string());
-            return mapper.treeToValue(node, ErrorResponse.class);
+            if (node.get("message") instanceof ArrayNode){
+                return mapper.treeToValue(node, ValidationErrorResponse.class);
+            }
+            else {
+                return mapper.treeToValue(node, ErrorResponse.class);
+            }
         } catch (IOException e) {
             return null;
         }

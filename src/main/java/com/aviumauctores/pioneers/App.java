@@ -117,8 +117,8 @@ public class App extends Application {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public Optional<ButtonType> showHttpErrorDialog(ErrorResponse errorResponse, String message) {
-        String header = errorResponse.statusCode() + " " + errorResponse.error();
+    public Optional<ButtonType> showHttpErrorDialog(int code, String error, String message) {
+        String header = code + " " + error;
         String content = message;
         content = content != null ? content : "";
         return showErrorDialog(header, content);

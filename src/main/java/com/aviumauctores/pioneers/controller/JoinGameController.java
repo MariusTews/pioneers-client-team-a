@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.ErrorService;
@@ -113,7 +114,8 @@ public class JoinGameController implements Controller {
                 .subscribe(member -> app.show(gameReadyController.get()),
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                app.showHttpErrorDialog(errorService.readErrorMessage(ex), "");
+                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
+                                app.showHttpErrorDialog(response.statusCode(), response.error(), response.message());
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }

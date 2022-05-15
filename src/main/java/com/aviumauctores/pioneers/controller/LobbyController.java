@@ -47,7 +47,7 @@ public class LobbyController implements Controller {
     private final Provider<CreateGameController> createGameController;
     private final Provider<JoinGameController> joinGameController;
 
-    private HashMap<String, String> errorCodes = new HashMap<>();
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML public Label gameLabel;
 
@@ -198,9 +198,9 @@ public class LobbyController implements Controller {
                         },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
                                 String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                app.showHttpErrorDialog(response, message);
+                                app.showHttpErrorDialog(response.statusCode(), response.error(), message);
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }
