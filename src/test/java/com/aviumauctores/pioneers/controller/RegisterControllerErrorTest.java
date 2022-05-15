@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.input.KeyCode;
@@ -14,6 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,6 +36,12 @@ public class RegisterControllerErrorTest extends ApplicationTest {
 
     @Spy
     App app;
+
+    @Mock
+    PreferenceService preferenceService;
+
+    @Spy
+    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @InjectMocks
     RegisterController registerController;
