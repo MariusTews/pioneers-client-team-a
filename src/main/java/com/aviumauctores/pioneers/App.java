@@ -10,14 +10,20 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -35,17 +41,17 @@ public class App extends Application {
 
     private Disposable disposable;
 
-    public App(){
+    public App() {
         final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
         controller = mainComponent.loginController();
     }
 
-    public App(Controller controller){
+    public App(Controller controller) {
         this.controller = controller;
     }
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) {
 
         this.stage = primaryStage;
         stage.setWidth(SCREEN_WIDTH);
@@ -63,65 +69,141 @@ public class App extends Application {
 
         primaryStage.show();
 
-        if (controller != null){
+        if (controller != null) {
             show(controller);
         }
 
     }
 
-    private void setAppIcon(Stage stage){
+    public void letterbox(final Pane contentPane) {
+        final double initWidth = stage.getScene().getWidth();
+        final double initHeight = stage.getScene().getHeight();
+        final double ratio = initWidth / initHeight;
+
+        SceneSizeChangeListener sizeListener = new SceneSizeChangeListener(stage.getScene(), ratio, initHeight, initWidth, contentPane);
+        stage.getScene().widthProperty().addListener(sizeListener);
+        stage.getScene().heightProperty().addListener(sizeListener);
+    }
+
+
+
+
+    public void setWindow(Pane contentPane) {
+        final double newWidth = stage.getScene().getWidth();
+        final double newHeight = stage.getScene().getHeight();
+        final int ratio = SCREEN_WIDTH/SCREEN_HEIGHT;
+
+        System.out.println("newWidth: " +  newWidth);
+        System.out.println("newHeight: " +  newHeight);
+
+
+
+        double scaleFactor = newWidth / newHeight > ratio ? newHeight / SCREEN_HEIGHT : newWidth / SCREEN_WIDTH;
+        System.out.println(scaleFactor);
+        if (scaleFactor >= 1) {
+            Scale scale = new Scale(scaleFactor, scaleFactor);
+            scale.setPivotX(0);
+            scale.setPivotY(0);
+            stage.getScene().getRoot().getTransforms().setAll(scale);
+
+            System.out.println(newWidth / scaleFactor);
+
+            contentPane.setPrefWidth(newWidth / scaleFactor);
+            contentPane.setPrefHeight(newHeight / scaleFactor);
+        } else {
+            contentPane.setPrefWidth(Math.max(SCREEN_WIDTH, newWidth));
+            contentPane.setPrefHeight(Math.max(SCREEN_HEIGHT, newHeight));
+        }
+
+
+    }
+
+    public record SceneSizeChangeListener(Scene scene, double ratio, double initHeight, double initWidth,
+                                          Pane contentPane) implements ChangeListener<Number> {
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+            final double newWidth = scene.getWidth();
+            final double newHeight = scene.getHeight();
+
+            double scaleFactor = newWidth / newHeight > ratio ? newHeight / initHeight : newWidth / initWidth;
+
+            if (scaleFactor >= 1) {
+                Scale scale = new Scale(scaleFactor, scaleFactor);
+                scale.setPivotX(0);
+                scale.setPivotY(0);
+                scene.getRoot().getTransforms().setAll(scale);
+
+                contentPane.setPrefWidth(newWidth / scaleFactor);
+                contentPane.setPrefHeight(newHeight / scaleFactor);
+            } else {
+                contentPane.setPrefWidth(Math.max(initWidth, newWidth));
+                contentPane.setPrefHeight(Math.max(initHeight, newHeight));
+            }
+        }
+    }
+
+    private void setAppIcon(Stage stage) {
         final Image image = new Image(Objects.requireNonNull(getClass().getResource("settlement.png")).toString());
         stage.getIcons().add(image);
     }
 
-    private void setTaskBarIcon(){
-        if(GraphicsEnvironment.isHeadless()){
+    private void setTaskBarIcon() {
+        if (GraphicsEnvironment.isHeadless()) {
             return;
         }
-        try{
+        try {
             final Taskbar taskbar = Taskbar.getTaskbar();
             final java.awt.Image image = ImageIO.read(Objects.requireNonNull(Main.class.getResource("settlement.png")));
             taskbar.setIconImage(image);
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
 
         }
     }
+
     @Override
-    public void stop(){
+    public void stop() {
         cleanup();
     }
 
-    public void show(Controller controller){
+    public void show(Controller controller) {
         cleanup();
         this.controller = controller;
 
         //if controller is a logincontroller and remember me is enabled then try to login with the refresh token
         //if this is not implemented here but in the logincontroller, then the login controller will show shortly
         //before a successful token login leads to the lobby screen
-        if(controller instanceof LoginController loginController){
-            if(loginController.getRememberMeStatus()){
+        if (controller instanceof LoginController loginController) {
+            if (loginController.getRememberMeStatus()) {
                 Observable<LoginResult> observable = loginController.tryTokenLogin();
-                disposable = observable.subscribeOn(FX_SCHEDULER)
-                        .subscribe(
-                                //on success show the lobby screen (token login was successful)
-                                loginController::toLobby,
-                                //on error show the login screen (token login was not successful)
-                                error -> {
-                                    loginController.init();
-                                    stage.getScene().setRoot(loginController.render());
-                                }
-                        );
+                disposable = observable.subscribeOn(FX_SCHEDULER).subscribe(
+                        //on success show the lobby screen (token login was successful)
+                        loginController::toLobby,
+                        //on error show the login screen (token login was not successful)
+                        error -> {
+                            loginController.init();
+                            stage.getScene().setRoot(loginController.render());
+                            Pane root = (Pane) stage.getScene().getRoot();
+                            this.setWindow(root);
+                            this.letterbox(root);
+                        });
             }
             //if remember me is disabled show the login screen
             else {
                 loginController.init();
                 stage.getScene().setRoot(loginController.render());
+                Pane root = (Pane) stage.getScene().getRoot();
+                this.setWindow(root);
+                letterbox(root);
             }
         }
         //if controller is not a logincontroller then do a normal controller init and render
-        else{
+        else {
             controller.init();
             stage.getScene().setRoot(controller.render());
+            Pane root = (Pane) stage.getScene().getRoot();
+            this.setWindow(root);
+            letterbox(root);
         }
 
     }
@@ -176,13 +258,13 @@ public class App extends Application {
         dialogStage.show();
     }
 
-    private void cleanup(){
+    private void cleanup() {
 
         if (this.disposable != null) {
             disposable.dispose();
         }
 
-        if(controller != null){
+        if (controller != null) {
             controller.destroy();
             controller = null;
         }

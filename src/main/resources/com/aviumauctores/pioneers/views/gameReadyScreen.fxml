@@ -20,7 +20,7 @@
               <tabs>
                 <Tab fx:id="allChatTab" text="All">
                   <content>
-                    <AnchorPane fx:id="chatPane" minHeight="0.0" minWidth="0.0" prefHeight="203.0" prefWidth="263.0" style="-fx-border-color: #346b32#346b32;" />
+                    <AnchorPane fx:id="chatPane" minHeight="0.0" minWidth="0.0" prefHeight="203.0" prefWidth="263.0" />
                   </content>
                 </Tab>
               </tabs>

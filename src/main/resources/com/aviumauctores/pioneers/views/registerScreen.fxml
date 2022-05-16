@@ -12,75 +12,78 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="25.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.RegisterController">
-   <HBox prefHeight="52.0" prefWidth="600.0" />
-   <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
-      <Label text="Username" />
-      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-         <TextField id="textfieldUsername" fx:id="textfieldUsername" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="200.0" promptText="Input Username">
-            <opaqueInsets>
-               <Insets />
-            </opaqueInsets>
-            <font>
-               <Font size="14.0" />
-            </font>
-         </TextField>
-      </HBox>
-   </VBox>
-   <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
-      <Label text="Passwort" />
-      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <Pane prefHeight="30.0" prefWidth="200.0">
-            <PasswordField id="textfieldPassword" fx:id="textfieldPassword" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="200.0" promptText="Input Passwort">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.RegisterController">
+   <VBox alignment="CENTER" layoutX="-10.0" layoutY="-7.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="415.0" prefWidth="621.0" spacing="25.0">
+      <HBox prefHeight="52.0" prefWidth="600.0" />
+      <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
+         <Label text="Username" />
+         <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+            <TextField id="textfieldUsername" fx:id="textfieldUsername" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="200.0" promptText="Input Username">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
                <font>
                   <Font size="14.0" />
                </font>
-            </PasswordField>
-            <TextField id="textfieldPassword_show" fx:id="textfieldPassword_show" editable="false" prefHeight="25.0" prefWidth="200.0" visible="false">
+            </TextField>
+         </HBox>
+      </VBox>
+      <VBox alignment="TOP_CENTER" prefHeight="98.0" prefWidth="600.0" spacing="5.0">
+         <Label text="Passwort" />
+         <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+            <opaqueInsets>
+               <Insets />
+            </opaqueInsets>
+            <padding>
+               <Insets left="135.0" />
+            </padding>
+            <Pane prefHeight="30.0" prefWidth="200.0">
+               <PasswordField id="textfieldPassword" fx:id="textfieldPassword" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="200.0" promptText="Input Passwort">
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
+                  <font>
+                     <Font size="14.0" />
+                  </font>
+               </PasswordField>
+               <TextField id="textfieldPassword_show" fx:id="textfieldPassword_show" editable="false" prefHeight="25.0" prefWidth="200.0" visible="false">
+                  <font>
+                     <Font size="14.0" />
+                  </font>
+               </TextField>
+            </Pane>
+            <Pane prefHeight="50.0" prefWidth="15.0" />
+            <ImageView fitHeight="29.0" fitWidth="29.0">
+               <Image url="@Schloss.png" />
+            </ImageView>
+            <Button id="showPasswordButton" fx:id="showPasswordButton" mnemonicParsing="false" onAction="#showPassword" prefHeight="30.0" prefWidth="92.0" text="Anzeigen">
                <font>
                   <Font size="14.0" />
                </font>
-            </TextField>
-         </Pane>
-         <Pane prefHeight="50.0" prefWidth="15.0" />
-         <ImageView fitHeight="29.0" fitWidth="29.0">
-            <Image url="@Schloss.png" />
-         </ImageView>
-         <Button id="showPasswordButton" fx:id="showPasswordButton" mnemonicParsing="false" onAction="#showPassword" prefHeight="30.0" prefWidth="92.0" text="Anzeigen">
+            </Button>
+         </HBox>
+         <HBox alignment="TOP_CENTER" prefHeight="33.0" prefWidth="600.0" spacing="20.0">
+            <padding>
+               <Insets left="150.0" />
+            </padding>
+         </HBox>
+      </VBox>
+      <VBox alignment="TOP_CENTER" prefHeight="99.0" prefWidth="600.0" spacing="5.0">
+         <Button id="createAccountButton" fx:id="createAccountButton" mnemonicParsing="false" onAction="#createAccount" text="Account erstellen">
             <font>
                <Font size="14.0" />
             </font>
          </Button>
+      </VBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
          <padding>
-            <Insets left="135.0" />
+            <Insets right="60.0" />
          </padding>
-      </HBox>
-      <HBox alignment="TOP_CENTER" prefHeight="33.0" prefWidth="600.0" spacing="20.0">
-         <padding>
-            <Insets left="150.0" />
-         </padding>
+         <Button id="leaveButton" fx:id="leaveButton" mnemonicParsing="false" onAction="#leave" text="Verlassen">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
       </HBox>
    </VBox>
-   <VBox alignment="TOP_CENTER" prefHeight="99.0" prefWidth="600.0" spacing="5.0">
-      <Button id="createAccountButton" fx:id="createAccountButton" mnemonicParsing="false" onAction="#createAccount" text="Account erstellen">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Button>
-   </VBox>
-   <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
-      <padding>
-         <Insets right="60.0" />
-      </padding>
-      <Button id="leaveButton" fx:id="leaveButton" mnemonicParsing="false" onAction="#leave" text="Verlassen">
-         <font>
-            <Font size="14.0" />
-         </font></Button>
-   </HBox>
-</VBox>
+</Pane>

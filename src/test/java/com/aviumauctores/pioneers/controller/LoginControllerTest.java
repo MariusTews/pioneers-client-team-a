@@ -59,4 +59,18 @@ class LoginControllerTest extends ApplicationTest {
 
         verify(loginService).login("Struppi", "12345678");
     }
+
+    @Test
+    void changeDesignLight() {
+        doNothing().when(app).setTheme("light");
+        clickOn("#sunIcon");
+        verify(app).setTheme("light");
+    }
+
+    @Test
+    void changeDesignDark() {
+        doNothing().when(app).setTheme("dark");
+        clickOn("#moonIcon");
+        verify(app).setTheme("dark");
+    }
 }

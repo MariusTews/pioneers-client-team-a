@@ -61,6 +61,7 @@ public class GameReadyController implements Controller {
         final Parent parent;
         try {
             parent = loader.load();
+            chatPane.setId("chatpane");
         }catch(IOException e) {
             e.printStackTrace();
             return null;
