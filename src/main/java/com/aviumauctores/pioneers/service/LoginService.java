@@ -33,7 +33,10 @@ public class LoginService {
 
     public Observable<LoginResult> login(String token){
         return authenticationApiService.refresh(new RefreshDto(token))
-                .doOnNext(result -> tokenStorage.setToken(result.accessToken()));
+                .doOnNext(result -> {
+                    tokenStorage.setToken(result.accessToken());
+                    userService.setCurrentUserID(result._id());
+                });
     }
 
     public @NonNull Completable logout() {

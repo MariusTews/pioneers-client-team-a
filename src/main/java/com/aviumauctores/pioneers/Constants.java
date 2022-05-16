@@ -85,8 +85,6 @@ public class Constants {
 
     public static final String HTTP_409 = "HTTP 409 ";
 
-    //Allchat_ID
-    //public static final String ALLCHAT_ID = "627b906ad6f8f300140d8470";
     public static final String ALLCHAT_ID = "627cf3c93496bc00158f3859";
 
 
