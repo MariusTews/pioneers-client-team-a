@@ -38,6 +38,12 @@ class RegisterControllerTest extends ApplicationTest {
     Provider<LoginController> loginController;
 
     @Mock
+    PreferenceService preferenceService;
+
+    @Spy
+    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
+
+    @Mock
     App app;
 
     @Mock

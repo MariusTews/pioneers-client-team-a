@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.GameReadyController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.GameReadyController">
    <children>
       <Pane prefHeight="408.0" prefWidth="600.0">
          <children>
@@ -26,15 +26,15 @@
               </tabs>
             </TabPane>
             <TextField layoutX="37.0" layoutY="280.0" prefHeight="31.0" prefWidth="145.0" promptText="%message" />
-            <Button fx:id="sendMessageButton" layoutX="185.0" layoutY="280.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="70.0" style="-fx-background-color: #b0ffc0#b0ffc0 #b0ffc0#b0ffc0; -fx-border-color: #346b32#346b32 #346b32#346b32;" text="%send" />
+            <Button fx:id="sendMessageButton" layoutX="185.0" layoutY="280.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="70.0" text="%send" />
             <Label fx:id="gameNameLabel" layoutX="205.0" layoutY="25.0" prefHeight="26.0" prefWidth="200.0" text="%game">
                <font>
                   <Font size="24.0" />
                </font>
             </Label>
-            <Button fx:id="leaveGameButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#leaveGame" prefHeight="39.0" prefWidth="89.0" style="-fx-background-color: #b0ffc0#b0ffc0; -fx-border-color: #346b32#346b32;" text="%leave" />
-            <Button fx:id="gameReadyButton" layoutX="262.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameReady" prefHeight="39.0" prefWidth="89.0" style="-fx-background-color: #b0ffc0; -fx-border-color: #346b32#346b32;" text="%ready" />
-            <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame" prefHeight="39.0" prefWidth="89.0" style="-fx-background-color: #b0ffc0#b0ffc0; -fx-border-color: #346b32#346b32;" text="%start.game" />
+            <Button fx:id="leaveGameButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#leaveGame" prefHeight="39.0" prefWidth="89.0" text="%leave" />
+            <Button fx:id="gameReadyButton" layoutX="262.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameReady" prefHeight="39.0" prefWidth="89.0" text="%ready" />
+            <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame" prefHeight="39.0" prefWidth="89.0" text="%start.game" />
          </children>
       </Pane>
    </children>

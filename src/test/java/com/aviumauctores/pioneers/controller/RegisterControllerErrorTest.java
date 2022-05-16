@@ -34,6 +34,12 @@ public class RegisterControllerErrorTest extends ApplicationTest {
     @Mock
     Provider<LoginController> loginController;
 
+    @Mock
+    PreferenceService preferenceService;
+
+    @Spy
+    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
+
     @Spy
     App app;
 

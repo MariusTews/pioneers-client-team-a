@@ -19,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseEvent;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -208,5 +209,14 @@ public class LoginController implements Controller {
     public void setEnglish(MouseEvent event) {
         preferenceService.setLocale(Locale.ENGLISH);
         app.show(loginController.get());
+    }
+
+    public void selectLight(MouseEvent mouseEvent) {
+        app.setTheme("light");
+    }
+
+    public void selectDark(MouseEvent mouseEvent) {
+        app.setTheme("dark");
+
     }
 }

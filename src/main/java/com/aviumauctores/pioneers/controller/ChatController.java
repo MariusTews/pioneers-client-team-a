@@ -22,16 +22,13 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 
-public class ChatController implements Controller {
+public class ChatController extends PlayerListController {
 
     private final App app;
     private final Provider<LobbyController> lobbyController;
@@ -46,7 +43,7 @@ public class ChatController implements Controller {
 
     private final EventListener eventListener;
 
-    private CompositeDisposable disposable = new CompositeDisposable();
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     private List<String> usersIdList  = new ArrayList<>();
 
@@ -54,13 +51,15 @@ public class ChatController implements Controller {
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
-    @FXML public ListView onlinePlayerList;
+    @FXML public ListView<Parent> onlinePlayerList;
     @FXML public Button leaveButton;
     @FXML public ScrollBar chatScrollBar;
     @FXML public Label hintLabel;
     @FXML public Label onlinePlayerLabel;
     @FXML public Tab allTab;
     @FXML public TabPane chatTabPane;
+
+    private final Map<String, Tab> chatTabsByUserID = new HashMap<>();
 
     @Inject
     public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
@@ -77,10 +76,16 @@ public class ChatController implements Controller {
 
     public void init(){
         // get all users, their ids and update the All-Group
-        userService.findAll().observeOn(FX_SCHEDULER).subscribe(result -> {this.users.setAll(result);
-            usersIdList = getAllUserIDs(users);
-            groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
-        });
+        disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
+                .subscribe(result -> {
+                    this.users.setAll(result);
+                    usersIdList = getAllUserIDs(users);
+                    groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
+                    result.forEach(this::addPlayerToList);
+                    if (onlinePlayerLabel != null) {
+                        updatePlayerLabel();
+                    }
+                }));
         // listen for users and put them in the All-Group for the All-Chat
         disposable.add(eventListener.listen("users.*.*", User.class)
                 .observeOn(FX_SCHEDULER)
@@ -90,6 +95,8 @@ public class ChatController implements Controller {
                         usersIdList.add(event.data()._id());
                         groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
+                    // Update user list
+                    onUserEvent(event);
                 }));
         // listen for incoming messages and show them as a Label
         disposable.add(eventListener.listen("groups.*.messages.*.*", Message.class)
@@ -107,8 +114,14 @@ public class ChatController implements Controller {
                 }));
     }
 
+    @Override
+    protected void updatePlayerLabel() {
+        onlinePlayerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+    }
+
     public void destroy(){
         disposable.dispose();
+        chatTabsByUserID.clear();
     }
 
     public Parent render() {
@@ -129,6 +142,8 @@ public class ChatController implements Controller {
                 sendMessage();
             }
         } );
+        onlinePlayerList.setItems(playerItems);
+        updatePlayerLabel();
         return parent;
     }
 
@@ -160,7 +175,28 @@ public class ChatController implements Controller {
         app.show(controller);
     }
 
-
+    @Override
+    public void onPlayerItemClicked(User selectedUser) {
+        Tab userTab = chatTabsByUserID.get(selectedUser._id());
+        if (userTab != null) {
+            // There is already a chat tab
+            chatTabPane.getSelectionModel().select(userTab);
+            return;
+        }
+        disposable.add(groupService.getOrCreateGroup(List.of(userService.getCurrentUserID(), selectedUser._id()), disposable)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(group -> {
+                    disposable.add(eventListener.listen("groups." + group._id() + ".messages.*.*", Message.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(eventDto -> {
+                                // Process message
+                            }));
+                    Tab tab = new Tab(selectedUser.name());
+                    chatTabPane.getTabs().add(tab);
+                    chatTabPane.getSelectionModel().select(tab);
+                    chatTabsByUserID.put(selectedUser._id(), tab);
+                }));
+    }
 
     // Function to create a new label for the message with the needed functions
     public Label createMessageLabel(Message message) {
