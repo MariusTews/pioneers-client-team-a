@@ -52,6 +52,10 @@ public abstract class PlayerListController implements Controller {
         playerItems.add(controller.render());
     }
 
+    protected void addMemberToList(Member gameMember) {
+        // Do nothing at default
+    }
+
     protected abstract void updatePlayerLabel();
 
     protected void removePlayerFromList(String userID, PlayerListItemController controller) {

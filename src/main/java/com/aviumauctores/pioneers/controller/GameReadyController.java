@@ -2,10 +2,13 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameMemberService;
+import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,7 +29,9 @@ public class GameReadyController extends PlayerListController {
 
     private final App app;
     private final UserService userService;
+    private final GameService gameService;
     private final GameMemberService gameMemberService;
+    private final EventListener eventListener;
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
 
@@ -53,11 +58,14 @@ public class GameReadyController extends PlayerListController {
     private CompositeDisposable disposables;
 
     @Inject
-    public GameReadyController(App app, UserService userService, GameMemberService gameMemberService,
+    public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
+                               EventListener eventListener,
                                ResourceBundle bundle, Provider<LobbyController> lobbyController){
         this.app = app;
         this.userService = userService;
+        this.gameService = gameService;
         this.gameMemberService = gameMemberService;
+        this.eventListener = eventListener;
         this.bundle = bundle;
         this.lobbyController = lobbyController;
     }
@@ -68,22 +76,55 @@ public class GameReadyController extends PlayerListController {
         disposables.add(gameMemberService.listCurrentGameMembers()
                 .subscribe(members -> {
                     for (Member member : members) {
-                        String userId = member.userId();
-                        disposables.add(userService.getUserByID(userId)
-                                .observeOn(FX_SCHEDULER)
-                                .subscribe(user -> {
-                                    addPlayerToList(user, member);
-                                    if (playerListPane != null) {
-                                        updatePlayerLabel();
-                                    }
-                                }));
+                        addMemberToList(member);
+                    }
+                    if (playerListPane != null) {
+                        updatePlayerLabel();
                     }
                 }));
+        // Listen to game member events
+        disposables.add(eventListener.listen(
+                        "games." + gameService.getCurrentGameID() + ".members.*.*",
+                        Member.class
+                )
+                .observeOn(FX_SCHEDULER)
+                .subscribe(this::onMemberEvent));
+    }
+
+    protected void onMemberEvent(EventDto<Member> eventDto) {
+        String event = eventDto.event();
+        Member member = eventDto.data();
+        if (event.endsWith("created")) {
+            addMemberToList(member);
+        } else if (event.endsWith("updated")) {
+            PlayerListItemController controller = playerListItemControllers.get(member.userId());
+            if (controller != null) {
+                readyMembers += member.ready() ? 1 : -1;
+                controller.onGameMemberUpdated(member);
+            } else {
+                addMemberToList(member);
+            }
+        } else if (event.endsWith("deleted")) {
+            PlayerListItemController controller = playerListItemControllers.get(member.userId());
+            if (controller != null) {
+                removePlayerFromList(member.userId(), controller);
+            }
+        }
+        updatePlayerLabel();
     }
 
     @Override
-    protected void addPlayerToList(User user, Member gameMember) {
-        super.addPlayerToList(user, gameMember);
+    protected void addMemberToList(Member gameMember) {
+        String userId = gameMember.userId();
+        disposables.add(userService.getUserByID(userId)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(user -> {
+                    addPlayerToList(user, gameMember);
+                    // Listen to user events
+                    disposables.add(eventListener.listen("users." + userId + ".*", User.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(this::onUserEvent));
+                }));
         if (gameMember.ready()) {
             readyMembers++;
         }
@@ -92,6 +133,12 @@ public class GameReadyController extends PlayerListController {
     @Override
     protected void updatePlayerLabel() {
         playerListPane.setText(String.format("Spieler im Spiel (Bereit %d/4)", readyMembers));
+    }
+
+    @Override
+    protected void removePlayerFromList(String userID, PlayerListItemController controller) {
+        super.removePlayerFromList(userID, controller);
+        readyMembers--;
     }
 
     public void destroy(){
