@@ -1,5 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.User;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -11,18 +13,32 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 
+import java.util.Objects;
+
 public class PlayerListItemController implements Controller {
+    public static final String READY_SRC = "views/ready.png";
+    public static final String NOT_READY_SRC = "views/notReady.png";
+
     private HBox root;
     private ImageView avatarView;
     private Label playerName;
+    private ImageView readyView;
 
     private final PlayerListController parentController;
+
     private User user;
+    private Member gameMember;
+
     private final ObservableList<Parent> playerItems;
 
     public PlayerListItemController(PlayerListController parentController, User user, ObservableList<Parent> playerItems) {
+        this(parentController, user, null, playerItems);
+    }
+
+    public PlayerListItemController(PlayerListController parentController, User user, Member gameMember, ObservableList<Parent> playerItems) {
         this.parentController = parentController;
         this.user = user;
+        this.gameMember = gameMember;
         this.playerItems = playerItems;
     }
 
@@ -36,6 +52,11 @@ public class PlayerListItemController implements Controller {
         playerItems.remove(root);
     }
 
+    private Image createReadyImg() {
+        String src = gameMember.ready() ? READY_SRC : NOT_READY_SRC;
+        return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(src)));
+    }
+
     @Override
     public Parent render() {
         avatarView = new ImageView();
@@ -44,7 +65,10 @@ public class PlayerListItemController implements Controller {
         String avatarUrl = user.avatar();
         Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
         avatarView.setImage(avatar);
-        playerName = new Label(user.name());
+        if (gameMember != null) {
+            readyView = new ImageView(createReadyImg());
+        }
+        playerName = new Label(user.name(), readyView);
         root = new HBox(10.0, avatarView, playerName);
         root.setAlignment(Pos.CENTER_LEFT);
         root.setOnMouseClicked(this::onItemClicked);
@@ -65,5 +89,10 @@ public class PlayerListItemController implements Controller {
         Image newAvatar = avatarUrl == null ? null : new Image(avatarUrl);
         avatarView.setImage(newAvatar);
         playerName.setText(newUser.name());
+    }
+
+    public void onGameMemberUpdated(Member newGameMember) {
+        gameMember = newGameMember;
+        readyView.setImage(createReadyImg());
     }
 }
