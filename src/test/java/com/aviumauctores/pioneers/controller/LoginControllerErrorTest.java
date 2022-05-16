@@ -50,13 +50,13 @@ class LoginControllerErrorTest extends ApplicationTest {
 
     @Test
     void login(){
-        when(loginService.login(any(), any())).thenReturn(Observable.error(new Throwable("HTTP 400 ")));
+        when(loginService.login(any(), any())).thenReturn(Observable.error(new Throwable()));
 
         write("Struppi\t");
         write("1\t");
         type(KeyCode.SPACE);
 
-        verifyThat("Validation failed.", NodeMatchers.isVisible());
+        verifyThat("Connection failed.", NodeMatchers.isVisible());
         verify(loginService).login("Struppi", "1");
     }
 }

@@ -15,26 +15,26 @@
    <children>
       <Pane prefHeight="408.0" prefWidth="600.0">
          <children>
-            <TitledPane fx:id="playerListPane" animated="false" collapsible="false" layoutX="372.0" layoutY="75.0" prefHeight="234.0" prefWidth="202.0" text="Player in Lobby (Ready 2/4)" />
+            <TitledPane fx:id="playerListPane" animated="false" collapsible="false" layoutX="372.0" layoutY="75.0" prefHeight="234.0" prefWidth="202.0" text="%players" />
             <TabPane layoutX="37.0" layoutY="82.0" prefHeight="194.0" prefWidth="218.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab fx:id="allChatTab" text="All">
+                <Tab fx:id="allChatTab" text="%all">
                   <content>
                     <AnchorPane fx:id="chatPane" minHeight="0.0" minWidth="0.0" prefHeight="203.0" prefWidth="263.0" style="-fx-border-color: #346b32#346b32;" />
                   </content>
                 </Tab>
               </tabs>
             </TabPane>
-            <TextField layoutX="37.0" layoutY="280.0" prefHeight="31.0" prefWidth="145.0" promptText="Message" />
-            <Button fx:id="sendMessageButton" layoutX="185.0" layoutY="280.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="70.0" text="Send" />
-            <Label fx:id="gameNameLabel" layoutX="205.0" layoutY="25.0" prefHeight="26.0" prefWidth="200.0" text="Welcome to Game1">
+            <TextField layoutX="37.0" layoutY="280.0" prefHeight="31.0" prefWidth="145.0" promptText="%message" />
+            <Button fx:id="sendMessageButton" layoutX="185.0" layoutY="280.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="70.0" text="%send" />
+            <Label fx:id="gameNameLabel" layoutX="205.0" layoutY="25.0" prefHeight="26.0" prefWidth="200.0" text="%game">
                <font>
                   <Font size="24.0" />
                </font>
             </Label>
-            <Button fx:id="leaveGameButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#leaveGame" prefHeight="39.0" prefWidth="89.0" text="Leave" />
-            <Button fx:id="gameReadyButton" layoutX="262.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameReady" prefHeight="39.0" prefWidth="89.0" text="Ready" />
-            <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame" prefHeight="39.0" prefWidth="89.0" text="Start Game" />
+            <Button fx:id="leaveGameButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#leaveGame" prefHeight="39.0" prefWidth="89.0" text="%leave" />
+            <Button fx:id="gameReadyButton" layoutX="262.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameReady" prefHeight="39.0" prefWidth="89.0" text="%ready" />
+            <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame" prefHeight="39.0" prefWidth="89.0" text="%start.game" />
          </children>
       </Pane>
    </children>

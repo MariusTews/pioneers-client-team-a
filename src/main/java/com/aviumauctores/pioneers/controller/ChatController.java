@@ -46,6 +46,7 @@ public class ChatController extends PlayerListController {
     private final UserService userService;
 
     private final GroupService groupService;
+    private final ResourceBundle bundle;
 
     private final EventListener eventListener;
 
@@ -77,13 +78,15 @@ public class ChatController extends PlayerListController {
 
     @Inject
     public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
-                          EventListener eventListener, UserService userService, GroupService groupService) {
+                          EventListener eventListener, UserService userService, GroupService groupService,
+                          ResourceBundle bundle) {
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
         this.eventListener = eventListener;
         this.userService = userService;
         this.groupService = groupService;
+        this.bundle = bundle;
     }
 
     public void init(){
@@ -161,7 +164,7 @@ public class ChatController extends PlayerListController {
     }
 
     public Parent render() {
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/ChatScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/ChatScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
