@@ -222,6 +222,7 @@ public class LobbyController extends PlayerListController {
 
     public void toChat(ActionEvent event) {
         final ChatController controller = chatController.get();
+        controller.setUser(this.user);
         app.show(controller);
     }
 

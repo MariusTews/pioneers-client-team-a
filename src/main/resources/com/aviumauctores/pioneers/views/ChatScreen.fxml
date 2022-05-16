@@ -18,7 +18,7 @@
             <tabs>
                 <Tab fx:id="allTab" closable="false" text="%all">
                     <content>
-                        <ScrollPane>
+                        <ScrollPane fx:id="scrollPane">
                             <content>
                                 <VBox/>
                             </content>
@@ -39,7 +39,6 @@
                 <Font size="17.0" />
             </font>
         </Button>
-        <ScrollBar fx:id="chatScrollBar" layoutX="331.0" layoutY="55.0" orientation="VERTICAL" prefHeight="315.0" prefWidth="15.0" />
         <Label fx:id="hintLabel" layoutX="14.0" layoutY="384.0" prefHeight="17.0" prefWidth="333.0" text="%delete.hint">
             <font>
                 <Font size="11.0" />
