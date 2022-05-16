@@ -17,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -32,6 +33,7 @@ public class CreateGameController implements Controller {
     private final Provider<LobbyController> lobbyController;
 
     private final GameService gameService;
+    private final ResourceBundle bundle;
 
     private boolean hidePassword = true;
 
@@ -49,10 +51,11 @@ public class CreateGameController implements Controller {
 
     @Inject
     public CreateGameController(App app, Provider<LobbyController> lobbyController,
-                                GameService gameService){
+                                GameService gameService, ResourceBundle bundle){
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameService = gameService;
+        this.bundle = bundle;
     }
 
     public void init(){
@@ -67,7 +70,7 @@ public class CreateGameController implements Controller {
     @Override
     public Parent render(){
         //load createGame FXML
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -102,7 +105,7 @@ public class CreateGameController implements Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
         //show gameReady Screen
-        final GameReadyController controller = new GameReadyController(app,lobbyController);
+        final GameReadyController controller = new GameReadyController(app, bundle, lobbyController);
         app.show(controller);
     }
 

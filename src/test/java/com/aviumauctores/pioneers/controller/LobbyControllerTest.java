@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Completable;
@@ -17,8 +18,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -44,6 +49,12 @@ class LobbyControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
+
+    @Mock
+    PreferenceService preferenceService;
+
+    @Spy
+    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @InjectMocks
     LobbyController lobbyController;
@@ -89,6 +100,6 @@ class LobbyControllerTest extends ApplicationTest {
 
         clickOn("#quitButton");
         // Ensure a dialog is shown
-        verify(app).showConnectionFailedDialog();
+        verify(app).showErrorDialog(anyString(),anyString());
     }
 }

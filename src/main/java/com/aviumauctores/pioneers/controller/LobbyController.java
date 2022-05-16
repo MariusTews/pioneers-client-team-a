@@ -2,12 +2,14 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -27,6 +29,7 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -39,11 +42,15 @@ public class LobbyController extends PlayerListController {
     private final UserService userService;
     private final GameService gameService;
     private final ErrorService errorService;
+    private final PreferenceService preferenceService;
     private final EventListener eventListener;
+    private final ResourceBundle bundle;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
     private final Provider<CreateGameController> createGameController;
     private final Provider<JoinGameController> joinGameController;
+
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML public Label gameLabel;
 
@@ -65,9 +72,12 @@ public class LobbyController extends PlayerListController {
     private CompositeDisposable disposables;
 
     @Inject
-    public LobbyController(App app, LoginService loginService, UserService userService,
+    public LobbyController(App app,
+                           LoginService loginService, UserService userService,
                            GameService gameService, ErrorService errorService,
+                           PreferenceService preferenceService,
                            EventListener eventListener,
+                           ResourceBundle bundle,
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
@@ -77,7 +87,9 @@ public class LobbyController extends PlayerListController {
         this.userService = userService;
         this.gameService = gameService;
         this.errorService = errorService;
+        this.preferenceService = preferenceService;
         this.eventListener = eventListener;
+        this.bundle = bundle;
         this.loginController = loginController;
         this.chatController = chatController;
         this.createGameController = createGameController;
@@ -131,16 +143,21 @@ public class LobbyController extends PlayerListController {
         disposables.add(eventListener.listen("users.*.*", User.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onUserEvent));
+
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+
     }
 
     private void addGameToList(Game game) {
-        GameListItemController controller = new GameListItemController(this, game, gameItems);
+        GameListItemController controller = new GameListItemController(this, game, gameItems, bundle);
         gameListItemControllers.put(game._id(), controller);
         gameItems.add(controller.render());
     }
 
     private void updateGameLabel() {
-        gameLabel.setText(String.format("Spiele (%d)", gameItems.size()));
+        gameLabel.setText(String.format(bundle.getString("games") + " (%d)", gameItems.size()));
     }
 
     private void removeGameFromList(String gameID, GameListItemController controller) {
@@ -150,7 +167,7 @@ public class LobbyController extends PlayerListController {
 
     @Override
     protected void updatePlayerLabel() {
-        playerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+        playerLabel.setText(String.format(bundle.getString("online.players") + " (%d)", playerItems.size()));
     }
 
     public void destroy(){
@@ -175,7 +192,7 @@ public class LobbyController extends PlayerListController {
     }
 
     public Parent render(){
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/lobbyScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/lobbyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -211,12 +228,18 @@ public class LobbyController extends PlayerListController {
     public void quit(ActionEvent event) {
         disposables.add(loginService.logout()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(() -> app.show(loginController.get()),
+                .subscribe(() -> {
+                            preferenceService.setRememberMe(false);
+                            preferenceService.setRefreshToken("");
+                            app.show(loginController.get());
+                        },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                app.showHttpErrorDialog(errorService.readErrorMessage(ex));
+                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                app.showHttpErrorDialog(response.statusCode(), response.error(), message);
                             } else {
-                                app.showConnectionFailedDialog();
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }
                         }));
     }
