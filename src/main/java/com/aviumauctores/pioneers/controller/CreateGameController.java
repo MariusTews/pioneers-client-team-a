@@ -32,6 +32,7 @@ public class CreateGameController implements Controller {
 
     private final Provider<LobbyController> lobbyController;
 
+    private final Provider<GameReadyController> gameReadyController;
     private final GameService gameService;
     private final ResourceBundle bundle;
 
@@ -50,10 +51,12 @@ public class CreateGameController implements Controller {
     @FXML public TextField gameNameInput;
 
     @Inject
-    public CreateGameController(App app, Provider<LobbyController> lobbyController,
+    public CreateGameController(App app,
+                                Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
                                 GameService gameService, ResourceBundle bundle){
         this.app = app;
         this.lobbyController = lobbyController;
+        this.gameReadyController = gameReadyController;
         this.gameService = gameService;
         this.bundle = bundle;
     }
@@ -103,10 +106,11 @@ public class CreateGameController implements Controller {
         }
         gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
-        //show gameReady Screen
-        final GameReadyController controller = new GameReadyController(app, bundle, lobbyController);
-        app.show(controller);
+                .subscribe(gameID -> {
+                    gameService.setCurrentGameID(gameID);
+                    //show gameReady Screen
+                    app.show(gameReadyController.get());
+                });
     }
 
 

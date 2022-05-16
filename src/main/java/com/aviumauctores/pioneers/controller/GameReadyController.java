@@ -2,6 +2,9 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Member;
+import com.aviumauctores.pioneers.service.GameMemberService;
+import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,10 +18,14 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+
 public class GameReadyController extends PlayerListController {
 
 
     private final App app;
+    private final UserService userService;
+    private final GameMemberService gameMemberService;
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
 
@@ -40,23 +47,45 @@ public class GameReadyController extends PlayerListController {
 
     @FXML public ListView<Parent> playerList;
 
+    private int readyMembers;
+
     private CompositeDisposable disposables;
 
     @Inject
-    public GameReadyController(App app, ResourceBundle bundle, Provider<LobbyController> lobbyController){
-
+    public GameReadyController(App app, UserService userService, GameMemberService gameMemberService,
+                               ResourceBundle bundle, Provider<LobbyController> lobbyController){
         this.app = app;
+        this.userService = userService;
+        this.gameMemberService = gameMemberService;
         this.bundle = bundle;
         this.lobbyController = lobbyController;
     }
 
     public void init(){
         disposables = new CompositeDisposable();
+        // Get member list via REST
+        disposables.add(gameMemberService.listCurrentGameMembers()
+                .subscribe(members -> {
+                    for (Member member : members) {
+                        String userId = member.userId();
+                        disposables.add(userService.getUserByID(userId)
+                                .observeOn(FX_SCHEDULER)
+                                .subscribe(user -> {
+                                    if (member.ready()) {
+                                        readyMembers++;
+                                    }
+                                    addPlayerToList(user, member);
+                                    if (playerListPane != null) {
+                                        updatePlayerLabel();
+                                    }
+                                }));
+                    }
+                }));
     }
 
     @Override
     protected void updatePlayerLabel() {
-        playerListPane.setText(String.format("Spieler im Spiel (Bereit %d/4)", playerItems.size()));
+        playerListPane.setText(String.format("Spieler im Spiel (Bereit %d/4)", readyMembers));
     }
 
     public void destroy(){
