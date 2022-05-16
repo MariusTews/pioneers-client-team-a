@@ -2,16 +2,12 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.service.GameService;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
@@ -19,7 +15,7 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
-public class GameReadyController implements Controller {
+public class GameReadyController extends PlayerListController {
 
 
     private final App app;
@@ -42,6 +38,10 @@ public class GameReadyController implements Controller {
 
     @FXML public TitledPane playerListPane;
 
+    @FXML public ListView<Parent> playerList;
+
+    private CompositeDisposable disposables;
+
     @Inject
     public GameReadyController(App app, ResourceBundle bundle, Provider<LobbyController> lobbyController){
 
@@ -51,11 +51,21 @@ public class GameReadyController implements Controller {
     }
 
     public void init(){
-        
+        disposables = new CompositeDisposable();
+    }
+
+    @Override
+    protected void updatePlayerLabel() {
+        playerListPane.setText(String.format("Spieler im Spiel (Bereit %d/4)", playerItems.size()));
     }
 
     public void destroy(){
-
+        if (disposables != null) {
+            disposables.dispose();
+            disposables = null;
+        }
+        playerListItemControllers.forEach((id, controller) -> controller.destroy());
+        playerListItemControllers.clear();
     }
 
     public Parent render(){
@@ -68,6 +78,8 @@ public class GameReadyController implements Controller {
             e.printStackTrace();
             return null;
         }
+        playerList.setItems(playerItems);
+        updatePlayerLabel();
         return parent;
     }
 
