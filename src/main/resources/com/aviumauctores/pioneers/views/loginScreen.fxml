@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LoginController">
+   <Pane prefHeight="58.0" prefWidth="600.0">
+      <ImageView id="moonIcon" fitHeight="50.0" fitWidth="50.0" layoutX="59.0" layoutY="4.0"
+                 onMouseClicked="#selectDark" pickOnBounds="true" preserveRatio="true">
+         <Image url="@mond.png"/>
+      </ImageView>
+      <ImageView id="sunIcon" fitHeight="38.0" fitWidth="44.0" layoutX="14.0" layoutY="10.0"
+                 onMouseClicked="#selectLight" pickOnBounds="true" preserveRatio="true">
+         <Image url="@sun.png"/>
+      </ImageView>
+      <Button fx:id="englishButton" layoutX="517.0" layoutY="12.0" mnemonicParsing="false" onAction="#setEnglish"
+              text="EN"/>
+      <Button fx:id="germanButton" layoutX="555.0" layoutY="12.0" mnemonicParsing="false" onAction="#setGerman"
+              text="DE"/>
+   </Pane>
+   <VBox alignment="CENTER" layoutY="71.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="329.0" prefWidth="600.0">
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+         <padding>
+            <Insets left="200.0" right="200.0" />
+         </padding>
+         <Label text="%username">
+            <font>
+               <Font size="18.0" />
+            </font>
+         </Label>
+         <TextField fx:id="usernameInput">
+            <font>
+               <Font size="18.0" />
+            </font>
+         </TextField>
+         <Label id="usernameErrorLabel" fx:id="usernameErrorLabel" textFill="RED" />
+         <Label text="%password">
+            <font>
+               <Font size="18.0" />
+            </font>
+            <VBox.margin>
+               <Insets top="5.0" />
+            </VBox.margin>
+         </Label>
+         <PasswordField fx:id="passwordInput">
+            <font>
+               <Font size="18.0" />
+            </font>
+         </PasswordField>
+         <Label id="passwordErrorLabel" fx:id="passwordErrorLabel" textFill="RED" />
+         <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login" prefWidth="140.0" text="%sign.in">
+            <VBox.margin>
+               <Insets top="15.0" />
+            </VBox.margin>
+            <font>
+               <Font size="18.0" />
+            </font>
+         </Button>
+         <CheckBox fx:id="rememberMeCheckBox" mnemonicParsing="false" text="%remember.me">
+            <VBox.margin>
+               <Insets top="20.0" />
+            </VBox.margin>
+         </CheckBox>
+      </VBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+         <VBox alignment="CENTER" prefHeight="95.0" prefWidth="188.0" spacing="8.0">
+            <Label text="%no.account" />
+            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#toRegister" prefHeight="25.0" prefWidth="140" text="%create.account" />
+         </VBox>
+      </HBox>
+   </VBox>
+</Pane>
