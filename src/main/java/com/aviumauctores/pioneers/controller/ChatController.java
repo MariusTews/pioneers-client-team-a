@@ -52,6 +52,8 @@ public class ChatController extends PlayerListController {
 
     private final CompositeDisposable disposable = new CompositeDisposable();
 
+    private final ObservableList<User> users = FXCollections.observableArrayList();
+
     private List<User> onlineUsers = new ArrayList<>();
 
     private List<User> allUsers = new ArrayList<>();
@@ -68,11 +70,12 @@ public class ChatController extends PlayerListController {
     @FXML public Button sendButton;
     @FXML public ListView<Parent> onlinePlayerList;
     @FXML public Button leaveButton;
-    @FXML public ScrollBar chatScrollBar;
     @FXML public Label hintLabel;
     @FXML public Label onlinePlayerLabel;
     @FXML public Tab allTab;
     @FXML public TabPane chatTabPane;
+
+    @FXML public ScrollPane scrollPane;
 
     private final Map<String, Tab> chatTabsByUserID = new HashMap<>();
 
@@ -95,7 +98,6 @@ public class ChatController extends PlayerListController {
             allUsers = res;
             showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
         });
-        //showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
 
         // get all users, their ids and update the All-Group
         userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
@@ -107,6 +109,7 @@ public class ChatController extends PlayerListController {
                 .subscribe(result -> {
                     this.users.setAll(result);
                     usersIdList = getAllUserIDs(users);
+                    usersIdList.add(user._id());
                     groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     result.forEach(this::addPlayerToList);
                     if (onlinePlayerLabel != null) {
