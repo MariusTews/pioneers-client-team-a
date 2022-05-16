@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Member;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -71,9 +72,6 @@ public class GameReadyController extends PlayerListController {
                         disposables.add(userService.getUserByID(userId)
                                 .observeOn(FX_SCHEDULER)
                                 .subscribe(user -> {
-                                    if (member.ready()) {
-                                        readyMembers++;
-                                    }
                                     addPlayerToList(user, member);
                                     if (playerListPane != null) {
                                         updatePlayerLabel();
@@ -81,6 +79,14 @@ public class GameReadyController extends PlayerListController {
                                 }));
                     }
                 }));
+    }
+
+    @Override
+    protected void addPlayerToList(User user, Member gameMember) {
+        super.addPlayerToList(user, gameMember);
+        if (gameMember.ready()) {
+            readyMembers++;
+        }
     }
 
     @Override
