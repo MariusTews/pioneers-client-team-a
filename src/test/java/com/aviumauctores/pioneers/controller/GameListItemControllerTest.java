@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
@@ -14,6 +15,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -28,6 +32,12 @@ class GameListItemControllerTest extends ApplicationTest {
 
     @Mock
     ObservableList<Parent> items;
+
+    @Mock
+    PreferenceService preferenceService;
+
+    @Spy
+    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @InjectMocks
     GameListItemController gameListItemController;

@@ -43,12 +43,6 @@ public class RegisterControllerErrorTest extends ApplicationTest {
     @Spy
     App app;
 
-    @Mock
-    PreferenceService preferenceService;
-
-    @Spy
-    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
-
     @InjectMocks
     RegisterController registerController;
 
