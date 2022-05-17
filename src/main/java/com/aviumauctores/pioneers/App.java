@@ -88,7 +88,6 @@ public class App extends Application {
         final int ratio = SCREEN_WIDTH/SCREEN_HEIGHT;
 
         double scaleFactor = newWidth / newHeight > ratio ? newHeight / SCREEN_HEIGHT : newWidth / SCREEN_WIDTH;
-        System.out.println(scaleFactor);
         if (scaleFactor >= 1) {
             Scale scale = new Scale(scaleFactor, scaleFactor);
             scale.setPivotX(0);

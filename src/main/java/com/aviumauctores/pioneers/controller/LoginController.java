@@ -10,6 +10,7 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.rest.UsersApiService;
 import com.aviumauctores.pioneers.service.*;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
