@@ -1,18 +1,14 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
-import com.aviumauctores.pioneers.controller.LobbyController;
 import com.aviumauctores.pioneers.controller.LoginController;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
-import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,7 +16,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
@@ -29,7 +24,6 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.util.Objects;
-
 import java.util.Optional;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -93,11 +87,6 @@ public class App extends Application {
         final double newHeight = stage.getScene().getHeight();
         final int ratio = SCREEN_WIDTH/SCREEN_HEIGHT;
 
-        System.out.println("newWidth: " +  newWidth);
-        System.out.println("newHeight: " +  newHeight);
-
-
-
         double scaleFactor = newWidth / newHeight > ratio ? newHeight / SCREEN_HEIGHT : newWidth / SCREEN_WIDTH;
         System.out.println(scaleFactor);
         if (scaleFactor >= 1) {
@@ -105,8 +94,6 @@ public class App extends Application {
             scale.setPivotX(0);
             scale.setPivotY(0);
             stage.getScene().getRoot().getTransforms().setAll(scale);
-
-            System.out.println(newWidth / scaleFactor);
 
             contentPane.setPrefWidth(newWidth / scaleFactor);
             contentPane.setPrefHeight(newHeight / scaleFactor);
@@ -186,6 +173,7 @@ public class App extends Application {
                             Pane root = (Pane) stage.getScene().getRoot();
                             this.setWindow(root);
                             this.letterbox(root);
+
                         });
             }
             //if remember me is disabled show the login screen
@@ -194,7 +182,8 @@ public class App extends Application {
                 stage.getScene().setRoot(loginController.render());
                 Pane root = (Pane) stage.getScene().getRoot();
                 this.setWindow(root);
-                letterbox(root);
+                this.letterbox(root);
+
             }
         }
         //if controller is not a logincontroller then do a normal controller init and render
@@ -203,7 +192,8 @@ public class App extends Application {
             stage.getScene().setRoot(controller.render());
             Pane root = (Pane) stage.getScene().getRoot();
             this.setWindow(root);
-            letterbox(root);
+            this.letterbox(root);
+
         }
 
     }
