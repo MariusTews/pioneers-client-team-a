@@ -62,8 +62,6 @@ public class ChatController extends PlayerListController {
 
     private User user;
 
-    private String username;
-
     private Label deleteLabel;
 
     private Tab selectedTab;
@@ -105,14 +103,14 @@ public class ChatController extends PlayerListController {
         // get all users, their ids and update the All-Group
         userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
             usersIdList = getAllUserIDs(onlineUsers);
-            usersIdList.add(user._id());
+            usersIdList.add(userService.getCurrentUserID());
             groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
         });
         disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     this.users.setAll(result);
                     usersIdList = getAllUserIDs(users);
-                    usersIdList.add(user._id());
+                    usersIdList.add(userService.getCurrentUserID());
                     groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     result.forEach(this::addPlayerToList);
                     if (onlinePlayerLabel != null) {
