@@ -14,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LoginServiceTest {
@@ -28,12 +27,16 @@ class LoginServiceTest {
     @InjectMocks
     LoginService loginService;
 
+    @Mock(lenient = true)
+    UserService userService;
+
     @Test
     void login() {
         // Expected result
         LoginResult expResult =
                 new LoginResult("42", "Struppi", "online", null, "at", "rt");
         when(authApiService.login(any())).thenReturn(Observable.just(expResult));
+        doNothing().when(userService).setCurrentUserID(anyString());
 
         // Actual result
         LoginResult actResult = loginService.login("Struppi", "12345678").blockingFirst();
@@ -48,6 +51,7 @@ class LoginServiceTest {
     @Test
     void logout() {
         when(authApiService.logout()).thenReturn(Observable.empty());
+        doNothing().when(userService).setCurrentUserID(anyString());
 
         loginService.logout().blockingAwait();
 

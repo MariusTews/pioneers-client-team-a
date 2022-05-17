@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.control.PasswordField;
@@ -13,8 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,6 +40,12 @@ class JoinGameControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
+
+    @Mock
+    PreferenceService preferenceService;
+
+    @Spy
+    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @InjectMocks
     JoinGameController joinGameController;
@@ -88,6 +99,6 @@ class JoinGameControllerTest extends ApplicationTest {
         write("abcdef");
         type(KeyCode.ENTER);
         // Ensure the dialog is shown
-        verify(app).showConnectionFailedDialog();
+        verify(app).showErrorDialog(anyString(),anyString());
     }
 }

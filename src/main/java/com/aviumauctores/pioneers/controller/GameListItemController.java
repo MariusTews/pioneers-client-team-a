@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
+import java.util.ResourceBundle;
+
 public class GameListItemController implements Controller {
     private BorderPane root;
     private Label gameName;
@@ -20,11 +22,14 @@ public class GameListItemController implements Controller {
     private final LobbyController parentController;
     private Game game;
     private final ObservableList<Parent> gameItems;
+    private final ResourceBundle bundle;
 
-    public GameListItemController(LobbyController parentController, Game game, ObservableList<Parent> gameItems) {
+    public GameListItemController(LobbyController parentController, Game game, ObservableList<Parent> gameItems,
+                                  ResourceBundle bundle) {
         this.parentController = parentController;
         this.game = game;
         this.gameItems = gameItems;
+        this.bundle = bundle;
     }
 
     @Override
@@ -42,10 +47,10 @@ public class GameListItemController implements Controller {
         gameName = new Label(game.name());
         // Set width so numMembersTextLabel is correct aligned in the ListView
         gameName.setPrefWidth(100.0);
-        Label numMembersTextLabel = new Label("Anzahl Spieler:");
+        Label numMembersTextLabel = new Label(bundle.getString("amount.players") + ":");
         int numMembers = game.members();
         numMembersLabel = new Label(numMembers + "/4");
-        joinButton = new Button("Join");
+        joinButton = new Button(bundle.getString("join"));
         joinButton.setOnAction(this::onJoinButtonPressed);
         // Don't let more than four players join
         joinButton.setDisable(numMembers >= 4);

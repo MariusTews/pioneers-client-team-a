@@ -23,10 +23,14 @@
                  onMouseClicked="#selectLight" pickOnBounds="true" preserveRatio="true">
          <Image url="@sun.png"/>
       </ImageView>
-      <Button fx:id="englishButton" layoutX="517.0" layoutY="12.0" mnemonicParsing="false" onAction="#setEnglish"
-              text="EN"/>
-      <Button fx:id="germanButton" layoutX="555.0" layoutY="12.0" mnemonicParsing="false" onAction="#setGerman"
-              text="DE"/>
+      <ImageView fitHeight="28.0" fitWidth="38.0" onMouseClicked="#setEnglish" pickOnBounds="true"
+                 preserveRatio="true">
+         <Image url="@../en.png"/>
+      </ImageView>
+      <ImageView fitHeight="30.0" fitWidth="40.0" onMouseClicked="#setGerman" pickOnBounds="true"
+                 preserveRatio="true">
+         <Image url="@../de.png"/>
+      </ImageView>
    </Pane>
    <VBox alignment="CENTER" layoutY="71.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="329.0" prefWidth="600.0">
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">

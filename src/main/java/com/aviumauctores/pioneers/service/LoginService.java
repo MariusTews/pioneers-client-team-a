@@ -14,26 +14,37 @@ public class LoginService {
 
     private final AuthenticationApiService authenticationApiService;
     private final TokenStorage tokenStorage;
+    private final UserService userService;
 
     @Inject
-    public LoginService(AuthenticationApiService authenticationApiService, TokenStorage tokenStorage){
+    public LoginService(AuthenticationApiService authenticationApiService, TokenStorage tokenStorage, UserService userService){
         this.authenticationApiService = authenticationApiService;
         this.tokenStorage = tokenStorage;
+        this.userService = userService;
     }
 
     public Observable<LoginResult> login(String username, String password){
         return authenticationApiService.login(new LoginDto(username, password))
-                .doOnNext(result -> tokenStorage.setToken(result.accessToken()));
+                .doOnNext(result -> {
+                    tokenStorage.setToken(result.accessToken());
+                    userService.setCurrentUserID(result._id());
+                });
     }
 
     public Observable<LoginResult> login(String token){
         return authenticationApiService.refresh(new RefreshDto(token))
-                .doOnNext(result -> tokenStorage.setToken(result.accessToken()));
+                .doOnNext(result -> {
+                    tokenStorage.setToken(result.accessToken());
+                    userService.setCurrentUserID(result._id());
+                });
     }
 
     public @NonNull Completable logout() {
         return authenticationApiService.logout()
-                .doOnComplete(() -> tokenStorage.setToken(null))
+                .doOnComplete(() -> {
+                    tokenStorage.setToken(null);
+                    userService.setCurrentUserID(null);
+                })
                 .ignoreElements();
     }
 }
