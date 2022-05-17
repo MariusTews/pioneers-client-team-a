@@ -53,6 +53,9 @@ public class PlayerListItemController implements Controller {
     }
 
     private Image createReadyImg() {
+        if (gameMember == null) {
+            return null;
+        }
         String src = gameMember.ready() ? READY_SRC : NOT_READY_SRC;
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(src)));
     }
@@ -65,11 +68,10 @@ public class PlayerListItemController implements Controller {
         String avatarUrl = user.avatar();
         Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
         avatarView.setImage(avatar);
-        if (gameMember != null) {
-            readyView = new ImageView(createReadyImg());
-        }
-        playerName = new Label(user.name(), readyView);
-        root = new HBox(10.0, avatarView, playerName);
+        readyView = new ImageView(createReadyImg());
+        playerName = new Label(user.name());
+        playerName.setMinWidth(95.0);
+        root = new HBox(10.0, avatarView, playerName, readyView);
         root.setAlignment(Pos.CENTER_LEFT);
         root.setOnMouseClicked(this::onItemClicked);
         return root;
