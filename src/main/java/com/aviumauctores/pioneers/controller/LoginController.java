@@ -5,12 +5,12 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.error.ValidationErrorResponse;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.CryptoService;
-import com.aviumauctores.pioneers.service.ErrorService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.PreferenceService;
+import com.aviumauctores.pioneers.rest.UsersApiService;
+import com.aviumauctores.pioneers.service.*;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -43,9 +43,6 @@ public class LoginController implements Controller {
     private final CryptoService cryptoService;
     private final ResourceBundle bundle;
     private final ErrorService errorService;
-
-    private Disposable disposable;
-
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML public TextField usernameInput;
@@ -56,11 +53,14 @@ public class LoginController implements Controller {
     @FXML public Label usernameErrorLabel;
     @FXML public Label passwordErrorLabel;
 
+    private CompositeDisposable disposables;
+    private final UserService userService;
+
     @Inject
     public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController,
                            Provider<LobbyController> lobbyController, Provider<LoginController> loginController,
                            PreferenceService preferenceService, CryptoService cryptoService, ResourceBundle bundle,
-                           ErrorService errorService){
+                           ErrorService errorService, UserService userService){
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
@@ -70,6 +70,7 @@ public class LoginController implements Controller {
         this.cryptoService = cryptoService;
         this.bundle = bundle;
         this.errorService = errorService;
+        this.userService = userService;
     }
 
     @Override
@@ -77,12 +78,14 @@ public class LoginController implements Controller {
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.username.password"));
         errorCodes.put("429", bundle.getString("limit.reached"));
+        this.disposables = new CompositeDisposable();
     }
+
 
     @Override
     public void destroy(){
-        if (this.disposable != null) {
-            disposable.dispose();
+        if (this.disposables != null) {
+            disposables.dispose();
         }
     }
 
@@ -134,7 +137,7 @@ public class LoginController implements Controller {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
-            disposable = loginService.login(username, password)
+            disposables.add(loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
@@ -167,7 +170,7 @@ public class LoginController implements Controller {
                                     app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                                 }
                             }
-                    );
+                    ));
         }
     }
 
@@ -194,11 +197,34 @@ public class LoginController implements Controller {
         app.show(controller);
     }
 
-    public void toLobby(LoginResult result) {
+    public void toLobby(LoginResult loginResult) {
         final LobbyController controller = lobbyController.get();
-        User user = new User(result._id(), result.name(), result.status(), result.avatar());
-        controller.setUser(user);
-        app.show(controller);
+        User user = new User(loginResult._id(), loginResult.name(), "online", loginResult.avatar());
+        disposables.add(userService.updateUser(loginResult._id(), new UpdateUserDto(user.name(), user.status(), user.avatar(), passwordInput.getText()))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        result -> {
+                            controller.setUser(user);
+                            app.show(controller);
+                        },
+                        throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Object object = errorService.readErrorMessage(ex);
+                                if (object instanceof ErrorResponse response) {
+                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                }
+                                else {
+                                    ValidationErrorResponse response = (ValidationErrorResponse) object;
+                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                }
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                            }
+                        }
+
+                ));
     }
 
     public void setGerman(MouseEvent event) {
