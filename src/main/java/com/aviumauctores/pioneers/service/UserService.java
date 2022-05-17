@@ -35,8 +35,12 @@ public class UserService {
         return usersApiService.listUsers("online", null);
     }
 
+    public Observable<User> getUserByID(String id) {
+        return usersApiService.getUser(id);
+    }
+
     public Observable<String> getUserName(String id) {
-        return usersApiService.getUser(id).map(User::name);
+        return getUserByID(id).map(User::name);
     }
 
     public Observable<User> updateUser(String id, UpdateUserDto updateUserDto) {
