@@ -40,6 +40,11 @@ public class MessageService {
         return messagesApiService.deleteMessage("groups", ALLCHAT_ID, id);
     }
 
+    public Observable<Message> deleteGameMessage(String messageId, String gameId) {
+
+        return messagesApiService.deleteMessage("games", gameId, messageId);
+    }
+
     public Observable<List<Message>> listMessages(String namespace, String parent, String createdBefore, int limit) {
         return messagesApiService.listMessages(namespace, parent, createdBefore, limit);
     }
