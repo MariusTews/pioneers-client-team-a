@@ -132,7 +132,7 @@ public class GameReadyController extends PlayerListController {
 
     @Override
     protected void updatePlayerLabel() {
-        playerListPane.setText(String.format("Spieler im Spiel (Bereit %d/4)", readyMembers));
+        playerListPane.setText(String.format(bundle.getString("player.in.game"), readyMembers));
     }
 
     @Override
