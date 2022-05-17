@@ -74,14 +74,15 @@ public class GameReadyController extends PlayerListController {
         disposables = new CompositeDisposable();
         // Get member list via REST
         disposables.add(gameMemberService.listCurrentGameMembers()
-                .subscribe(members -> {
-                    for (Member member : members) {
-                        addMemberToList(member);
-                    }
-                    if (playerListPane != null) {
-                        updatePlayerLabel();
-                    }
-                }));
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(members -> {
+                            for (Member member : members) {
+                                addMemberToList(member);
+                            }
+                            if (playerListPane != null) {
+                                updatePlayerLabel();
+                            }
+                        }));
         // Listen to game member events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".members.*.*",
@@ -99,8 +100,7 @@ public class GameReadyController extends PlayerListController {
         } else if (event.endsWith("updated")) {
             PlayerListItemController controller = playerListItemControllers.get(member.userId());
             if (controller != null) {
-                readyMembers += member.ready() ? 1 : -1;
-                controller.onGameMemberUpdated(member);
+                readyMembers += controller.onGameMemberUpdated(member);
             } else {
                 addMemberToList(member);
             }

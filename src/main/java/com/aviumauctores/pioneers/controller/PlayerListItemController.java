@@ -91,8 +91,17 @@ public class PlayerListItemController implements Controller {
         playerName.setText(newUser.name());
     }
 
-    public void onGameMemberUpdated(Member newGameMember) {
+    public int onGameMemberUpdated(Member newGameMember) {
+        // Value which is added to the amount of ready game members
+        int readyMemberChange = 0;
+        boolean newGameMemberReady = newGameMember.ready();
+        // Update the amount of ready game members only if the ready state of this member changed
+        if (newGameMemberReady != gameMember.ready()) {
+            // If ready from false to true increment the amount of members otherwise decrement
+            readyMemberChange = newGameMemberReady ? 1 : -1;
+        }
         gameMember = newGameMember;
         readyView.setImage(createReadyImg());
+        return readyMemberChange;
     }
 }
