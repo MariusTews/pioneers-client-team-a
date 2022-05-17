@@ -54,6 +54,8 @@ public class Constants {
     public static final String UPDATE_MESSAGE_URL = "{namespace}/{parent}/messages/{id}";
     public static final String DELETE_MESSAGE_URL = "{namespace}/{parent}/messages/{id}";
 
+    public static final String SEND_MESSAGE_GAME_NAMESPACE = "games";
+
     // Game Members API URLs
     public static final String LIST_MEMBERS_URL = "games/{gameId}/members";
     public static final String CREATE_MEMBER_URL = "games/{gameId}/members";

@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.core.Observable;
 import javax.inject.Inject;
 
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
+import static com.aviumauctores.pioneers.Constants.SEND_MESSAGE_GAME_NAMESPACE;
 
 
 public class MessageService {
@@ -35,5 +36,9 @@ public class MessageService {
     public Observable<Message> deleteMessage(String id) {
 
         return messagesApiService.deleteMessage("groups", ALLCHAT_ID, id);
+    }
+
+    public Observable<Message> sendMessage(String message, String gameId) {
+        return messagesApiService.sendMessage(SEND_MESSAGE_GAME_NAMESPACE, gameId, new CreateMessageDto(message));
     }
 }

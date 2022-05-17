@@ -4,9 +4,11 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Member;
+import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -15,11 +17,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -33,6 +39,7 @@ public class GameReadyController extends PlayerListController {
     private final GameMemberService gameMemberService;
     private final EventListener eventListener;
     private final ResourceBundle bundle;
+    private final MessageService messageService;
     private final Provider<LobbyController> lobbyController;
 
     @FXML public Button startGameButton;
@@ -52,6 +59,7 @@ public class GameReadyController extends PlayerListController {
     @FXML public TitledPane playerListPane;
 
     @FXML public ListView<Parent> playerList;
+    @FXML public TextField messageTextField;
 
     private int readyMembers;
 
@@ -60,13 +68,14 @@ public class GameReadyController extends PlayerListController {
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener,
-                               ResourceBundle bundle, Provider<LobbyController> lobbyController){
+                               ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController){
         this.app = app;
         this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
         this.eventListener = eventListener;
         this.bundle = bundle;
+        this.messageService = messageService;
         this.lobbyController = lobbyController;
     }
 
@@ -90,6 +99,21 @@ public class GameReadyController extends PlayerListController {
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMemberEvent));
+
+        //listen to chat messages
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> {
+                    Label msgLabel = createMessageLabel(event.data());
+                    if (event.event().endsWith(".created")) {
+                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                                .add(msgLabel);
+                    }
+                    else if (event.event().endsWith(".deleted")) {
+                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                                .remove(msgLabel);
+                    }
+                }));
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
@@ -160,8 +184,16 @@ public class GameReadyController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
+
         playerList.setItems(playerItems);
         updatePlayerLabel();
+
+        messageTextField.setOnKeyPressed(event -> {
+            if( event.getCode() == KeyCode.ENTER ) {
+                sendMessage(null);
+            }
+        } );
+
         return parent;
     }
 
@@ -179,6 +211,18 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void sendMessage(ActionEvent actionEvent) {
+        String message = messageTextField.getText();
+        if (message.isBlank()) {
+            return;
+        }
+        messageTextField.clear();
+        messageService.sendMessage(message, gameService.getCurrentGameID())
+                .observeOn(FX_SCHEDULER)
+                .subscribe();
+    }
 
+    public Label createMessageLabel(Message message) {
+        Label msgLabel = new Label();
+        return msgLabel;
     }
 }
