@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.core.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -102,6 +103,24 @@ class ChatControllerTest extends ApplicationTest {
         type(KeyCode.ENTER);
 
         verify(messageService).sendMessage("hello", ALLCHAT_ID);
+
+    }
+
+    @Test
+    void delete() {
+/*        when(messageService.deleteMessage(any(), any())).thenReturn(Observable.empty());
+
+        Message message1 = new Message("1", "2", "3", "1", "hello");
+        VBox vBox = lookup("#allChatVBox").query();
+        Label msgLabel = new Label("hello");
+        msgLabel.setId("3");
+        vBox.getChildren().add(msgLabel);
+        rightClickOn(msgLabel);
+        clickOn("#Ok");
+
+        verify(messageService).deleteMessage("3", "627cf3c93496bc00158f3859");
+*/
+
 
     }
 

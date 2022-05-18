@@ -53,6 +53,7 @@ public class ChatController extends PlayerListController {
     private final CompositeDisposable disposable = new CompositeDisposable();
 
     private final ObservableList<User> users = FXCollections.observableArrayList();
+    public VBox allChatVBox;
 
     private List<User> onlineUsers = new ArrayList<>();
 
