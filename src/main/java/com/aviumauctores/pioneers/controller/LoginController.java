@@ -7,11 +7,9 @@ import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.error.ValidationErrorResponse;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.rest.UsersApiService;
 import com.aviumauctores.pioneers.service.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,14 +17,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.MouseEvent;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -45,13 +41,20 @@ public class LoginController implements Controller {
     private final ErrorService errorService;
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
-    @FXML public TextField usernameInput;
-    @FXML public PasswordField passwordInput;
-    @FXML public Button loginButton;
-    @FXML public CheckBox rememberMeCheckBox;
-    @FXML public Button registerButton;
-    @FXML public Label usernameErrorLabel;
-    @FXML public Label passwordErrorLabel;
+    @FXML
+    public TextField usernameInput;
+    @FXML
+    public PasswordField passwordInput;
+    @FXML
+    public Button loginButton;
+    @FXML
+    public CheckBox rememberMeCheckBox;
+    @FXML
+    public Button registerButton;
+    @FXML
+    public Label usernameErrorLabel;
+    @FXML
+    public Label passwordErrorLabel;
 
     private CompositeDisposable disposables;
     private final UserService userService;
@@ -60,7 +63,7 @@ public class LoginController implements Controller {
     public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController,
                            Provider<LobbyController> lobbyController, Provider<LoginController> loginController,
                            PreferenceService preferenceService, CryptoService cryptoService, ResourceBundle bundle,
-                           ErrorService errorService, UserService userService){
+                           ErrorService errorService, UserService userService) {
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
@@ -74,7 +77,7 @@ public class LoginController implements Controller {
     }
 
     @Override
-    public void init(){
+    public void init() {
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.username.password"));
         errorCodes.put("429", bundle.getString("limit.reached"));
@@ -83,20 +86,20 @@ public class LoginController implements Controller {
 
 
     @Override
-    public void destroy(){
+    public void destroy() {
         if (this.disposables != null) {
             disposables.dispose();
         }
     }
 
     @Override
-    public Parent render(){
+    public Parent render() {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/loginScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
             parent = loader.load();
-        }catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -107,7 +110,7 @@ public class LoginController implements Controller {
         return parent;
     }
 
-    public Boolean getRememberMeStatus(){
+    public Boolean getRememberMeStatus() {
         return preferenceService.getRememberMe();
     }
 
@@ -122,18 +125,15 @@ public class LoginController implements Controller {
         if (usernameEmpty || passwordEmpty) {
             if (usernameEmpty) {
                 usernameErrorLabel.setText(bundle.getString("invalid.input"));
-            }
-            else {
+            } else {
                 usernameErrorLabel.setText("");
             }
             if (passwordEmpty) {
                 passwordErrorLabel.setText(bundle.getString("invalid.input"));
-            }
-            else {
+            } else {
                 passwordErrorLabel.setText("");
             }
-        }
-        else {
+        } else {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
@@ -141,12 +141,11 @@ public class LoginController implements Controller {
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
-                                if (rememberMeCheckBox.isSelected()){
+                                if (rememberMeCheckBox.isSelected()) {
                                     preferenceService.setRememberMe(true);
                                     String encodedToken = cryptoService.encode(result.refreshToken());
                                     preferenceService.setRefreshToken(encodedToken);
-                                }
-                                else{
+                                } else {
                                     preferenceService.setRememberMe(false);
                                     preferenceService.setRefreshToken("");
                                 }
@@ -160,8 +159,7 @@ public class LoginController implements Controller {
                                     if (object instanceof ErrorResponse response) {
                                         String message = errorCodes.get(Integer.toString(response.statusCode()));
                                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                    }
-                                    else {
+                                    } else {
                                         ValidationErrorResponse response = (ValidationErrorResponse) object;
                                         String message = errorCodes.get(Integer.toString(response.statusCode()));
                                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
@@ -175,7 +173,7 @@ public class LoginController implements Controller {
     }
 
     public Observable<LoginResult> tryTokenLogin() {
-        String token = "";
+        String token;
         try {
             token = cryptoService.decode(preferenceService.getRefreshToken());
         } catch (Exception e) {
@@ -213,8 +211,7 @@ public class LoginController implements Controller {
                                 if (object instanceof ErrorResponse response) {
                                     String message = errorCodes.get(Integer.toString(response.statusCode()));
                                     Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                }
-                                else {
+                                } else {
                                     ValidationErrorResponse response = (ValidationErrorResponse) object;
                                     String message = errorCodes.get(Integer.toString(response.statusCode()));
                                     Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));

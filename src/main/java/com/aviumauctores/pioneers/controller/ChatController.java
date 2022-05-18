@@ -24,14 +24,8 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.*;
-import com.aviumauctores.pioneers.ws.EventListener;
-
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -94,18 +88,18 @@ public class ChatController extends PlayerListController {
 
     public void init(){
         //get all users for the usernames of the old messages
-        userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
+        disposable.add(userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
             allUsers = res;
             showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
-        });
+        }));
 
 
         // get all users, their ids and update the All-Group
-        userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
+        disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
             usersIdList = getAllUserIDs(onlineUsers);
             usersIdList.add(userService.getCurrentUserID());
             groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
-        });
+        }));
         disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     this.users.setAll(result);
@@ -305,7 +299,7 @@ public class ChatController extends PlayerListController {
     }
 
     public void showOldMessages(String namespace, String pathId, String createdBefore, int limit) {
-        messageService.listMessages(namespace, pathId, createdBefore, limit)
+        disposable.add(messageService.listMessages(namespace, pathId, createdBefore, limit)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     for (Message m : result) {
@@ -316,7 +310,7 @@ public class ChatController extends PlayerListController {
                                     .add(msgLabel);
                         }
                     }
-                });
+                }));
     }
 
     public void setUser(User user) {
