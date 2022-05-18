@@ -27,17 +27,17 @@ public class MessageService {
     }
 
 
-    public Observable<String> sendAllChat(String message) {
+    public Observable<String> sendMessage(String message, String groupId) {
 
-        return messagesApiService.sendMessage("groups", ALLCHAT_ID, new CreateMessageDto(message))
+        return messagesApiService.sendMessage("groups", groupId, new CreateMessageDto(message))
                 .map(Message::body);
     }
 
 
 
-    public Observable<Message> deleteMessage(String id) {
+    public Observable<Message> deleteMessage(String id, String groupId) {
 
-        return messagesApiService.deleteMessage("groups", ALLCHAT_ID, id);
+        return messagesApiService.deleteMessage("groups", groupId, id);
     }
 
     public Observable<Message> deleteGameMessage(String messageId, String gameId) {
