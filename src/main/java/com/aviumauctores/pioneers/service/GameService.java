@@ -39,13 +39,11 @@ public class GameService {
     public void setCurrentGameID(String currentGameID) { this.currentGameID = currentGameID;
     }
 
-    public Observable<Game> create(String name, String password){
-        Observable<Game> game =  gamesApiService.createGame(new CreateGameDto(name, password));
-        setCurrentGameID(game.blockingFirst()._id());
-        this.ownerID = game.blockingFirst().owner();
+    public Observable<String> create(String name, String password){
         this.name = name;
         this.password = password;
-        return game;
+        return gamesApiService.createGame(new CreateGameDto(name, password))
+                .map(Game::_id);
     }
 
     public Observable<Member> joinGame(String password) {
@@ -67,6 +65,14 @@ public class GameService {
 
     public Observable<Game> updateGame(){
         return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, password));
+    }
+
+    public String getOwnerID(){
+        return this.ownerID;
+    }
+
+    public void setOwnerID(String ID){
+        this.ownerID = ID;
     }
 
 }

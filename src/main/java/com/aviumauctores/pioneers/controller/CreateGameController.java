@@ -2,25 +2,22 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.UserService;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.ResourceBundle;
 import java.util.Optional;
-import javafx.beans.property.SimpleStringProperty;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -37,6 +34,7 @@ public class CreateGameController implements Controller {
 
     private final Provider<GameReadyController> gameReadyController;
     private final GameService gameService;
+    private final UserService userService;
     private final ResourceBundle bundle;
 
     private boolean hidePassword = true;
@@ -53,16 +51,16 @@ public class CreateGameController implements Controller {
 
     @FXML public TextField gameNameInput;
 
-    private User user;
 
     @Inject
     public CreateGameController(App app,
                                 Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
-                                GameService gameService, ResourceBundle bundle){
+                                GameService gameService, UserService userService, ResourceBundle bundle){
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
         this.gameService = gameService;
+        this.userService = userService;
         this.bundle = bundle;
     }
 
@@ -121,17 +119,13 @@ public class CreateGameController implements Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(gameID -> {
                     gameService.setCurrentGameID(gameID);
+                    gameService.setOwnerID(userService.getCurrentUserID());
+                    gameService.updateGame()
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe();
                     //show gameReady Screen
                     app.show(gameReadyController.get());
                 });
-        gameService.updateGame()
-                .observeOn(FX_SCHEDULER)
-                .subscribe();
-        //show gameReady Screen
-        final GameReadyController controller = gameReadyController.get();
-        controller.gameName = gameNameInput.getText();
-        controller.setUser(this.user);
-        app.show(controller);
     }
 
 
@@ -139,7 +133,6 @@ public class CreateGameController implements Controller {
     public void cancel(ActionEvent actionEvent) {
         //change view to LobbyScreen
         final LobbyController controller = lobbyController.get();
-        controller.setUser(this.user);
         app.show(controller);
     }
 
@@ -168,8 +161,5 @@ public class CreateGameController implements Controller {
         showPasswordButton.setGraphic(view);
     }
 
-    public void setUser(User user){
-        this.user = user;
-    }
 
 }

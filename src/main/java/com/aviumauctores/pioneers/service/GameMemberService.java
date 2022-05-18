@@ -36,7 +36,7 @@ public class GameMemberService {
     }
 
     public Observable<List<Member>> listCurrentGameMembers() {
-        return gameMembersApiService.listMembers(service.getCurrentGameID());
+        return gameMembersApiService.listMembers(gameService.getCurrentGameID());
     }
     public Observable<Member> deleteMember(String memberID){
         return gameMembersApiService.deleteMember(gameService.getCurrentGameID(), memberID);

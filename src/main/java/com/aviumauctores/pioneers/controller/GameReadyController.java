@@ -3,37 +3,34 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Member;
-import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
+import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import com.aviumauctores.pioneers.service.GroupService;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.control.*;
-
-import javax.inject.Provider;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
-
-import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -46,21 +43,13 @@ public class GameReadyController extends PlayerListController {
     private final GameMemberService gameMemberService;
     private final EventListener eventListener;
     private final ResourceBundle bundle;
+    private final MessageService messageService;
     private final Provider<LobbyController> lobbyController;
 
-    private final GameService gameService;
-    private final GameMemberService gameMemberService;
-    private final ErrorService errorService;
-    public String gameName;
+    private Game game;
 
-    private Observable<Game> game;
+    private Label deleteLabel;
 
-    public final GroupService groupService;
-
-    private CompositeDisposable disposable = new CompositeDisposable();
-
-
-    public TextField field;
     @FXML public Button startGameButton;
 
     @FXML public Button gameReadyButton;
@@ -78,6 +67,7 @@ public class GameReadyController extends PlayerListController {
     @FXML public TitledPane playerListPane;
 
     @FXML public ListView<Parent> playerList;
+    @FXML public TextField messageTextField;
 
     private int readyMembers;
 
@@ -86,38 +76,33 @@ public class GameReadyController extends PlayerListController {
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener,
-                               ResourceBundle bundle, Provider<LobbyController> lobbyController){
+                               ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController){
         this.app = app;
         this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
         this.eventListener = eventListener;
         this.bundle = bundle;
+        this.messageService = messageService;
         this.lobbyController = lobbyController;
-        this.gameService = gameService;
-        this.errorService = errorService;
-        this.groupService = groupService;
-        this.game = gameService.getCurrentGame();
-        this.gameMemberService = gameMemberService;
-        System.out.println("Game id " + gameService.getCurrentGameID());
-        System.out.println("owner id " + game.blockingFirst().owner());
-
-
+        this.game = gameService.getCurrentGame().blockingFirst();
+        System.out.println("Game id " + game._id());
+        System.out.println("Owner id " + game.owner());
     }
 
     public void init(){
         disposables = new CompositeDisposable();
         // Get member list via REST
         disposables.add(gameMemberService.listCurrentGameMembers()
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe(members -> {
-                            for (Member member : members) {
-                                addMemberToList(member);
-                            }
-                            if (playerListPane != null) {
-                                updatePlayerLabel();
-                            }
-                        }));
+                .observeOn(FX_SCHEDULER)
+                .subscribe(members -> {
+                    for (Member member : members) {
+                        addMemberToList(member);
+                    }
+                    if (playerListPane != null) {
+                        updatePlayerLabel();
+                    }
+                }));
         // Listen to game member events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".members.*.*",
@@ -125,6 +110,28 @@ public class GameReadyController extends PlayerListController {
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMemberEvent));
+
+        //listen to chat messages
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> {
+                    if (event.event().endsWith(".created")) {
+                        Label msgLabel = createMessageLabel(event.data());
+                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                                .add(msgLabel);
+                    }
+                    else if (event.event().endsWith(".deleted")) {
+                        //search for the Label of the which will be deleted
+                        for (Node l : ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()) {
+                            if (event.data()._id().equals(l.getId())) {
+                                this.deleteLabel = (Label) l;
+                            }
+                        }
+                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                                .remove(this.deleteLabel);
+
+                    }
+                }));
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
@@ -186,7 +193,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public Parent render(){
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/gameReadyScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/gameReadyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -195,17 +202,20 @@ public class GameReadyController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
+
         playerList.setItems(playerItems);
         updatePlayerLabel();
-        gameNameLabel.setText("Welcome to " + gameName);
+
+        messageTextField.setOnKeyPressed(event -> {
+            if( event.getCode() == KeyCode.ENTER ) {
+                sendMessage(null);
+            }
+        } );
+
         return parent;
     }
 
-
     public void startGame(ActionEvent actionEvent) {
-        //TODO: check if the Game has 4 members
-        //TODO: check if all players are ready
-        //TODO: start the game
 
 
     }
@@ -213,61 +223,106 @@ public class GameReadyController extends PlayerListController {
     public void gameReady(ActionEvent actionEvent) {
 
 
-            Observable<Member> member = gameMemberService.getMember(this.user._id());
-            gameMemberService.updateMember(this.user._id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe();
-            String buttonText = member.blockingFirst().ready() ? "Ready" : "Not Ready";
-            gameReadyButton.setText(buttonText);
+        Observable<Member> member = gameMemberService.getMember(userService.getCurrentUserID());
+        gameMemberService.updateMember(userService.getCurrentUserID())
+                .observeOn(FX_SCHEDULER)
+                .subscribe();
+        String buttonText = member.blockingFirst().ready() ? "Ready" : "Not Ready";
+        gameReadyButton.setText(buttonText);
 
-            System.out.println("Number of members : " + gameService.getCurrentGame().blockingFirst().members());
-            System.out.println("Ready status of current User : " + member.blockingFirst().ready());
+        System.out.println("Number of members : " + gameService.getCurrentGame().blockingFirst().members());
+        System.out.println("Ready status of current User : " + member.blockingFirst().ready());
 
 
     }
 
     public void leaveGame(ActionEvent actionEvent) {
-        if(this.user._id().equals(this.game.blockingFirst().owner())){
+        System.out.println("user id "+ userService.getCurrentUserID());
+        System.out.println("ownerid " + gameService.getOwnerID());
+        if (userService.getCurrentUserID().equals(gameService.getOwnerID())) {
             ButtonType proceedButton = new ButtonType("Proceed", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType("Return", ButtonBar.ButtonData.CANCEL_CLOSE);
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Leaver Warning");
-            alert.setHeaderText("If you leave a game as the owner, it will be deleted");
-            alert.setContentText("Delete this Game?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.get() == null){
-                return;
-            }
-            if(result.get() == ButtonType.OK){
+            Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            ownerAlert.setTitle("Leaver Warning");
+            ownerAlert.setHeaderText("If you leave a game as the owner, it will be deleted");
+            ownerAlert.setContentText("Delete this Game?");
+            Optional<ButtonType> result = ownerAlert.showAndWait();
+            if (result.get() == ButtonType.OK) {
                 gameService.deleteGame()
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
-            }else{
-                alert.close();
+            } else {
+                ownerAlert.close();
                 return;
             }
-
-
-        }
-        else{
-            gameMemberService.deleteMember(this.user._id())
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe();
+        }else{
+            Alert memberAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            memberAlert.setTitle("Leaver Warning");
+            memberAlert.setHeaderText("Do you want to leave this game?");
+            Optional<ButtonType> result = memberAlert.showAndWait();
+            if(result.get() == ButtonType.OK) {
+                gameMemberService.deleteMember(userService.getCurrentUserID())
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe();
+                /*gameService.updateGame()
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe();*/
+                System.out.println(game.members());
+            }else {
+                return;
+            }
         }
         gameService.setCurrentGameID(null);
         final LobbyController controller = lobbyController.get();
-        controller.setUser(this.user);
         app.show(controller);
+        }
 
-    }
 
     public void sendMessage(ActionEvent actionEvent) {
-
+        String message = messageTextField.getText();
+        if (message.isBlank()) {
+            return;
+        }
+        messageTextField.clear();
+        messageService.sendGameMessage(message, gameService.getCurrentGameID())
+                .observeOn(FX_SCHEDULER)
+                .subscribe();
     }
 
-    public void setUser(User user){
-        this.user = user;
+    public Label createMessageLabel(Message message) {
+        Label msgLabel = new Label();
+        userService.getUserName(message.sender())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        result -> msgLabel.setText(result + ": " + message.body())
+                );
+        msgLabel.setOnMouseClicked(this::onMessageClicked);
+        msgLabel.setId(message._id());
+        return msgLabel;
     }
 
+    public void onMessageClicked(MouseEvent event) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            // Alert for the delete
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete");
+            alert.setHeaderText("Delete this Message?");
+            alert.setContentText("Do you want to delete this message?");
+            Optional<ButtonType> res = alert.showAndWait();
+            // delete if "Ok" is clicked
+            if (res.get() == ButtonType.OK){
+                this.deleteLabel = (Label) event.getSource();
+                delete(this.deleteLabel.getId());
+                alert.close();
+            } else {
+                alert.close();
+            }
+        }
+    }
 
+    public void delete(String messageId) {
+        messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
+                .observeOn(FX_SCHEDULER)
+                .subscribe();
+    }
 }
