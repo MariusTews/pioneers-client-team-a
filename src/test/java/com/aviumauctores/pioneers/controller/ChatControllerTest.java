@@ -97,12 +97,12 @@ class ChatControllerTest extends ApplicationTest {
 
     @Test
     void sendMessage() {
-        when(messageService.sendMessage(any(), any())).thenReturn(Observable.just("hello"));
+        when(messageService.sendGroupMessage(any(), any())).thenReturn(Observable.just("hello"));
         clickOn("#chatTextField");
         write("hello");
         type(KeyCode.ENTER);
 
-        verify(messageService).sendMessage("hello", ALLCHAT_ID);
+        verify(messageService).sendGroupMessage("hello", ALLCHAT_ID);
 
     }
 
