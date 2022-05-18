@@ -76,7 +76,8 @@ class ChatControllerTest extends ApplicationTest {
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     private Observable<EventDto<User>> userUpdates;
-    private Observable<EventDto<Message>> messageUpdates;
+    private Observable<EventDto<Message>> messageCreateUpdates;
+
     @Override
     public void start(Stage stage) throws Exception {
         User user1 = new User("1", "user1", "online", null);
@@ -88,10 +89,9 @@ class ChatControllerTest extends ApplicationTest {
         when(groupService.updateGroup(any(), any())).thenReturn(Observable.empty());
         when(messageService.listMessages(any(), any(), any(), eq(100) )).thenReturn(Observable.just(List.of(message1)));
         userUpdates = Observable.just(new EventDto<>("created", user1));
-        messageUpdates = Observable.just(new EventDto<>("created", message1));
+        messageCreateUpdates = Observable.just(new EventDto<>("created", message1));
         when(eventListener.listen("users.*.updated", User.class)).thenReturn(userUpdates);
-        //when(eventListener.listen("groups.*.messages.*.*", Message.class)).thenReturn(messageUpdates);
-        when(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)).thenReturn(messageUpdates);
+        when(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)).thenReturn(messageCreateUpdates);
         new App(chatController).start(stage);
     }
 
@@ -108,18 +108,18 @@ class ChatControllerTest extends ApplicationTest {
 
     @Test
     void delete() {
-/*        when(messageService.deleteMessage(any(), any())).thenReturn(Observable.empty());
+        when(messageService.deleteMessage(any(), any())).thenReturn(Observable.empty());
 
-        Message message1 = new Message("1", "2", "3", "1", "hello");
-        VBox vBox = lookup("#allChatVBox").query();
-        Label msgLabel = new Label("hello");
-        msgLabel.setId("3");
-        vBox.getChildren().add(msgLabel);
-        rightClickOn(msgLabel);
-        clickOn("#Ok");
+        //create a Message
+        EventDto<Message> createdMessageEventDto = messageCreateUpdates.blockingFirst();
+
+        //click on it and choose Ok to delete it
+        rightClickOn("#3");
+        clickOn("OK");
+
 
         verify(messageService).deleteMessage("3", "627cf3c93496bc00158f3859");
-*/
+
 
 
     }
