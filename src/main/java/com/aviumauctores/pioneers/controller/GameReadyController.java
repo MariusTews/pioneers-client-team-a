@@ -86,8 +86,6 @@ public class GameReadyController extends PlayerListController {
         this.messageService = messageService;
         this.lobbyController = lobbyController;
         this.game = gameService.getCurrentGame().blockingFirst();
-        System.out.println("Game id " + game._id());
-        System.out.println("Owner id " + game.owner());
     }
 
     public void init(){
@@ -221,25 +219,16 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void gameReady(ActionEvent actionEvent) {
-
-
         Observable<Member> member = gameMemberService.getMember(userService.getCurrentUserID());
         gameMemberService.updateMember(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
         String buttonText = member.blockingFirst().ready() ? "Ready" : "Not Ready";
         gameReadyButton.setText(buttonText);
-
-        System.out.println("Number of members : " + gameService.getCurrentGame().blockingFirst().members());
-        System.out.println("Ready status of current User : " + member.blockingFirst().ready());
-
-
     }
 
     public void leaveGame(ActionEvent actionEvent) {
-        System.out.println("user id "+ userService.getCurrentUserID());
-        System.out.println("ownerid " + gameService.getOwnerID());
-        if (userService.getCurrentUserID().equals(gameService.getOwnerID())) {
+        if (userService.getCurrentUserID().equals(game.owner())) {
             ButtonType proceedButton = new ButtonType("Proceed", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType("Return", ButtonBar.ButtonData.CANCEL_CLOSE);
             Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -264,10 +253,6 @@ public class GameReadyController extends PlayerListController {
                 gameMemberService.deleteMember(userService.getCurrentUserID())
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
-                /*gameService.updateGame()
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe();*/
-                System.out.println(game.members());
             }else {
                 return;
             }
