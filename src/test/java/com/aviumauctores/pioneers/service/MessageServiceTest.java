@@ -30,7 +30,7 @@ class MessageServiceTest {
         when(messagesApiService.sendMessage(any(), any(), any())).thenReturn(Observable.just(msg));
 
         // check if the group will be sended correctly
-        String checkmsg = messageService.sendMessage("hello", "627cf3c93496bc00158f3859").blockingFirst();
+        String checkmsg = messageService.sendGroupMessage("hello", "627cf3c93496bc00158f3859").blockingFirst();
         assertEquals(msg.body(), checkmsg);
 
         verify(messagesApiService).sendMessage("groups", "627cf3c93496bc00158f3859", new CreateMessageDto("hello"));

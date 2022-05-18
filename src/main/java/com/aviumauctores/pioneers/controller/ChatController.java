@@ -204,7 +204,7 @@ public class ChatController extends PlayerListController {
             return;
         }
         // send the message
-        messageService.sendMessage(message, groupId)
+        messageService.sendGroupMessage(message, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }

@@ -229,7 +229,7 @@ public class GameReadyController extends PlayerListController {
             return;
         }
         messageTextField.clear();
-        messageService.sendMessage(message, gameService.getCurrentGameID())
+        messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
