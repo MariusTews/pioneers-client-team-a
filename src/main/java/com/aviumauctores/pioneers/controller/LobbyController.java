@@ -82,6 +82,7 @@ public class LobbyController extends PlayerListController {
         this.chatController = chatController;
         this.createGameController = createGameController;
         this.joinGameController = joinGameController;
+
     }
 
 
@@ -193,6 +194,7 @@ public class LobbyController extends PlayerListController {
 
     public void toCreateGame(ActionEvent event) {
         final CreateGameController controller = createGameController.get();
+        controller.setUser(this.user);
         controller.gameName.set("");
         controller.password.set("");
         app.show(controller);

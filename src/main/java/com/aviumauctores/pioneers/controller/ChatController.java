@@ -90,6 +90,7 @@ public class ChatController extends PlayerListController {
                     if (event.event().endsWith(".created")) {
                         //update AllGroup
                         usersIdList.add(event.data()._id());
+                        System.out.println(event.data()._id());
                         groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                     // Update user list

@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameService;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Optional;
+import javafx.beans.property.SimpleStringProperty;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -47,9 +49,12 @@ public class CreateGameController implements Controller {
 
     @FXML public TextField gameNameInput;
 
+    private User user;
+
     @Inject
     public CreateGameController(App app, Provider<LobbyController> lobbyController,
-                                GameService gameService, Provider<GameReadyController> gameReadyController){
+                                GameService gameService,
+                                Provider<GameReadyController> gameReadyController){
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
@@ -110,8 +115,13 @@ public class CreateGameController implements Controller {
         gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
+        gameService.updateGame()
+                .observeOn(FX_SCHEDULER)
+                .subscribe();
         //show gameReady Screen
         final GameReadyController controller = gameReadyController.get();
+        controller.gameName = gameNameInput.getText();
+        controller.setUser(this.user);
         app.show(controller);
     }
 
@@ -120,6 +130,7 @@ public class CreateGameController implements Controller {
     public void cancel(ActionEvent actionEvent) {
         //change view to LobbyScreen
         final LobbyController controller = lobbyController.get();
+        controller.setUser(this.user);
         app.show(controller);
     }
 
@@ -133,22 +144,23 @@ public class CreateGameController implements Controller {
         if(hidePassword){
             image = new Image(Main.class.getResource("views/hidePassword.png").toString());
             String password = gamePasswordInput.getText();
-            gamePasswordText.setVisible(true);
-            gamePasswordInput.setVisible(false);
             gamePasswordText.setText(password);
-            hidePassword = false;
         }else{
             image = new Image(Main.class.getResource("views/showPassword.png").toString());
             gamePasswordText.setText("");
-            gamePasswordText.setVisible(false);
-            gamePasswordInput.setVisible(true);
-            hidePassword = true;
         }
+        gamePasswordText.setVisible(hidePassword);
+        gamePasswordInput.setVisible(!hidePassword);
+        hidePassword = !hidePassword;
         //set Image to showPasswordButton
         ImageView view = new ImageView(image);
         view.setFitHeight(23.0);
         view.setFitWidth(25.0);
         showPasswordButton.setGraphic(view);
+    }
+
+    public void setUser(User user){
+        this.user = user;
     }
 
 }

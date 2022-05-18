@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.gamemembers.CreateMemberDto;
 import com.aviumauctores.pioneers.dto.games.CreateGameDto;
+import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
@@ -19,6 +20,12 @@ public class GameService {
 
     private String currentGameID;
 
+    private String ownerID;
+
+    private String name;
+
+    public String password;
+
     @Inject
     public GameService(GameMembersApiService gameMembersApiService, GamesApiService gamesApiService) {
         this.gameMembersApiService = gameMembersApiService;
@@ -29,14 +36,16 @@ public class GameService {
         return currentGameID;
     }
 
-    public void setCurrentGameID(String currentGameID) {
-        this.currentGameID = currentGameID;
+    public void setCurrentGameID(String currentGameID) { this.currentGameID = currentGameID;
     }
 
-    public Observable<String> create(String name, String password){
-        return gamesApiService.createGame(new CreateGameDto(name, password))
-                .map(Game::_id);
-
+    public Observable<Game> create(String name, String password){
+        Observable<Game> game =  gamesApiService.createGame(new CreateGameDto(name, password));
+        setCurrentGameID(game.blockingFirst()._id());
+        this.ownerID = game.blockingFirst().owner();
+        this.name = name;
+        this.password = password;
+        return game;
     }
 
     public Observable<Member> joinGame(String password) {
@@ -50,4 +59,14 @@ public class GameService {
     public Observable<Game> getCurrentGame() {
         return gamesApiService.getGame(currentGameID);
     }
+
+
+    public Observable<Game> deleteGame(){
+        return gamesApiService.deleteGame(currentGameID);
+    }
+
+    public Observable<Game> updateGame(){
+        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, password));
+    }
+
 }
