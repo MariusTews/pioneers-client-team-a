@@ -72,6 +72,11 @@
     -fx-background-radius: 0 0 8 8;
 }
 
+.tab-pane {
+    -fx-background-color: #333333;
+    -fx-background-radius: 8px;
+}
+
 .tab-header-background {
     -fx-background-color: #00496c;
     -fx-background-radius: 8 8 0 0;

@@ -31,8 +31,10 @@
 
 .tab-pane {
     -fx-background-radius: 8px;
-    -fx-background-color: #00496c;
+    -fx-background-color: #FFFFFF;
 }
+
+
 
 .list-view > .viewport {
     -fx-background-color: transparent;
