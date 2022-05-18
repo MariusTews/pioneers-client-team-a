@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import io.reactivex.rxjava3.core.Observable;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
@@ -30,14 +31,13 @@ public class GameMemberService {
         this.gameID = this.game.blockingFirst()._id();
     }
 
-    public Observable<List<Member>> listMembers(){
-        return gameMembersApiService.listMembers(gameID);
-    }
-
     public Observable<Member> createMember(){
         return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, gameService.password));
     }
 
+    public Observable<List<Member>> listCurrentGameMembers() {
+        return gameMembersApiService.listMembers(service.getCurrentGameID());
+    }
     public Observable<Member> deleteMember(String memberID){
         return gameMembersApiService.deleteMember(gameService.getCurrentGameID(), memberID);
 
@@ -52,5 +52,4 @@ public class GameMemberService {
     public Observable<Member> getMember(String memberID){
         return gameMembersApiService.getMember(gameID, memberID);
     }
-
 }

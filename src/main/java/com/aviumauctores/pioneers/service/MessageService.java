@@ -11,6 +11,8 @@ import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
 
+import java.util.List;
+
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
 
 
@@ -23,17 +25,21 @@ public class MessageService {
         this.messagesApiService = messagesApiService;
     }
 
-    //
-    public Observable<String> sendAllChat(String message) {
 
-        return messagesApiService.sendMessage("groups", ALLCHAT_ID, new CreateMessageDto(message))
+    public Observable<String> sendMessage(String message, String groupId) {
+
+        return messagesApiService.sendMessage("groups", groupId, new CreateMessageDto(message))
                 .map(Message::body);
     }
 
 
 
-    public Observable<Message> deleteMessage(String id) {
+    public Observable<Message> deleteMessage(String id, String groupId) {
 
-        return messagesApiService.deleteMessage("groups", ALLCHAT_ID, id);
+        return messagesApiService.deleteMessage("groups", groupId, id);
+    }
+
+    public Observable<List<Message>> listMessages(String namespace, String parent, String createdBefore, int limit) {
+        return messagesApiService.listMessages(namespace, parent, createdBefore, limit);
     }
 }

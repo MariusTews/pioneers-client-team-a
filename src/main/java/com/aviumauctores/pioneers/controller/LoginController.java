@@ -3,10 +3,12 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
+import com.aviumauctores.pioneers.dto.error.ValidationErrorResponse;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.CryptoService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.PreferenceService;
+import com.aviumauctores.pioneers.rest.UsersApiService;
+import com.aviumauctores.pioneers.service.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -14,20 +16,21 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import javafx.scene.input.MouseEvent;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static com.aviumauctores.pioneers.Constants.*;
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class LoginController implements Controller {
 
@@ -39,11 +42,9 @@ public class LoginController implements Controller {
     private final PreferenceService preferenceService;
     private final CryptoService cryptoService;
     private final ResourceBundle bundle;
+    private final ErrorService errorService;
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
-    private Disposable disposable;
-
-    @FXML public Button germanButton;
-    @FXML public Button englishButton;
     @FXML public TextField usernameInput;
     @FXML public PasswordField passwordInput;
     @FXML public Button loginButton;
@@ -52,10 +53,14 @@ public class LoginController implements Controller {
     @FXML public Label usernameErrorLabel;
     @FXML public Label passwordErrorLabel;
 
+    private CompositeDisposable disposables;
+    private final UserService userService;
+
     @Inject
     public LoginController(App app, LoginService loginService, Provider<RegisterController> registerController,
                            Provider<LobbyController> lobbyController, Provider<LoginController> loginController,
-                           PreferenceService preferenceService, CryptoService cryptoService, ResourceBundle bundle){
+                           PreferenceService preferenceService, CryptoService cryptoService, ResourceBundle bundle,
+                           ErrorService errorService, UserService userService){
         this.app = app;
         this.loginService = loginService;
         this.registerController = registerController;
@@ -64,17 +69,23 @@ public class LoginController implements Controller {
         this.preferenceService = preferenceService;
         this.cryptoService = cryptoService;
         this.bundle = bundle;
+        this.errorService = errorService;
+        this.userService = userService;
     }
 
     @Override
     public void init(){
-
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.username.password"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+        this.disposables = new CompositeDisposable();
     }
+
 
     @Override
     public void destroy(){
-        if (this.disposable != null) {
-            disposable.dispose();
+        if (this.disposables != null) {
+            disposables.dispose();
         }
     }
 
@@ -110,13 +121,13 @@ public class LoginController implements Controller {
         //check whether username or password is empty
         if (usernameEmpty || passwordEmpty) {
             if (usernameEmpty) {
-                usernameErrorLabel.setText("Invalid input.");
+                usernameErrorLabel.setText(bundle.getString("invalid.input"));
             }
             else {
                 usernameErrorLabel.setText("");
             }
             if (passwordEmpty) {
-                passwordErrorLabel.setText("Invalid input.");
+                passwordErrorLabel.setText(bundle.getString("invalid.input"));
             }
             else {
                 passwordErrorLabel.setText("");
@@ -126,7 +137,7 @@ public class LoginController implements Controller {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
-            disposable = loginService.login(username, password)
+            disposables.add(loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
@@ -142,8 +153,24 @@ public class LoginController implements Controller {
 
                                 toLobby(result);
                             },
-                            error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
-                    );
+                            //temporary solution
+                            throwable -> {
+                                if (throwable instanceof HttpException ex) {
+                                    Object object = errorService.readErrorMessage(ex);
+                                    if (object instanceof ErrorResponse response) {
+                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                    }
+                                    else {
+                                        ValidationErrorResponse response = (ValidationErrorResponse) object;
+                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                    }
+                                } else {
+                                    app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                                }
+                            }
+                    ));
         }
     }
 
@@ -155,42 +182,7 @@ public class LoginController implements Controller {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        //System.out.println(token);
         return loginService.login(token);
-    }
-
-    private void createDialog(String message) {
-        VBox vBox = new VBox(18);
-        vBox.setAlignment(Pos.CENTER);
-
-        Label label = new Label();
-        label.setFont(new Font(18));
-        label.setId("dialogLabel");
-
-        double width;
-
-        switch (message) {
-            case HTTP_400 -> {
-                label.setText("Validation failed.");
-                width = 300;
-            }
-            case HTTP_401 -> {
-                label.setText("Invalid username or password.");
-                width = 400;
-            }
-            case HTTP_429 -> {
-                label.setText("Rate limit reached.");
-                width = 540;
-            }
-            default -> {
-                label.setText("No connection to the Server.");
-                width = 300;
-            }
-        }
-
-        vBox.getChildren().add(label);
-
-        app.showDialogWithOkButton(vBox, width);
     }
 
     public void toRegister(ActionEvent event) {
@@ -205,19 +197,42 @@ public class LoginController implements Controller {
         app.show(controller);
     }
 
-    public void toLobby(LoginResult result) {
+    public void toLobby(LoginResult loginResult) {
         final LobbyController controller = lobbyController.get();
-        User user = new User(result._id(), result.name(), result.status(), result.avatar());
-        controller.setUser(user);
-        app.show(controller);
+        User user = new User(loginResult._id(), loginResult.name(), "online", loginResult.avatar());
+        disposables.add(userService.updateUser(loginResult._id(), new UpdateUserDto(user.name(), user.status(), user.avatar(), passwordInput.getText()))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(
+                        result -> {
+                            controller.setUser(user);
+                            app.show(controller);
+                        },
+                        throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Object object = errorService.readErrorMessage(ex);
+                                if (object instanceof ErrorResponse response) {
+                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                }
+                                else {
+                                    ValidationErrorResponse response = (ValidationErrorResponse) object;
+                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                }
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                            }
+                        }
+
+                ));
     }
 
-    public void setGerman(ActionEvent event) {
+    public void setGerman(MouseEvent event) {
         preferenceService.setLocale(Locale.GERMAN);
         app.show(loginController.get());
     }
 
-    public void setEnglish(ActionEvent event) {
+    public void setEnglish(MouseEvent event) {
         preferenceService.setLocale(Locale.ENGLISH);
         app.show(loginController.get());
     }

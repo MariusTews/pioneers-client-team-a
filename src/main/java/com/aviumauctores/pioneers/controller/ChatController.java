@@ -90,15 +90,25 @@ public class ChatController extends PlayerListController {
                     if (event.event().endsWith(".created")) {
                         //update AllGroup
                         usersIdList.add(event.data()._id());
-                        System.out.println(event.data()._id());
                         groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                     // Update user list
                     onUserEvent(event);
                 }));
-
         // listen for incoming messages and show them as a Label
-
+        disposable.add(eventListener.listen("groups.*.messages.*.*", Message.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> {
+                    Label msgLabel = createMessageLabel(event.data());
+                    if (event.event().endsWith(".created")) {
+                        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
+                                .add(msgLabel);
+                    }
+                    else if (event.event().endsWith(".deleted")) {
+                        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
+                                .remove(msgLabel);
+                    }
+                }));
     }
 
     @Override

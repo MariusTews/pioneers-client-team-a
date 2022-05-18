@@ -10,12 +10,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ResourceBundle;
 import java.util.Optional;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -32,8 +35,9 @@ public class CreateGameController implements Controller {
 
     private final Provider<LobbyController> lobbyController;
 
-    private final GameService gameService;
     private final Provider<GameReadyController> gameReadyController;
+    private final GameService gameService;
+    private final ResourceBundle bundle;
 
     private boolean hidePassword = true;
 
@@ -52,13 +56,14 @@ public class CreateGameController implements Controller {
     private User user;
 
     @Inject
-    public CreateGameController(App app, Provider<LobbyController> lobbyController,
-                                GameService gameService,
-                                Provider<GameReadyController> gameReadyController){
+    public CreateGameController(App app,
+                                Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
+                                GameService gameService, ResourceBundle bundle){
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
         this.gameService = gameService;
+        this.bundle = bundle;
     }
 
     public void init(){
@@ -73,7 +78,7 @@ public class CreateGameController implements Controller {
     @Override
     public Parent render(){
         //load createGame FXML
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"));
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -114,7 +119,11 @@ public class CreateGameController implements Controller {
         }
         gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(gameID -> {
+                    gameService.setCurrentGameID(gameID);
+                    //show gameReady Screen
+                    app.show(gameReadyController.get());
+                });
         gameService.updateGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe();

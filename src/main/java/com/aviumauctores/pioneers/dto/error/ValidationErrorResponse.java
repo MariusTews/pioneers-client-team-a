@@ -1,8 +1,10 @@
 package com.aviumauctores.pioneers.dto.error;
 
+import java.util.List;
+
 public record ValidationErrorResponse(
         int statusCode,
         String error,
-        String message
+        List<String> message
 ) {
 }

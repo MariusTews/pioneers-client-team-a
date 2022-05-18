@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,9 +43,17 @@ public abstract class PlayerListController implements Controller {
     }
 
     protected void addPlayerToList(User user) {
-        PlayerListItemController controller = new PlayerListItemController(this, user, playerItems);
+        addPlayerToList(user, null);
+    }
+
+    protected void addPlayerToList(User user, Member gameMember) {
+        PlayerListItemController controller = new PlayerListItemController(this, user, gameMember, playerItems);
         playerListItemControllers.put(user._id(), controller);
         playerItems.add(controller.render());
+    }
+
+    protected void addMemberToList(Member gameMember) {
+        // Do nothing at default
     }
 
     protected abstract void updatePlayerLabel();

@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.users.CreateUserDto;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.rest.UsersApiService;
 import io.reactivex.rxjava3.core.Observable;
@@ -34,8 +35,16 @@ public class UserService {
         return usersApiService.listUsers("online", null);
     }
 
+    public Observable<User> getUserByID(String id) {
+        return usersApiService.getUser(id);
+    }
+
     public Observable<String> getUserName(String id) {
-        return usersApiService.getUser(id).map(User::name);
+        return getUserByID(id).map(User::name);
+    }
+
+    public Observable<User> updateUser(String id, UpdateUserDto updateUserDto) {
+        return this.usersApiService.updateUser(id, updateUserDto);
     }
 
     public String getCurrentUserID() {
