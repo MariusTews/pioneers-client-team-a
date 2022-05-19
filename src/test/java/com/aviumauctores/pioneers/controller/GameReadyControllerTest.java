@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameMemberService;
@@ -24,11 +25,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.ListViewMatchers.hasItems;
+import static org.testfx.matcher.control.ListViewMatchers.isEmpty;
 
 @ExtendWith(MockitoExtension.class)
 class GameReadyControllerTest extends ApplicationTest {
@@ -64,6 +65,8 @@ class GameReadyControllerTest extends ApplicationTest {
                 Observable.just(new User("1", "Player1", "online", null)));
         when(userService.getUserByID("42")).thenReturn(
                 Observable.just(new User("42", "Player42", "online", null)));
+
+        //when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", 2 )));
         when(gameService.getCurrentGameID()).thenReturn("12");
         existingMembers = Observable.just(List.of(existingMember));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(existingMembers);
@@ -75,6 +78,7 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Test
     void gameMemberListUpdates() {
+
         final ListView<Parent> playerList = lookup("#playerList").queryListView();
         // Get existing members
         List<Member> exMembersList = existingMembers.blockingFirst();
@@ -84,8 +88,5 @@ class GameReadyControllerTest extends ApplicationTest {
         verifyThat(playerList, hasItems(2));
     }
 
-    @Test
-    void gameReady(){
 
-    }
 }

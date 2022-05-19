@@ -53,7 +53,7 @@ public class CreateGameController implements Controller {
 
     @FXML public TextField gameNameInput;
 
-    private final CompositeDisposable disposable = new CompositeDisposable();
+    private CompositeDisposable disposable = new CompositeDisposable();
 
 
     @Inject
@@ -74,6 +74,10 @@ public class CreateGameController implements Controller {
 
 
     public void destroy(){
+        if(disposable != null){
+            disposable.dispose();
+            disposable = null;
+        }
 
     }
 

@@ -10,7 +10,6 @@ import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,16 +36,16 @@ public class GameReadyController extends PlayerListController {
 
 
     private final App app;
+
     private final UserService userService;
     private final GameService gameService;
     private final GameMemberService gameMemberService;
     private final ErrorService errorService;
+    private final MessageService messageService;
+
     private final EventListener eventListener;
     private final ResourceBundle bundle;
-    private final MessageService messageService;
     private final Provider<LobbyController> lobbyController;
-
-    private Game game;
 
     private Label deleteLabel;
 
@@ -86,7 +85,7 @@ public class GameReadyController extends PlayerListController {
         this.bundle = bundle;
         this.messageService = messageService;
         this.lobbyController = lobbyController;
-        this.game = gameService.getCurrentGame().blockingFirst();
+        gameMemberService.updateID();
     }
 
     public void init() {
@@ -205,6 +204,10 @@ public class GameReadyController extends PlayerListController {
         //press esc to leave
         leaveGameButton.setCancelButton(true);
 
+        //press esc to leave
+        leaveGameButton.setCancelButton(true);
+
+
         playerList.setItems(playerItems);
         updatePlayerLabel();
 
@@ -226,10 +229,10 @@ public class GameReadyController extends PlayerListController {
         gameMemberService.updateMember(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                    String buttonText = member.ready() ? "Ready" : "Not Ready";
-                    gameReadyButton.setText(buttonText);
-                }
-                ,throwable -> {
+                            String buttonText = member.ready() ? "Ready" : "Not Ready";
+                            gameReadyButton.setText(buttonText);
+                        }
+                        ,throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
                                 app.showHttpErrorDialog(response.statusCode(), response.error(), response.message());
@@ -241,7 +244,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void leaveGame(ActionEvent actionEvent) {
-        if (userService.getCurrentUserID().equals(game.owner())) {
+        if (userService.getCurrentUserID().equals(gameService.getOwnerID())) {
             ButtonType proceedButton = new ButtonType("Proceed", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType("Return", ButtonBar.ButtonData.CANCEL_CLOSE);
             Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -273,7 +276,7 @@ public class GameReadyController extends PlayerListController {
         gameService.setCurrentGameID(null);
         final LobbyController controller = lobbyController.get();
         app.show(controller);
-        }
+    }
 
 
     public void sendMessage(ActionEvent actionEvent) {

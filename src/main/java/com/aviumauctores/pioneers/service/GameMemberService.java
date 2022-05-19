@@ -18,7 +18,6 @@ public class GameMemberService {
 
     private final GameMembersApiService gameMembersApiService;
 
-    private final Observable<Game> game;
 
     private String gameID;
 
@@ -27,8 +26,7 @@ public class GameMemberService {
     public GameMemberService(GameService gameService, GameMembersApiService gameMembersApiService) {
         this.gameService = gameService;
         this.gameMembersApiService = gameMembersApiService;
-        this.game = gameService.getCurrentGame();
-        this.gameID = this.game.blockingFirst()._id();
+        this.gameID = gameService.getCurrentGameID();
     }
 
     public Observable<Member> createMember(){
@@ -46,10 +44,14 @@ public class GameMemberService {
     public Observable<Member> updateMember(String memberID){
         Observable<Member> member = getMember(memberID);
         boolean status = !(member.blockingFirst().ready());
-        return gameMembersApiService.updateMember(gameID, memberID, new UpdateMemberDto(status));
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status));
     }
 
     public Observable<Member> getMember(String memberID){
         return gameMembersApiService.getMember(gameID, memberID);
+    }
+
+    public void updateID(){
+        this.gameID = gameService.getCurrentGameID();
     }
 }

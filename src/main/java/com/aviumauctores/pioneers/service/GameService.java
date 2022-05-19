@@ -36,7 +36,8 @@ public class GameService {
         return currentGameID;
     }
 
-    public void setCurrentGameID(String currentGameID) { this.currentGameID = currentGameID;
+    public void setCurrentGameID(String currentGameID) {
+        this.currentGameID = currentGameID;
     }
 
     public Observable<String> create(String name, String password){
