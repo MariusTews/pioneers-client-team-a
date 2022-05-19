@@ -2,8 +2,11 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.PreferenceService;
+import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -28,6 +31,9 @@ class LoginControllerTest extends ApplicationTest {
 
     @Mock
     LoginService loginService;
+
+    @Mock
+    UserService userService;
 
     @Mock
     PreferenceService preferenceService;
@@ -58,5 +64,29 @@ class LoginControllerTest extends ApplicationTest {
         type(KeyCode.SPACE);
 
         verify(loginService).login("Struppi", "12345678");
+    }
+
+    @Test
+    void loginScreen() {
+        clickOn("#sunIcon");
+        verify(app).setTheme("light");
+
+        clickOn("#moonIcon");
+        verify(app).setTheme("dark");
+
+        clickOn("#britishFlag");
+        verify(preferenceService).setLocale(Locale.ENGLISH);
+
+        clickOn("#germanFlag");
+        verify(preferenceService).setLocale(Locale.GERMAN);
+    }
+
+    @Test
+    void toLobby() {
+        User user1 = new User("1", "Mark", "online", "brr");
+        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null))).thenReturn(Observable.just(user1));
+        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref"));
+
+        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null));
     }
 }

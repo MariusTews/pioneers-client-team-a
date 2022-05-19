@@ -35,23 +35,32 @@ public class GameReadyController extends PlayerListController {
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
 
-    @FXML public Button startGameButton;
+    @FXML
+    public Button startGameButton;
 
-    @FXML public Button gameReadyButton;
+    @FXML
+    public Button gameReadyButton;
 
-    @FXML public Button leaveGameButton;
+    @FXML
+    public Button leaveGameButton;
 
-    @FXML public Label gameNameLabel;
+    @FXML
+    public Label gameNameLabel;
 
-    @FXML public Button sendMessageButton;
+    @FXML
+    public Button sendMessageButton;
 
-    @FXML public AnchorPane chatPane;
+    @FXML
+    public AnchorPane chatPane;
 
-    @FXML public Tab allChatTab;
+    @FXML
+    public Tab allChatTab;
 
-    @FXML public TitledPane playerListPane;
+    @FXML
+    public TitledPane playerListPane;
 
-    @FXML public ListView<Parent> playerList;
+    @FXML
+    public ListView<Parent> playerList;
 
     private int readyMembers;
 
@@ -60,7 +69,7 @@ public class GameReadyController extends PlayerListController {
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener,
-                               ResourceBundle bundle, Provider<LobbyController> lobbyController){
+                               ResourceBundle bundle, Provider<LobbyController> lobbyController) {
         this.app = app;
         this.userService = userService;
         this.gameService = gameService;
@@ -70,19 +79,19 @@ public class GameReadyController extends PlayerListController {
         this.lobbyController = lobbyController;
     }
 
-    public void init(){
+    public void init() {
         disposables = new CompositeDisposable();
         // Get member list via REST
         disposables.add(gameMemberService.listCurrentGameMembers()
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe(members -> {
-                            for (Member member : members) {
-                                addMemberToList(member);
-                            }
-                            if (playerListPane != null) {
-                                updatePlayerLabel();
-                            }
-                        }));
+                .observeOn(FX_SCHEDULER)
+                .subscribe(members -> {
+                    for (Member member : members) {
+                        addMemberToList(member);
+                    }
+                    if (playerListPane != null) {
+                        updatePlayerLabel();
+                    }
+                }));
         // Listen to game member events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".members.*.*",
@@ -141,7 +150,7 @@ public class GameReadyController extends PlayerListController {
         readyMembers--;
     }
 
-    public void destroy(){
+    public void destroy() {
         if (disposables != null) {
             disposables.dispose();
             disposables = null;
@@ -150,13 +159,13 @@ public class GameReadyController extends PlayerListController {
         playerListItemControllers.clear();
     }
 
-    public Parent render(){
+    public Parent render() {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/gameReadyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
             parent = loader.load();
-        }catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
