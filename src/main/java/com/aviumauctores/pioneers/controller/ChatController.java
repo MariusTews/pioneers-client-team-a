@@ -64,7 +64,10 @@ public class ChatController extends PlayerListController {
 
     private Label deleteLabel;
 
+    private Message deleteMessage;
+
     private Tab selectedTab;
+
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
@@ -237,6 +240,7 @@ public class ChatController extends PlayerListController {
             for (Tab t: chatTabPane.getTabs()) {
                 if (t.equals(userTab)) {
                     notOpen = false;
+                    break;
                 }
             }
             if (notOpen) {
@@ -257,7 +261,7 @@ public class ChatController extends PlayerListController {
                                 for (Tab t: chatTabPane.getTabs()) {
                                     if (t.getId().equals(group._id())) {
                                         noTab = false;
-                                        selectedTab = t;
+                                        this.selectedTab = t;
                                     }
                                 }
                                 /*if (noTab) {
@@ -335,20 +339,27 @@ public class ChatController extends PlayerListController {
 
     public void onMessageClicked(MouseEvent event) {
         if (event.getButton() == MouseButton.SECONDARY) {
-            // Alert for the delete
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete");
-            alert.setHeaderText("Delete this Message?");
-            alert.setContentText("Do you want to delete this message?");
-            Optional<ButtonType> res = alert.showAndWait();
-            // delete if "Ok" is clicked
-            if (res.get() == ButtonType.OK){
-                this.deleteLabel = (Label) event.getSource();
-                delete(this.deleteLabel.getId(), this.selectedTab.getId());
-                alert.close();
-            } else {
-                alert.close();
-            }
+            // Alert for the delete, only if you click on your message
+            Label msg = (Label) event.getSource();
+            messageService.getMessage("groups",selectedTab.getId(), msg.getId()).observeOn(FX_SCHEDULER).subscribe(res ->  {
+                deleteMessage = res;
+                if (!userService.getCurrentUserID().equals(deleteMessage.sender())) {
+                    return;
+                }
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Delete");
+                alert.setHeaderText("Delete this Message?");
+                alert.setContentText("Do you want to delete this message?");
+                Optional<ButtonType> result = alert.showAndWait();
+                // delete if "Ok" is clicked
+                if (result.get() == ButtonType.OK){
+                    this.deleteLabel = (Label) event.getSource();
+                    delete(this.deleteLabel.getId(), this.selectedTab.getId());
+                    alert.close();
+                } else {
+                    alert.close();
+                }
+            });
         }
 
     }
