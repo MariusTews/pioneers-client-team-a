@@ -108,6 +108,9 @@ class ChatControllerTest extends ApplicationTest {
 
     @Test
     void delete() {
+        Message message1 = new Message("1", "2", "3", "1", "hello");
+        when(userService.getCurrentUserID()).thenReturn("1");
+        when(messageService.getMessage(any(), any(), any())).thenReturn(Observable.just(message1));
         when(messageService.deleteMessage(any(), any())).thenReturn(Observable.empty());
 
         //create a Message
@@ -119,9 +122,7 @@ class ChatControllerTest extends ApplicationTest {
 
 
         verify(messageService).deleteMessage("3", "627cf3c93496bc00158f3859");
-
-
-
+        
     }
 
 }

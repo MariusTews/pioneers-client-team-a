@@ -28,7 +28,6 @@ import java.util.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -245,6 +244,8 @@ public class ChatController extends PlayerListController {
             }
             if (notOpen) {
                 chatTabPane.getTabs().add(userTab);
+                showOldMessages("groups",userTab.getId(),LocalDateTime.now().toString(), 100);
+
             }
             // There is already a chat tab
             chatTabPane.getSelectionModel().select(userTab);
@@ -256,32 +257,30 @@ public class ChatController extends PlayerListController {
                     disposable.add(eventListener.listen("groups." + group._id() + ".messages.*.*", Message.class)
                             .observeOn(FX_SCHEDULER)
                             .subscribe(event -> {
-
-                                boolean noTab = true;
+                                Tab tab = this.selectedTab;
+                                boolean notOpen = true;
                                 for (Tab t: chatTabPane.getTabs()) {
                                     if (t.getId().equals(group._id())) {
-                                        noTab = false;
-                                        this.selectedTab = t;
+                                        tab = t;
+                                        notOpen = false;
                                     }
                                 }
-                                /*if (noTab) {
-                                    Tab newTab = createTab(group._id(), selectedUser.name());
-                                    this.chatTabPane.getTabs().add(newTab);
-                                    this.selectedTab = newTab;
-                                }*/
+                                if (notOpen) {
+                                    return;
+                                }
                                 if (event.event().endsWith(".created")) {
                                     Label msgLabel = createMessageLabel(event.data());
-                                    ((VBox)((ScrollPane)this.selectedTab.getContent()).getContent()).getChildren()
+                                    ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()
                                             .add(msgLabel);
                                 }
                                 else if (event.event().endsWith(".deleted")) {
                                     //search for the Label of the which will be deleted
-                                    for (Node l : ((VBox)((ScrollPane)this.selectedTab.getContent()).getContent()).getChildren()) {
+                                    for (Node l : ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()) {
                                         if (event.data()._id().equals(l.getId())) {
                                             this.deleteLabel = (Label) l;
                                         }
                                     }
-                                    ((VBox)((ScrollPane)this.selectedTab.getContent()).getContent()).getChildren()
+                                    ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()
                                             .remove(this.deleteLabel);
 
                                 }
@@ -371,7 +370,10 @@ public class ChatController extends PlayerListController {
         tab.setContent(sp);
         tab.setId(groupId);
         tab.setClosable(true);
-        tab.setOnCloseRequest(event -> chatTabPane.getTabs().remove(tab));
+        tab.setOnCloseRequest(event -> {
+            chatTabPane.getTabs().remove(tab);
+            ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren().clear();
+        });
         tab.setOnSelectionChanged(event -> {
             if (event.getTarget().equals(tab)) {
                 this.selectedTab = tab;
