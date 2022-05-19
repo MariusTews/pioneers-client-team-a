@@ -80,17 +80,29 @@ class AppTest extends ApplicationTest {
         assertLobbyScreen();
         // Join a game
         clickOn("Join");
+        // Time for CI
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
+        assertJoinGameScreen();
         // Back to lobby
         type(KeyCode.ESCAPE);
 
         assertLobbyScreen();
         // Join again
         clickOn("Join");
+        // Time for CI
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         // Longer password so CI has more time for screen change
         write("12345678");
-        // Assert only now the join game screen because CI seems to dislike the first place
         assertJoinGameScreen();
         // Join game
         type(KeyCode.ENTER);
