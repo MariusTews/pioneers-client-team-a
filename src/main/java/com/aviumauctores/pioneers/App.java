@@ -1,15 +1,9 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
-import com.aviumauctores.pioneers.controller.LobbyController;
 import com.aviumauctores.pioneers.controller.LoginController;
-import com.aviumauctores.pioneers.dto.auth.LoginResult;
-import com.aviumauctores.pioneers.model.User;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -23,7 +17,6 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.util.Objects;
-
 import java.util.Optional;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -56,7 +49,7 @@ public class App extends Application {
         final Scene scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
-        scene.getStylesheets().add(Main.class.getResource("views/light-theme.css").toString());
+        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light-theme.css")).toString());
 
         setAppIcon(stage);
         setTaskBarIcon();
@@ -121,10 +114,10 @@ public class App extends Application {
     public void setTheme(String theme) {
         if (theme.equals("light")) {
             stage.getScene().getStylesheets().clear();
-            stage.getScene().getStylesheets().add(Main.class.getResource("views/light-theme.css").toString());
+            stage.getScene().getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light-theme.css")).toString());
         } else if (theme.equals("dark")) {
             stage.getScene().getStylesheets().clear();
-            stage.getScene().getStylesheets().add(Main.class.getResource("views/dark-theme.css").toString());
+            stage.getScene().getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark-theme.css")).toString());
         }
     }
 

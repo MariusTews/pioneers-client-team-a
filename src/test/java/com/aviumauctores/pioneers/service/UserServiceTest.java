@@ -1,5 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
+import com.aviumauctores.pioneers.dto.users.CreateUserDto;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.Group;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.rest.GroupsApiService;
@@ -44,4 +46,62 @@ class UserServiceTest {
         verify(usersApiService).findAll();
     }
 
+
+    @Test
+    void listOnlineUsers() {
+        User user1 = new User("1", "Mark", "online", "brr");
+        User user2 = new User("2", "Marcel", "online", "brr");
+
+        List<User> usersOnline = new ArrayList<>();
+        usersOnline.add(user1);
+        usersOnline.add(user2);
+        when(userService.listOnlineUsers()).thenReturn(Observable.just(usersOnline));
+
+        List<User> checkUsers = userService.listOnlineUsers().blockingFirst();
+        assertEquals(checkUsers, usersOnline);
+
+        verify(usersApiService).listUsers("online", null);
+    }
+
+    @Test
+    void register() {
+        User user1 = new User("1", "Mark", "online", "brr");
+        when(userService.register("Mark", "password")).thenReturn(Observable.just(user1));
+
+        User user2 = userService.register("Mark", "password").blockingFirst();
+        assertEquals(user2, user1);
+        verify(usersApiService).createUser(new CreateUserDto("Mark", "password"));
+    }
+
+    @Test
+    void getUserByID() {
+        User user1 = new User("1", "Mark", "online", "brr");
+        when(userService.getUserByID("1")).thenReturn(Observable.just(user1));
+
+        User user = userService.getUserByID("1").blockingFirst();
+        assertEquals(user, user1);
+        verify(usersApiService).getUser("1");
+    }
+
+    @Test
+    void getUserName() {
+        User user1 = new User("1", "Mark", "online", "brr");
+        when(userService.getUserByID("1")).thenReturn((Observable.just(user1)));
+
+        String username = userService.getUserName("1").blockingFirst();
+        assertEquals(username, user1.name());
+        verify(usersApiService).getUser("1");
+
+    }
+
+    @Test
+    void updateUser() {
+        User user1 = new User("1", "Mark", "offline", "brr");
+
+        when(userService.updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test"))).thenReturn(Observable.just(user1));
+        User user = userService.updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test")).blockingFirst();
+
+        assertEquals(user, user1);
+        verify(usersApiService).updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test"));
+    }
 }
