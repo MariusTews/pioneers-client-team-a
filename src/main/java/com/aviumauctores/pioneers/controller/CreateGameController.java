@@ -87,6 +87,9 @@ public class CreateGameController implements Controller {
             e.printStackTrace();
             return null;
         }
+        //press esc to leave
+        cancelButton.setCancelButton(true);
+
         //check if one or both input fields are empty
         createGameButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
