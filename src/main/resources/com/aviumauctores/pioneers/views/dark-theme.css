@@ -72,6 +72,11 @@
     -fx-background-radius: 0 0 8 8;
 }
 
+.tab-pane {
+    -fx-background-color: #333333;
+    -fx-background-radius: 8px;
+}
+
 .tab-header-background {
     -fx-background-color: #00496c;
     -fx-background-radius: 8 8 0 0;
@@ -94,6 +99,29 @@
 .tab:selected {
     -fx-background-color: rgba(0, 255, 72, 0.21);
     -fx-text-base-color: #eee;
+}
+
+#chatpane {
+    -fx-background-color: #333333;
+    -fx-background-radius: 0 0 8 8;
+    -fx-border-color: transparent;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #00496c;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.titled-pane {
+    -fx-text-fill: #ffffff;
+}
+
+.titled-pane > *.content {
+    -fx-background-radius: 0 0 8 8;
+    -fx-background-color: #333333;
+    -fx-border-radius: 0 0 8 8;
+    -fx-text-fill: #111;
+    -fx-border-color: transparent;
 }
 
 

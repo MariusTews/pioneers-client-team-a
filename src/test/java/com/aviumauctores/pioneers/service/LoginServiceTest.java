@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.auth.LoginDto;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.dto.auth.RefreshDto;
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,24 @@ class LoginServiceTest {
 
         // Ensure LoginService.login calls authApiService.login
         verify(authApiService).login(new LoginDto("Struppi", "12345678"));
+    }
+
+    @Test
+    void loginWithToken() {
+        LoginResult expResult =
+                new LoginResult("42", "Struppi", "online", null, "at", "rt");
+        when(authApiService.refresh(any())).thenReturn(Observable.just(expResult));
+        doNothing().when(userService).setCurrentUserID(anyString());
+
+        // Actual result
+        LoginResult actResult = loginService.login("12345").blockingFirst();
+
+        assertEquals(actResult, expResult);
+        assertEquals(tokenStorage.getToken(), actResult.accessToken());
+
+        // Ensure LoginService.login calls authApiService.login
+        verify(authApiService).refresh(new RefreshDto("12345"));
+
     }
 
     @Test

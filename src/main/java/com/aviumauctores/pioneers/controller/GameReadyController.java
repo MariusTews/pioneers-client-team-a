@@ -2,14 +2,13 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.GameMemberService;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.MessageService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
@@ -23,6 +22,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -36,15 +36,16 @@ public class GameReadyController extends PlayerListController {
 
 
     private final App app;
+
     private final UserService userService;
     private final GameService gameService;
     private final GameMemberService gameMemberService;
+    private final ErrorService errorService;
+    private final MessageService messageService;
+
     private final EventListener eventListener;
     private final ResourceBundle bundle;
-    private final MessageService messageService;
     private final Provider<LobbyController> lobbyController;
-
-    private User user;
 
     private Label deleteLabel;
 
@@ -73,31 +74,33 @@ public class GameReadyController extends PlayerListController {
 
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
-                               EventListener eventListener,
+                               EventListener eventListener, ErrorService errorService,
                                ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController){
         this.app = app;
         this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
+        this.errorService = errorService;
         this.eventListener = eventListener;
         this.bundle = bundle;
         this.messageService = messageService;
         this.lobbyController = lobbyController;
+        gameMemberService.updateID();
     }
 
-    public void init(){
+    public void init() {
         disposables = new CompositeDisposable();
         // Get member list via REST
         disposables.add(gameMemberService.listCurrentGameMembers()
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe(members -> {
-                            for (Member member : members) {
-                                addMemberToList(member);
-                            }
-                            if (playerListPane != null) {
-                                updatePlayerLabel();
-                            }
-                        }));
+                .observeOn(FX_SCHEDULER)
+                .subscribe(members -> {
+                    for (Member member : members) {
+                        addMemberToList(member);
+                    }
+                    if (playerListPane != null) {
+                        updatePlayerLabel();
+                    }
+                }));
         // Listen to game member events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".members.*.*",
@@ -178,7 +181,7 @@ public class GameReadyController extends PlayerListController {
         readyMembers--;
     }
 
-    public void destroy(){
+    public void destroy() {
         if (disposables != null) {
             disposables.dispose();
             disposables = null;
@@ -187,16 +190,21 @@ public class GameReadyController extends PlayerListController {
         playerListItemControllers.clear();
     }
 
-    public Parent render(){
+    public Parent render() {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/gameReadyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
             parent = loader.load();
-        }catch(IOException e) {
+            chatPane.setId("chatpane");
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+
+        //press esc to leave
+        leaveGameButton.setCancelButton(true);
+
 
         playerList.setItems(playerItems);
         updatePlayerLabel();
@@ -216,12 +224,58 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void gameReady(ActionEvent actionEvent) {
+        gameMemberService.updateMember(userService.getCurrentUserID())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(member -> {
+                            String buttonText = member.ready() ? "Ready" : "Not Ready";
+                            gameReadyButton.setText(buttonText);
+                        }
+                        ,throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
+                                app.showHttpErrorDialog(response.statusCode(), response.error(), response.message());
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                            }
+                        });
+
     }
 
     public void leaveGame(ActionEvent actionEvent) {
+        if (userService.getCurrentUserID().equals(gameService.getOwnerID())) {
+            ButtonType proceedButton = new ButtonType("Proceed", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType("Return", ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            ownerAlert.setTitle("Leaver Warning");
+            ownerAlert.setHeaderText("If you leave a game as the owner, it will be deleted");
+            ownerAlert.setContentText("Delete this Game?");
+            Optional<ButtonType> result = ownerAlert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                gameService.deleteGame()
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe();
+            } else {
+                ownerAlert.close();
+                return;
+            }
+        }else{
+            Alert memberAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            memberAlert.setTitle("Leaver Warning");
+            memberAlert.setHeaderText("Do you want to leave this game?");
+            Optional<ButtonType> result = memberAlert.showAndWait();
+            if(result.get() == ButtonType.OK) {
+                gameMemberService.deleteMember(userService.getCurrentUserID())
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe();
+            }else {
+                return;
+            }
+        }
+        gameService.setCurrentGameID(null);
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
+
 
     public void sendMessage(ActionEvent actionEvent) {
         String message = messageTextField.getText();

@@ -31,8 +31,10 @@
 
 .tab-pane {
     -fx-background-radius: 8px;
-    -fx-background-color: #00496c;
+    -fx-background-color: #FFFFFF;
 }
+
+
 
 .list-view > .viewport {
     -fx-background-color: transparent;
@@ -40,7 +42,7 @@
 
 .list-view {
     -fx-background-radius: 8px;
-    -fx-background-color: #eee;
+    -fx-background-color: #ffffff;
 }
 
 .list-view .corner {
@@ -48,13 +50,17 @@
 }
 
 .list-cell {
-    -fx-background-color: #eee;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
 }
 
 .list-cell:selected {
     -fx-background-radius: 8px;
     -fx-background-color: rgb(208, 208, 208);
+}
+
+.game-list {
+    -fx-font-size: 11px;
 }
 
 .tab {
@@ -64,7 +70,7 @@
 }
 
 .tab:selected {
-    -fx-background-color: #eee;
+    -fx-background-color: #ffffff;
 }
 
 
@@ -82,6 +88,29 @@
     -fx-background-color: #00496c;
     -fx-background-radius: 8 8 0 0;
 
+}
+
+#chatpane {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0 0 8 8;
+    -fx-border-color: transparent;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #00496c;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.titled-pane {
+    -fx-text-fill: #ffffff;
+}
+
+.titled-pane > *.content {
+    -fx-background-radius: 0 0 8 8;
+    -fx-background-color: #ffffff;
+    -fx-border-radius: 0 0 8 8;
+    -fx-text-fill: #111;
+    -fx-border-color: transparent;
 }
 
 

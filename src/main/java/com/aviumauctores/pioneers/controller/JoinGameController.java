@@ -34,12 +34,18 @@ public class JoinGameController implements Controller {
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
-    @FXML public Label gameNameLabel;
-    @FXML public PasswordField passwordTextField;
-    @FXML public TextField showPasswordTextField;
-    @FXML public Button showPasswordButton;
-    @FXML public Button joinGameButton;
-    @FXML public Button leaveButton;
+    @FXML
+    public Label gameNameLabel;
+    @FXML
+    public PasswordField passwordTextField;
+    @FXML
+    public TextField showPasswordTextField;
+    @FXML
+    public Button showPasswordButton;
+    @FXML
+    public Button joinGameButton;
+    @FXML
+    public Button leaveButton;
 
     private CompositeDisposable disposables;
 
@@ -58,7 +64,7 @@ public class JoinGameController implements Controller {
         this.gameReadyController = gameReadyController;
     }
 
-    public void init(){
+    public void init() {
         disposables = new CompositeDisposable();
         disposables.add(gameService.getCurrentGame()
                 .observeOn(FX_SCHEDULER)
@@ -78,14 +84,14 @@ public class JoinGameController implements Controller {
                 }));
     }
 
-    public void destroy(){
+    public void destroy() {
         if (disposables != null) {
             disposables.dispose();
             disposables = null;
         }
     }
 
-    public Parent render(){
+    public Parent render() {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/joinGameScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
@@ -95,6 +101,9 @@ public class JoinGameController implements Controller {
             e.printStackTrace();
             return null;
         }
+        //press esc to leave
+        leaveButton.setCancelButton(true);
+
         passwordTextField.textProperty().bindBidirectional(showPasswordTextField.textProperty());
         showPasswordTextField.setManaged(false);
         return parent;
