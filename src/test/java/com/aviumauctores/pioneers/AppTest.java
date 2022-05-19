@@ -11,6 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.testfx.assertions.api.Assertions.assertThat;
 
 class AppTest extends ApplicationTest {
+    private final ScreenAsserts screenAsserts = new ScreenAsserts(this);
+
     private Stage stage;
 
     @Override
@@ -26,7 +28,7 @@ class AppTest extends ApplicationTest {
     void criticalPath() {
         assertThat(stage.getTitle()).isEqualTo("Pioneers");
 
-        assertLoginScreen();
+        screenAsserts.assertLoginScreen();
 
         write("User1\t");
         write("12345678\t\t\t");
@@ -41,22 +43,22 @@ class AppTest extends ApplicationTest {
         // Create an account
         type(KeyCode.ENTER);
 
-        assertLoginScreen();
+        screenAsserts.assertLoginScreen();
 
         write("User1\t");
         write("12345678\t");
         // Login
         type(KeyCode.SPACE);
 
-        assertLobbyScreen();
+        screenAsserts.assertLobbyScreen();
         // Go to create game screen
         clickOn("#createGameButton");
 
-        assertCreateGameScreen();
+        screenAsserts.assertCreateGameScreen();
         // Go back to lobby
         clickOn("#cancelButton");
 
-        assertLobbyScreen();
+        screenAsserts.assertLobbyScreen();
         // Go to create game screen again
         clickOn("#createGameButton");
 
@@ -65,19 +67,19 @@ class AppTest extends ApplicationTest {
         write("1");
         clickOn("#createGameButton");
 
-        assertGameReadyScreen();
+        screenAsserts.assertGameReadyScreen();
         // Go back to lobby
         clickOn("#leaveGameButton");
 
-        assertLobbyScreen();
+        screenAsserts.assertLobbyScreen();
         // Go to chat screen
         clickOn("#chatButton");
 
-        assertChatScreen();
+        screenAsserts.assertChatScreen();
         // Go back to lobby
         clickOn("#leaveButton");
 
-        assertLobbyScreen();
+        screenAsserts.assertLobbyScreen();
         // Join a game
         clickOn("Join");
         // Time for CI
@@ -87,11 +89,11 @@ class AppTest extends ApplicationTest {
             throw new RuntimeException(e);
         }
 
-        assertJoinGameScreen();
+        screenAsserts.assertJoinGameScreen();
         // Back to lobby
         type(KeyCode.ESCAPE);
 
-        assertLobbyScreen();
+        screenAsserts.assertLobbyScreen();
         // Join again
         clickOn("Join");
         // Time for CI
@@ -103,11 +105,11 @@ class AppTest extends ApplicationTest {
 
         // Longer password so CI has more time for screen change
         write("12345678");
-        assertJoinGameScreen();
+        screenAsserts.assertJoinGameScreen();
         // Join game
         type(KeyCode.ENTER);
 
-        assertGameReadyScreen();
+        screenAsserts.assertGameReadyScreen();
         // Go back to lobby
         clickOn("#leaveGameButton");
 
@@ -115,36 +117,6 @@ class AppTest extends ApplicationTest {
         clickOn("#quitButton");
 
         // Now we should be back in login screen
-        assertLoginScreen();
-    }
-
-    private void assertLoginScreen() {
-        // The existence of the remember-me checkbox proves that we are in login screen
-        lookup("#rememberMeCheckBox").query();
-    }
-
-    private void assertLobbyScreen() {
-        // Only the lobby screen has the game list so if it exists we must be in lobby screen
-        lookup("#gameListView").queryListView();
-    }
-
-    private void assertCreateGameScreen() {
-        // Check that we are in create game screen
-        lookup("#gameNameInput").query();
-    }
-
-    private void assertJoinGameScreen() {
-        // Check that we are in join game screen
-        lookup("#joinGameButton").queryButton();
-    }
-
-    private void assertGameReadyScreen() {
-        // Check that we are in game ready screen
-        lookup("#startGameButton").queryButton();
-    }
-
-    private void assertChatScreen() {
-        // The chat tab pane is an indicator that we are in chat screen
-        lookup("#chatTabPane").query();
+        screenAsserts.assertLoginScreen();
     }
 }
