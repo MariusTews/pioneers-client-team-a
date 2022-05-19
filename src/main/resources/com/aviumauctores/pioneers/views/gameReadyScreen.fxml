@@ -19,7 +19,7 @@
         </TitledPane>
         <TabPane layoutX="37.0" layoutY="82.0" prefHeight="194.0" prefWidth="218.0" tabClosingPolicy="UNAVAILABLE">
             <Tab fx:id="allChatTab" text="%all">
-                <ScrollPane prefHeight="200.0" prefWidth="200.0">
+                <ScrollPane fx:id="chatPane" prefHeight="200.0" prefWidth="200.0">
                <content>
                   <VBox prefHeight="168.0" prefWidth="205.0" />
                </content>
