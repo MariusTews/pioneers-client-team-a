@@ -81,7 +81,6 @@ class AppTest extends ApplicationTest {
         // Join a game
         clickOn("Join");
 
-        assertJoinGameScreen();
         // Back to lobby
         type(KeyCode.ESCAPE);
 
@@ -89,7 +88,9 @@ class AppTest extends ApplicationTest {
         // Join again
         clickOn("Join");
 
-        write("");
+        write("1");
+        // Assert only now the join game screen because CI seems to dislike the first place
+        assertJoinGameScreen();
         // Join game
         type(KeyCode.ENTER);
 
