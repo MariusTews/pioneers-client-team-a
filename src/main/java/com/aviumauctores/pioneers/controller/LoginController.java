@@ -10,6 +10,7 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -56,7 +57,9 @@ public class LoginController implements Controller {
     @FXML
     public Label passwordErrorLabel;
 
-    private CompositeDisposable disposables;
+
+    private Disposable loginDisposable;
+    private Disposable toLobbyDisposable;
     private final UserService userService;
 
     @Inject
@@ -81,14 +84,16 @@ public class LoginController implements Controller {
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.username.password"));
         errorCodes.put("429", bundle.getString("limit.reached"));
-        this.disposables = new CompositeDisposable();
     }
 
 
     @Override
     public void destroy() {
-        if (this.disposables != null) {
-            disposables.dispose();
+        if (this.loginDisposable != null) {
+            this.loginDisposable.dispose();
+        }
+        if (this.toLobbyDisposable != null) {
+            this.toLobbyDisposable.dispose();
         }
     }
 
@@ -137,7 +142,7 @@ public class LoginController implements Controller {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
 
-            disposables.add(loginService.login(username, password)
+            loginDisposable = loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             result -> {
@@ -168,7 +173,7 @@ public class LoginController implements Controller {
                                     app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                                 }
                             }
-                    ));
+                    );
         }
     }
 
@@ -198,7 +203,7 @@ public class LoginController implements Controller {
     public void toLobby(LoginResult loginResult) {
         final LobbyController controller = lobbyController.get();
         User user = new User(loginResult._id(), loginResult.name(), "online", loginResult.avatar());
-        disposables.add(userService.updateUser(loginResult._id(), new UpdateUserDto(user.name(), user.status(), user.avatar(), passwordInput.getText()))
+        toLobbyDisposable = userService.updateUser(loginResult._id(), new UpdateUserDto(user.name(), user.status(), user.avatar(),null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> {
@@ -221,7 +226,7 @@ public class LoginController implements Controller {
                             }
                         }
 
-                ));
+                );
     }
 
     public void setGerman(MouseEvent event) {
