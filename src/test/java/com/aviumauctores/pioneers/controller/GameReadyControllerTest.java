@@ -83,4 +83,9 @@ class GameReadyControllerTest extends ApplicationTest {
         // The list should now have 2 items: one existing member from REST and one new member
         verifyThat(playerList, hasItems(2));
     }
+
+    @Test
+    void gameReady(){
+
+    }
 }
