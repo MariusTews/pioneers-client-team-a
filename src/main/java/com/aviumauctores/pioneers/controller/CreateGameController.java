@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.GameService;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -49,6 +51,9 @@ public class CreateGameController implements Controller {
     @FXML public PasswordField gamePasswordInput;
 
     @FXML public TextField gameNameInput;
+
+    private final CompositeDisposable disposable = new CompositeDisposable();
+
 
     @Inject
     public CreateGameController(App app,
@@ -104,13 +109,13 @@ public class CreateGameController implements Controller {
         if(!(name.length() > 0 && name.length() <= 32)){
             return;
         }
-        gameService.create(name, password)
+        disposable.add(gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(gameID -> {
                     gameService.setCurrentGameID(gameID);
                     //show gameReady Screen
                     app.show(gameReadyController.get());
-                });
+                }));
     }
 
 
@@ -129,14 +134,14 @@ public class CreateGameController implements Controller {
         Image image;
         //set source for Image and show/hide password depending on hidePassword
         if(hidePassword){
-            image = new Image(Main.class.getResource("views/hidePassword.png").toString());
+            image = new Image(Objects.requireNonNull(Main.class.getResource("views/hidePassword.png")).toString());
             String password = gamePasswordInput.getText();
             gamePasswordText.setVisible(true);
             gamePasswordInput.setVisible(false);
             gamePasswordText.setText(password);
             hidePassword = false;
         }else{
-            image = new Image(Main.class.getResource("views/showPassword.png").toString());
+            image = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
             gamePasswordText.setText("");
             gamePasswordText.setVisible(false);
             gamePasswordInput.setVisible(true);
