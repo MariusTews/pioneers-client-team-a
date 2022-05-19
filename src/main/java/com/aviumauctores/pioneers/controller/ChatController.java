@@ -184,6 +184,7 @@ public class ChatController extends PlayerListController {
                 this.selectedTab = allTab;
             }
         });
+        chatTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         this.selectedTab = allTab;
         sendButton.setOnAction(event -> sendMessage(selectedTab.getId()));
         leaveButton.setOnAction(event -> leave());
@@ -231,6 +232,16 @@ public class ChatController extends PlayerListController {
     public void onPlayerItemClicked(User selectedUser) {
         Tab userTab = chatTabsByUserID.get(selectedUser._id());
         if (userTab != null) {
+            // there were a chat tab, but it was closed
+            boolean notOpen = true;
+            for (Tab t: chatTabPane.getTabs()) {
+                if (t.equals(userTab)) {
+                    notOpen = false;
+                }
+            }
+            if (notOpen) {
+                chatTabPane.getTabs().add(userTab);
+            }
             // There is already a chat tab
             chatTabPane.getSelectionModel().select(userTab);
             return;
@@ -242,11 +253,18 @@ public class ChatController extends PlayerListController {
                             .observeOn(FX_SCHEDULER)
                             .subscribe(event -> {
 
+                                boolean noTab = true;
                                 for (Tab t: chatTabPane.getTabs()) {
                                     if (t.getId().equals(group._id())) {
+                                        noTab = false;
                                         selectedTab = t;
                                     }
                                 }
+                                /*if (noTab) {
+                                    Tab newTab = createTab(group._id(), selectedUser.name());
+                                    this.chatTabPane.getTabs().add(newTab);
+                                    this.selectedTab = newTab;
+                                }*/
                                 if (event.event().endsWith(".created")) {
                                     Label msgLabel = createMessageLabel(event.data());
                                     ((VBox)((ScrollPane)this.selectedTab.getContent()).getContent()).getChildren()
@@ -264,17 +282,7 @@ public class ChatController extends PlayerListController {
 
                                 }
                             }));
-                    Tab tab = new Tab(selectedUser.name());
-                    ScrollPane sp = new ScrollPane();
-                    sp.setContent(new VBox());
-                    tab.setContent(sp);
-                    tab.setId(group._id());
-                    tab.setClosable(true);
-                    tab.setOnSelectionChanged(event -> {
-                        if (event.getTarget().equals(tab)) {
-                            this.selectedTab = tab;
-                        }
-                    });
+                    Tab tab = createTab(group._id(), selectedUser);
                     chatTabPane.getTabs().add(tab);
                     chatTabPane.getSelectionModel().select(tab);
                     chatTabsByUserID.put(selectedUser._id(), tab);
@@ -344,5 +352,23 @@ public class ChatController extends PlayerListController {
         }
 
     }
+
+    public Tab createTab(String groupId, User user) {
+        Tab tab = new Tab(user.name());
+        ScrollPane sp = new ScrollPane();
+        sp.setContent(new VBox());
+        tab.setContent(sp);
+        tab.setId(groupId);
+        tab.setClosable(true);
+        tab.setOnCloseRequest(event -> chatTabPane.getTabs().remove(tab));
+        tab.setOnSelectionChanged(event -> {
+            if (event.getTarget().equals(tab)) {
+                this.selectedTab = tab;
+            }
+        });
+        return tab;
+    }
+
+
 
 }
