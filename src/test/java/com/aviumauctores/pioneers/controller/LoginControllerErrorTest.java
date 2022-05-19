@@ -1,8 +1,12 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.dto.auth.LoginResult;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.PreferenceService;
+import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -14,7 +18,9 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
+import retrofit2.HttpException;
 
+import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeoutException;
@@ -31,7 +37,13 @@ class LoginControllerErrorTest extends ApplicationTest {
     LoginService loginService;
 
     @Mock
+    Provider<LobbyController> lobbyController;
+
+    @Mock
     PreferenceService preferenceService;
+
+    @Mock
+    UserService userService;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
@@ -56,7 +68,25 @@ class LoginControllerErrorTest extends ApplicationTest {
         write("1\t");
         type(KeyCode.SPACE);
 
-        verifyThat("Connection failed.", NodeMatchers.isVisible());
+        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(loginService).login("Struppi", "1");
+    }
+
+    @Test
+    void toLobby() {
+        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null)))
+                .thenReturn(Observable.error(new Throwable()));
+        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref"));
+
+        //to show the error popup
+        write("Struppi\t");
+        write("1\t");
+
+        //verify popup is visible
+        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
+
+        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null));
     }
 }

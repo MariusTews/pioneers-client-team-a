@@ -52,19 +52,26 @@ public class LobbyController extends PlayerListController {
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
-    @FXML public Label gameLabel;
+    @FXML
+    public Label gameLabel;
 
-    @FXML public ListView<Parent> gameListView;
+    @FXML
+    public ListView<Parent> gameListView;
 
-    @FXML public Label playerLabel;
+    @FXML
+    public Label playerLabel;
 
-    @FXML public ListView<Parent> playerListView;
+    @FXML
+    public ListView<Parent> playerListView;
 
-    @FXML public Button createGameButton;
+    @FXML
+    public Button createGameButton;
 
-    @FXML public Button chatButton;
+    @FXML
+    public Button chatButton;
 
-    @FXML public Button quitButton;
+    @FXML
+    public Button quitButton;
 
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
     private final Map<String, GameListItemController> gameListItemControllers = new HashMap<>();
@@ -81,7 +88,7 @@ public class LobbyController extends PlayerListController {
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
-                           Provider<JoinGameController> joinGameController){
+                           Provider<JoinGameController> joinGameController) {
         this.app = app;
         this.loginService = loginService;
         this.userService = userService;
@@ -98,7 +105,7 @@ public class LobbyController extends PlayerListController {
     }
 
 
-    public void init(){
+    public void init() {
         disposables = new CompositeDisposable();
         // Get games via REST
         disposables.add(gameService.listGames()
@@ -171,7 +178,7 @@ public class LobbyController extends PlayerListController {
         playerLabel.setText(String.format(bundle.getString("online.players") + " (%d)", playerItems.size()));
     }
 
-    public void destroy(){
+    public void destroy() {
         if (disposables != null) {
             disposables.dispose();
             disposables = null;
@@ -188,17 +195,17 @@ public class LobbyController extends PlayerListController {
         return user;
     }
 
-    public void setUser(User user){
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public Parent render(){
+    public Parent render() {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/lobbyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
             parent = loader.load();
-        }catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }

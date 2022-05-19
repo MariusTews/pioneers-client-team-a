@@ -88,7 +88,7 @@ public class GameReadyController extends PlayerListController {
         this.game = gameService.getCurrentGame().blockingFirst();
     }
 
-    public void init(){
+    public void init() {
         disposables = new CompositeDisposable();
         // Get member list via REST
         disposables.add(gameMemberService.listCurrentGameMembers()
@@ -181,7 +181,7 @@ public class GameReadyController extends PlayerListController {
         readyMembers--;
     }
 
-    public void destroy(){
+    public void destroy() {
         if (disposables != null) {
             disposables.dispose();
             disposables = null;
@@ -190,13 +190,13 @@ public class GameReadyController extends PlayerListController {
         playerListItemControllers.clear();
     }
 
-    public Parent render(){
+    public Parent render() {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/gameReadyScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
             parent = loader.load();
-        }catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
