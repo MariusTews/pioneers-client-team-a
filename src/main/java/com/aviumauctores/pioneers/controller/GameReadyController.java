@@ -202,10 +202,14 @@ public class GameReadyController extends PlayerListController {
         final Parent parent;
         try {
             parent = loader.load();
+            chatPane.setId("chatpane");
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+
+        //press esc to leave
+        leaveGameButton.setCancelButton(true);
 
         playerList.setItems(playerItems);
         updatePlayerLabel();

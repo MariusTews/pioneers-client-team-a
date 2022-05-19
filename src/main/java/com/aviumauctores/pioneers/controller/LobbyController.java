@@ -208,6 +208,9 @@ public class LobbyController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
+        //press esc to leave
+        quitButton.setCancelButton(true);
+
         gameListView.setItems(gameItems);
         updateGameLabel();
         playerListView.setItems(playerItems);
