@@ -26,7 +26,8 @@ public class ScreenAsserts {
 
     void assertJoinGameScreen() {
         // Check that we are in join game screen
-        test.lookup("#joinGameButton").queryButton();
+        test.lookup("#gameNameLabel").query();
+        test.lookup("Join").query();
     }
 
     void assertGameReadyScreen() {
