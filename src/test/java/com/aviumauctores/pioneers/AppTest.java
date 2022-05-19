@@ -70,6 +70,7 @@ class AppTest extends ApplicationTest {
         screenAsserts.assertGameReadyScreen();
         // Go back to lobby
         clickOn("#leaveGameButton");
+        clickOn("OK");
 
         screenAsserts.assertLobbyScreen();
         // Go to chat screen
