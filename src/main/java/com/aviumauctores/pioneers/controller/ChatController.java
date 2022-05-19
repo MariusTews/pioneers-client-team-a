@@ -70,6 +70,8 @@ public class ChatController extends PlayerListController {
     @FXML public Tab allTab;
     @FXML public TabPane chatTabPane;
 
+    @FXML public VBox allChatVBox;
+
     @FXML public ScrollPane scrollPane;
 
     private final Map<String, Tab> chatTabsByUserID = new HashMap<>();
@@ -202,7 +204,7 @@ public class ChatController extends PlayerListController {
             return;
         }
         // send the message
-        messageService.sendMessage(message, groupId)
+        messageService.sendGroupMessage(message, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
