@@ -4,13 +4,14 @@ import com.aviumauctores.pioneers.controller.Controller;
 import com.aviumauctores.pioneers.controller.LoginController;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -20,6 +21,7 @@ import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -50,10 +52,16 @@ public class App extends Application {
         stage.setTitle(GAME_TITLE);
 
         //The label in the following line has to be replaced with an fxml-file in order to show the right screen
-        final Scene scene = new Scene(new Label("Loading..."));
-        stage.setScene(scene);
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("views/loadingScreen.fxml")));
+            final Scene scene = new Scene(root);
+            stage.setScene(scene);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light-theme.css")).toString());
+
+        stage.getScene().getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light-theme.css")).toString());
 
         setAppIcon(stage);
         setTaskBarIcon();

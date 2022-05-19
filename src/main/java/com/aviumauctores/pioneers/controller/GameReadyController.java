@@ -203,6 +203,10 @@ public class GameReadyController extends PlayerListController {
             return null;
         }
 
+        //press esc to leave
+        leaveGameButton.setCancelButton(true);
+
+
         playerList.setItems(playerItems);
         updatePlayerLabel();
 
