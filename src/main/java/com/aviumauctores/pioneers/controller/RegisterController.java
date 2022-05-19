@@ -84,8 +84,9 @@ public class RegisterController implements Controller {
         textfieldUsername.textProperty().bindBidirectional(username);
         textfieldPassword.textProperty().bindBidirectional(password);
 
-        //click enter to register
+        //click enter to register, click esc to leave
         createAccountButton.setDefaultButton(true);
+        leaveButton.setCancelButton(true);
 
         //only because of the test
         if (textfieldUsername.getText() == null) {

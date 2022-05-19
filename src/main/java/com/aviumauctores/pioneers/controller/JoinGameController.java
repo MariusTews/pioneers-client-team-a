@@ -101,6 +101,9 @@ public class JoinGameController implements Controller {
             e.printStackTrace();
             return null;
         }
+        //press esc to leave
+        leaveButton.setCancelButton(true);
+
         passwordTextField.textProperty().bindBidirectional(showPasswordTextField.textProperty());
         showPasswordTextField.setManaged(false);
         return parent;

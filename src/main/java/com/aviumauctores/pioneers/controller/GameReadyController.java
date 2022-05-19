@@ -202,6 +202,8 @@ public class GameReadyController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
+        //press esc to leave
+        leaveGameButton.setCancelButton(true);
 
         playerList.setItems(playerItems);
         updatePlayerLabel();

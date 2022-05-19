@@ -45,16 +45,19 @@ public class GameListItemController implements Controller {
     @Override
     public Parent render() {
         gameName = new Label(game.name());
+        gameName.getStyleClass().add("game-list");
         // Set width so numMembersTextLabel is correct aligned in the ListView
-        gameName.setPrefWidth(100.0);
+        gameName.setPrefWidth(90.0);
         Label numMembersTextLabel = new Label(bundle.getString("amount.players") + ":");
+        numMembersTextLabel.getStyleClass().add("game-list");
         int numMembers = game.members();
         numMembersLabel = new Label(numMembers + "/4");
         joinButton = new Button(bundle.getString("join"));
+        joinButton.getStyleClass().add("game-list");
         joinButton.setOnAction(this::onJoinButtonPressed);
         // Don't let more than four players join
         joinButton.setDisable(numMembers >= 4);
-        HBox rightHBox = new HBox(10.0, numMembersLabel, joinButton);
+        HBox rightHBox = new HBox(8.0, numMembersLabel, joinButton);
         rightHBox.setAlignment(Pos.CENTER);
         root = new BorderPane(numMembersTextLabel, null, rightHBox, null, gameName);
         BorderPane.setAlignment(gameName, Pos.CENTER);

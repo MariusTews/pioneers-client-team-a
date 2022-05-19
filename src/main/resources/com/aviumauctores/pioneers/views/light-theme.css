@@ -59,6 +59,10 @@
     -fx-background-color: rgb(208, 208, 208);
 }
 
+.game-list {
+    -fx-font-size: 11px;
+}
+
 .tab {
     -fx-background-color: rgb(147, 147, 147);
     -fx-background-radius: 8 8 0 0;
