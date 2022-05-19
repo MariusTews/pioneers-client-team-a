@@ -109,6 +109,7 @@ public class LoginController implements Controller {
             return null;
         }
 
+        loginButton.setDefaultButton(true);
         //necessary for fast testing; otherwise you would have to move the mouse to the input first, which takes time
         Platform.runLater(() -> usernameInput.requestFocus());
 
