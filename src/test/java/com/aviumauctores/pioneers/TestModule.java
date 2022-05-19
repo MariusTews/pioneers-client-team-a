@@ -300,7 +300,9 @@ public class TestModule {
 
             @Override
             public Observable<Game> createGame(CreateGameDto createGameDto) {
-                return Observable.empty();
+                return Observable.just(new Game(
+                        "", "", "101", "Game101", "1", 1
+                ));
             }
 
             @Override
