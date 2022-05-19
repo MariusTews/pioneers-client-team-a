@@ -70,11 +70,6 @@ public class App extends Application {
         final double initWidth = stage.getScene().getWidth();
         final double initHeight = stage.getScene().getHeight();
         final double ratio = initWidth / initHeight;
-        System.out.println("initwidth: " + initWidth);
-        System.out.println("initheight: " + initHeight);
-        System.out.println("ratio: " + ratio);
-        System.out.println("------------------------------");
-
 
 
 
@@ -116,11 +111,7 @@ public class App extends Application {
             final double newWidth = scene.getWidth();
             final double newHeight = scene.getHeight();
 
-            System.out.println("newWidth: " + newWidth);
-            System.out.println("newHeight: " + newHeight);
-
             double scaleFactor = newWidth / newHeight > ratio ? newHeight / initHeight : newWidth / initWidth;
-            System.out.println("scaleFactor: " + scaleFactor);
 
             if (scaleFactor >= 1) {
                 Scale scale = new Scale(scaleFactor, scaleFactor);
@@ -135,8 +126,6 @@ public class App extends Application {
                 contentPane.setPrefWidth(Math.max(initWidth, newWidth));
                 contentPane.setPrefHeight(Math.max(initHeight, newHeight));
             }
-            System.out.println("breite nach listener: " + contentPane.getPrefWidth());
-            System.out.println("höhe nach listener " + contentPane.getPrefHeight());
         }
     }
 
@@ -181,10 +170,8 @@ public class App extends Application {
                                 stage.getScene().setRoot(loginController.render());
                                 Pane root = (Pane) stage.getScene().getRoot();
                                 if(stage.isMaximized()){
-                                    stage.setMaximized(false);
                                     this.setWindow(root);
                                     this.letterbox(root);
-                                    stage.setMaximized(true);
                                 } else{
                                     this.setWindow(root);
                                     this.letterbox(root);
@@ -199,10 +186,8 @@ public class App extends Application {
             stage.getScene().setRoot(controller.render());
             Pane root = (Pane) stage.getScene().getRoot();
             if(stage.isMaximized()){
-                stage.setMaximized(false);
                 this.setWindow(root);
                 this.letterbox(root);
-                stage.setMaximized(true);
             } else{
                 this.setWindow(root);
                 this.letterbox(root);
