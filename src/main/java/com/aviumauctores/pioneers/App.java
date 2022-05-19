@@ -53,7 +53,7 @@ public class App extends Application {
         final Scene scene = new Scene(new Label("Loading..."));
         stage.setScene(scene);
 
-        scene.getStylesheets().add(Main.class.getResource("views/light-theme.css").toString());
+        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light-theme.css")).toString());
 
         setAppIcon(stage);
         setTaskBarIcon();
@@ -201,10 +201,10 @@ public class App extends Application {
     public void setTheme(String theme) {
         if (theme.equals("light")) {
             stage.getScene().getStylesheets().clear();
-            stage.getScene().getStylesheets().add(Main.class.getResource("views/light-theme.css").toString());
+            stage.getScene().getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light-theme.css")).toString());
         } else if (theme.equals("dark")) {
             stage.getScene().getStylesheets().clear();
-            stage.getScene().getStylesheets().add(Main.class.getResource("views/dark-theme.css").toString());
+            stage.getScene().getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/dark-theme.css")).toString());
         }
     }
 
