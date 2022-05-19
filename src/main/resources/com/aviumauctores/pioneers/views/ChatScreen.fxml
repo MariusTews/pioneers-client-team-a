@@ -20,7 +20,7 @@
                     <content>
                         <ScrollPane fx:id="scrollPane">
                             <content>
-                                <VBox/>
+                                <VBox fx:id="allChatVBox"/>
                             </content>
                         </ScrollPane>
                     </content>
