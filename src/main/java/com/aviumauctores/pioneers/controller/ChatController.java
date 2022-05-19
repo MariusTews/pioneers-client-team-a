@@ -170,6 +170,9 @@ public class ChatController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
+        //press esc to leave
+        leaveButton.setCancelButton(true);
+
         allTab.setId(ALLCHAT_ID);
         allTab.setOnSelectionChanged(event -> {
             if (event.getTarget().equals(allTab)) {
