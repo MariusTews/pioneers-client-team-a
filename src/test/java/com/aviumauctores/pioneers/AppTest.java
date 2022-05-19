@@ -88,7 +88,8 @@ class AppTest extends ApplicationTest {
         // Join again
         clickOn("Join");
 
-        write("1");
+        // Longer password so CI has more time for screen change
+        write("12345678");
         // Assert only now the join game screen because CI seems to dislike the first place
         assertJoinGameScreen();
         // Join game
