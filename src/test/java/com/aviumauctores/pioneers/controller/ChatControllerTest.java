@@ -111,28 +111,20 @@ class ChatControllerTest extends ApplicationTest {
     @Test
     void privateChats() {
         User user1 = new User("1", "user1", "online", null);
-        Message message1 = new Message("1", "2", "3", "1", "hello");
         when(messageService.sendGroupMessage(any(), any())).thenReturn(Observable.just("hello"));
-        when(userService.getCurrentUserID()).thenReturn("1");
-        when(messageService.getMessage(any(), any(), any())).thenReturn(Observable.just(message1));
-        when(messageService.deleteMessage(any(), any())).thenReturn(Observable.empty());
+
+        // create ChatTab
         TabPane tabPane = lookup("#chatTabPane").query();
-        Tab privateTab = new Tab("Hans");
-        //Tab privateTab = chatController.createTab("17", user1);
-        privateTab.setId("17");
+        Tab privateTab = chatController.createTab("17", user1);
 
-        chatController.setSelectedTab(privateTab);
+        Platform.runLater(() -> tabPane.getTabs().add(privateTab));
 
-        Platform.runLater(() -> {
-            tabPane.getTabs().add(privateTab);
-            //chatController.setSelectedTab(privateTab);
-        });
 
         WaitForAsyncUtils.waitForFxEvents();
 
 
+        // select Tab and send message
         clickOn("#17");
-
         clickOn("#chatTextField");
         write("hello");
         type(KeyCode.ENTER);
