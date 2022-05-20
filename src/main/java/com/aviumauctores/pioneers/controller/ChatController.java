@@ -385,4 +385,7 @@ public class ChatController extends PlayerListController {
         return tab;
     }
 
+    public void setSelectedTab(Tab tab) {
+        this.selectedTab = tab;
+    }
 }
