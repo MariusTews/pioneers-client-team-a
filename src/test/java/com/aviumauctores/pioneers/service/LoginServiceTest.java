@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.dto.auth.LoginDto;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.auth.RefreshDto;
 import com.aviumauctores.pioneers.rest.AuthenticationApiService;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +72,7 @@ class LoginServiceTest {
     void logout() {
         when(authApiService.logout()).thenReturn(Observable.empty());
         doNothing().when(userService).setCurrentUserID(anyString());
+        when(userService.changeCurrentUserStatus(anyString())).thenReturn(Completable.complete());
 
         loginService.logout().blockingAwait();
 
