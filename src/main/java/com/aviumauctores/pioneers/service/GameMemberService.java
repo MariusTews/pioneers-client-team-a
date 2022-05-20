@@ -1,30 +1,57 @@
 package com.aviumauctores.pioneers.service;
 
+import com.aviumauctores.pioneers.dto.gamemembers.CreateMemberDto;
+import com.aviumauctores.pioneers.dto.gamemembers.UpdateMemberDto;
+import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 
-
+@Singleton
 public class GameMemberService {
 
+    private final GameService gameService;
+
     private final GameMembersApiService gameMembersApiService;
-    public final GameService service;
+
+
+    private String gameID;
 
 
     @Inject
-    public GameMemberService(GameMembersApiService gameMembersApiService, GameService service) {
+    public GameMemberService(GameService gameService, GameMembersApiService gameMembersApiService) {
+        this.gameService = gameService;
         this.gameMembersApiService = gameMembersApiService;
-        this.service = service;
+        this.gameID = gameService.getCurrentGameID();
+    }
+
+    public Observable<Member> createMember(){
+        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, gameService.password));
     }
 
     public Observable<List<Member>> listCurrentGameMembers() {
-        return gameMembersApiService.listMembers(service.getCurrentGameID());
+        return gameMembersApiService.listMembers(gameService.getCurrentGameID());
+    }
+    public Observable<Member> deleteMember(String memberID){
+        return gameMembersApiService.deleteMember(gameService.getCurrentGameID(), memberID);
+
     }
 
-    public void deleteGame(){
+    public Observable<Member> updateMember(String memberID){
+        Observable<Member> member = getMember(memberID);
+        boolean status = !(member.blockingFirst().ready());
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status));
+    }
 
+    public Observable<Member> getMember(String memberID){
+        return gameMembersApiService.getMember(gameID, memberID);
+    }
+
+    public void updateID(){
+        this.gameID = gameService.getCurrentGameID();
     }
 }
