@@ -72,7 +72,7 @@ public class GameReadyController extends PlayerListController {
     private int readyMembers;
 
     //list for storing message IDs of own messages to check whether a message can be deleted or not
-    private ArrayList<String> ownMessageIds = new ArrayList<>();
+    private final ArrayList<String> ownMessageIds = new ArrayList<>();
 
     private CompositeDisposable disposables;
 
@@ -119,19 +119,20 @@ public class GameReadyController extends PlayerListController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
+                    VBox chatBox = (VBox)((ScrollPane)this.allChatTab.getContent()).getContent();
                     if (event.event().endsWith(".created")) {
                         Label msgLabel = createMessageLabel(event.data());
-                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                        chatBox.getChildren()
                                 .add(msgLabel);
                     }
                     else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
-                        for (Node l : ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()) {
+                        for (Node l : chatBox.getChildren()) {
                             if (event.data()._id().equals(l.getId())) {
                                 this.deleteLabel = (Label) l;
                             }
                         }
-                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                        chatBox.getChildren()
                                 .remove(this.deleteLabel);
 
                     }
