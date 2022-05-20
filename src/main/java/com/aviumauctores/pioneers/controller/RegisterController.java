@@ -96,7 +96,7 @@ public class RegisterController implements Controller {
             textfieldPassword.setText("");
         }
 
-        //disable accountErstellenButton when one or both textfields are empty
+        //disable createAccountButton when one or both textfields are empty
         createAccountButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
                                 textfieldUsername.getText().trim().isEmpty(), textfieldUsername.textProperty())
@@ -108,6 +108,7 @@ public class RegisterController implements Controller {
     }
 
     public void showPassword(ActionEvent event) {
+        // toggle PasswordField and TextField with a button to show password
         if (textfieldPassword.isVisible() && !Objects.equals(textfieldPassword.getText(), "")) {
             textfieldPassword.setVisible(false);
             textfieldPassword_show.setText(textfieldPassword.getText());
@@ -119,12 +120,14 @@ public class RegisterController implements Controller {
     }
 
     public void leave(ActionEvent event) {
+        // back to login
         final LoginController controller = loginController.get();
         app.show(controller);
 
     }
 
     public void createAccount(ActionEvent event) {
+        // send username and password to server
         disposable = userService.register(textfieldUsername.getText(), textfieldPassword.getText())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
