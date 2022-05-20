@@ -2,6 +2,8 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
@@ -18,10 +20,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -43,22 +47,29 @@ public class RegisterController implements Controller {
     public Button showPasswordButton;
     @FXML
     public PasswordField textfieldPassword;
+    private final ErrorService errorService;
     private final Provider<LoginController> loginController;
     private final ResourceBundle bundle;
     public TextField textfieldPassword_show;
 
     private Disposable disposable;
 
+    private final HashMap<String, String> errorCodes = new HashMap<>();
+
     @Inject
-    public RegisterController(App app, UserService userService, Provider<LoginController> loginController, ResourceBundle bundle) {
+    public RegisterController(App app, UserService userService, ErrorService errorService, Provider<LoginController> loginController, ResourceBundle bundle) {
         this.app = app;
         this.userService = userService;
+        this.errorService = errorService;
         this.loginController = loginController;
         this.bundle = bundle;
     }
 
     @Override
     public void init() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("409", bundle.getString("username.taken"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     @Override
@@ -96,7 +107,7 @@ public class RegisterController implements Controller {
             textfieldPassword.setText("");
         }
 
-        //disable accountErstellenButton when one or both textfields are empty
+        //disable createAccountButton when one or both textfields are empty
         createAccountButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
                                 textfieldUsername.getText().trim().isEmpty(), textfieldUsername.textProperty())
@@ -108,6 +119,7 @@ public class RegisterController implements Controller {
     }
 
     public void showPassword(ActionEvent event) {
+        // toggle PasswordField and TextField with a button to show password
         if (textfieldPassword.isVisible() && !Objects.equals(textfieldPassword.getText(), "")) {
             textfieldPassword.setVisible(false);
             textfieldPassword_show.setText(textfieldPassword.getText());
@@ -119,12 +131,14 @@ public class RegisterController implements Controller {
     }
 
     public void leave(ActionEvent event) {
+        // back to login
         final LoginController controller = loginController.get();
         app.show(controller);
 
     }
 
     public void createAccount(ActionEvent event) {
+        // send username and password to server
         disposable = userService.register(textfieldUsername.getText(), textfieldPassword.getText())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
@@ -132,43 +146,16 @@ public class RegisterController implements Controller {
                             final LoginController controller = loginController.get();
                             app.show(controller);
                         },
-                        error -> Platform.runLater(() -> this.createDialog(error.getMessage()))
+                        throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                            }
+                        }
 
                 );
     }
-
-    private void createDialog(String message) {
-        VBox vBox = new VBox(18);
-        vBox.setAlignment(Pos.CENTER);
-
-        Label label = new Label();
-        label.setFont(new Font(14));
-        label.setId("errorLabel");
-
-        double width;
-
-        switch (message) {
-            case HTTP_400 -> {
-                label.setText("Validierung fehlgeschlagen. (Passwort zu kurz)");
-                width = 300;
-            }
-            case HTTP_409 -> {
-                label.setText("Username schon vergeben");
-                width = 400;
-            }
-            case HTTP_429 -> {
-                label.setText("Bitte warten Sie einen Moment und versuchen es dann erneut.");
-                width = 540;
-            }
-            default -> {
-                label.setText("Keine Verbindung zum Server.");
-                width = 300;
-            }
-        }
-
-        vBox.getChildren().add(label);
-        app.showDialogWithOkButton(vBox, width);
-    }
-
-
 }

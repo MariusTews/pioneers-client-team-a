@@ -88,6 +88,7 @@ test {
             'prism.text'       : 't2k',
     ]
 
+
     jvmArgs += [
             '-Xmx1g',
             '--add-opens', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED',

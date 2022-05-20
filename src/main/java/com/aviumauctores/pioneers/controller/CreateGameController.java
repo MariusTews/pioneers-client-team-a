@@ -117,9 +117,9 @@ public class CreateGameController implements Controller {
         //check if name length is valid
         if(!(name.length() > 0 && name.length() <= 32)){
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Validation Problem");
-            alert.setHeaderText("Invalid format");
-            alert.setContentText("name length needs to be between 1 and 32");
+            alert.setTitle(bundle.getString("invalid.format"));
+            alert.setHeaderText(null);
+            alert.setContentText(bundle.getString("invalid.game.length"));
             Optional<ButtonType> res = alert.showAndWait();
             if(res.get() == ButtonType.OK){
                 alert.close();
