@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 
-public class CreateGameController implements Controller {
+public class CreateGameController extends LoggedInController {
 
     private final App app;
 
@@ -36,7 +36,6 @@ public class CreateGameController implements Controller {
 
     private final Provider<GameReadyController> gameReadyController;
     private final GameService gameService;
-    private final UserService userService;
     private final ResourceBundle bundle;
 
     private boolean hidePassword = true;
@@ -53,32 +52,27 @@ public class CreateGameController implements Controller {
 
     @FXML public TextField gameNameInput;
 
-    private CompositeDisposable disposable = new CompositeDisposable();
-
 
     @Inject
     public CreateGameController(App app,
                                 Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
                                 GameService gameService, UserService userService, ResourceBundle bundle){
+        super(userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
         this.gameService = gameService;
-        this.userService = userService;
         this.bundle = bundle;
     }
 
     public void init(){
+        disposables = new CompositeDisposable();
     }
 
 
-
-    public void destroy(){
-        if(disposable != null){
-            disposable.dispose();
-            disposable = null;
-        }
-
+    @Override
+    public void destroy(boolean closed){
+        super.destroy(closed);
     }
 
     @Override
@@ -126,7 +120,7 @@ public class CreateGameController implements Controller {
             }
             return;
         }
-        disposable.add(gameService.create(name, password)
+        disposables.add(gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(gameID -> {
                     gameService.setCurrentGameID(gameID);

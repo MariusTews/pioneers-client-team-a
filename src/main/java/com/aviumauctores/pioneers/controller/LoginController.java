@@ -9,7 +9,6 @@ import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -88,7 +87,7 @@ public class LoginController implements Controller {
 
 
     @Override
-    public void destroy() {
+    public void destroy(boolean closed) {
         if (this.loginDisposable != null) {
             this.loginDisposable.dispose();
         }

@@ -38,7 +38,7 @@ public class GameListItemController implements Controller {
     }
 
     @Override
-    public void destroy() {
+    public void destroy(boolean closed) {
         gameItems.remove(root);
     }
 

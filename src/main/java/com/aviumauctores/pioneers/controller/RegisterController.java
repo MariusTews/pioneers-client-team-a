@@ -73,7 +73,7 @@ public class RegisterController implements Controller {
     }
 
     @Override
-    public void destroy() {
+    public void destroy(boolean closed) {
         if (this.disposable != null) {
             disposable.dispose();
         }

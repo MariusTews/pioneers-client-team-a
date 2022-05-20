@@ -40,11 +40,13 @@ public class LoginService {
     }
 
     public @NonNull Completable logout() {
-        return authenticationApiService.logout()
-                .doOnComplete(() -> {
-                    tokenStorage.setToken(null);
-                    userService.setCurrentUserID(null);
-                })
-                .ignoreElements();
+        return Completable.concatArray(
+                userService.changeCurrentUserStatus("offline"),
+                authenticationApiService.logout()
+                        .doOnComplete(() -> {
+                            tokenStorage.setToken(null);
+                            userService.setCurrentUserID(null);
+                        })
+                        .ignoreElements());
     }
 }

@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.rest.UsersApiService;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -45,6 +46,11 @@ public class UserService {
 
     public Observable<User> updateUser(String id, UpdateUserDto updateUserDto) {
         return this.usersApiService.updateUser(id, updateUserDto);
+    }
+
+    public Completable changeCurrentUserStatus(String status) {
+        return updateUser(currentUserID, new UpdateUserDto(null, status, null, null))
+                .ignoreElements();
     }
 
     public String getCurrentUserID() {

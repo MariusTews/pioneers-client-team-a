@@ -37,8 +37,6 @@ public class GameReadyController extends PlayerListController {
 
 
     private final App app;
-
-    private final UserService userService;
     private final GameService gameService;
     private final GameMemberService gameMemberService;
     private final ErrorService errorService;
@@ -84,8 +82,8 @@ public class GameReadyController extends PlayerListController {
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
                                ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController){
+        super(userService);
         this.app = app;
-        this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
         this.errorService = errorService;
@@ -194,12 +192,9 @@ public class GameReadyController extends PlayerListController {
         readyMembers--;
     }
 
-    public void destroy() {
-        if (disposables != null) {
-            disposables.dispose();
-            disposables = null;
-        }
-        playerListItemControllers.forEach((id, controller) -> controller.destroy());
+    public void destroy(boolean closed) {
+        super.destroy(closed);
+        playerListItemControllers.forEach((id, controller) -> controller.destroy(false));
         playerListItemControllers.clear();
     }
 
