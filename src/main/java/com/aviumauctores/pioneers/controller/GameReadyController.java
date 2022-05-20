@@ -64,9 +64,6 @@ public class GameReadyController extends PlayerListController {
 
     @FXML public Tab allChatTab;
 
-    @FXML
-    public ScrollPane chatPane;
-
     @FXML public TitledPane playerListPane;
 
     @FXML
