@@ -35,8 +35,10 @@ public class WebsocketClient {
 
     @OnMessage
     public void onMessage(String message) {
-        for (final Consumer<String> handler : messageHandlers) {
-            handler.accept(message);
+        synchronized (messageHandlers) {
+            for (final Consumer<String> handler : messageHandlers) {
+                handler.accept(message);
+            }
         }
     }
 
