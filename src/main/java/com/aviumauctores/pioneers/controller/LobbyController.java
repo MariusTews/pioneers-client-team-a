@@ -3,25 +3,22 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
-import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.ErrorService;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.PreferenceService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyEvent;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -209,8 +206,7 @@ public class LobbyController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
-        //press esc to leave
-        quitButton.setCancelButton(true);
+
 
         gameListView.setItems(gameItems);
         updateGameLabel();

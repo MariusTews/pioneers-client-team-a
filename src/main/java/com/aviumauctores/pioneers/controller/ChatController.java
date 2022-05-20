@@ -11,12 +11,15 @@ import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -196,6 +199,11 @@ public class ChatController extends PlayerListController {
         }
         //press esc to leave
         leaveButton.setCancelButton(true);
+        onlinePlayerList.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ESCAPE) {
+                leave();
+            }
+        });
 
         //Tabstructure
         allTab.setId(ALLCHAT_ID);
