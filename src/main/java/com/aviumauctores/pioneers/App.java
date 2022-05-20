@@ -157,11 +157,11 @@ public class App extends Application {
 
     @Override
     public void stop() {
-        cleanup();
+        cleanup(true);
     }
 
     public void show(Controller controller) {
-        cleanup();
+        cleanup(false);
         this.controller = controller;
 
         /*if controller is a logincontroller and remember me is enabled then try to login with the refresh token
@@ -251,14 +251,14 @@ public class App extends Application {
         dialogStage.show();
     }
 
-    private void cleanup() {
+    private void cleanup(boolean closed) {
 
         if (this.disposable != null) {
             disposable.dispose();
         }
 
         if (controller != null) {
-            controller.destroy();
+            controller.destroy(closed);
             controller = null;
         }
     }

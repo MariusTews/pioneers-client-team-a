@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
@@ -25,7 +26,7 @@ import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
-public class JoinGameController implements Controller {
+public class JoinGameController extends LoggedInController {
 
     private final App app;
     private final GameService gameService;
@@ -47,14 +48,13 @@ public class JoinGameController implements Controller {
     @FXML
     public Button leaveButton;
 
-    private CompositeDisposable disposables;
-
     @Inject
-    public JoinGameController(App app, GameService gameService, ErrorService errorService,
+    public JoinGameController(App app, UserService userService, GameService gameService, ErrorService errorService,
                               EventListener eventListener,
                               ResourceBundle bundle,
                               Provider<LobbyController> lobbyController,
                               Provider<GameReadyController> gameReadyController) {
+        super(userService);
         this.app = app;
         this.gameService = gameService;
         this.errorService = errorService;
@@ -84,11 +84,9 @@ public class JoinGameController implements Controller {
                 }));
     }
 
-    public void destroy() {
-        if (disposables != null) {
-            disposables.dispose();
-            disposables = null;
-        }
+    @Override
+    public void destroy(boolean closed) {
+        super.destroy(closed);
     }
 
     public Parent render() {

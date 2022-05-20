@@ -48,7 +48,7 @@ public class PlayerListItemController implements Controller {
     }
 
     @Override
-    public void destroy() {
+    public void destroy(boolean closed) {
         playerItems.remove(root);
     }
 

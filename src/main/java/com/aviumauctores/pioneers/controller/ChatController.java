@@ -11,15 +11,12 @@ import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -27,13 +24,8 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.*;
-import com.aviumauctores.pioneers.ws.EventListener;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -45,14 +37,10 @@ public class ChatController extends PlayerListController {
     private final Provider<LobbyController> lobbyController;
     private final MessageService messageService;
 
-    private final UserService userService;
-
     private final GroupService groupService;
     private final ResourceBundle bundle;
 
     private final EventListener eventListener;
-
-    private final CompositeDisposable disposable = new CompositeDisposable();
 
     private final ObservableList<User> users = FXCollections.observableArrayList();
 
@@ -90,16 +78,17 @@ public class ChatController extends PlayerListController {
     public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
                           EventListener eventListener, UserService userService, GroupService groupService,
                           ResourceBundle bundle) {
+        super(userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
         this.eventListener = eventListener;
-        this.userService = userService;
         this.groupService = groupService;
         this.bundle = bundle;
     }
 
     public void init(){
+        disposables = new CompositeDisposable();
         //get all users for the usernames of the old messages
         userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
             allUsers = res;
@@ -113,7 +102,7 @@ public class ChatController extends PlayerListController {
             usersIdList.add(userService.getCurrentUserID());
             groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
         });
-        disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
+        disposables.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     this.users.setAll(result);
                     usersIdList = getAllUserIDs(users);
@@ -125,7 +114,7 @@ public class ChatController extends PlayerListController {
                     }
                 }));
         // listen for users and put them in the All-Group for the All-Chat
-        disposable.add(eventListener.listen("users.*.updated", User.class)
+        disposables.add(eventListener.listen("users.*.updated", User.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.data().status().equals("online")) {
@@ -141,7 +130,7 @@ public class ChatController extends PlayerListController {
                     onUserEvent(event);
                 }));
         // listen for incoming messages and show them as a Label
-        disposable.add(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)
+        disposables.add(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.event().endsWith(".created")) {
@@ -168,8 +157,8 @@ public class ChatController extends PlayerListController {
         onlinePlayerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
     }
 
-    public void destroy(){
-        disposable.dispose();
+    public void destroy(boolean closed){
+        super.destroy(closed);
         chatTabsByUserID.clear();
     }
 
@@ -262,10 +251,10 @@ public class ChatController extends PlayerListController {
             chatTabPane.getSelectionModel().select(userTab);
             return;
         }
-        disposable.add(groupService.getOrCreateGroup(List.of(userService.getCurrentUserID(), selectedUser._id()), disposable)
+        disposables.add(groupService.getOrCreateGroup(List.of(userService.getCurrentUserID(), selectedUser._id()), disposables)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(group -> {
-                    disposable.add(eventListener.listen("groups." + group._id() + ".messages.*.*", Message.class)
+                    disposables.add(eventListener.listen("groups." + group._id() + ".messages.*.*", Message.class)
                             .observeOn(FX_SCHEDULER)
                             .subscribe(event -> {
                                 Tab tab = this.selectedTab;
