@@ -234,7 +234,7 @@ public class LobbyController extends PlayerListController {
                         },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
+                                ErrorResponse response = errorService.readErrorMessage(ex);
                                 String message = errorCodes.get(Integer.toString(response.statusCode()));
                                 app.showHttpErrorDialog(response.statusCode(), response.error(), message);
                             } else {

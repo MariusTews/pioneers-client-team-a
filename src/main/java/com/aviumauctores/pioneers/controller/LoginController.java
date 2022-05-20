@@ -157,18 +157,11 @@ public class LoginController implements Controller {
 
                                 toLobby(result);
                             },
-                            //temporary solution
                             throwable -> {
                                 if (throwable instanceof HttpException ex) {
-                                    Object object = errorService.readErrorMessage(ex);
-                                    if (object instanceof ErrorResponse response) {
-                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                    } else {
-                                        ValidationErrorResponse response = (ValidationErrorResponse) object;
-                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                    }
+                                    ErrorResponse response = errorService.readErrorMessage(ex);
+                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                                 } else {
                                     app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                                 }
@@ -212,15 +205,9 @@ public class LoginController implements Controller {
                         },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                Object object = errorService.readErrorMessage(ex);
-                                if (object instanceof ErrorResponse response) {
-                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                } else {
-                                    ValidationErrorResponse response = (ValidationErrorResponse) object;
-                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                }
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }

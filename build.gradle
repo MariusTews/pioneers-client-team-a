@@ -85,7 +85,8 @@ test {
             'glass.platform'   : 'Monocle',
             'monocle.platform' : 'Headless',
             'prism.order'      : 'sw',
-            'prism.text'       : 't2k',]
+            'prism.text'       : 't2k',
+    ]
 
 
     jvmArgs += [

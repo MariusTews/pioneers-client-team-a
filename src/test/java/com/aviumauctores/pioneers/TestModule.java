@@ -40,8 +40,8 @@ public class TestModule {
     ErrorService errorService() {
         return new ErrorService(null) {
             @Override
-            public Object readErrorMessage(HttpException httpException) {
-                return new ErrorResponse(501, "", null);
+            public ErrorResponse readErrorMessage(HttpException httpException) {
+                return new ErrorResponse(501, "");
             }
         };
     }

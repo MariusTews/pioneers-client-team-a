@@ -20,7 +20,7 @@ public class ErrorService {
         this.mapper = mapper;
     }
 
-    public Object readErrorMessage(HttpException httpException) {
+    public ErrorResponse readErrorMessage(HttpException httpException) {
         Response<?> response = httpException.response();
         if (response == null) {
             return null;
@@ -30,12 +30,7 @@ public class ErrorService {
                 return null;
             }
             JsonNode node = mapper.readTree(responseBody.string());
-            if (node.get("message") instanceof ArrayNode){
-                return mapper.treeToValue(node, ValidationErrorResponse.class);
-            }
-            else {
-                return mapper.treeToValue(node, ErrorResponse.class);
-            }
+            return mapper.treeToValue(node, ErrorResponse.class);
         } catch (IOException e) {
             return null;
         }
