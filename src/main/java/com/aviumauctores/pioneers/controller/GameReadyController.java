@@ -10,6 +10,7 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +26,7 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -71,6 +73,8 @@ public class GameReadyController extends PlayerListController {
     private int readyMembers;
 
     private CompositeDisposable disposables;
+
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -130,6 +134,11 @@ public class GameReadyController extends PlayerListController {
 
                     }
                 }));
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("change.membership.error"));
+        errorCodes.put("404", bundle.getString("membership.not.found"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
@@ -231,13 +240,14 @@ public class GameReadyController extends PlayerListController {
         gameMemberService.updateMember(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                            String buttonText = member.ready() ? "Ready" : "Not Ready";
+                            String buttonText = member.ready() ? bundle.getString("ready") : bundle.getString("not.ready");
                             gameReadyButton.setText(buttonText);
                         }
                         ,throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
-                                app.showHttpErrorDialog(response.statusCode(), response.error(), response.message());
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
                             }
@@ -247,14 +257,13 @@ public class GameReadyController extends PlayerListController {
 
     public void leaveGame(ActionEvent actionEvent) {
         if (userService.getCurrentUserID().equals(gameService.getOwnerID())) {
-            ButtonType proceedButton = new ButtonType("Proceed", ButtonBar.ButtonData.OK_DONE);
-            ButtonType cancelButton = new ButtonType("Return", ButtonBar.ButtonData.CANCEL_CLOSE);
-            Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            ownerAlert.setTitle("Leaver Warning");
-            ownerAlert.setHeaderText("If you leave a game as the owner, it will be deleted");
-            ownerAlert.setContentText("Delete this Game?");
+            ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.game.owner.alert"), proceedButton, cancelButton);
+            ownerAlert.setTitle(bundle.getString("warning"));
+            ownerAlert.setHeaderText(null);
             Optional<ButtonType> result = ownerAlert.showAndWait();
-            if (result.get() == ButtonType.OK) {
+            if (result.get() == proceedButton) {
                 gameService.deleteGame()
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
@@ -263,11 +272,13 @@ public class GameReadyController extends PlayerListController {
                 return;
             }
         }else{
-            Alert memberAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            memberAlert.setTitle("Leaver Warning");
-            memberAlert.setHeaderText("Do you want to leave this game?");
+            ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert memberAlert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.game.alert"), proceedButton, cancelButton);
+            memberAlert.setTitle(bundle.getString("warning"));
+            memberAlert.setHeaderText(null);
             Optional<ButtonType> result = memberAlert.showAndWait();
-            if(result.get() == ButtonType.OK) {
+            if(result.get() == proceedButton) {
                 gameMemberService.deleteMember(userService.getCurrentUserID())
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
@@ -307,13 +318,14 @@ public class GameReadyController extends PlayerListController {
     public void onMessageClicked(MouseEvent event) {
         if (event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete");
-            alert.setHeaderText("Delete this Message?");
-            alert.setContentText("Do you want to delete this message?");
+            ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.question"), proceedButton, cancelButton);
+            alert.setTitle(bundle.getString("delete"));
+            alert.setHeaderText(null);
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
-            if (res.get() == ButtonType.OK){
+            if (res.get() == proceedButton){
                 this.deleteLabel = (Label) event.getSource();
                 delete(this.deleteLabel.getId());
                 alert.close();

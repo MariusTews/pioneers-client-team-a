@@ -79,14 +79,6 @@ public class Constants {
 
     public static final String JSON_DATA = "data";
 
-    // Response Codes
-    // (the single space after the code is necessary)
-    public static final String HTTP_400 = "HTTP 400 ";
-    public static final String HTTP_401 = "HTTP 401 ";
-    public static final String HTTP_429 = "HTTP 429 ";
-
-    public static final String HTTP_409 = "HTTP 409 ";
-
     public static final String ALLCHAT_ID = "627cf3c93496bc00158f3859";
 
 

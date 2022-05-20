@@ -165,7 +165,7 @@ public class ChatController extends PlayerListController {
 
     @Override
     protected void updatePlayerLabel() {
-        onlinePlayerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+        onlinePlayerLabel.setText(String.format(bundle.getString("online.players") + " (%d)", playerItems.size()));
     }
 
     public void destroy(){
@@ -356,13 +356,14 @@ public class ChatController extends PlayerListController {
                 if (!userService.getCurrentUserID().equals(deleteMessage.sender())) {
                     return;
                 }
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Delete");
-                alert.setHeaderText("Delete this Message?");
-                alert.setContentText("Do you want to delete this message?");
+                ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+                ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.question"), proceedButton, cancelButton);
+                alert.setTitle(bundle.getString("delete"));
+                alert.setHeaderText(null);
                 Optional<ButtonType> result = alert.showAndWait();
                 // delete if "Ok" is clicked
-                if (result.get() == ButtonType.OK){
+                if (result.get() == proceedButton){
                     this.deleteLabel = (Label) event.getSource();
                     delete(this.deleteLabel.getId(), this.selectedTab.getId());
                     alert.close();
