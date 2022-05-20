@@ -11,10 +11,13 @@ import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
@@ -172,6 +175,11 @@ public class GameReadyController extends PlayerListController {
         }
         //press esc to leave
         leaveGameButton.setCancelButton(true);
+        playerList.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ESCAPE) {
+                leaveGame(new ActionEvent());
+            }
+        });
 
         playerList.setItems(playerItems);
         updatePlayerLabel();
