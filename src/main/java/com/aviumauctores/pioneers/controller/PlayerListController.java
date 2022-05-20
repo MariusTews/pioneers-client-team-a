@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.UserService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
@@ -10,9 +11,13 @@ import javafx.scene.Parent;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class PlayerListController implements Controller {
+public abstract class PlayerListController extends LoggedInController {
     protected final ObservableList<Parent> playerItems = FXCollections.observableArrayList();
     protected final Map<String, PlayerListItemController> playerListItemControllers = new HashMap<>();
+
+    protected PlayerListController(UserService userService) {
+        super(userService);
+    }
 
     protected void onUserEvent(EventDto<User> eventDto) {
         String event = eventDto.event();
@@ -59,7 +64,7 @@ public abstract class PlayerListController implements Controller {
     protected abstract void updatePlayerLabel();
 
     protected void removePlayerFromList(String userID, PlayerListItemController controller) {
-        controller.destroy();
+        controller.destroy(false);
         playerListItemControllers.remove(userID);
     }
 

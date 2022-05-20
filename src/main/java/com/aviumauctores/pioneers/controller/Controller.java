@@ -6,7 +6,7 @@ public interface Controller {
 
     void init();
 
-    void destroy();
+    void destroy(boolean closed);
 
     Parent render();
 
