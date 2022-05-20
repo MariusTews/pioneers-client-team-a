@@ -66,7 +66,6 @@ class ChatControllerTest extends ApplicationTest {
         User user1 = new User("1", "user1", "online", null);
         Group group1 = new Group("1", "2", "3", null);
         Message message1 = new Message("1", "2", "3", "1", "hello");
-        chatController.setUser(user1);
         when(userService.findAll()).thenReturn(Observable.just(List.of(user1)));
         when(userService.listOnlineUsers()).thenReturn(Observable.just(List.of(user1)));
         when(groupService.updateGroup(any(), any())).thenReturn(Observable.empty());
