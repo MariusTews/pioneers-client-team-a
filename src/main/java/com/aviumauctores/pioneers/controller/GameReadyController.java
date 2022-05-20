@@ -4,7 +4,6 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
@@ -20,7 +19,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import retrofit2.HttpException;
 
@@ -206,6 +204,11 @@ public class GameReadyController extends PlayerListController {
 
         //press esc to leave
         leaveGameButton.setCancelButton(true);
+        playerList.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ESCAPE) {
+                leaveGame(new ActionEvent());
+            }
+        });
 
         playerList.setItems(playerItems);
         updatePlayerLabel();
