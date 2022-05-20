@@ -52,11 +52,11 @@ class ChatControllerTest extends ApplicationTest {
     @Mock
     EventListener eventListener;
 
-    @InjectMocks
-    ChatController chatController;
-
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
+
+    @InjectMocks
+    ChatController chatController;
 
     private Observable<EventDto<User>> userUpdates;
     private Observable<EventDto<Message>> messageCreateUpdates;
