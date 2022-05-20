@@ -25,6 +25,7 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -69,6 +70,9 @@ public class GameReadyController extends PlayerListController {
     @FXML public TextField messageTextField;
 
     private int readyMembers;
+
+    //list for storing message IDs of own messages to check whether a message can be deleted or not
+    private ArrayList<String> ownMessageIds = new ArrayList<>();
 
     private CompositeDisposable disposables;
 
@@ -289,7 +293,7 @@ public class GameReadyController extends PlayerListController {
         messageTextField.clear();
         messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(result -> ownMessageIds.add(result._id()));
     }
 
     public Label createMessageLabel(Message message) {
@@ -305,7 +309,8 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void onMessageClicked(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
+        Label label = (Label) event.getSource();
+        if (ownMessageIds.contains(label.getId()) && event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete");
@@ -314,7 +319,7 @@ public class GameReadyController extends PlayerListController {
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
             if (res.get() == ButtonType.OK){
-                this.deleteLabel = (Label) event.getSource();
+                this.deleteLabel = label;
                 delete(this.deleteLabel.getId());
                 alert.close();
             } else {

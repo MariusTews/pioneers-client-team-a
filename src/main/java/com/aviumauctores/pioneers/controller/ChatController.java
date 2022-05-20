@@ -165,7 +165,7 @@ public class ChatController extends PlayerListController {
 
     @Override
     protected void updatePlayerLabel() {
-        onlinePlayerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+        onlinePlayerLabel.setText(String.format(bundle.getString("online.players") + " (%d)", playerItems.size()));
     }
 
     public void destroy(){
