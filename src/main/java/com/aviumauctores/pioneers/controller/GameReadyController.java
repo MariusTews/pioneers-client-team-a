@@ -47,7 +47,8 @@ public class GameReadyController extends PlayerListController {
 
     private Label deleteLabel;
 
-    @FXML public Button startGameButton;
+    @FXML
+    public Button startGameButton;
 
     @FXML public Button gameReadyButton;
 
@@ -63,7 +64,8 @@ public class GameReadyController extends PlayerListController {
 
     @FXML public TitledPane playerListPane;
 
-    @FXML public ListView<Parent> playerList;
+    @FXML
+    public ListView<Parent> playerList;
     @FXML public TextField messageTextField;
 
     private int readyMembers;
@@ -207,7 +209,6 @@ public class GameReadyController extends PlayerListController {
                 leaveGame(new ActionEvent());
             }
         });
-
 
         playerList.setItems(playerItems);
         updatePlayerLabel();
