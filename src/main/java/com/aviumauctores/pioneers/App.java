@@ -224,24 +224,6 @@ public class App extends Application {
         return alert.showAndWait();
     }
 
-    public void showDialogWithOkButton(VBox vBox, double width) {
-        Stage dialogStage = new Stage();
-        dialogStage.setTitle("Error");
-        setAppIcon(dialogStage);
-
-        Button button = new Button("OK");
-        button.setFont(new Font(12));
-        button.setPrefWidth(120);
-        button.setOnAction(e -> dialogStage.close());
-
-        vBox.getChildren().add(button);
-
-        Scene dialogScene = new Scene(vBox, width, 130);
-        dialogStage.setScene(dialogScene);
-
-        dialogStage.show();
-    }
-
     private void cleanup() {
 
         if (this.disposable != null) {

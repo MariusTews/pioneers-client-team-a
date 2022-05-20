@@ -10,7 +10,11 @@ import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.application.Platform;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +23,14 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.ALLCHAT_ID;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +66,6 @@ class ChatControllerTest extends ApplicationTest {
         User user1 = new User("1", "user1", "online", null);
         Group group1 = new Group("1", "2", "3", null);
         Message message1 = new Message("1", "2", "3", "1", "hello");
-        chatController.setUser(user1);
         when(userService.findAll()).thenReturn(Observable.just(List.of(user1)));
         when(userService.listOnlineUsers()).thenReturn(Observable.just(List.of(user1)));
         when(groupService.updateGroup(any(), any())).thenReturn(Observable.empty());
@@ -100,6 +105,31 @@ class ChatControllerTest extends ApplicationTest {
 
         verify(messageService).deleteMessage("3", "627cf3c93496bc00158f3859");
 
+    }
+
+    @Test
+    void privateChats() {
+        User user1 = new User("1", "user1", "online", null);
+        when(messageService.sendGroupMessage(any(), any())).thenReturn(Observable.just("hello"));
+
+        // create ChatTab
+        TabPane tabPane = lookup("#chatTabPane").query();
+        Tab privateTab = chatController.createTab("17", user1);
+
+        Platform.runLater(() -> tabPane.getTabs().add(privateTab));
+
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+
+        // select Tab and send message
+        clickOn("#17");
+        clickOn("#chatTextField");
+        write("hello");
+        type(KeyCode.ENTER);
+
+
+        verify(messageService).sendGroupMessage("hello", "17");
     }
 
 }
