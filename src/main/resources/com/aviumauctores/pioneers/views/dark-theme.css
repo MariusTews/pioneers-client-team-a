@@ -50,6 +50,10 @@
     -fx-background-radius: 8 8 8 8;
 }
 
+.game-list {
+    -fx-font-size: 11px;
+}
+
 .list-view .corner {
     -fx-background-color: transparent ;
 }
