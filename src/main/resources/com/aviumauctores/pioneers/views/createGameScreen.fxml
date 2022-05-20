@@ -10,14 +10,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.CreateGameController">
+<VBox xmlns="http://javafx.com/javafx/17.0.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.CreateGameController">
    <children>
       <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
          <children>
-            <TextField fx:id="gameNameInput" layoutX="200.0" layoutY="134.0" prefHeight="30.0" prefWidth="200.0" promptText="Name" />
-            <Button fx:id="cancelButton" layoutX="472.0" layoutY="320.0" mnemonicParsing="false" onAction="#cancel" text="Cancel" />
-            <Button id="createGameButton" fx:id="createGameButton" layoutX="258.0" layoutY="269.0" mnemonicParsing="false" onAction="#createGame" text="Create Game" />
-            <PasswordField fx:id="gamePasswordInput" layoutX="200.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" promptText="Password" />
+            <TextField fx:id="gameNameInput" layoutX="200.0" layoutY="134.0" prefHeight="30.0" prefWidth="200.0" promptText="%name" />
+            <Button fx:id="cancelButton" layoutX="472.0" layoutY="320.0" mnemonicParsing="false" onAction="#cancel" text="%cancel" />
+            <Button id="createGameButton" fx:id="createGameButton" layoutX="258.0" layoutY="269.0" mnemonicParsing="false" onAction="#createGame" text="%create.game" />
+            <PasswordField fx:id="gamePasswordInput" layoutX="200.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" promptText="%password"/>
             <Button fx:id="showPasswordButton" layoutX="413.0" layoutY="208.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="18.0" prefWidth="37.0">
                <graphic>
                   <ImageView accessibleRole="BUTTON" fitHeight="23.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
@@ -27,7 +27,7 @@
                   </ImageView>
                </graphic></Button>
             <TextField fx:id="gamePasswordText" layoutX="200.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" visible="false" />
-            <Label layoutX="218.0" layoutY="48.0" text="Create a Game" underline="true">
+            <Label layoutX="218.0" layoutY="48.0" text="%create.game" underline="true">
                <font>
                   <Font name="System Bold" size="24.0" />
                </font>

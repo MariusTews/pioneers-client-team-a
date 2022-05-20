@@ -52,6 +52,9 @@ class ChatControllerTest extends ApplicationTest {
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
+    private Observable<EventDto<User>> userUpdates;
+    private Observable<EventDto<Message>> messageCreateUpdates;
+
     @Override
     public void start(Stage stage) throws Exception {
         User user1 = new User("1", "user1", "online", null);
@@ -60,22 +63,42 @@ class ChatControllerTest extends ApplicationTest {
         chatController.setUser(user1);
         when(userService.findAll()).thenReturn(Observable.just(List.of(user1)));
         when(userService.listOnlineUsers()).thenReturn(Observable.just(List.of(user1)));
-        Observable<EventDto<User>> userUpdates = Observable.just(new EventDto<>("created", user1));
-        Observable<EventDto<Message>> messageUpdates = Observable.just(new EventDto<>("created", message1));
+        when(groupService.updateGroup(any(), any())).thenReturn(Observable.empty());
+        when(messageService.listMessages(any(), any(), any(), eq(100) )).thenReturn(Observable.just(List.of(message1)));
+        userUpdates = Observable.just(new EventDto<>("created", user1));
+        messageCreateUpdates = Observable.just(new EventDto<>("created", message1));
         when(eventListener.listen("users.*.updated", User.class)).thenReturn(userUpdates);
-        //when(eventListener.listen("groups.*.messages.*.*", Message.class)).thenReturn(messageUpdates);
-        when(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)).thenReturn(messageUpdates);
+        when(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)).thenReturn(messageCreateUpdates);
         new App(chatController).start(stage);
     }
 
     @Test
     void sendMessage() {
-        when(messageService.sendMessage(any(), any())).thenReturn(Observable.just("hello"));
+        when(messageService.sendGroupMessage(any(), any())).thenReturn(Observable.just("hello"));
         clickOn("#chatTextField");
         write("hello");
         type(KeyCode.ENTER);
 
-        verify(messageService).sendMessage("hello", ALLCHAT_ID);
+        verify(messageService).sendGroupMessage("hello", ALLCHAT_ID);
+
+    }
+
+    @Test
+    void delete() {
+        Message message1 = new Message("1", "2", "3", "1", "hello");
+        when(userService.getCurrentUserID()).thenReturn("1");
+        when(messageService.getMessage(any(), any(), any())).thenReturn(Observable.just(message1));
+        when(messageService.deleteMessage(any(), any())).thenReturn(Observable.empty());
+
+        //create a Message
+        EventDto<Message> createdMessageEventDto = messageCreateUpdates.blockingFirst();
+
+        //click on it and choose Ok to delete it
+        rightClickOn("#3");
+        clickOn("OK");
+
+
+        verify(messageService).deleteMessage("3", "627cf3c93496bc00158f3859");
 
     }
 
