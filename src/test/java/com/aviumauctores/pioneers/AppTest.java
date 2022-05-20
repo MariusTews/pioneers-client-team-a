@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testfx.assertions.api.Assertions.assertThat;
@@ -81,6 +82,31 @@ class AppTest extends ApplicationTest {
         clickOn("#leaveButton");
 
         screenAsserts.assertLobbyScreen();
+        // Join a game
+        clickOn("Join");
+        // Wait for CI
+        WaitForAsyncUtils.waitForFxEvents();
+
+        screenAsserts.assertJoinGameScreen();
+        // Back to lobby
+        type(KeyCode.ESCAPE);
+
+        screenAsserts.assertLobbyScreen();
+        // Join again
+        clickOn("Join");
+        // Wait for CI
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Longer password so CI has more time for screen change
+        write("12345678");
+        screenAsserts.assertJoinGameScreen();
+        // Join game
+        type(KeyCode.ENTER);
+
+        screenAsserts.assertGameReadyScreen();
+        // Go back to lobby
+        clickOn("#leaveGameButton");
+        clickOn("OK");
 
         // Logout
         clickOn("#quitButton");
