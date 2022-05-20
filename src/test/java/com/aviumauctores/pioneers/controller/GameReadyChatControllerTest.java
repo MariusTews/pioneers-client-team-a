@@ -59,14 +59,16 @@ class GameReadyChatControllerTest extends ApplicationTest {
 
     private Observable<EventDto<Message>> messageCreateUpdates;
 
+    private final Message message = new Message("", "", "1", "1", "hello");
+
     @Override
     public void start(Stage stage) throws Exception {
         Member member = new Member("", "", "1", "1", false);
-        Message message = new Message("", "", "1", "1", "hello");
         User user = new User("1", "Struppi", "online", null);
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(Observable.just(List.of(member)));
         when(gameService.getCurrentGameID()).thenReturn("1");
+        when(messageService.sendGameMessage(anyString(), anyString())).thenReturn(Observable.just(message));
         when(eventListener.listen("games.1.members.*.*", Member.class)).thenReturn(Observable.just(new EventDto<>("", member)));
         when(eventListener.listen("games.1.messages.*.*", Message.class)).thenReturn(messageCreateUpdates);
         when(eventListener.listen("users.1.*", User.class)).thenReturn(Observable.just(new EventDto<>("", user)));
@@ -78,8 +80,6 @@ class GameReadyChatControllerTest extends ApplicationTest {
 
     @Test
     void sendMessage() {
-        when(messageService.sendGameMessage(anyString(), anyString())).thenReturn(Observable.empty());
-
         Game game = new Game("", "", "1", "game1", "1", 1);
         clickOn("#messageTextField");
         write("hello");
@@ -92,7 +92,11 @@ class GameReadyChatControllerTest extends ApplicationTest {
 
     @Test
     void delete() {
-        when(messageService.deleteGameMessage(any(), any())).thenReturn(Observable.empty());
+        when(messageService.deleteGameMessage(any(), any())).thenReturn(Observable.just(message));
+
+        clickOn("#messageTextField");
+        write("hello");
+        type(KeyCode.ENTER);
 
         //create a Message
         EventDto<Message> createdMessageEventDto = messageCreateUpdates.blockingFirst();
