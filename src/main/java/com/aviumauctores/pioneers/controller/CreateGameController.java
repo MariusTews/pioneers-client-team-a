@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 
-public class CreateGameController implements Controller {
+public class CreateGameController extends LoggedInController {
 
     private final App app;
 
@@ -36,7 +36,6 @@ public class CreateGameController implements Controller {
 
     private final Provider<GameReadyController> gameReadyController;
     private final GameService gameService;
-    private final UserService userService;
     private final ResourceBundle bundle;
 
     private boolean hidePassword = true;
@@ -53,37 +52,34 @@ public class CreateGameController implements Controller {
 
     @FXML public TextField gameNameInput;
 
-    private CompositeDisposable disposable;
+    private CompositeDisposable disposables = new CompositeDisposable();
 
 
     @Inject
     public CreateGameController(App app,
                                 Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
                                 GameService gameService, UserService userService, ResourceBundle bundle){
+        super(userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
         this.gameService = gameService;
-        this.userService = userService;
         this.bundle = bundle;
     }
 
     public void init(){
+        disposables = new CompositeDisposable();
     }
 
 
-
-    public void destroy(){
-        if(disposable != null){
-            disposable.dispose();
-            disposable = null;
-        }
-
+    @Override
+    public void destroy(boolean closed){
+        super.destroy(closed);
     }
 
     @Override
     public Parent render(){
-        disposable = new CompositeDisposable();
+        disposables = new CompositeDisposable();
         //load createGame FXML
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
@@ -126,16 +122,16 @@ public class CreateGameController implements Controller {
         //check if name length is valid
         if(!(name.length() > 0 && name.length() <= 32)){
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Validation Problem");
-            alert.setHeaderText("Invalid format");
-            alert.setContentText("name length needs to be between 1 and 32");
+            alert.setTitle(bundle.getString("invalid.format"));
+            alert.setHeaderText(null);
+            alert.setContentText(bundle.getString("invalid.game.length"));
             Optional<ButtonType> res = alert.showAndWait();
             if(res.get() == ButtonType.OK){
                 alert.close();
             }
             return;
         }
-        disposable.add(gameService.create(name, password)
+        disposables.add(gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(gameID -> {
                     gameService.setCurrentGameID(gameID);

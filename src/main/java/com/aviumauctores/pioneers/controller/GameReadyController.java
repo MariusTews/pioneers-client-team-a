@@ -4,13 +4,13 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,13 +20,14 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -36,8 +37,6 @@ public class GameReadyController extends PlayerListController {
 
 
     private final App app;
-
-    private final UserService userService;
     private final GameService gameService;
     private final GameMemberService gameMemberService;
     private final ErrorService errorService;
@@ -49,7 +48,8 @@ public class GameReadyController extends PlayerListController {
 
     private Label deleteLabel;
 
-    @FXML public Button startGameButton;
+    @FXML
+    public Button startGameButton;
 
     @FXML public Button gameReadyButton;
 
@@ -59,25 +59,31 @@ public class GameReadyController extends PlayerListController {
 
     @FXML public Button sendMessageButton;
 
-    @FXML public AnchorPane chatPane;
+    @FXML public ScrollPane chatPane;
 
     @FXML public Tab allChatTab;
 
     @FXML public TitledPane playerListPane;
 
-    @FXML public ListView<Parent> playerList;
+    @FXML
+    public ListView<Parent> playerList;
     @FXML public TextField messageTextField;
 
     private int readyMembers;
 
+    //list for storing message IDs of own messages to check whether a message can be deleted or not
+    private final ArrayList<String> ownMessageIds = new ArrayList<>();
+
     private CompositeDisposable disposables;
+
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
                                ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController){
+        super(userService);
         this.app = app;
-        this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
         this.errorService = errorService;
@@ -113,23 +119,29 @@ public class GameReadyController extends PlayerListController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
+                    VBox chatBox = (VBox)((ScrollPane)this.allChatTab.getContent()).getContent();
                     if (event.event().endsWith(".created")) {
                         Label msgLabel = createMessageLabel(event.data());
-                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                        chatBox.getChildren()
                                 .add(msgLabel);
                     }
                     else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
-                        for (Node l : ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()) {
+                        for (Node l : chatBox.getChildren()) {
                             if (event.data()._id().equals(l.getId())) {
                                 this.deleteLabel = (Label) l;
                             }
                         }
-                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
+                        chatBox.getChildren()
                                 .remove(this.deleteLabel);
 
                     }
                 }));
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("change.membership.error"));
+        errorCodes.put("404", bundle.getString("membership.not.found"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
@@ -181,12 +193,9 @@ public class GameReadyController extends PlayerListController {
         readyMembers--;
     }
 
-    public void destroy() {
-        if (disposables != null) {
-            disposables.dispose();
-            disposables = null;
-        }
-        playerListItemControllers.forEach((id, controller) -> controller.destroy());
+    public void destroy(boolean closed) {
+        super.destroy(closed);
+        playerListItemControllers.forEach((id, controller) -> controller.destroy(false));
         playerListItemControllers.clear();
     }
 
@@ -204,7 +213,11 @@ public class GameReadyController extends PlayerListController {
 
         //press esc to leave
         leaveGameButton.setCancelButton(true);
-
+        playerList.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ESCAPE) {
+                leaveGame(new ActionEvent());
+            }
+        });
 
         playerList.setItems(playerItems);
         updatePlayerLabel();
@@ -227,13 +240,14 @@ public class GameReadyController extends PlayerListController {
         gameMemberService.updateMember(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                            String buttonText = member.ready() ? "Ready" : "Not Ready";
+                            String buttonText = member.ready() ? bundle.getString("ready") : bundle.getString("not.ready");
                             gameReadyButton.setText(buttonText);
                         }
                         ,throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
-                                app.showHttpErrorDialog(response.statusCode(), response.error(), response.message());
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
                             }
@@ -243,14 +257,13 @@ public class GameReadyController extends PlayerListController {
 
     public void leaveGame(ActionEvent actionEvent) {
         if (userService.getCurrentUserID().equals(gameService.getOwnerID())) {
-            ButtonType proceedButton = new ButtonType("Proceed", ButtonBar.ButtonData.OK_DONE);
-            ButtonType cancelButton = new ButtonType("Return", ButtonBar.ButtonData.CANCEL_CLOSE);
-            Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            ownerAlert.setTitle("Leaver Warning");
-            ownerAlert.setHeaderText("If you leave a game as the owner, it will be deleted");
-            ownerAlert.setContentText("Delete this Game?");
+            ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert ownerAlert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.game.owner.alert"), proceedButton, cancelButton);
+            ownerAlert.setTitle(bundle.getString("warning"));
+            ownerAlert.setHeaderText(null);
             Optional<ButtonType> result = ownerAlert.showAndWait();
-            if (result.get() == ButtonType.OK) {
+            if (result.get() == proceedButton) {
                 gameService.deleteGame()
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
@@ -259,11 +272,13 @@ public class GameReadyController extends PlayerListController {
                 return;
             }
         }else{
-            Alert memberAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            memberAlert.setTitle("Leaver Warning");
-            memberAlert.setHeaderText("Do you want to leave this game?");
+            ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert memberAlert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.game.alert"), proceedButton, cancelButton);
+            memberAlert.setTitle(bundle.getString("warning"));
+            memberAlert.setHeaderText(null);
             Optional<ButtonType> result = memberAlert.showAndWait();
-            if(result.get() == ButtonType.OK) {
+            if(result.get() == proceedButton) {
                 gameMemberService.deleteMember(userService.getCurrentUserID())
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
@@ -285,7 +300,7 @@ public class GameReadyController extends PlayerListController {
         messageTextField.clear();
         messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(result -> ownMessageIds.add(result._id()));
     }
 
     public Label createMessageLabel(Message message) {
@@ -301,16 +316,18 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void onMessageClicked(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
+        Label label = (Label) event.getSource();
+        if (ownMessageIds.contains(label.getId()) && event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete");
-            alert.setHeaderText("Delete this Message?");
-            alert.setContentText("Do you want to delete this message?");
+            ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.question"), proceedButton, cancelButton);
+            alert.setTitle(bundle.getString("delete"));
+            alert.setHeaderText(null);
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
-            if (res.get() == ButtonType.OK){
-                this.deleteLabel = (Label) event.getSource();
+            if (res.get() == proceedButton){
+                this.deleteLabel = label;
                 delete(this.deleteLabel.getId());
                 alert.close();
             } else {

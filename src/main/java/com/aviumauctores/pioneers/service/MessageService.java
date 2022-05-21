@@ -48,4 +48,8 @@ public class MessageService {
     public Observable<Message> sendGameMessage(String message, String gameId) {
         return messagesApiService.sendMessage(SEND_MESSAGE_GAME_NAMESPACE, gameId, new CreateMessageDto(message));
     }
+
+    public Observable<Message> getMessage(String namespace, String groupId,String id) {
+        return messagesApiService.getMessage(namespace, groupId, id);
+    }
 }

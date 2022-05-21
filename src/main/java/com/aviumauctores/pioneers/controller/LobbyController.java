@@ -3,14 +3,9 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
-import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.ErrorService;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.PreferenceService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
@@ -39,7 +34,6 @@ public class LobbyController extends PlayerListController {
 
     private User user = null;
     private final LoginService loginService;
-    private final UserService userService;
     private final GameService gameService;
     private final ErrorService errorService;
     private final PreferenceService preferenceService;
@@ -76,8 +70,6 @@ public class LobbyController extends PlayerListController {
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
     private final Map<String, GameListItemController> gameListItemControllers = new HashMap<>();
 
-    private CompositeDisposable disposables;
-
     @Inject
     public LobbyController(App app,
                            LoginService loginService, UserService userService,
@@ -89,9 +81,9 @@ public class LobbyController extends PlayerListController {
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
                            Provider<JoinGameController> joinGameController) {
+        super(userService);
         this.app = app;
         this.loginService = loginService;
-        this.userService = userService;
         this.gameService = gameService;
         this.errorService = errorService;
         this.preferenceService = preferenceService;
@@ -169,7 +161,7 @@ public class LobbyController extends PlayerListController {
     }
 
     private void removeGameFromList(String gameID, GameListItemController controller) {
-        controller.destroy();
+        controller.destroy(false);
         gameListItemControllers.remove(gameID);
     }
 
@@ -178,16 +170,13 @@ public class LobbyController extends PlayerListController {
         playerLabel.setText(String.format(bundle.getString("online.players") + " (%d)", playerItems.size()));
     }
 
-    public void destroy() {
-        if (disposables != null) {
-            disposables.dispose();
-            disposables = null;
-        }
+    public void destroy(boolean closed) {
+        super.destroy(closed);
         // Destroy and delete each sub controller
         // We cannot call remove<Name>FromList since it would remove elements from the map while iterating over it
-        gameListItemControllers.forEach((id, controller) -> controller.destroy());
+        gameListItemControllers.forEach((id, controller) -> controller.destroy(false));
         gameListItemControllers.clear();
-        playerListItemControllers.forEach((id, controller) -> controller.destroy());
+        playerListItemControllers.forEach((id, controller) -> controller.destroy(false));
         playerListItemControllers.clear();
     }
 
@@ -209,8 +198,7 @@ public class LobbyController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
-        //press esc to leave
-        quitButton.setCancelButton(true);
+
 
         gameListView.setItems(gameItems);
         updateGameLabel();
@@ -244,7 +232,7 @@ public class LobbyController extends PlayerListController {
                         },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
+                                ErrorResponse response = errorService.readErrorMessage(ex);
                                 String message = errorCodes.get(Integer.toString(response.statusCode()));
                                 app.showHttpErrorDialog(response.statusCode(), response.error(), message);
                             } else {

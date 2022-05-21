@@ -6,8 +6,11 @@ import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,11 +24,12 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
-public class JoinGameController implements Controller {
+public class JoinGameController extends LoggedInController {
 
     private final App app;
     private final GameService gameService;
@@ -47,14 +51,15 @@ public class JoinGameController implements Controller {
     @FXML
     public Button leaveButton;
 
-    private CompositeDisposable disposables;
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
-    public JoinGameController(App app, GameService gameService, ErrorService errorService,
+    public JoinGameController(App app, UserService userService, GameService gameService, ErrorService errorService,
                               EventListener eventListener,
                               ResourceBundle bundle,
                               Provider<LobbyController> lobbyController,
                               Provider<GameReadyController> gameReadyController) {
+        super(userService);
         this.app = app;
         this.gameService = gameService;
         this.errorService = errorService;
@@ -82,13 +87,17 @@ public class JoinGameController implements Controller {
                         gameNameLabel.setText(game.name());
                     }
                 }));
+
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("incorrect.password"));
+        errorCodes.put("404", bundle.getString("game.not.found"));
+        errorCodes.put("409", bundle.getString("user.already.joined"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
-    public void destroy() {
-        if (disposables != null) {
-            disposables.dispose();
-            disposables = null;
-        }
+    @Override
+    public void destroy(boolean closed) {
+        super.destroy(closed);
     }
 
     public Parent render() {
@@ -106,6 +115,8 @@ public class JoinGameController implements Controller {
 
         passwordTextField.textProperty().bindBidirectional(showPasswordTextField.textProperty());
         showPasswordTextField.setManaged(false);
+        joinGameButton.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> passwordTextField.getText().isEmpty(), passwordTextField.textProperty()));
         return parent;
     }
 
@@ -123,8 +134,9 @@ public class JoinGameController implements Controller {
                 .subscribe(member -> app.show(gameReadyController.get()),
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = (ErrorResponse) errorService.readErrorMessage(ex);
-                                app.showHttpErrorDialog(response.statusCode(), response.error(), response.message());
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }

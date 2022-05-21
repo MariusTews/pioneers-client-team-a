@@ -51,7 +51,7 @@ public class App extends Application {
         stage.setHeight(SCREEN_HEIGHT);
         stage.setTitle(GAME_TITLE);
 
-        //The label in the following line has to be replaced with an fxml-file in order to show the right screen
+        //load fxml of the loadingScreen (initial scene)
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("views/loadingScreen.fxml")));
             final Scene scene = new Scene(root);
@@ -60,7 +60,7 @@ public class App extends Application {
             throw new RuntimeException(e);
         }
 
-
+        // initial style is the light-theme
         stage.getScene().getStylesheets().add(Objects.requireNonNull(Main.class.getResource("views/light-theme.css")).toString());
 
         setAppIcon(stage);
@@ -71,7 +71,6 @@ public class App extends Application {
         if (controller != null) {
             show(controller);
         }
-
     }
 
     public void letterbox(final Pane contentPane) {
@@ -79,20 +78,17 @@ public class App extends Application {
         final double initHeight = stage.getScene().getHeight();
         final double ratio = initWidth / initHeight;
 
-
-
+        // add a new ScenSizeListener -> listen if stage is maximized or minimized
         SceneSizeChangeListener sizeListener = new SceneSizeChangeListener(stage.getScene(), ratio, initHeight, initWidth, contentPane);
         stage.getScene().widthProperty().addListener(sizeListener);
         stage.getScene().heightProperty().addListener(sizeListener);
     }
 
 
-
-
     public void setWindow(Pane contentPane) {
         final double newWidth = stage.getScene().getWidth();
         final double newHeight = stage.getScene().getHeight();
-        final int ratio = SCREEN_WIDTH/SCREEN_HEIGHT;
+        final int ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
         double scaleFactor = newWidth / newHeight > ratio ? newHeight / SCREEN_HEIGHT : newWidth / SCREEN_WIDTH;
         if (scaleFactor >= 1) {
@@ -107,8 +103,6 @@ public class App extends Application {
             contentPane.setPrefWidth(Math.max(SCREEN_WIDTH, newWidth));
             contentPane.setPrefHeight(Math.max(SCREEN_HEIGHT, newHeight));
         }
-
-
     }
 
     public record SceneSizeChangeListener(Scene scene, double ratio, double initHeight, double initWidth,
@@ -157,17 +151,17 @@ public class App extends Application {
 
     @Override
     public void stop() {
-        cleanup();
+        cleanup(true);
     }
 
     public void show(Controller controller) {
-        cleanup();
+        cleanup(false);
         this.controller = controller;
 
         /*if controller is a logincontroller and remember me is enabled then try to login with the refresh token
         if this is not implemented here but in the logincontroller, then the login controller will show shortly
         before a successful token login leads to the lobby screen*/
-        if((controller instanceof LoginController loginController) && loginController.getRememberMeStatus()){
+        if ((controller instanceof LoginController loginController) && loginController.getRememberMeStatus()) {
             disposable = loginController.tryTokenLogin().subscribeOn(FX_SCHEDULER)
                     .subscribe(
                             //on success show the lobby screen (token login was successful)
@@ -177,10 +171,10 @@ public class App extends Application {
                                 loginController.init();
                                 stage.getScene().setRoot(loginController.render());
                                 Pane root = (Pane) stage.getScene().getRoot();
-                                if(stage.isMaximized()){
+                                if (stage.isMaximized()) {
                                     this.setWindow(root);
                                     this.letterbox(root);
-                                } else{
+                                } else {
                                     this.setWindow(root);
                                     this.letterbox(root);
 
@@ -193,17 +187,14 @@ public class App extends Application {
             controller.init();
             stage.getScene().setRoot(controller.render());
             Pane root = (Pane) stage.getScene().getRoot();
-            if(stage.isMaximized()){
+            if (stage.isMaximized()) {
                 this.setWindow(root);
                 this.letterbox(root);
-            } else{
+            } else {
                 this.setWindow(root);
                 this.letterbox(root);
-
             }
-
         }
-
     }
 
     public void setTheme(String theme) {
@@ -233,32 +224,14 @@ public class App extends Application {
         return alert.showAndWait();
     }
 
-    public void showDialogWithOkButton(VBox vBox, double width) {
-        Stage dialogStage = new Stage();
-        dialogStage.setTitle("Error");
-        setAppIcon(dialogStage);
-
-        Button button = new Button("OK");
-        button.setFont(new Font(12));
-        button.setPrefWidth(120);
-        button.setOnAction(e -> dialogStage.close());
-
-        vBox.getChildren().add(button);
-
-        Scene dialogScene = new Scene(vBox, width, 130);
-        dialogStage.setScene(dialogScene);
-
-        dialogStage.show();
-    }
-
-    private void cleanup() {
+    private void cleanup(boolean closed) {
 
         if (this.disposable != null) {
             disposable.dispose();
         }
 
         if (controller != null) {
-            controller.destroy();
+            controller.destroy(closed);
             controller = null;
         }
     }

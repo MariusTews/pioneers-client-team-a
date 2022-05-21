@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
 
 import javax.inject.Provider;
 
@@ -53,35 +54,38 @@ public class RegisterControllerErrorTest extends ApplicationTest {
 
     @Test
     void testUsernameTaken() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable(HTTP_409)));
+        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable()));
         write("Jannis\t");
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Username schon vergeben"));
+        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
     }
 
     @Test
     void RateLimitReached() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable(HTTP_429)));
+        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable()));
         write("Jannis\t");
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Bitte warten Sie einen Moment und versuchen es dann erneut."));
+        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
 
     }
 
     @Test
     void testValidationFailed() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable(HTTP_400)));
+        when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable()));
         write("Jannis\t");
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Validierung fehlgeschlagen. (Passwort zu kurz)"));
+        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
 
     }
@@ -93,7 +97,8 @@ public class RegisterControllerErrorTest extends ApplicationTest {
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat("#errorLabel", hasText("Keine Verbindung zum Server."));
+        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
     }
 }

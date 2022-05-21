@@ -9,7 +9,6 @@ import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -88,7 +87,7 @@ public class LoginController implements Controller {
 
 
     @Override
-    public void destroy() {
+    public void destroy(boolean closed) {
         if (this.loginDisposable != null) {
             this.loginDisposable.dispose();
         }
@@ -158,18 +157,11 @@ public class LoginController implements Controller {
 
                                 toLobby(result);
                             },
-                            //temporary solution
                             throwable -> {
                                 if (throwable instanceof HttpException ex) {
-                                    Object object = errorService.readErrorMessage(ex);
-                                    if (object instanceof ErrorResponse response) {
-                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                    } else {
-                                        ValidationErrorResponse response = (ValidationErrorResponse) object;
-                                        String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                    }
+                                    ErrorResponse response = errorService.readErrorMessage(ex);
+                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                                 } else {
                                     app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                                 }
@@ -213,15 +205,9 @@ public class LoginController implements Controller {
                         },
                         throwable -> {
                             if (throwable instanceof HttpException ex) {
-                                Object object = errorService.readErrorMessage(ex);
-                                if (object instanceof ErrorResponse response) {
-                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                } else {
-                                    ValidationErrorResponse response = (ValidationErrorResponse) object;
-                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                                }
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }
@@ -246,6 +232,5 @@ public class LoginController implements Controller {
 
     public void selectDark(MouseEvent mouseEvent) {
         app.setTheme("dark");
-
     }
 }

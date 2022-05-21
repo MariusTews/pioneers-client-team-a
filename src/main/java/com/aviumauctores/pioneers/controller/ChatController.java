@@ -19,7 +19,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -38,14 +37,10 @@ public class ChatController extends PlayerListController {
     private final Provider<LobbyController> lobbyController;
     private final MessageService messageService;
 
-    private final UserService userService;
-
     private final GroupService groupService;
     private final ResourceBundle bundle;
 
     private final EventListener eventListener;
-
-    private final CompositeDisposable disposable = new CompositeDisposable();
 
     private final ObservableList<User> users = FXCollections.observableArrayList();
 
@@ -55,11 +50,12 @@ public class ChatController extends PlayerListController {
 
     private List<String> usersIdList  = new ArrayList<>();
 
-    private User user;
-
     private Label deleteLabel;
 
+    private Message deleteMessage;
+
     private Tab selectedTab;
+
 
     @FXML public TextField chatTextField;
     @FXML public Button sendButton;
@@ -80,30 +76,34 @@ public class ChatController extends PlayerListController {
     public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
                           EventListener eventListener, UserService userService, GroupService groupService,
                           ResourceBundle bundle) {
+        super(userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
         this.eventListener = eventListener;
-        this.userService = userService;
         this.groupService = groupService;
         this.bundle = bundle;
     }
 
+
+
+
+
     public void init(){
+        disposables = new CompositeDisposable();
         //get all users for the usernames of the old messages
-        disposable.add(userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
+        userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
             allUsers = res;
             showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
-        }));
+        });
 
-
-        // get all users, their ids and update the All-Group
-        disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
+        // get all online users, their ids and update the All-Group
+        userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
             usersIdList = getAllUserIDs(onlineUsers);
             usersIdList.add(userService.getCurrentUserID());
             groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
-        }));
-        disposable.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
+        });
+        disposables.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     this.users.setAll(result);
                     usersIdList = getAllUserIDs(users);
@@ -115,7 +115,7 @@ public class ChatController extends PlayerListController {
                     }
                 }));
         // listen for users and put them in the All-Group for the All-Chat
-        disposable.add(eventListener.listen("users.*.updated", User.class)
+        disposables.add(eventListener.listen("users.*.updated", User.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.data().status().equals("online")) {
@@ -131,7 +131,7 @@ public class ChatController extends PlayerListController {
                     onUserEvent(event);
                 }));
         // listen for incoming messages and show them as a Label
-        disposable.add(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)
+        disposables.add(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.event().endsWith(".created")) {
@@ -153,15 +153,28 @@ public class ChatController extends PlayerListController {
                 }));
     }
 
+
+
+
     @Override
     protected void updatePlayerLabel() {
-        onlinePlayerLabel.setText(String.format("Online Spieler (%d)", playerItems.size()));
+        onlinePlayerLabel.setText(String.format(bundle.getString("online.players") + " (%d)", playerItems.size()));
     }
 
-    public void destroy(){
-        disposable.dispose();
+
+
+
+
+
+    public void destroy(boolean closed){
+        super.destroy(closed);
         chatTabsByUserID.clear();
     }
+
+
+
+
+
 
     public Parent render() {
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/ChatScreen.fxml"), bundle);
@@ -175,16 +188,24 @@ public class ChatController extends PlayerListController {
         }
         //press esc to leave
         leaveButton.setCancelButton(true);
+        onlinePlayerList.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ESCAPE) {
+                leave();
+            }
+        });
 
+        //Tabstructure
         allTab.setId(ALLCHAT_ID);
         allTab.setOnSelectionChanged(event -> {
             if (event.getTarget().equals(allTab)) {
                 this.selectedTab = allTab;
             }
         });
+        chatTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         this.selectedTab = allTab;
         sendButton.setOnAction(event -> sendMessage(selectedTab.getId()));
         leaveButton.setOnAction(event -> leave());
+
         //send Message with Enter
         chatTextField.setOnKeyPressed(event -> {
             if( event.getCode() == KeyCode.ENTER ) {
@@ -195,6 +216,11 @@ public class ChatController extends PlayerListController {
         updatePlayerLabel();
         return parent;
     }
+
+
+
+
+
 
     public void sendMessage(String groupId) {
         // clear the field
@@ -209,6 +235,10 @@ public class ChatController extends PlayerListController {
                 .subscribe();
     }
 
+
+
+
+
     // delete the message
     public void delete(String messageId, String groupId) {
         messageService.deleteMessage(messageId, groupId)
@@ -218,67 +248,88 @@ public class ChatController extends PlayerListController {
 
 
 
+
+
+
     public void leave() {
         // back to LobbyScreen
         final LobbyController controller = lobbyController.get();
-        controller.setUser(user);
         app.show(controller);
     }
+
+
+
+
+
 
     @Override
     public void onPlayerItemClicked(User selectedUser) {
         Tab userTab = chatTabsByUserID.get(selectedUser._id());
         if (userTab != null) {
+            // there were a chat tab, but it was closed
+            boolean notOpen = true;
+            for (Tab t: chatTabPane.getTabs()) {
+                if (t.equals(userTab)) {
+                    notOpen = false;
+                    break;
+                }
+            }
+            if (notOpen) {
+                chatTabPane.getTabs().add(userTab);
+                showOldMessages("groups",userTab.getId(),LocalDateTime.now().toString(), 100);
+
+            }
             // There is already a chat tab
             chatTabPane.getSelectionModel().select(userTab);
             return;
         }
-        disposable.add(groupService.getOrCreateGroup(List.of(userService.getCurrentUserID(), selectedUser._id()), disposable)
+        disposables.add(groupService.getOrCreateGroup(List.of(userService.getCurrentUserID(), selectedUser._id()), disposables)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(group -> {
-                    disposable.add(eventListener.listen("groups." + group._id() + ".messages.*.*", Message.class)
+                    disposables.add(eventListener.listen("groups." + group._id() + ".messages.*.*", Message.class)
                             .observeOn(FX_SCHEDULER)
                             .subscribe(event -> {
-
+                                //check if the Group/Tab, were is the event happened is open
+                                Tab tab = this.selectedTab;
+                                boolean notOpen = true;
                                 for (Tab t: chatTabPane.getTabs()) {
+                                    //search the right tab
                                     if (t.getId().equals(group._id())) {
-                                        selectedTab = t;
+                                        tab = t;
+                                        notOpen = false;
                                     }
                                 }
+                                if (notOpen) {
+                                    return;
+                                }
+                                //add or remove the Message
                                 if (event.event().endsWith(".created")) {
                                     Label msgLabel = createMessageLabel(event.data());
-                                    ((VBox)((ScrollPane)this.selectedTab.getContent()).getContent()).getChildren()
+                                    ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()
                                             .add(msgLabel);
                                 }
                                 else if (event.event().endsWith(".deleted")) {
                                     //search for the Label of the which will be deleted
-                                    for (Node l : ((VBox)((ScrollPane)this.selectedTab.getContent()).getContent()).getChildren()) {
+                                    for (Node l : ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()) {
                                         if (event.data()._id().equals(l.getId())) {
                                             this.deleteLabel = (Label) l;
                                         }
                                     }
-                                    ((VBox)((ScrollPane)this.selectedTab.getContent()).getContent()).getChildren()
+                                    ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()
                                             .remove(this.deleteLabel);
-
                                 }
                             }));
-                    Tab tab = new Tab(selectedUser.name());
-                    ScrollPane sp = new ScrollPane();
-                    sp.setContent(new VBox());
-                    tab.setContent(sp);
-                    tab.setId(group._id());
-                    tab.setClosable(true);
-                    tab.setOnSelectionChanged(event -> {
-                        if (event.getTarget().equals(tab)) {
-                            this.selectedTab = tab;
-                        }
-                    });
+                    Tab tab = createTab(group._id(), selectedUser);
                     chatTabPane.getTabs().add(tab);
                     chatTabPane.getSelectionModel().select(tab);
                     chatTabsByUserID.put(selectedUser._id(), tab);
                     showOldMessages("groups",tab.getId(),LocalDateTime.now().toString(), 100);
                 }));
     }
+
+
+
+
 
 
     public Label createMessageLabel(Message message) {
@@ -296,6 +347,10 @@ public class ChatController extends PlayerListController {
 
 
 
+
+
+
+
     public List<String> getAllUserIDs(List<User> users) {
         List<String> ids = new ArrayList<>();
         for (User u : users) {
@@ -304,8 +359,14 @@ public class ChatController extends PlayerListController {
         return ids;
     }
 
+
+
+
+
+
+
     public void showOldMessages(String namespace, String pathId, String createdBefore, int limit) {
-        disposable.add(messageService.listMessages(namespace, pathId, createdBefore, limit)
+        messageService.listMessages(namespace, pathId, createdBefore, limit)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     for (Message m : result) {
@@ -316,31 +377,64 @@ public class ChatController extends PlayerListController {
                                     .add(msgLabel);
                         }
                     }
-                }));
+                });
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+
+
+
+
 
     public void onMessageClicked(MouseEvent event) {
         if (event.getButton() == MouseButton.SECONDARY) {
-            // Alert for the delete
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete");
-            alert.setHeaderText("Delete this Message?");
-            alert.setContentText("Do you want to delete this message?");
-            Optional<ButtonType> res = alert.showAndWait();
-            // delete if "Ok" is clicked
-            if (res.get() == ButtonType.OK){
-                this.deleteLabel = (Label) event.getSource();
-                delete(this.deleteLabel.getId(), this.selectedTab.getId());
-                alert.close();
-            } else {
-                alert.close();
-            }
+            // Alert for the delete, only if you click on your message
+            Label msg = (Label) event.getSource();
+            messageService.getMessage("groups",selectedTab.getId(), msg.getId()).observeOn(FX_SCHEDULER).subscribe(res ->  {
+                deleteMessage = res;
+                if (!userService.getCurrentUserID().equals(deleteMessage.sender())) {
+                    return;
+                }
+                ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+                ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.question"), proceedButton, cancelButton);
+                alert.setTitle(bundle.getString("delete"));
+                alert.setHeaderText(null);
+                Optional<ButtonType> result = alert.showAndWait();
+                // delete if "Ok" is clicked
+                if (result.get() == proceedButton){
+                    this.deleteLabel = (Label) event.getSource();
+                    delete(this.deleteLabel.getId(), this.selectedTab.getId());
+                    alert.close();
+                } else {
+                    alert.close();
+                }
+            });
         }
 
     }
 
+
+
+
+
+
+
+    public Tab createTab(String groupId, User user) {
+        Tab tab = new Tab(user.name());
+        ScrollPane sp = new ScrollPane();
+        sp.setContent(new VBox());
+        tab.setContent(sp);
+        tab.setId(groupId);
+        tab.setClosable(true);
+        tab.setOnCloseRequest(event -> {
+            chatTabPane.getTabs().remove(tab);
+            ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren().clear();
+        });
+        tab.setOnSelectionChanged(event -> {
+            if (event.getTarget().equals(tab)) {
+                this.selectedTab = tab;
+            }
+        });
+        return tab;
+    }
 }
