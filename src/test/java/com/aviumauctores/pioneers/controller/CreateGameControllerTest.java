@@ -93,7 +93,7 @@ public class CreateGameControllerTest extends ApplicationTest{
         FxAssert.verifyThat("#createGameButton", NodeMatchers.isEnabled());
         when(gameService.create(anyString(), anyString())).thenReturn(Observable.just(new Game("1", "1", "gameID", "game", "owner", 1).toString()));
         when(gameService.updateGame()).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", 1)));
-        clickOn("Create Game");
+        clickOn("#createGameButton");
         verify(gameService).create("game", "password");
         verify(gameService).updateGame();
     }
