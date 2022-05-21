@@ -16,7 +16,7 @@
          <children>
             <TextField fx:id="gameNameInput" layoutX="200.0" layoutY="134.0" prefHeight="30.0" prefWidth="200.0" promptText="%name" />
             <Button fx:id="cancelButton" layoutX="472.0" layoutY="320.0" mnemonicParsing="false" onAction="#cancel" text="%cancel" />
-            <Button id="createGameButton" fx:id="createGameButton" layoutX="258.0" layoutY="269.0" mnemonicParsing="false" onAction="#createGame" text="%create.game" />
+            <Button id="createGameButton" fx:id="createGameButton" layoutX="258.0" layoutY="269.0" mnemonicParsing="false" onAction="#createGame" text="%create.game" disable="true"/>
             <PasswordField fx:id="gamePasswordInput" layoutX="200.0" layoutY="208.0" prefHeight="30.0" prefWidth="200.0" promptText="%password"/>
             <Button fx:id="showPasswordButton" layoutX="413.0" layoutY="208.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="18.0" prefWidth="37.0">
                <graphic>
