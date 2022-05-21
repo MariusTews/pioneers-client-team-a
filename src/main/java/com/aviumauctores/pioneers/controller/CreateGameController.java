@@ -53,7 +53,7 @@ public class CreateGameController implements Controller {
 
     @FXML public TextField gameNameInput;
 
-    private CompositeDisposable disposable = new CompositeDisposable();
+    private CompositeDisposable disposable;
 
 
     @Inject
@@ -83,6 +83,7 @@ public class CreateGameController implements Controller {
 
     @Override
     public Parent render(){
+        disposable = new CompositeDisposable();
         //load createGame FXML
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
@@ -96,6 +97,16 @@ public class CreateGameController implements Controller {
         //press esc to leave
         cancelButton.setCancelButton(true);
 
+        gameNameInput.textProperty().bindBidirectional(gameName);
+        gamePasswordInput.textProperty().bindBidirectional(password);
+
+        if (gameNameInput.getText() == null) {
+            gameNameInput.setText("");
+        }
+        if (gamePasswordInput.getText() == null) {
+            gamePasswordInput.setText("");
+        }
+
         //check if one or both input fields are empty
         createGameButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() ->
@@ -105,8 +116,6 @@ public class CreateGameController implements Controller {
         );
 
         //take username and password from Login screen
-        gameNameInput.textProperty().bindBidirectional(gameName);
-        gamePasswordInput.textProperty().bindBidirectional(password);
         return parent;
     }
 

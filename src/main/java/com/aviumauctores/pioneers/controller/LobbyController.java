@@ -221,8 +221,6 @@ public class LobbyController extends PlayerListController {
 
     public void toCreateGame(ActionEvent event) {
         final CreateGameController controller = createGameController.get();
-        controller.gameName.set("");
-        controller.password.set("");
         app.show(controller);
     }
 

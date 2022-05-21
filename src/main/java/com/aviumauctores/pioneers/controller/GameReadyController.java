@@ -86,6 +86,7 @@ public class GameReadyController extends PlayerListController {
         this.messageService = messageService;
         this.lobbyController = lobbyController;
         gameMemberService.updateID();
+        System.out.println("haalo");
     }
 
     public void init() {

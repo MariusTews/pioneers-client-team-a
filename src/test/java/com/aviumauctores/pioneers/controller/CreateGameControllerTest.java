@@ -20,7 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
 import org.w3c.dom.Text;
 
 import javax.inject.Provider;
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isInvisible;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
+import static org.testfx.util.NodeQueryUtils.hasText;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateGameControllerTest extends ApplicationTest{
@@ -45,7 +48,7 @@ public class CreateGameControllerTest extends ApplicationTest{
     LobbyController lobbyController;
 
     @Mock
-    GameReadyController gameReadyController;
+    Provider<GameReadyController> gameReadyController;
 
     @Mock
     GameService gameService;
@@ -69,40 +72,35 @@ public class CreateGameControllerTest extends ApplicationTest{
 
     @Override
     public void start(Stage stage) {
-        /*not working
-        User user = new User("id", "name", "online", null);
-        userService.setCurrentUserID("id");
-        createGameController.gameName.set("");
-        createGameController.password.set("");
-        when(gameService.updateGame()).thenReturn(Observable.empty());
-        new App(createGameController).start(stage);*/
+       new App(createGameController).start(stage);
+
     }
 
     @Test
     void createGame(){
-        /*not working
         TextField gameName = lookup("#gameNameInput").query();
         PasswordField password = lookup("#gamePasswordInput").query();
-        Button createButton = lookup("#createGameButton").query();
-        Game game = new Game("1", "2", "gameID", "game", "id", 0);
-        when(gameService.create(anyString(), anyString())).thenReturn(Observable.just("gameID"));
-        doNothing().when(gameService).setCurrentGameID(any());
+        TextField showPassword = lookup("#gamePasswordText").query();
+        FxAssert.verifyThat("#createGameButton", NodeMatchers.isDisabled());
 
         clickOn(gameName);
-        write("name");
+        write("game");
+
+        FxAssert.verifyThat("#createGameButton", NodeMatchers.isDisabled());
 
         clickOn(password);
-        write("123");
-
-        clickOn(createButton);
-
-        verify(gameService).create("name", "123");*/
-
+        write("password");
+        FxAssert.verifyThat("#createGameButton", NodeMatchers.isEnabled());
+        when(gameService.create(anyString(), anyString())).thenReturn(Observable.just(new Game("1", "1", "gameID", "game", "owner", 1).toString()));
+        when(gameService.updateGame()).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", 1)));
+        clickOn("Create Game");
+        verify(gameService).create("game", "password");
+        verify(gameService).updateGame();
     }
 
     @Test
     void showPassword(){
-        /*Not working
+
         final PasswordField passwordTextField = lookup("#gamePasswordInput").query();
         final TextField showPasswordTextField = lookup("#gamePasswordText").query();
 
@@ -127,7 +125,7 @@ public class CreateGameControllerTest extends ApplicationTest{
 
         // A second click on the button should make the masked text field visible again
         verifyThat(passwordTextField, isVisible());
-        verifyThat(showPasswordTextField, isInvisible());*/
+        verifyThat(showPasswordTextField, isInvisible());
 
     }
 }
