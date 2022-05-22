@@ -119,11 +119,11 @@ public class GameReadyController extends PlayerListController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
-                    VBox chatBox = (VBox)((ScrollPane)this.allChatTab.getContent()).getContent();
-                    if (event.event().endsWith(".created")) {
+                    VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
+                    //if message is sent by myself then ignore it as it is already displayed in the sendMessage method
+                    if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
                         Label msgLabel = createMessageLabel(event.data());
-                        chatBox.getChildren()
-                                .add(msgLabel);
+                        chatBox.getChildren().add(msgLabel);
                     }
                     else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
@@ -132,11 +132,10 @@ public class GameReadyController extends PlayerListController {
                                 this.deleteLabel = (Label) l;
                             }
                         }
-                        chatBox.getChildren()
-                                .remove(this.deleteLabel);
-
+                        chatBox.getChildren().remove(this.deleteLabel);
                     }
                 }));
+
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("change.membership.error"));
@@ -300,7 +299,12 @@ public class GameReadyController extends PlayerListController {
         messageTextField.clear();
         messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
-                .subscribe(result -> ownMessageIds.add(result._id()));
+                .subscribe(result -> {
+                    ownMessageIds.add(result._id());
+                    Label msgLabel = createMessageLabel(result);
+                    VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
+                    chatBox.getChildren().add(msgLabel);
+                });
     }
 
     public Label createMessageLabel(Message message) {
