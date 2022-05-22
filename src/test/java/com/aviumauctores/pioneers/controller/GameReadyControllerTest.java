@@ -20,12 +20,15 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
 
+import javax.inject.Provider;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.ListViewMatchers.hasItems;
@@ -47,6 +50,9 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
+
+    @Mock
+    Provider<LobbyController> lobbyController;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
@@ -88,5 +94,36 @@ class GameReadyControllerTest extends ApplicationTest {
         verifyThat(playerList, hasItems(2));
     }
 
+    @Test
+    void gameReady(){
+        when(gameMemberService.updateMember(anyString())).thenReturn(Observable.just(new Member("","", "12", "1", false)));
+        when(userService.getCurrentUserID()).thenReturn("1");
+        clickOn("#gameReadyButton");
+
+        verify(gameMemberService).updateMember("1");
+    }
+
+    @Test
+    void leaveGame(){
+        when(userService.getCurrentUserID()).thenReturn("42");
+        when(gameMemberService.deleteMember(anyString())).thenReturn(Observable.just(new Member("", "", null, "1", false)));
+        clickOn("#leaveGameButton");
+        clickOn("OK");
+        verify(gameMemberService).updateID();
+        verify(gameMemberService).listCurrentGameMembers();
+        verify(gameMemberService).deleteMember("42");
+        verify(gameService).setCurrentGameID(null);
+    }
+
+    @Test
+    void deleteGame(){
+        when(userService.getCurrentUserID()).thenReturn("1");
+        when(gameService.getOwnerID()).thenReturn("1");
+        when(gameService.deleteGame()).thenReturn(Observable.just(new Game("", "", null, "name", "1",0)));
+        clickOn("#leaveGameButton");
+        clickOn("OK");
+        verify(gameService).deleteGame();
+        verify(gameService).setCurrentGameID(null);
+    }
 
 }
