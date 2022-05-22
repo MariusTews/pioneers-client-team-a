@@ -177,7 +177,7 @@ public class ChatController extends PlayerListController {
 
 
     public Parent render() {
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/ChatScreen.fxml"), bundle);
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/chatScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
