@@ -10,6 +10,7 @@ import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -114,6 +115,8 @@ public class JoinGameController extends LoggedInController {
 
         passwordTextField.textProperty().bindBidirectional(showPasswordTextField.textProperty());
         showPasswordTextField.setManaged(false);
+        joinGameButton.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> passwordTextField.getText().isEmpty(), passwordTextField.textProperty()));
         return parent;
     }
 

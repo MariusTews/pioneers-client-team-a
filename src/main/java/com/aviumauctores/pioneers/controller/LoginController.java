@@ -232,6 +232,5 @@ public class LoginController implements Controller {
 
     public void selectDark(MouseEvent mouseEvent) {
         app.setTheme("dark");
-
     }
 }

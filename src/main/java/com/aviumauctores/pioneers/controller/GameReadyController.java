@@ -26,6 +26,7 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -70,6 +71,11 @@ public class GameReadyController extends PlayerListController {
 
     private int readyMembers;
 
+    //list for storing message IDs of own messages to check whether a message can be deleted or not
+    private final ArrayList<String> ownMessageIds = new ArrayList<>();
+
+    private CompositeDisposable disposables;
+
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
@@ -113,23 +119,23 @@ public class GameReadyController extends PlayerListController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
-                    if (event.event().endsWith(".created")) {
+                    VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
+                    //if message is sent by myself then ignore it as it is already displayed in the sendMessage method
+                    if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
                         Label msgLabel = createMessageLabel(event.data());
-                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
-                                .add(msgLabel);
+                        chatBox.getChildren().add(msgLabel);
                     }
                     else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
-                        for (Node l : ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()) {
+                        for (Node l : chatBox.getChildren()) {
                             if (event.data()._id().equals(l.getId())) {
                                 this.deleteLabel = (Label) l;
                             }
                         }
-                        ((VBox)((ScrollPane)this.allChatTab.getContent()).getContent()).getChildren()
-                                .remove(this.deleteLabel);
-
+                        chatBox.getChildren().remove(this.deleteLabel);
                     }
                 }));
+
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("change.membership.error"));
@@ -293,7 +299,12 @@ public class GameReadyController extends PlayerListController {
         messageTextField.clear();
         messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(result -> {
+                    ownMessageIds.add(result._id());
+                    Label msgLabel = createMessageLabel(result);
+                    VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
+                    chatBox.getChildren().add(msgLabel);
+                });
     }
 
     public Label createMessageLabel(Message message) {
@@ -309,7 +320,8 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void onMessageClicked(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
+        Label label = (Label) event.getSource();
+        if (ownMessageIds.contains(label.getId()) && event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete
             ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -319,7 +331,7 @@ public class GameReadyController extends PlayerListController {
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
             if (res.get() == proceedButton){
-                this.deleteLabel = (Label) event.getSource();
+                this.deleteLabel = label;
                 delete(this.deleteLabel.getId());
                 alert.close();
             } else {
