@@ -267,18 +267,7 @@ public class ChatController extends PlayerListController {
         Tab userTab = chatTabsByUserID.get(selectedUser._id());
         if (userTab != null) {
             // there were a chat tab, but it was closed
-            boolean notOpen = true;
-            for (Tab t: chatTabPane.getTabs()) {
-                if (t.equals(userTab)) {
-                    notOpen = false;
-                    break;
-                }
-            }
-            if (notOpen) {
-                chatTabPane.getTabs().add(userTab);
-                showOldMessages("groups",userTab.getId(),LocalDateTime.now().toString(), 100);
-
-            }
+            reopenTab(userTab);
             // There is already a chat tab
             chatTabPane.getSelectionModel().select(userTab);
             return;
@@ -436,5 +425,20 @@ public class ChatController extends PlayerListController {
             }
         });
         return tab;
+    }
+
+
+    public void reopenTab(Tab userTab) {
+        boolean notOpen = true;
+        for (Tab t: chatTabPane.getTabs()) {
+            if (t.equals(userTab)) {
+                notOpen = false;
+                break;
+            }
+        }
+        if (notOpen) {
+            chatTabPane.getTabs().add(userTab);
+            showOldMessages("groups",userTab.getId(),LocalDateTime.now().toString(), 100);
+        }
     }
 }
