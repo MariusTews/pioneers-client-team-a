@@ -11,6 +11,7 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -49,13 +51,9 @@ public class PlayerResourceListController extends LoggedInController {
     private final Provider<LobbyController> lobbyController;
 
     @FXML
-    VBox listVBox;
-
-
-    private int readyMembers;
-
-    //list for storing message IDs of own messages to check whether a message can be deleted or not
-    private final ArrayList<String> ownMessageIds = new ArrayList<>();
+    public ScrollPane playerListScrollPane;
+    @FXML
+    public VBox playerListVBOX;
 
     private CompositeDisposable disposables;
 
@@ -81,6 +79,8 @@ public class PlayerResourceListController extends LoggedInController {
 
     public void init(){
 
+
+
     }
 
 
@@ -93,6 +93,12 @@ public class PlayerResourceListController extends LoggedInController {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+        List<Member> members = gameMemberService.listCurrentGameMembers().blockingFirst();
+        for(Member m : members) {
+            Label playerLabel = new Label();
+            playerLabel.setText(userService.getCurrentUserID());
+            ((VBox)playerListScrollPane.getContent()).getChildren().add(playerLabel);
         }
         return parent;
     }
