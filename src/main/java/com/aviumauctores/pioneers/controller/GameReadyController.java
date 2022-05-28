@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
@@ -21,6 +22,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -45,6 +48,7 @@ public class GameReadyController extends PlayerListController {
     private final EventListener eventListener;
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
+    private final Provider<PlayerResourceListController> playerResourceListController;
 
     private Label deleteLabel;
 
@@ -81,7 +85,9 @@ public class GameReadyController extends PlayerListController {
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
-                               ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController){
+                               ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController,
+                               Provider<PlayerResourceListController> playerResourceListController)
+    {
         super(userService);
         this.app = app;
         this.gameService = gameService;
@@ -91,7 +97,9 @@ public class GameReadyController extends PlayerListController {
         this.bundle = bundle;
         this.messageService = messageService;
         this.lobbyController = lobbyController;
+        this.playerResourceListController = playerResourceListController;
         gameMemberService.updateID();
+
     }
 
     public void init() {
@@ -132,7 +140,21 @@ public class GameReadyController extends PlayerListController {
                                 this.deleteLabel = (Label) l;
                             }
                         }
-                        chatBox.getChildren().remove(this.deleteLabel);
+                        chatBox.getChildren()
+                                .remove(this.deleteLabel);
+
+                    }
+                }));
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".deleted", Game.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> {
+                    if(!userService.getCurrentUserID().equals(gameService.getOwnerID())) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Game deleted");
+                        alert.setHeaderText(bundle.getString("game.deleted"));
+                        alert.showAndWait();
+                        gameService.setCurrentGameID(null);
+                        app.show(lobbyController.get());
                     }
                 }));
 
@@ -231,8 +253,8 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void startGame(ActionEvent actionEvent) {
-
-
+        System.out.println(gameService);
+        app.show(playerResourceListController.get());
     }
 
     public void gameReady(ActionEvent actionEvent) {
@@ -282,10 +304,12 @@ public class GameReadyController extends PlayerListController {
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
             }else {
+                memberAlert.close();
                 return;
             }
         }
         gameService.setCurrentGameID(null);
+        gameMemberService.updateID();
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
@@ -333,10 +357,8 @@ public class GameReadyController extends PlayerListController {
             if (res.get() == proceedButton){
                 this.deleteLabel = label;
                 delete(this.deleteLabel.getId());
-                alert.close();
-            } else {
-                alert.close();
             }
+            alert.close();
         }
     }
 
@@ -345,4 +367,5 @@ public class GameReadyController extends PlayerListController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
+
 }
