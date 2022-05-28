@@ -11,7 +11,7 @@ public class Constants {
 
     public static final String GAME_TITLE = "Pioneers";
 
-    public static final String BASE_URL = "https://pioneers.uniks.de/api/v1/";
+    public static final String BASE_URL = "https://pioneers.uniks.de/api/v2/";
 
     // URL params
     public static final String HEADER_AUTH = "Authorization";
@@ -21,6 +21,10 @@ public class Constants {
     public static final String PATH_USER_ID = "userId";
     public static final String PATH_NAMESPACE = "namespace";
     public static final String PATH_PARENT = "parent";
+
+    public static final String PATH_BUILDING_ID = "parent";
+
+
     public static final String QUERY_IDS = "ids";
     public static final String QUERY_STATUS = "status";
     public static final String QUERY_MEMBERS = "members";
@@ -69,6 +73,23 @@ public class Constants {
     public static final String GET_GAME_URL = "games/{id}";
     public static final String UPDATE_GAME_URL = "games/{id}";
     public static final String DELETE_GAME_URL = "games/{id}";
+
+    // API Pioneers URL
+
+    public static final String GET_MAP_URL ="games/{gameId}/map";
+
+    public static final String LIST_PLAYERS_URL ="games/{gameId}/players";
+
+    public static final String GET_USERID_URL ="games/{gameId}/players/{userId}";
+
+    public static final String GET_STATE_URL ="games/{gameId}/state";
+
+    public static final String LIST_BUILDINGS_URL ="games/{gameId}/buildings";
+
+    public static final String GET_BUILDINGID_URL ="games/{gameId}/buildings/{buildingId}";
+
+    public static final String CREATE_MOVE_URL ="games/{gameId}/moves";
+
 
     public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v1/events";
     public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
