@@ -71,7 +71,7 @@ public class GameReadyController extends PlayerListController {
     public ListView<Parent> playerList;
     @FXML public TextField messageTextField;
 
-    @FXML public ComboBox<Circle> pickColourMenu;
+    @FXML public ComboBox<Color> pickColourMenu;
 
     private int readyMembers;
 
@@ -145,29 +145,6 @@ public class GameReadyController extends PlayerListController {
         errorCodes.put("403", bundle.getString("change.membership.error"));
         errorCodes.put("404", bundle.getString("membership.not.found"));
         errorCodes.put("429", bundle.getString("limit.reached"));
-
-        Circle circle = new Circle();
-        circle.setRadius(10f);
-        circle.setFill(Color.BLUE);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.RED);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.GREEN);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.YELLOW);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.ORANGE);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.VIOLET);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.CYAN);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.LIMEGREEN);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.MAGENTA);
-        pickColourMenu.getItems().add(circle);
-        circle.setFill(Color.CHOCOLATE);
-        pickColourMenu.getItems().add(circle);
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
@@ -253,6 +230,38 @@ public class GameReadyController extends PlayerListController {
                 sendMessage(null);
             }
         } );
+
+        // fill the Combobox with colour-icons
+        pickColourMenu.getItems().addAll(
+                Color.BLUE,
+                Color.RED,
+                Color.GREEN,
+                Color.YELLOW,
+                Color.ORANGE,
+                Color.VIOLET,
+                Color.CYAN,
+                Color.LIMEGREEN,
+                Color.MAGENTA,
+                Color.CHOCOLATE);
+        pickColourMenu.setCellFactory(param -> {
+            return new ListCell<>() {
+                private final Circle circle;{
+                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                    circle = new Circle(10f);
+                }
+
+                @Override
+                protected void updateItem(Color colour, boolean empty){
+                    super.updateItem(colour, empty);
+                    if(colour == null || empty){
+                        setGraphic(null);
+                    } else {
+                        circle.setFill(colour);
+                        setGraphic(circle);
+                    }
+                }
+            };
+        });
 
         return parent;
     }
