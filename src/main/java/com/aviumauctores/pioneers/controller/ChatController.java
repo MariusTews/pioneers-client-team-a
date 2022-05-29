@@ -94,7 +94,7 @@ public class ChatController extends PlayerListController {
         //get all users for the usernames of the old messages
         userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
             allUsers = res;
-            showOldMessages("groups", ALLCHAT_ID,LocalDateTime.now().toString() , 100);
+            showOldMessages("groups", ALLCHAT_ID, LocalDateTime.now().toString() , 100);
         });
 
         // get all online users, their ids and update the All-Group
@@ -266,19 +266,8 @@ public class ChatController extends PlayerListController {
     public void onPlayerItemClicked(User selectedUser) {
         Tab userTab = chatTabsByUserID.get(selectedUser._id());
         if (userTab != null) {
-            // there were a chat tab, but it was closed
-            boolean notOpen = true;
-            for (Tab t: chatTabPane.getTabs()) {
-                if (t.equals(userTab)) {
-                    notOpen = false;
-                    break;
-                }
-            }
-            if (notOpen) {
-                chatTabPane.getTabs().add(userTab);
-                showOldMessages("groups",userTab.getId(),LocalDateTime.now().toString(), 100);
-
-            }
+            // there was a chat tab, but it was closed
+            reopenTab(userTab);
             // There is already a chat tab
             chatTabPane.getSelectionModel().select(userTab);
             return;
@@ -323,7 +312,7 @@ public class ChatController extends PlayerListController {
                     chatTabPane.getTabs().add(tab);
                     chatTabPane.getSelectionModel().select(tab);
                     chatTabsByUserID.put(selectedUser._id(), tab);
-                    showOldMessages("groups",tab.getId(),LocalDateTime.now().toString(), 100);
+                    showOldMessages("groups", tab.getId(), LocalDateTime.now().toString(), 100);
                 }));
     }
 
@@ -436,5 +425,20 @@ public class ChatController extends PlayerListController {
             }
         });
         return tab;
+    }
+
+
+    public void reopenTab(Tab userTab) {
+        boolean notOpen = true;
+        for (Tab t: chatTabPane.getTabs()) {
+            if (t.equals(userTab)) {
+                notOpen = false;
+                break;
+            }
+        }
+        if (notOpen) {
+            chatTabPane.getTabs().add(userTab);
+            showOldMessages("groups", userTab.getId(), LocalDateTime.now().toString(), 100);
+        }
     }
 }
