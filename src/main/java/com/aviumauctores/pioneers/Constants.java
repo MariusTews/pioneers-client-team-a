@@ -82,43 +82,5 @@ public class Constants {
     public static final String ALLCHAT_ID = "627cf3c93496bc00158f3859";
 
 
-    //Colors
-
-    public static final String COLOR_BLUE = "blue";
-    public static final String COLOR_RED = "red";
-    public static final String COLOR_GREEN = "green";
-    public static final String COLOR_YELLOW = "yellow";
-    public static final String COLOR_ORANGE = "orange";
-    public static final String COLOR_VIOLET = "violet";
-    public static final String COLOR_CYAN = "cyan";
-    public static final String COLOR_LIMEGREEN = "limegreen";
-    public static final String COLOR_MAGENTA = "magenta";
-    public static final String COLOR_CHOCOLATE = "chocolate";
-
-
-    //COLOR RGB CODES
-
-    public static final String COLOR_CODE_BLUE = "#0000FF";
-    public static final String COLOR_CODE_RED = "#FF0000";
-    public static final String COLOR_CODE_GREEN = "#008000";
-    public static final String COLOR_CODE_YELLOW = "#FFFF00";
-    public static final String COLOR_CODE_ORANGE = "#FFA500";
-    public static final String COLOR_CODE_VIOLET = "#EE82EE";
-    public static final String COLOR_CODE_CYAN = " #00FFFF";
-    public static final String COLOR_CODE_LIMEGREEN = "#32CD32";
-    public static final String COLOR_CODE_MAGENTA = "#FF00FF";
-    public static final String COLOR_CODE_CHOCOLATE = "#D2691E";
-
-
-
-
-
-
-
-
-
-
-
-
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }
