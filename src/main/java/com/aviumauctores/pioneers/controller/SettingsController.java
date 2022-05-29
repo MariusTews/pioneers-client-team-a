@@ -3,8 +3,11 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -18,6 +21,12 @@ public class SettingsController implements Controller {
     private final App app;
 
     private final Provider<LobbyController> lobbyController;
+    @FXML public Label currentNameLabel;
+    @FXML public Label currentPasswordLabel;
+    @FXML public Button changeNameButton;
+    @FXML public Button changePasswordButton;
+    @FXML public Button changeAvatarButton;
+    @FXML public Button leaveButton;
 
 
     @Inject
@@ -34,7 +43,7 @@ public class SettingsController implements Controller {
 
 
     public Parent render() {
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/SettingsScreen.fxml"), bundle);
+        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/settingsScreen.fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
@@ -48,7 +57,7 @@ public class SettingsController implements Controller {
 
 
     public void destroy(boolean closed) {
-        //super.destroy(closed);
+
     }
 
     public void toLobby(ActionEvent event) {
