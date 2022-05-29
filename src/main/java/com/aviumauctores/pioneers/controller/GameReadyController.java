@@ -21,6 +21,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -68,6 +70,8 @@ public class GameReadyController extends PlayerListController {
     @FXML
     public ListView<Parent> playerList;
     @FXML public TextField messageTextField;
+
+    @FXML public ComboBox<Circle> pickColourMenu;
 
     private int readyMembers;
 
@@ -141,6 +145,29 @@ public class GameReadyController extends PlayerListController {
         errorCodes.put("403", bundle.getString("change.membership.error"));
         errorCodes.put("404", bundle.getString("membership.not.found"));
         errorCodes.put("429", bundle.getString("limit.reached"));
+
+        Circle circle = new Circle();
+        circle.setRadius(10f);
+        circle.setFill(Color.BLUE);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.RED);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.GREEN);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.YELLOW);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.ORANGE);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.VIOLET);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.CYAN);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.LIMEGREEN);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.MAGENTA);
+        pickColourMenu.getItems().add(circle);
+        circle.setFill(Color.CHOCOLATE);
+        pickColourMenu.getItems().add(circle);
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
