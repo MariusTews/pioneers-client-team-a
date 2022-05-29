@@ -99,6 +99,7 @@ public class GameReadyController extends PlayerListController {
         this.lobbyController = lobbyController;
         this.playerResourceListController = playerResourceListController;
         gameMemberService.updateID();
+        System.out.println(gameService.getCurrentGameID());
 
     }
 

@@ -9,7 +9,7 @@
    <children>
       <ScrollPane fx:id="playerListScrollPane" hbarPolicy="NEVER" layoutY="-3.0" prefHeight="406.0" prefWidth="600.0">
          <content>
-            <VBox fx:id="playerListVBoc" prefHeight="405.0" prefWidth="599.0" />
+            <VBox fx:id="playerListVBOX" prefHeight="405.0" prefWidth="599.0" />
          </content>
       </ScrollPane>
    </children>
