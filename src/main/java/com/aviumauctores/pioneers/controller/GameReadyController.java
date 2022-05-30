@@ -373,10 +373,13 @@ public class GameReadyController extends PlayerListController {
                 pickColourMenu.getSelectionModel().clearSelection();
                 pickColourMenu.setValue(null);
             } else {
-                gameMemberService.updateMember(userService.getCurrentUserID(), pickColourMenu.getValue())
+                String colour = "#" + pickColourMenu.getValue().toString().substring(2,8);
+                gameMemberService.updateMember(userService.getCurrentUserID(), colour)
                         .observeOn(FX_SCHEDULER)
                         .subscribe(member -> {
-                        },throwable -> {
+
+                        }
+                        ,throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 ErrorResponse response = errorService.readErrorMessage(ex);
                                 String message = errorCodes.get(Integer.toString(response.statusCode()));

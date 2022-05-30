@@ -7,6 +7,6 @@ public record CreateMemberDto(
 
         boolean ready,
         String password,
-        Color color
+        String color
 ) {
 }
