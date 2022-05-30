@@ -84,6 +84,8 @@ public class Constants {
 
     //Colors
 
+    public static  final int COLOR_AMOUNT = 10;
+
     public static final String COLOR_BLUE = "blue";
     public static final String COLOR_RED = "red";
     public static final String COLOR_GREEN = "green";
