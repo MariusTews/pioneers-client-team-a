@@ -260,7 +260,7 @@ public class GameReadyController extends PlayerListController {
 
     public void startGame(ActionEvent actionEvent) {
         if (readyMembers != allMembers) {
-            // TODO Show error
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready"));
             return;
         }
         // TODO Check for colors
