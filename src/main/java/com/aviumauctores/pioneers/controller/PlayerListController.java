@@ -68,6 +68,10 @@ public abstract class PlayerListController extends LoggedInController {
         playerListItemControllers.remove(userID);
     }
 
+    protected void removeMemberFromList(Member member, PlayerListItemController controller) {
+        removePlayerFromList(member.userId(), controller);
+    }
+
     public void onPlayerItemClicked(User selectedUser) {
         // Do nothing at default
     }
