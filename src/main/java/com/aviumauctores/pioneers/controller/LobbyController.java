@@ -44,6 +44,8 @@ public class LobbyController extends PlayerListController {
     private final Provider<CreateGameController> createGameController;
     private final Provider<JoinGameController> joinGameController;
 
+    private final Provider<SettingsController> settingsController;
+
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML
@@ -67,6 +69,9 @@ public class LobbyController extends PlayerListController {
     @FXML
     public Button quitButton;
 
+    @FXML
+    public Button settingsButton;
+
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
     private final Map<String, GameListItemController> gameListItemControllers = new HashMap<>();
 
@@ -80,7 +85,8 @@ public class LobbyController extends PlayerListController {
                            Provider<LoginController> loginController,
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
-                           Provider<JoinGameController> joinGameController) {
+                           Provider<JoinGameController> joinGameController,
+                           Provider<SettingsController> settingsController) {
         super(userService);
         this.app = app;
         this.loginService = loginService;
@@ -93,6 +99,7 @@ public class LobbyController extends PlayerListController {
         this.chatController = chatController;
         this.createGameController = createGameController;
         this.joinGameController = joinGameController;
+        this.settingsController = settingsController;
 
     }
 
@@ -239,5 +246,10 @@ public class LobbyController extends PlayerListController {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
                             }
                         }));
+    }
+
+    public void toSettings(ActionEvent event) {
+        final SettingsController controller = settingsController.get();
+        app.show(controller);
     }
 }
