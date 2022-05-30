@@ -20,7 +20,7 @@ public class GroupService {
     }
 
     public Observable<Group> createGroup(List<String> members) {
-        return groupsApiService.createGroup(new CreateGroupDto(members));
+        return groupsApiService.createGroup(new CreateGroupDto("",members));
     }
 
     public Observable<Group> getOrCreateGroup(List<String> members, CompositeDisposable disposable) {
@@ -42,6 +42,6 @@ public class GroupService {
 
     public Observable<Group> updateGroup(String id,List<String> members) {
 
-        return groupsApiService.updateGroup(id, new UpdateGroupDto(members));
+        return groupsApiService.updateGroup(id, new UpdateGroupDto("",members));
     }
 }

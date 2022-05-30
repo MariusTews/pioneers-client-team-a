@@ -1,6 +1,10 @@
 package com.aviumauctores.pioneers.dto.gamemembers;
 
+
+import javafx.scene.paint.Color;
+
 public record UpdateMemberDto(
-        boolean ready
+        boolean ready,
+        Color color
 ) {
 }

@@ -23,8 +23,8 @@ public class UserService {
         this.usersApiService = usersApiService;
     }
 
-    public Observable<User> register(String username, String passwort) {
-        return usersApiService.createUser(new CreateUserDto(username, passwort));
+    public Observable<User> register(String username, String password) {
+        return usersApiService.createUser(new CreateUserDto(username, password,null));
 
     }
 
@@ -49,7 +49,7 @@ public class UserService {
     }
 
     public Completable changeCurrentUserStatus(String status) {
-        return updateUser(currentUserID, new UpdateUserDto(null, status, null, null))
+        return updateUser(currentUserID, new UpdateUserDto(null, status, null, null,null))
                 .ignoreElements();
     }
 

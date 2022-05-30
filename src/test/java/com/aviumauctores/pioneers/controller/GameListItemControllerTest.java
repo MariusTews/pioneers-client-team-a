@@ -28,7 +28,7 @@ class GameListItemControllerTest extends ApplicationTest {
     LobbyController parentController;
 
     @Spy
-    Game game = new Game("", "", "1", "name", "42", 1);
+    Game game = new Game("", "", "1", "name", "42", false,1);
 
     @Mock
     ObservableList<Parent> items;
@@ -61,7 +61,7 @@ class GameListItemControllerTest extends ApplicationTest {
         assertEquals(gameNameLabel.getText(), game.name());
         assertEquals(numPlayersLabel.getText(), "1/4");
 
-        Game newGame = new Game("", "", "2", "game2", "42", 2);
+        Game newGame = new Game("", "", "2", "game2", "42", false,2);
         Platform.runLater(() -> {
             gameListItemController.onGameUpdated(newGame);
 
