@@ -91,11 +91,11 @@ public class CreateGameControllerTest extends ApplicationTest{
         clickOn(password);
         write("password");
         FxAssert.verifyThat("#createGameButton", NodeMatchers.isEnabled());
-        when(gameService.create(anyString(), anyString())).thenReturn(Observable.just(new Game("1", "1", "gameID", "game", "owner", 1).toString()));
-        when(gameService.updateGame()).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", 1)));
+        when(gameService.create(anyString(), anyString())).thenReturn(Observable.just(new Game("1", "1", "gameID", "game", "owner", false, 1).toString()));
+        when(gameService.updateGame(any ())).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", false, 1)));
         clickOn("#createGameButton");
         verify(gameService).create("game", "password");
-        verify(gameService).updateGame();
+        verify(gameService).updateGame(any());
     }
 
     @Test

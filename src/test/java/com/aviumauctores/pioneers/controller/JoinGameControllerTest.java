@@ -53,7 +53,7 @@ class JoinGameControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         when(gameService.getCurrentGameID()).thenReturn("1");
-        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", 1)));
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", false,1)));
         when(eventListener.listen("games.1.*", Game.class)).thenReturn(Observable.empty());
         new App(joinGameController).start(stage);
     }

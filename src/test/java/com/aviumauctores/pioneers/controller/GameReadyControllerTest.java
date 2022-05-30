@@ -65,12 +65,12 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Member existingMember = new Member("", "", "12", "1", true);
-        Member createdMember = new Member("", "", "12", "42", true);
+        Member existingMember = new Member("", "", "12", "1", true,null);
+        Member createdMember = new Member("", "", "12", "42", true,null);
         when(userService.getUserByID("1")).thenReturn(
-                Observable.just(new User("1", "Player1", "online", null)));
+                Observable.just(new User("1", "Player1", "online", null,null)));
         when(userService.getUserByID("42")).thenReturn(
-                Observable.just(new User("42", "Player42", "online", null)));
+                Observable.just(new User("42", "Player42", "online", null,null)));
 
         //when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", 2 )));
         when(gameService.getCurrentGameID()).thenReturn("12");
@@ -96,17 +96,17 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Test
     void gameReady(){
-        when(gameMemberService.updateMember(anyString())).thenReturn(Observable.just(new Member("","", "12", "1", false)));
+        when(gameMemberService.updateMember(anyString(),any())).thenReturn(Observable.just(new Member("","", "12", "1", false,null)));
         when(userService.getCurrentUserID()).thenReturn("1");
         clickOn("#gameReadyButton");
 
-        verify(gameMemberService).updateMember("1");
+        verify(gameMemberService).updateMember("1",null);
     }
 
     @Test
     void leaveGame(){
         when(userService.getCurrentUserID()).thenReturn("42");
-        when(gameMemberService.deleteMember(anyString())).thenReturn(Observable.just(new Member("", "", null, "1", false)));
+        when(gameMemberService.deleteMember(anyString())).thenReturn(Observable.just(new Member("", "", null, "1", false,null)));
         clickOn("#leaveGameButton");
         clickOn("OK");
         verify(gameMemberService).updateID();
@@ -119,7 +119,7 @@ class GameReadyControllerTest extends ApplicationTest {
     void deleteGame(){
         when(userService.getCurrentUserID()).thenReturn("1");
         when(gameService.getOwnerID()).thenReturn("1");
-        when(gameService.deleteGame()).thenReturn(Observable.just(new Game("", "", null, "name", "1",0)));
+        when(gameService.deleteGame()).thenReturn(Observable.just(new Game("", "", null, "name", "1",false, 0)));
         clickOn("#leaveGameButton");
         clickOn("OK");
         verify(gameService).deleteGame();

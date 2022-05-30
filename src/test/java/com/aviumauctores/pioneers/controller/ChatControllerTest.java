@@ -63,7 +63,7 @@ class ChatControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        User user1 = new User("1", "user1", "online", null);
+        User user1 = new User("1", "user1", "online", null,null);
         Group group1 = new Group("1", "2", "3", null);
         Message message1 = new Message("1", "2", "3", "1", "hello");
         when(userService.findAll()).thenReturn(Observable.just(List.of(user1)));
@@ -109,7 +109,7 @@ class ChatControllerTest extends ApplicationTest {
 
     @Test
     void privateChats() {
-        User user1 = new User("1", "user1", "online", null);
+        User user1 = new User("1", "user1", "online", null,null);
         when(messageService.sendGroupMessage(any(), any())).thenReturn(Observable.just("hello"));
 
         // create ChatTab
