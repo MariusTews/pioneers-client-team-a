@@ -25,7 +25,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.util.Callback;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -323,7 +322,11 @@ public class GameReadyController extends PlayerListController {
             app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready"));
             return;
         }
-        // TODO Check for colors
+        int colouredMembers = (int) colourIsTaken.values().stream().filter(s -> !s.isEmpty()).count();
+        if (colouredMembers != allMembers) {
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.coloured"));
+            return;
+        }
         disposables.add(gameService.startGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> app.show(inGameController.get()), throwable -> {
