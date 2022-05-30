@@ -27,10 +27,10 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
     PlayerListController parentController;
 
     @Spy
-    User user = new User("42", "Player1", "online", null);
+    User user = new User("42", "Player1", "online", null,null);
 
     @Spy
-    Member gameMember = new Member("", "", "12", "42", false);
+    Member gameMember = new Member("", "", "12", "42", false,null);
 
     @Mock
     ObservableList<Parent> items;
@@ -55,7 +55,7 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
         // Ensure an image is shown
         assertNotNull(image1);
 
-        Member newGameMember = new Member("", "", "12", "42", true);
+        Member newGameMember = new Member("", "", "12", "42", true,null);
         Platform.runLater(() -> {
             int incr = playerListItemController.onGameMemberUpdated(newGameMember);
 
@@ -77,7 +77,7 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
         // Ensure an image is shown
         assertNotNull(image1);
 
-        Member newGameMember = new Member("", "", "12", "42", false);
+        Member newGameMember = new Member("", "", "12", "42", false,null);
         Platform.runLater(() -> {
             int incr = playerListItemController.onGameMemberUpdated(newGameMember);
 

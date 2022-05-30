@@ -36,7 +36,7 @@ class LoginServiceTest {
     void login() {
         // Expected result
         LoginResult expResult =
-                new LoginResult("42", "Struppi", "online", null, "at", "rt");
+                new LoginResult("42", "Struppi", "online", null, "at", "rt",null);
         when(authApiService.login(any())).thenReturn(Observable.just(expResult));
         doNothing().when(userService).setCurrentUserID(anyString());
 
@@ -53,7 +53,7 @@ class LoginServiceTest {
     @Test
     void loginWithToken() {
         LoginResult expResult =
-                new LoginResult("42", "Struppi", "online", null, "at", "rt");
+                new LoginResult("42", "Struppi", "online", null, "at", "rt",null);
         when(authApiService.refresh(any())).thenReturn(Observable.just(expResult));
         doNothing().when(userService).setCurrentUserID(anyString());
 

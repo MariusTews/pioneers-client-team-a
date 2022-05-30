@@ -136,7 +136,7 @@ public class CreateGameController extends LoggedInController {
                 .subscribe(gameID -> {
                     gameService.setCurrentGameID(gameID);
                     gameService.setOwnerID(userService.getCurrentUserID());
-                    gameService.updateGame()
+                    gameService.updateGame(false)
                             .observeOn(FX_SCHEDULER)
                             .subscribe();
                     //show gameReady Screen
