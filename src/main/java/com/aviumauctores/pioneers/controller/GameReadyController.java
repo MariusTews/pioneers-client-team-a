@@ -20,6 +20,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -72,6 +73,8 @@ public class GameReadyController extends PlayerListController {
     @FXML public TextField messageTextField;
 
     @FXML public ComboBox<Color> pickColourMenu;
+
+    @FXML public Circle pickedColour;
 
     private int readyMembers;
 
@@ -246,7 +249,6 @@ public class GameReadyController extends PlayerListController {
         pickColourMenu.setCellFactory(param -> {
             return new ListCell<>() {
                 private final Circle circle;{
-                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                     circle = new Circle(10f);
                 }
 
@@ -257,11 +259,15 @@ public class GameReadyController extends PlayerListController {
                         setGraphic(null);
                     } else {
                         circle.setFill(colour);
-                        setGraphic(circle);
+                        HBox hBox = new HBox();
+                        hBox.getChildren().add(circle);
+                        setGraphic(hBox);
                     }
                 }
             };
         });
+
+        pickedColour.setFill(Color.TRANSPARENT);
 
         return parent;
     }
@@ -341,6 +347,10 @@ public class GameReadyController extends PlayerListController {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
                 });
+    }
+
+    public void changeColour(ActionEvent actionEvent){
+        pickedColour.setFill(pickColourMenu.getValue());
     }
 
     public Label createMessageLabel(Message message) {
