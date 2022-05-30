@@ -49,6 +49,7 @@
                   <Font size="20.0" />
                </font>
             </Label>
+            <ImageView fx:id="avatarView" fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </VBox>
       <VBox layoutX="273.0" layoutY="100.0" prefHeight="200.0" prefWidth="100.0" spacing="17.0">

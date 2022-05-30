@@ -12,6 +12,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -32,6 +34,8 @@ public class SettingsController implements Controller {
     private final Provider<LobbyController> lobbyController;
 
     private User currentUser;
+
+    @FXML public ImageView avatarView;
     @FXML public VBox changeWindowVBox;
     @FXML public Label changeWindowLabel;
     @FXML public TextField oldPasswordField;
@@ -60,6 +64,9 @@ public class SettingsController implements Controller {
         userService.getUserByID(userService.getCurrentUserID()).observeOn(FX_SCHEDULER).subscribe(res -> {
             currentUser = res;
             currentNameLabel.setText(res.name());
+            String avatarUrl = currentUser.avatar();
+            Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+            avatarView.setImage(avatar);
         });
     }
 
@@ -135,13 +142,22 @@ public class SettingsController implements Controller {
 
     public void changeName(ActionEvent event) {
         String newName = newParameterField.getText();
+        if (newName.isBlank()) {
+            return;
+        }
         userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null)).observeOn(FX_SCHEDULER).subscribe();
         currentNameLabel.setText(newName);
         closeWindow();
     }
 
     public void changePassword(ActionEvent event) {
-
+        String newPassword = newParameterField.getText();
+        if (newPassword.isBlank()) {
+            return;
+        }
+        userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null)).observeOn(FX_SCHEDULER).subscribe();
+        currentPasswordLabel.setText(newPassword);
+        closeWindow();
     }
 
     public void changeAvatar(ActionEvent event) {
