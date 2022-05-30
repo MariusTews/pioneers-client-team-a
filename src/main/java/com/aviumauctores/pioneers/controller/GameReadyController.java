@@ -21,16 +21,17 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.util.Callback;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -71,6 +72,8 @@ public class GameReadyController extends PlayerListController {
     public ListView<Parent> playerList;
     @FXML public TextField messageTextField;
 
+    @FXML public ComboBox<Color> pickColourMenu;
+
     private int readyMembers;
     private int allMembers;
 
@@ -80,6 +83,8 @@ public class GameReadyController extends PlayerListController {
     private CompositeDisposable disposables;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
+
+    private final HashMap<Color, String> colourIsTaken = new HashMap<>();
 
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -167,11 +172,32 @@ public class GameReadyController extends PlayerListController {
         errorCodes.put("404_game", bundle.getString("membership.not.found"));
         errorCodes.put("429_member", bundle.getString("limit.reached"));
         errorCodes.put("429_game", bundle.getString("limit.reached"));
+
+        colourIsTaken.put(Color.BLUE, "");
+        colourIsTaken.put(Color.RED, "");
+        colourIsTaken.put(Color.GREEN, "");
+        colourIsTaken.put(Color.YELLOW, "");
+        colourIsTaken.put(Color.ORANGE, "");
+        colourIsTaken.put(Color.VIOLET, "");
+        colourIsTaken.put(Color.CYAN, "");
+        colourIsTaken.put(Color.LIMEGREEN, "");
+        colourIsTaken.put(Color.MAGENTA, "");
+        colourIsTaken.put(Color.CHOCOLATE, "");
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
         String event = eventDto.event();
         Member member = eventDto.data();
+        String memberID = member.userId();
+        Color memberColor = member.color();
+        if (colourIsTaken.get(memberColor) != null) {
+            for (Color colour : colourIsTaken.keySet()) {
+                if (Objects.equals(colourIsTaken.get(colour), memberID)) {
+                    colourIsTaken.replace(colour, "");
+                }
+            }
+            colourIsTaken.replace(memberColor, memberID);
+        }
         if (event.endsWith("created")) {
             addMemberToList(member);
         } else if (event.endsWith("updated")) {
@@ -255,6 +281,40 @@ public class GameReadyController extends PlayerListController {
             }
         } );
 
+        // fill the Combobox with colour-icons
+        pickColourMenu.getItems().addAll(
+                Color.BLUE,
+                Color.RED,
+                Color.GREEN,
+                Color.YELLOW,
+                Color.ORANGE,
+                Color.VIOLET,
+                Color.CYAN,
+                Color.LIMEGREEN,
+                Color.MAGENTA,
+                Color.CHOCOLATE);
+        pickColourMenu.setCellFactory(param -> new ListCell<>() {
+            private final Circle circle;{
+                circle = new Circle(10f);
+            }
+
+            @Override
+            protected void updateItem(Color colour, boolean empty){
+                super.updateItem(colour, empty);
+                if(colour == null || empty){
+                    setGraphic(null);
+                } else {
+                    circle.setFill(colour);
+                    HBox hBox = new HBox();
+                    hBox.getChildren().add(circle);
+                    if(!Objects.equals(colourIsTaken.get(colour), "")){
+                        hBox.getChildren().add(new Label("X"));
+                    }
+                    setGraphic(hBox);
+                }
+            }
+        });
+        pickColourMenu.setButtonCell(pickColourMenu.getCellFactory().call(null));
         return parent;
     }
 
@@ -347,6 +407,31 @@ public class GameReadyController extends PlayerListController {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
                 });
+    }
+
+    public void changeColour(ActionEvent actionEvent){
+        if (colourIsTaken.get(pickColourMenu.getValue()) != null){
+            if (!Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), "") || Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), userService.getCurrentUserID())){
+                pickColourMenu.getSelectionModel().clearSelection();
+                pickColourMenu.setValue(null);
+            } else {
+                String colour = "#" + pickColourMenu.getValue().toString().substring(2,8);
+                gameMemberService.updateMember(userService.getCurrentUserID(), colour)
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(member -> {
+
+                        }
+                        ,throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                            }
+                        });
+            }
+        }
     }
 
     public Label createMessageLabel(Message message) {
