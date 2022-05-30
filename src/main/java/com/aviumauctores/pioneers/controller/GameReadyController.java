@@ -30,10 +30,7 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -84,7 +81,7 @@ public class GameReadyController extends PlayerListController {
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
-    private HashMap<Color, Boolean> colourIsTaken = new HashMap<>();
+    private final HashMap<Color, String> colourIsTaken = new HashMap<>();
 
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -150,21 +147,31 @@ public class GameReadyController extends PlayerListController {
         errorCodes.put("404", bundle.getString("membership.not.found"));
         errorCodes.put("429", bundle.getString("limit.reached"));
 
-        colourIsTaken.put(Color.BLUE, false);
-        colourIsTaken.put(Color.RED, false);
-        colourIsTaken.put(Color.GREEN, false);
-        colourIsTaken.put(Color.YELLOW, false);
-        colourIsTaken.put(Color.ORANGE, false);
-        colourIsTaken.put(Color.VIOLET, false);
-        colourIsTaken.put(Color.CYAN, false);
-        colourIsTaken.put(Color.LIMEGREEN, false);
-        colourIsTaken.put(Color.MAGENTA, false);
-        colourIsTaken.put(Color.CHOCOLATE, false);
+        colourIsTaken.put(Color.BLUE, "");
+        colourIsTaken.put(Color.RED, "");
+        colourIsTaken.put(Color.GREEN, "");
+        colourIsTaken.put(Color.YELLOW, "");
+        colourIsTaken.put(Color.ORANGE, "");
+        colourIsTaken.put(Color.VIOLET, "");
+        colourIsTaken.put(Color.CYAN, "");
+        colourIsTaken.put(Color.LIMEGREEN, "");
+        colourIsTaken.put(Color.MAGENTA, "");
+        colourIsTaken.put(Color.CHOCOLATE, "");
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
         String event = eventDto.event();
         Member member = eventDto.data();
+        String memberID = member.userId();
+        Color memberColor = member.color();
+        if (colourIsTaken.get(memberColor) != null) {
+            for (Color colour : colourIsTaken.keySet()) {
+                if (Objects.equals(colourIsTaken.get(colour), memberID)) {
+                    colourIsTaken.replace(colour, "");
+                }
+            }
+            colourIsTaken.replace(memberColor, memberID);
+        }
         if (event.endsWith("created")) {
             addMemberToList(member);
         } else if (event.endsWith("updated")) {
@@ -272,7 +279,7 @@ public class GameReadyController extends PlayerListController {
                     circle.setFill(colour);
                     HBox hBox = new HBox();
                     hBox.getChildren().add(circle);
-                    if(colourIsTaken.get(colour)){
+                    if(!Objects.equals(colourIsTaken.get(colour), "")){
                         hBox.getChildren().add(new Label("X"));
                     }
                     setGraphic(hBox);
@@ -361,8 +368,25 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void changeColour(ActionEvent actionEvent){
-        pickColourMenu.getSelectionModel().clearSelection();
-        pickColourMenu.setValue(null);
+        if (colourIsTaken.get(pickColourMenu.getValue()) != null){
+            if (!Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), "") || Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), userService.getCurrentUserID())){
+                pickColourMenu.getSelectionModel().clearSelection();
+                pickColourMenu.setValue(null);
+            } else {
+                gameMemberService.updateMember(userService.getCurrentUserID(), pickColourMenu.getValue())
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(member -> {
+                        },throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                            }
+                        });
+            }
+        }
     }
 
     public Label createMessageLabel(Message message) {
