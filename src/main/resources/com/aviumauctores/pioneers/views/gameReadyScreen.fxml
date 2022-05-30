@@ -38,6 +38,5 @@
         <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame" prefHeight="39.0" prefWidth="100.0" text="%start.game" />
         <ComboBox fx:id="pickColourMenu" layoutX="424.0" layoutY="27.0" onAction="#changeColour" prefWidth="150.0" promptText="%pick.colour">
         </ComboBox>
-      <Circle fx:id="pickedColour" fill="DODGERBLUE" layoutX="405.0" layoutY="40.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
     </Pane>
 </VBox>

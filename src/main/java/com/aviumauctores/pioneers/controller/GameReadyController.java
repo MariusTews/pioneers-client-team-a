@@ -24,6 +24,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Callback;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -74,8 +75,6 @@ public class GameReadyController extends PlayerListController {
 
     @FXML public ComboBox<Color> pickColourMenu;
 
-    @FXML public Circle pickedColour;
-
     private int readyMembers;
 
     //list for storing message IDs of own messages to check whether a message can be deleted or not
@@ -84,6 +83,8 @@ public class GameReadyController extends PlayerListController {
     private CompositeDisposable disposables;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
+
+    private HashMap<Color, Boolean> colourIsTaken = new HashMap<>();
 
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -148,6 +149,17 @@ public class GameReadyController extends PlayerListController {
         errorCodes.put("403", bundle.getString("change.membership.error"));
         errorCodes.put("404", bundle.getString("membership.not.found"));
         errorCodes.put("429", bundle.getString("limit.reached"));
+
+        colourIsTaken.put(Color.BLUE, false);
+        colourIsTaken.put(Color.RED, false);
+        colourIsTaken.put(Color.GREEN, false);
+        colourIsTaken.put(Color.YELLOW, false);
+        colourIsTaken.put(Color.ORANGE, false);
+        colourIsTaken.put(Color.VIOLET, false);
+        colourIsTaken.put(Color.CYAN, false);
+        colourIsTaken.put(Color.LIMEGREEN, false);
+        colourIsTaken.put(Color.MAGENTA, false);
+        colourIsTaken.put(Color.CHOCOLATE, false);
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
@@ -246,29 +258,28 @@ public class GameReadyController extends PlayerListController {
                 Color.LIMEGREEN,
                 Color.MAGENTA,
                 Color.CHOCOLATE);
-        pickColourMenu.setCellFactory(param -> {
-            return new ListCell<>() {
-                private final Circle circle;{
-                    circle = new Circle(10f);
-                }
+        pickColourMenu.setCellFactory(param -> new ListCell<>() {
+            private final Circle circle;{
+                circle = new Circle(10f);
+            }
 
-                @Override
-                protected void updateItem(Color colour, boolean empty){
-                    super.updateItem(colour, empty);
-                    if(colour == null || empty){
-                        setGraphic(null);
-                    } else {
-                        circle.setFill(colour);
-                        HBox hBox = new HBox();
-                        hBox.getChildren().add(circle);
-                        setGraphic(hBox);
+            @Override
+            protected void updateItem(Color colour, boolean empty){
+                super.updateItem(colour, empty);
+                if(colour == null || empty){
+                    setGraphic(null);
+                } else {
+                    circle.setFill(colour);
+                    HBox hBox = new HBox();
+                    hBox.getChildren().add(circle);
+                    if(colourIsTaken.get(colour)){
+                        hBox.getChildren().add(new Label("X"));
                     }
+                    setGraphic(hBox);
                 }
-            };
+            }
         });
-
-        pickedColour.setFill(Color.TRANSPARENT);
-
+        pickColourMenu.setButtonCell(pickColourMenu.getCellFactory().call(null));
         return parent;
     }
 
@@ -350,7 +361,8 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void changeColour(ActionEvent actionEvent){
-        pickedColour.setFill(pickColourMenu.getValue());
+        pickColourMenu.getSelectionModel().clearSelection();
+        pickColourMenu.setValue(null);
     }
 
     public Label createMessageLabel(Message message) {
