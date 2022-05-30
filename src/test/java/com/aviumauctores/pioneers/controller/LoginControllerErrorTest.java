@@ -75,9 +75,9 @@ class LoginControllerErrorTest extends ApplicationTest {
 
     @Test
     void toLobby() {
-        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null)))
+        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null,null)))
                 .thenReturn(Observable.error(new Throwable()));
-        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref"));
+        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref",null));
 
         //to show the error popup
         write("Struppi\t");
@@ -87,6 +87,6 @@ class LoginControllerErrorTest extends ApplicationTest {
         verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
 
-        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null));
+        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null,null));
     }
 }
