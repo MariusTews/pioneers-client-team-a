@@ -23,7 +23,6 @@ public interface PioneersApiService {
     @GET(GET_MAP_URL)
     Observable<Map> getMap(@Path(PATH_GAME_ID) String id);
 
-
     @GET(LIST_PLAYERS_URL)
     Observable<List<Player>> listMembers(@Path(PATH_GAME_ID) String gameId);
 
@@ -33,9 +32,7 @@ public interface PioneersApiService {
     );
 
     @GET(GET_STATE_URL)
-    Observable<State> getState(
-            @Path(PATH_GAME_ID) String gameId
-    );
+    Observable<State> getState (@Path(PATH_GAME_ID) String gameId);
 
     @PATCH(CREATE_MOVE_URL)
     Observable<Move> createMove(@Path(PATH_GAME_ID) String gameId, @Body CreateMoveDto createMoveDto);

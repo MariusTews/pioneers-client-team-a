@@ -1,9 +1,7 @@
 package com.aviumauctores.pioneers.model;
 
 public record State(  String updatedAt,
-
                       String gameId,
-
-                      ExpectedMove xpectedMoves
+                      ExpectedMove expectedMoves
 ) {
 }

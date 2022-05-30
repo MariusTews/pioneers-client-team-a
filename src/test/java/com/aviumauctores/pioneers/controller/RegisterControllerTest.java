@@ -56,7 +56,7 @@ class RegisterControllerTest extends ApplicationTest {
 
     @Test
     void testRegisterController() {
-        when(userService.register(anyString(), anyString())).thenReturn(Observable.just(new User("1", "Jannis", "online", "Lion")));
+        when(userService.register(anyString(), anyString())).thenReturn(Observable.just(new User("1", "Jannis", "online", "Lion",null)));
         FxAssert.verifyThat("#createAccountButton", NodeMatchers.isDisabled());
         write("Jannis\t");
         FxAssert.verifyThat("#createAccountButton", NodeMatchers.isDisabled());

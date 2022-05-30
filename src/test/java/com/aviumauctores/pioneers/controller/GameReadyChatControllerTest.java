@@ -63,8 +63,8 @@ class GameReadyChatControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Member member = new Member("", "", "1", "1", false);
-        User user = new User("1", "Struppi", "online", null);
+        Member member = new Member("", "", "1", "1", false,null);
+        User user = new User("1", "Struppi", "online", null,null);
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(Observable.just(List.of(member)));
         when(gameService.getCurrentGameID()).thenReturn("1");
@@ -80,7 +80,7 @@ class GameReadyChatControllerTest extends ApplicationTest {
 
     @Test
     void sendMessage() {
-        Game game = new Game("", "", "1", "game1", "1", 1);
+        Game game = new Game("", "", "1", "game1", "1", false,1);
         clickOn("#messageTextField");
         write("hello");
         type(KeyCode.ENTER);

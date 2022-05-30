@@ -6,11 +6,6 @@ public record CreateBuildingDto(
         int z,
         int side,
         String type
-
-
-
-
-
 ) {
 
 }

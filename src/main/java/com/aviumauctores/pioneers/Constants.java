@@ -91,7 +91,7 @@ public class Constants {
     public static final String CREATE_MOVE_URL ="games/{gameId}/moves";
 
 
-    public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v1/events";
+    public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v2/events";
     public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
 
     public static final String JSON_EVENT = "event";

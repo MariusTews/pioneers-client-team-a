@@ -39,7 +39,7 @@ class GroupServiceTest {
         Group gr = groupService.createGroup(members).blockingFirst();
         assertEquals(gr, group);
 
-        verify(groupsApiService).createGroup(new CreateGroupDto(members));
+        verify(groupsApiService).createGroup(new CreateGroupDto("",members));
 
     }
 
@@ -60,7 +60,7 @@ class GroupServiceTest {
         Group gr = groupService.updateGroup(group._id(), members).blockingFirst();
         assertEquals(gr, updateGroup);
 
-        verify(groupsApiService).updateGroup("3", new UpdateGroupDto(members));
+        verify(groupsApiService).updateGroup("3", new UpdateGroupDto("",members));
 
     }
 

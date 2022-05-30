@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,7 +31,7 @@ public class GameMemberService {
     }
 
     public Observable<Member> createMember(){
-        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, gameService.password));
+        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, gameService.password,null));
     }
 
     public Observable<List<Member>> listCurrentGameMembers() {
@@ -41,10 +42,10 @@ public class GameMemberService {
 
     }
 
-    public Observable<Member> updateMember(String memberID){
+    public Observable<Member> updateMember(String memberID, Color color){
         Observable<Member> member = getMember(memberID);
         boolean status = !(member.blockingFirst().ready());
-        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status));
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status,color));
     }
 
     public Observable<Member> getMember(String memberID){
