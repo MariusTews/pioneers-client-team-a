@@ -68,7 +68,9 @@ class GameReadyChatControllerTest extends ApplicationTest {
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(Observable.just(List.of(member)));
         when(gameService.getCurrentGameID()).thenReturn("1");
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1 )));
         when(messageService.sendGameMessage(anyString(), anyString())).thenReturn(Observable.just(message));
+        when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(eventListener.listen("games.1.members.*.*", Member.class)).thenReturn(Observable.just(new EventDto<>("", member)));
         when(eventListener.listen("games.1.messages.*.*", Message.class)).thenReturn(messageCreateUpdates);
         when(eventListener.listen("users.1.*", User.class)).thenReturn(Observable.just(new EventDto<>("", user)));
