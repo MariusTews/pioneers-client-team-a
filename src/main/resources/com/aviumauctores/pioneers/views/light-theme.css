@@ -113,7 +113,6 @@
     -fx-border-color: transparent;
 }
 
-
-
-
-
+.combo-box {
+    -fx-background-color: #00496c;
+}

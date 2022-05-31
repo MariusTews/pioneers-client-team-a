@@ -70,6 +70,10 @@ public class GameService {
         return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, password,started));
     }
 
+    public Observable<Game> startGame() {
+        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(null, null, null, true));
+    }
+
     public String getOwnerID(){
         return this.ownerID;
     }

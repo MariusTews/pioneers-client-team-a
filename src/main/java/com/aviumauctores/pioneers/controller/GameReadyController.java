@@ -21,18 +21,16 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -48,7 +46,7 @@ public class GameReadyController extends PlayerListController {
     private final EventListener eventListener;
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
-    private final Provider<PlayerResourceListController> playerResourceListController;
+    private final Provider<InGameController> inGameController;
 
     private Label deleteLabel;
 
@@ -73,7 +71,10 @@ public class GameReadyController extends PlayerListController {
     public ListView<Parent> playerList;
     @FXML public TextField messageTextField;
 
+    @FXML public ComboBox<Color> pickColourMenu;
+
     private int readyMembers;
+    private int allMembers;
 
     //list for storing message IDs of own messages to check whether a message can be deleted or not
     private final ArrayList<String> ownMessageIds = new ArrayList<>();
@@ -82,12 +83,13 @@ public class GameReadyController extends PlayerListController {
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
+    private final HashMap<Color, String> colourIsTaken = new HashMap<>();
+
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
-                               ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController,
-                               Provider<PlayerResourceListController> playerResourceListController)
-    {
+                               ResourceBundle bundle, MessageService messageService,
+                               Provider<LobbyController> lobbyController, Provider<InGameController> inGameController){
         super(userService);
         this.app = app;
         this.gameService = gameService;
@@ -97,13 +99,16 @@ public class GameReadyController extends PlayerListController {
         this.bundle = bundle;
         this.messageService = messageService;
         this.lobbyController = lobbyController;
-        this.playerResourceListController = playerResourceListController;
+        this.inGameController = inGameController;
         gameMemberService.updateID();
 
     }
 
     public void init() {
         disposables = new CompositeDisposable();
+        // Get game via REST
+        disposables.add(gameService.getCurrentGame()
+                .subscribe(game -> allMembers = game.members()));
         // Get member list via REST
         disposables.add(gameMemberService.listCurrentGameMembers()
                 .observeOn(FX_SCHEDULER)
@@ -113,6 +118,19 @@ public class GameReadyController extends PlayerListController {
                     }
                     if (playerListPane != null) {
                         updatePlayerLabel();
+                    }
+                }));
+        // Listen to game updates
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".*", Game.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(eventDto -> {
+                    String event = eventDto.event();
+                    Game game = eventDto.data();
+                    if (event.endsWith("created") || event.endsWith("updated")) {
+                        allMembers = game.members();
+                        if (game.started()) {
+                            app.show(inGameController.get());
+                        }
                     }
                 }));
         // Listen to game member events
@@ -158,16 +176,42 @@ public class GameReadyController extends PlayerListController {
                     }
                 }));
 
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("invalid.token"));
-        errorCodes.put("403", bundle.getString("change.membership.error"));
-        errorCodes.put("404", bundle.getString("membership.not.found"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
+        errorCodes.put("400_member", bundle.getString("validation.failed"));
+        errorCodes.put("400_game", bundle.getString("validation.failed"));
+        errorCodes.put("401_member", bundle.getString("invalid.token"));
+        errorCodes.put("401_game", bundle.getString("invalid.token"));
+        errorCodes.put("403_member", bundle.getString("change.membership.error"));
+        errorCodes.put("403_game", bundle.getString("change.game.error"));
+        errorCodes.put("404_member", bundle.getString("membership.not.found"));
+        errorCodes.put("404_game", bundle.getString("membership.not.found"));
+        errorCodes.put("429_member", bundle.getString("limit.reached"));
+        errorCodes.put("429_game", bundle.getString("limit.reached"));
+
+        colourIsTaken.put(Color.BLUE, "");
+        colourIsTaken.put(Color.RED, "");
+        colourIsTaken.put(Color.GREEN, "");
+        colourIsTaken.put(Color.YELLOW, "");
+        colourIsTaken.put(Color.ORANGE, "");
+        colourIsTaken.put(Color.VIOLET, "");
+        colourIsTaken.put(Color.CYAN, "");
+        colourIsTaken.put(Color.LIMEGREEN, "");
+        colourIsTaken.put(Color.MAGENTA, "");
+        colourIsTaken.put(Color.CHOCOLATE, "");
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
         String event = eventDto.event();
         Member member = eventDto.data();
+        String memberID = member.userId();
+        Color memberColor = member.color();
+        if (colourIsTaken.get(memberColor) != null) {
+            for (Color colour : colourIsTaken.keySet()) {
+                if (Objects.equals(colourIsTaken.get(colour), memberID)) {
+                    colourIsTaken.replace(colour, "");
+                }
+            }
+            colourIsTaken.replace(memberColor, memberID);
+        }
         if (event.endsWith("created")) {
             addMemberToList(member);
         } else if (event.endsWith("updated")) {
@@ -180,7 +224,7 @@ public class GameReadyController extends PlayerListController {
         } else if (event.endsWith("deleted")) {
             PlayerListItemController controller = playerListItemControllers.get(member.userId());
             if (controller != null) {
-                removePlayerFromList(member.userId(), controller);
+                removeMemberFromList(member, controller);
             }
         }
         updatePlayerLabel();
@@ -209,9 +253,11 @@ public class GameReadyController extends PlayerListController {
     }
 
     @Override
-    protected void removePlayerFromList(String userID, PlayerListItemController controller) {
-        super.removePlayerFromList(userID, controller);
-        readyMembers--;
+    protected void removeMemberFromList(Member member, PlayerListItemController controller) {
+        super.removeMemberFromList(member, controller);
+        if (member.ready()) {
+            readyMembers--;
+        }
     }
 
     public void destroy(boolean closed) {
@@ -249,12 +295,64 @@ public class GameReadyController extends PlayerListController {
             }
         } );
 
+        // fill the Combobox with colour-icons
+        pickColourMenu.getItems().addAll(
+                Color.BLUE,
+                Color.RED,
+                Color.GREEN,
+                Color.YELLOW,
+                Color.ORANGE,
+                Color.VIOLET,
+                Color.CYAN,
+                Color.LIMEGREEN,
+                Color.MAGENTA,
+                Color.CHOCOLATE);
+        pickColourMenu.setCellFactory(param -> new ListCell<>() {
+            private final Circle circle;{
+                circle = new Circle(10f);
+            }
+
+            @Override
+            protected void updateItem(Color colour, boolean empty){
+                super.updateItem(colour, empty);
+                if(colour == null || empty){
+                    setGraphic(null);
+                } else {
+                    circle.setFill(colour);
+                    HBox hBox = new HBox();
+                    hBox.getChildren().add(circle);
+                    if(!Objects.equals(colourIsTaken.get(colour), "")){
+                        hBox.getChildren().add(new Label("X"));
+                    }
+                    setGraphic(hBox);
+                }
+            }
+        });
+        pickColourMenu.setButtonCell(pickColourMenu.getCellFactory().call(null));
         return parent;
     }
 
     public void startGame(ActionEvent actionEvent) {
-        System.out.println(gameService);
-        app.show(playerResourceListController.get());
+        if (readyMembers != allMembers) {
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready"));
+            return;
+        }
+        int colouredMembers = (int) colourIsTaken.values().stream().filter(s -> !s.isEmpty()).count();
+        if (colouredMembers != allMembers) {
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.coloured"));
+            return;
+        }
+        disposables.add(gameService.startGame()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(game -> app.show(inGameController.get()), throwable -> {
+                    if (throwable instanceof HttpException ex) {
+                        ErrorResponse response = errorService.readErrorMessage(ex);
+                        String message = errorCodes.get(response.statusCode() + "_game");
+                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                    } else {
+                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                    }
+                }));
     }
 
     public void gameReady(ActionEvent actionEvent) {
@@ -267,7 +365,7 @@ public class GameReadyController extends PlayerListController {
                         ,throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 ErrorResponse response = errorService.readErrorMessage(ex);
-                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                String message = errorCodes.get(response.statusCode() + "_member");
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
@@ -329,6 +427,31 @@ public class GameReadyController extends PlayerListController {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
                 });
+    }
+
+    public void changeColour(ActionEvent actionEvent){
+        if (colourIsTaken.get(pickColourMenu.getValue()) != null){
+            if (!Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), "") || Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), userService.getCurrentUserID())){
+                pickColourMenu.getSelectionModel().clearSelection();
+                pickColourMenu.setValue(null);
+            } else {
+                String colour = "#" + pickColourMenu.getValue().toString().substring(2,8);
+                gameMemberService.updateMember(userService.getCurrentUserID(), colour)
+                        .observeOn(FX_SCHEDULER)
+                        .subscribe(member -> {
+
+                        }
+                        ,throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                            }
+                        });
+            }
+        }
     }
 
     public Label createMessageLabel(Message message) {
