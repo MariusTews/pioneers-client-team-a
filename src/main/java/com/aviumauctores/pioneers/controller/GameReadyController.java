@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
@@ -24,7 +25,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.util.Callback;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -46,6 +46,7 @@ public class GameReadyController extends PlayerListController {
     private final EventListener eventListener;
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
+    private final Provider<InGameController> inGameController;
 
     private Label deleteLabel;
 
@@ -73,6 +74,7 @@ public class GameReadyController extends PlayerListController {
     @FXML public ComboBox<Color> pickColourMenu;
 
     private int readyMembers;
+    private int allMembers;
 
     //list for storing message IDs of own messages to check whether a message can be deleted or not
     private final ArrayList<String> ownMessageIds = new ArrayList<>();
@@ -88,7 +90,8 @@ public class GameReadyController extends PlayerListController {
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
-                               ResourceBundle bundle, MessageService messageService, Provider<LobbyController> lobbyController){
+                               ResourceBundle bundle, MessageService messageService,
+                               Provider<LobbyController> lobbyController, Provider<InGameController> inGameController){
         super(userService);
         this.app = app;
         this.gameService = gameService;
@@ -98,11 +101,15 @@ public class GameReadyController extends PlayerListController {
         this.bundle = bundle;
         this.messageService = messageService;
         this.lobbyController = lobbyController;
+        this.inGameController = inGameController;
         gameMemberService.updateID();
     }
 
     public void init() {
         disposables = new CompositeDisposable();
+        // Get game via REST
+        disposables.add(gameService.getCurrentGame()
+                .subscribe(game -> allMembers = game.members()));
         // Get member list via REST
         disposables.add(gameMemberService.listCurrentGameMembers()
                 .observeOn(FX_SCHEDULER)
@@ -112,6 +119,19 @@ public class GameReadyController extends PlayerListController {
                     }
                     if (playerListPane != null) {
                         updatePlayerLabel();
+                    }
+                }));
+        // Listen to game updates
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".*", Game.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(eventDto -> {
+                    String event = eventDto.event();
+                    Game game = eventDto.data();
+                    if (event.endsWith("created") || event.endsWith("updated")) {
+                        allMembers = game.members();
+                        if (game.started()) {
+                            app.show(inGameController.get());
+                        }
                     }
                 }));
         // Listen to game member events
@@ -143,11 +163,16 @@ public class GameReadyController extends PlayerListController {
                     }
                 }));
 
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("invalid.token"));
-        errorCodes.put("403", bundle.getString("change.membership.error"));
-        errorCodes.put("404", bundle.getString("membership.not.found"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
+        errorCodes.put("400_member", bundle.getString("validation.failed"));
+        errorCodes.put("400_game", bundle.getString("validation.failed"));
+        errorCodes.put("401_member", bundle.getString("invalid.token"));
+        errorCodes.put("401_game", bundle.getString("invalid.token"));
+        errorCodes.put("403_member", bundle.getString("change.membership.error"));
+        errorCodes.put("403_game", bundle.getString("change.game.error"));
+        errorCodes.put("404_member", bundle.getString("membership.not.found"));
+        errorCodes.put("404_game", bundle.getString("membership.not.found"));
+        errorCodes.put("429_member", bundle.getString("limit.reached"));
+        errorCodes.put("429_game", bundle.getString("limit.reached"));
 
         colourIsTaken.put(Color.BLUE, "");
         colourIsTaken.put(Color.RED, "");
@@ -194,7 +219,7 @@ public class GameReadyController extends PlayerListController {
         } else if (event.endsWith("deleted")) {
             PlayerListItemController controller = playerListItemControllers.get(member.userId());
             if (controller != null) {
-                removePlayerFromList(member.userId(), controller);
+                removeMemberFromList(member, controller);
             }
         }
         updatePlayerLabel();
@@ -223,9 +248,11 @@ public class GameReadyController extends PlayerListController {
     }
 
     @Override
-    protected void removePlayerFromList(String userID, PlayerListItemController controller) {
-        super.removePlayerFromList(userID, controller);
-        readyMembers--;
+    protected void removeMemberFromList(Member member, PlayerListItemController controller) {
+        super.removeMemberFromList(member, controller);
+        if (member.ready()) {
+            readyMembers--;
+        }
     }
 
     public void destroy(boolean closed) {
@@ -309,8 +336,26 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void startGame(ActionEvent actionEvent) {
-
-
+        if (readyMembers != allMembers) {
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready"));
+            return;
+        }
+        int colouredMembers = (int) colourIsTaken.values().stream().filter(s -> !s.isEmpty()).count();
+        if (colouredMembers != allMembers) {
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.coloured"));
+            return;
+        }
+        disposables.add(gameService.startGame()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(game -> app.show(inGameController.get()), throwable -> {
+                    if (throwable instanceof HttpException ex) {
+                        ErrorResponse response = errorService.readErrorMessage(ex);
+                        String message = errorCodes.get(response.statusCode() + "_game");
+                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                    } else {
+                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                    }
+                }));
     }
 
     public void gameReady(ActionEvent actionEvent) {
@@ -323,7 +368,7 @@ public class GameReadyController extends PlayerListController {
                         ,throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 ErrorResponse response = errorService.readErrorMessage(ex);
-                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                String message = errorCodes.get(response.statusCode() + "_member");
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
