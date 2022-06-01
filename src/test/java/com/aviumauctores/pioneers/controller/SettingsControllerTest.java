@@ -37,6 +37,7 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
+        //create User for the the settings
         User user = new User("123", "Hans", "online", null, null);
         when(userService.getUserByID(any())).thenReturn(Observable.just(user));
         new App(settingsController).start(stage);
@@ -44,12 +45,10 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Test
     void changeUserName() {
-        //User user = new User("123", "Hans", "online", null, null);
-        //when(userService.getUserByID(any())).thenReturn(Observable.just(user));
-        //when(userService.getCurrentUserID()).thenReturn("123");
         when(userService.updateUser(any(), new UpdateUserDto(any(), null, null, null, null)))
                 .thenReturn(Observable.empty());
 
+        //click through the screen and change Name from Hans to Peter
         clickOn("#changeNameButton");
         clickOn("#newParameterField");
         write("Peter");
