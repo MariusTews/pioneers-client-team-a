@@ -12,6 +12,7 @@ import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -126,4 +127,13 @@ class GameReadyControllerTest extends ApplicationTest {
         verify(gameService).setCurrentGameID(null);
     }
 
+    @Test
+    void testColour(){
+        when(userService.getCurrentUserID()).thenReturn("1");
+        String colourHexBlue = "#" + Color.BLUE.toString().substring(2,8);
+        when(gameMemberService.updateMember("1", colourHexBlue)).thenReturn(Observable.just(new Member("","", "12", "1", false,Color.BLUE)));
+        clickOn("#pickColourMenu");
+        clickOn("#item_" + Color.BLUE);
+        verify(gameMemberService).updateMember("1",colourHexBlue);
+    }
 }
