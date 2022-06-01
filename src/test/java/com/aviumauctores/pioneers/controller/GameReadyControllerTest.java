@@ -10,6 +10,7 @@ import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
@@ -20,19 +21,18 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
-import org.testfx.matcher.base.NodeMatchers;
 
 import javax.inject.Provider;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.ListViewMatchers.hasItems;
-import static org.testfx.matcher.control.ListViewMatchers.isEmpty;
 
 @ExtendWith(MockitoExtension.class)
 class GameReadyControllerTest extends ApplicationTest {
@@ -61,22 +61,19 @@ class GameReadyControllerTest extends ApplicationTest {
     GameReadyController gameReadyController;
 
     private Observable<List<Member>> existingMembers;
-    private Observable<EventDto<Member>> memberUpdates;
+    private PublishSubject<EventDto<Member>> memberUpdates;
 
     @Override
     public void start(Stage stage) throws Exception {
         Member existingMember = new Member("", "", "12", "1", true,null);
-        Member createdMember = new Member("", "", "12", "42", true,null);
         when(userService.getUserByID("1")).thenReturn(
                 Observable.just(new User("1", "Player1", "online", null,null)));
-        when(userService.getUserByID("42")).thenReturn(
-                Observable.just(new User("42", "Player42", "online", null,null)));
 
-        //when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", 2 )));
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1 )));
         when(gameService.getCurrentGameID()).thenReturn("12");
         existingMembers = Observable.just(List.of(existingMember));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(existingMembers);
-        memberUpdates = Observable.just(new EventDto<>("created", createdMember));
+        memberUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(eventListener.listen("games.12.members.*.*", Member.class)).thenReturn(memberUpdates);
         new App(gameReadyController).start(stage);
@@ -84,12 +81,15 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Test
     void gameMemberListUpdates() {
+        when(userService.getUserByID("42")).thenReturn(
+                Observable.just(new User("42", "Player42", "online", null,null)));
 
         final ListView<Parent> playerList = lookup("#playerList").queryListView();
         // Get existing members
         List<Member> exMembersList = existingMembers.blockingFirst();
         // create a member
-        EventDto<Member> createdMemberEventDto = memberUpdates.blockingFirst();
+        Member createdMember = new Member("", "", "12", "42", true,null);
+        memberUpdates.onNext(new EventDto<>("created", createdMember));
         // The list should now have 2 items: one existing member from REST and one new member
         verifyThat(playerList, hasItems(2));
     }
@@ -126,4 +126,25 @@ class GameReadyControllerTest extends ApplicationTest {
         verify(gameService).setCurrentGameID(null);
     }
 
+    @Test
+    void startGameFailedColors() {
+        clickOn("#startGameButton");
+
+        // Both players shouldn't have a set color by default, so this error message is expected
+        verify(app).showErrorDialog(
+                bundle.getString("cannot.start.game"), bundle.getString("not.all.members.coloured")
+        );
+    }
+
+    @Test
+    void startGameFailedMembersNotReady() {
+        memberUpdates.onNext(new EventDto<>("updated",
+                new Member("", "", "12", "1", false,null)));
+
+        clickOn("#startGameButton");
+
+        verify(app).showErrorDialog(
+                bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready")
+        );
+    }
 }

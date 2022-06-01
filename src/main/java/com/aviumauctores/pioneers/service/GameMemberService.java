@@ -42,7 +42,7 @@ public class GameMemberService {
 
     }
 
-    public Observable<Member> updateMember(String memberID, Color color){
+    public Observable<Member> updateMember(String memberID, String color){
         Observable<Member> member = getMember(memberID);
         boolean status = !(member.blockingFirst().ready());
         return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status,color));
