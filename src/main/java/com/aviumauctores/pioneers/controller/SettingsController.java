@@ -161,7 +161,9 @@ public class SettingsController implements Controller {
     }
 
     public void changeAvatar(ActionEvent event) {
-
+        String avatarUrl = newParameterField.getText();
+        Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+        avatarView.setImage(avatar);
     }
 
     public void closeWindow() {
