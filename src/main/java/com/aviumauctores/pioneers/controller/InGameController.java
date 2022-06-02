@@ -47,7 +47,7 @@ public class InGameController extends LoggedInController{
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
 
-    // This are the Sound-Icons
+    // These are the Sound-Icons
     Image soundButtonImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
     Image soundButtonImage2 = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
 
