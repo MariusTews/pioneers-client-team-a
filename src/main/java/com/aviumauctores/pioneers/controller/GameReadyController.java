@@ -85,6 +85,8 @@ public class GameReadyController extends PlayerListController {
 
     private final HashMap<Color, String> colourIsTaken = new HashMap<>();
 
+    private Color chosenColour;
+
     @Inject
     public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
@@ -189,13 +191,21 @@ public class GameReadyController extends PlayerListController {
         Member member = eventDto.data();
         String memberID = member.userId();
         Color memberColor = member.color();
+        // if the colour is valid
         if (colourIsTaken.get(memberColor) != null) {
+            // check all colours
             for (Color colour : colourIsTaken.keySet()) {
+                // if they are assigned to this user
                 if (Objects.equals(colourIsTaken.get(colour), memberID)) {
+                    // unassign the colour
                     colourIsTaken.replace(colour, "");
                 }
             }
+            // assign the new colour to this user
             colourIsTaken.replace(memberColor, memberID);
+            // and update the combobox
+            updateComboBox();
+            pickColourMenu.setValue(memberColor);
         }
         if (event.endsWith("created")) {
             addMemberToList(member);
@@ -280,7 +290,7 @@ public class GameReadyController extends PlayerListController {
             }
         } );
 
-        // fill the Combobox with colour-icons
+        // add the colours to the combobox
         pickColourMenu.getItems().addAll(
                 Color.BLUE,
                 Color.RED,
@@ -292,6 +302,13 @@ public class GameReadyController extends PlayerListController {
                 Color.LIMEGREEN,
                 Color.MAGENTA,
                 Color.CHOCOLATE);
+        updateComboBox();
+
+        return parent;
+    }
+
+    void updateComboBox(){
+        // create the colour-icons
         pickColourMenu.setCellFactory(param -> new ListCell<>() {
             private final Circle circle;{
                 circle = new Circle(10f);
@@ -305,6 +322,7 @@ public class GameReadyController extends PlayerListController {
                 } else {
                     circle.setFill(colour);
                     HBox hBox = new HBox();
+                    hBox.setId("item_" + colour);
                     hBox.getChildren().add(circle);
                     if(!Objects.equals(colourIsTaken.get(colour), "")){
                         hBox.getChildren().add(new Label("X"));
@@ -313,8 +331,8 @@ public class GameReadyController extends PlayerListController {
                 }
             }
         });
+        // and display the current colour-icon
         pickColourMenu.setButtonCell(pickColourMenu.getCellFactory().call(null));
-        return parent;
     }
 
     public void startGame(ActionEvent actionEvent) {
@@ -415,21 +433,28 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void changeColour(ActionEvent actionEvent){
+        // if the chosen colour is valid...
         if (colourIsTaken.get(pickColourMenu.getValue()) != null){
+            // ...but already taken
             if (!Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), "") || Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), userService.getCurrentUserID())){
+                // the new colour will not be selected
                 pickColourMenu.getSelectionModel().clearSelection();
-                pickColourMenu.setValue(null);
+                pickColourMenu.setValue(chosenColour);
+            // ...and free
             } else {
+                // the hexcode is created
                 String colour = "#" + pickColourMenu.getValue().toString().substring(2,8);
+                // send to the server
                 gameMemberService.updateMember(userService.getCurrentUserID(), colour)
                         .observeOn(FX_SCHEDULER)
                         .subscribe(member -> {
-
+                            // and stored locally
+                            chosenColour = pickColourMenu.getValue();
                         }
                         ,throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 ErrorResponse response = errorService.readErrorMessage(ex);
-                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                String message = errorCodes.get(response.statusCode() + "_member");
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));

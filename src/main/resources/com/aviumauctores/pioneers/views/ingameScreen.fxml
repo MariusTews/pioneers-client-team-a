@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
       <Pane BorderPane.alignment="CENTER">
          <ImageView fitHeight="99.0" fitWidth="505.0" layoutX="62.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true">
@@ -139,6 +139,7 @@
                      </ImageView>
                   </graphic>
                </Button>
+               <ImageView fx:id="soundImage" fitHeight="25.0" fitWidth="25.0" onMousePressed="#soundOnOff" pickOnBounds="true" preserveRatio="true" />
                <Button fx:id="leaveGameButton" mnemonicParsing="false" onAction="#leaveGame" text="%leave" />
             </VBox>
          </bottom>
