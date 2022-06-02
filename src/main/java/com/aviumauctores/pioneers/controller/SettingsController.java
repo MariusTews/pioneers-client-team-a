@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,6 +32,8 @@ public class SettingsController implements Controller {
 
     private final UserService userService;
 
+    private final LoginService loginService;
+
     private final Provider<LobbyController> lobbyController;
 
     private User currentUser;
@@ -52,10 +55,11 @@ public class SettingsController implements Controller {
 
 
     @Inject
-    public SettingsController(ResourceBundle bundle, App app, UserService userService, Provider<LobbyController> lobbyController) {
+    public SettingsController(ResourceBundle bundle, App app, UserService userService, LoginService loginService, Provider<LobbyController> lobbyController) {
         this.bundle = bundle;
         this.app = app;
         this.userService = userService;
+        this.loginService = loginService;
         this.lobbyController = lobbyController;
     }
 
@@ -141,29 +145,53 @@ public class SettingsController implements Controller {
     }
 
     public void changeName(ActionEvent event) {
-        String newName = newParameterField.getText();
-        if (newName.isBlank()) {
-            return;
-        }
-        userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null)).observeOn(FX_SCHEDULER).subscribe();
-        currentNameLabel.setText(newName);
-        closeWindow();
+        //check the old password with a login
+        String oldPassword = oldPasswordField.getText();
+        loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
+            //this only happens, if the login was successful
+            //change the username to the new Parameter
+            String newName = newParameterField.getText();
+            if (newName.isBlank()) {
+                return;
+            }
+            userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null)).observeOn(FX_SCHEDULER).subscribe();
+            currentNameLabel.setText(newName);
+            closeWindow();
+        });
     }
 
     public void changePassword(ActionEvent event) {
-        String newPassword = newParameterField.getText();
-        if (newPassword.isBlank()) {
-            return;
-        }
-        userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null)).observeOn(FX_SCHEDULER).subscribe();
-        currentPasswordLabel.setText(newPassword);
-        closeWindow();
+        //check the old password with a login
+        String oldPassword = oldPasswordField.getText();
+        loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
+            //this only happens, if the login was successful
+            //change the password to the new Parameter
+            String newPassword = newParameterField.getText();
+            String confirmNewPassword = confirmField.getText();
+            if (!newPassword.equals(confirmNewPassword)) {
+                return;
+            }
+            if (newPassword.isBlank()) {
+                return;
+            }
+            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null)).observeOn(FX_SCHEDULER).subscribe();
+            currentPasswordLabel.setText(newPassword);
+            closeWindow();
+        });
     }
 
     public void changeAvatar(ActionEvent event) {
-        String avatarUrl = newParameterField.getText();
-        Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
-        avatarView.setImage(avatar);
+        //check the old password with a login
+        String oldPassword = oldPasswordField.getText();
+        loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
+            //this only happens, if the login was successful
+            //change the avatar to the new Parameter
+            String avatarUrl = newParameterField.getText();
+            Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null)).observeOn(FX_SCHEDULER).subscribe();
+            avatarView.setImage(avatar);
+            closeWindow();
+        });
     }
 
     public void closeWindow() {

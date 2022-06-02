@@ -37,7 +37,7 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        //create User for the the settings
+        //create User for the settings
         User user = new User("123", "Hans", "online", null, null);
         when(userService.getUserByID(any())).thenReturn(Observable.just(user));
         new App(settingsController).start(stage);
