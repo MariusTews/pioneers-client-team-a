@@ -2,6 +2,8 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
@@ -15,14 +17,19 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+
 public class InGameController extends LoggedInController{
     private final App app;
     private final ResourceBundle bundle;
+    private final GameMemberService gameMemberService;
 
     @FXML public Label numSheepLabel;
     @FXML
@@ -40,16 +47,17 @@ public class InGameController extends LoggedInController{
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
 
-    // This are the Sound-Icons
+    // These are the Sound-Icons
     Image soundButtonImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
     Image soundButtonImage2 = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle) {
+    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
+        this.gameMemberService = gameMemberService;
     }
 
     @Override
@@ -68,6 +76,14 @@ public class InGameController extends LoggedInController{
             e.printStackTrace();
             return null;
         }
+        disposables.add(gameMemberService.getMember(userService.getCurrentUserID())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(member -> {
+                    String colourString = "-fx-background-color: #" + member.color().toString().substring(2,8);
+                    rollButton.setStyle(colourString);
+                    leaveGameButton.setStyle(colourString);
+                    finishMoveButton.setStyle(colourString);
+                }));
         soundImage.setImage(soundButtonImage);
 
 
