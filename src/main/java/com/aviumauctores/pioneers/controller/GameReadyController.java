@@ -308,7 +308,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     void updateComboBox(){
-        // create the Colour-icons
+        // create the colour-icons
         pickColourMenu.setCellFactory(param -> new ListCell<>() {
             private final Circle circle;{
                 circle = new Circle(10f);
