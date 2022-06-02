@@ -347,7 +347,9 @@ public class GameReadyController extends PlayerListController {
         }
         disposables.add(gameService.startGame()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(game -> app.show(inGameController.get()), throwable -> {
+                .subscribe(game -> {
+                    // do nothing, the switch to ingame screen happens with the websocket event
+                }, throwable -> {
                     if (throwable instanceof HttpException ex) {
                         ErrorResponse response = errorService.readErrorMessage(ex);
                         String message = errorCodes.get(response.statusCode() + "_game");
