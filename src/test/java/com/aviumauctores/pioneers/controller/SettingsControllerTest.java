@@ -1,8 +1,10 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.stage.Stage;
@@ -29,6 +31,9 @@ class SettingsControllerTest extends ApplicationTest {
     @Mock
     UserService userService;
 
+    @Mock
+    LoginService loginService;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
@@ -45,6 +50,7 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Test
     void changeUserName() {
+        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", null, null, null, null)));
         when(userService.updateUser(any(), new UpdateUserDto(any(), null, null, null, null)))
                 .thenReturn(Observable.empty());
 
