@@ -56,6 +56,7 @@ public class InGameController extends LoggedInController{
         this.app = app;
         this.bundle = bundle;
         this.gameMemberService = gameMemberService;
+
     }
 
     @Override
