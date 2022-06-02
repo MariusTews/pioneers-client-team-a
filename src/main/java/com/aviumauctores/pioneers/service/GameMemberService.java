@@ -48,6 +48,11 @@ public class GameMemberService {
         return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status,color));
     }
 
+    public Observable<Member> updateColour(String memberID, String colour) {
+        Observable<Member> member = getMember(memberID);
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(member.blockingFirst().ready(),colour));
+    }
+
     public Observable<Member> getMember(String memberID){
         return gameMembersApiService.getMember(gameID, memberID);
     }
