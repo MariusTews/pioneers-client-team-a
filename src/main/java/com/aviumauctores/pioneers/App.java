@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.controller.Controller;
+import com.aviumauctores.pioneers.controller.InGameController;
 import com.aviumauctores.pioneers.controller.GameReadyController;
 import com.aviumauctores.pioneers.controller.LoginController;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -10,14 +11,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
@@ -33,6 +33,7 @@ public class App extends Application {
 
     private Stage stage;
     private Controller controller;
+    private SceneSizeChangeListener sizeListener;
 
     private Disposable disposable;
 
@@ -81,7 +82,7 @@ public class App extends Application {
         final double ratio = initWidth / initHeight;
 
         // add a new ScenSizeListener -> listen if stage is maximized or minimized
-        SceneSizeChangeListener sizeListener = new SceneSizeChangeListener(stage.getScene(), ratio, initHeight, initWidth, contentPane);
+        sizeListener = new SceneSizeChangeListener(stage.getScene(), ratio, initHeight, initWidth, contentPane);
         stage.getScene().widthProperty().addListener(sizeListener);
         stage.getScene().heightProperty().addListener(sizeListener);
     }
@@ -90,7 +91,7 @@ public class App extends Application {
     public void setWindow(Pane contentPane) {
         final double newWidth = stage.getScene().getWidth();
         final double newHeight = stage.getScene().getHeight();
-        final int ratio = SCREEN_WIDTH / SCREEN_HEIGHT;
+        final double ratio = (double) SCREEN_WIDTH / SCREEN_HEIGHT;
 
         double scaleFactor = newWidth / newHeight > ratio ? newHeight / SCREEN_HEIGHT : newWidth / SCREEN_WIDTH;
         if (scaleFactor >= 1) {
@@ -173,14 +174,8 @@ public class App extends Application {
                                 loginController.init();
                                 stage.getScene().setRoot(loginController.render());
                                 Pane root = (Pane) stage.getScene().getRoot();
-                                if (stage.isMaximized()) {
-                                    this.setWindow(root);
-                                    this.letterbox(root);
-                                } else {
-                                    this.setWindow(root);
-                                    this.letterbox(root);
-
-                                }
+                                this.setWindow(root);
+                                this.letterbox(root);
                             }
                     );
         }
@@ -188,11 +183,10 @@ public class App extends Application {
         else {
             controller.init();
             stage.getScene().setRoot(controller.render());
-            Pane root = (Pane) stage.getScene().getRoot();
-            if (stage.isMaximized()) {
-                this.setWindow(root);
-                this.letterbox(root);
+            if (controller instanceof InGameController) {
+                stage.sizeToScene();
             } else {
+                Pane root = (Pane) stage.getScene().getRoot();
                 this.setWindow(root);
                 this.letterbox(root);
             }
@@ -235,6 +229,12 @@ public class App extends Application {
         if (controller != null) {
             controller.destroy(closed);
             controller = null;
+        }
+
+        if (sizeListener != null) {
+            stage.getScene().widthProperty().removeListener(sizeListener);
+            stage.getScene().heightProperty().removeListener(sizeListener);
+            sizeListener = null;
         }
     }
 }
