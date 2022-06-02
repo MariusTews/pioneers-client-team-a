@@ -431,14 +431,14 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void changeColour(ActionEvent actionEvent){
-        // if the chosen colour is valid
+        // if the chosen colour is valid...
         if (colourIsTaken.get(pickColourMenu.getValue()) != null){
-            // but already taken
+            // ...but already taken
             if (!Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), "") || Objects.equals(colourIsTaken.get(pickColourMenu.getValue()), userService.getCurrentUserID())){
                 // the new colour will not be selected
                 pickColourMenu.getSelectionModel().clearSelection();
                 pickColourMenu.setValue(chosenColour);
-            // and free
+            // ...and free
             } else {
                 // the hexcode is created
                 String colour = "#" + pickColourMenu.getValue().toString().substring(2,8);
@@ -452,7 +452,7 @@ public class GameReadyController extends PlayerListController {
                         ,throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 ErrorResponse response = errorService.readErrorMessage(ex);
-                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                String message = errorCodes.get(response.statusCode() + "_member");
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
                                 app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
