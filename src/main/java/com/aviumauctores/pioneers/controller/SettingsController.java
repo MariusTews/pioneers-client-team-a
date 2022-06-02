@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,9 +42,9 @@ public class SettingsController implements Controller {
     @FXML public ImageView avatarView;
     @FXML public VBox changeWindowVBox;
     @FXML public Label changeWindowLabel;
-    @FXML public TextField oldPasswordField;
+    @FXML public PasswordField oldPasswordField;
     @FXML public TextField newParameterField;
-    @FXML public TextField confirmField;
+    @FXML public PasswordField confirmField;
     @FXML public Button acceptChangesButton;
     @FXML public Button cancelChangesButton;
     @FXML public Label currentNameLabel;
@@ -175,7 +176,6 @@ public class SettingsController implements Controller {
                 return;
             }
             userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null)).observeOn(FX_SCHEDULER).subscribe();
-            currentPasswordLabel.setText(newPassword);
             closeWindow();
         });
     }
