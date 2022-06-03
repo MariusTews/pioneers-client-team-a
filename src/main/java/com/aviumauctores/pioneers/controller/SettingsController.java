@@ -116,6 +116,7 @@ public class SettingsController implements Controller {
 
     public void openWindow(String type_of_change) {
         if (type_of_change.equals("name")) {
+            changeBackToTextField();
             acceptChangesButton.setOnAction(this::changeName);
             changeWindowLabel.setText("Nutzernamen ändern");
             newParameterField.setPromptText("neuen Nutzernamen angeben");
@@ -123,14 +124,15 @@ public class SettingsController implements Controller {
             confirmField.setVisible(false);
         }
         if (type_of_change.equals("password")) {
+            changeToPasswordField();
             acceptChangesButton.setOnAction(this::changePassword);
             changeWindowLabel.setText("Passwort ändern");
-            newParameterField.setPromptText("neues Passwort angeben");
             confirmField.setDisable(false);
             confirmField.setVisible(true);
             confirmField.setPromptText("neues Passwort bestätigen");
         }
         if (type_of_change.equals("avatar")) {
+            changeBackToTextField();
             acceptChangesButton.setOnAction(this::changeAvatar);
             changeWindowLabel.setText("Avatar ändern");
             newParameterField.setPromptText("neuen Avatar angeben");
@@ -167,7 +169,8 @@ public class SettingsController implements Controller {
         loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
             //this only happens, if the login was successful
             //change the password to the new Parameter
-            String newPassword = newParameterField.getText();
+            PasswordField newPasswordField = (PasswordField) changeWindowVBox.getChildren().get(2);
+            String newPassword = newPasswordField.getText();
             String confirmNewPassword = confirmField.getText();
             if (!newPassword.equals(confirmNewPassword)) {
                 return;
@@ -200,5 +203,17 @@ public class SettingsController implements Controller {
         confirmField.clear();
         changeWindowVBox.setDisable(true);
         changeWindowVBox.setVisible(false);
+    }
+
+    public void changeToPasswordField() {
+        PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setPromptText("neues Passwort angeben");
+        changeWindowVBox.getChildren().remove(2);
+        changeWindowVBox.getChildren().add(2, newPasswordField);
+    }
+
+    public void changeBackToTextField() {
+        changeWindowVBox.getChildren().remove(2);
+        changeWindowVBox.getChildren().add(2, newParameterField);
     }
 }
