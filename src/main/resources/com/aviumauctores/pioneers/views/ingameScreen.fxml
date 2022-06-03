@@ -14,7 +14,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
-      <Pane BorderPane.alignment="CENTER">
+      <Pane prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER">
          <ImageView fitHeight="99.0" fitWidth="505.0" layoutX="62.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@victoryPointsPlaceholder.png" />
          </ImageView>
@@ -124,12 +124,7 @@
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
    <left>
-      <BorderPane BorderPane.alignment="CENTER">
-         <top>
-            <ImageView fitHeight="150.0" fitWidth="185.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-               <Image url="@ingameChatPlaceholder.png" />
-            </ImageView>
-         </top>
+      <BorderPane prefHeight="580.0" prefWidth="236.0" BorderPane.alignment="CENTER">
          <bottom>
             <VBox alignment="BOTTOM_LEFT" spacing="20.0" BorderPane.alignment="CENTER">
                <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDice">
@@ -144,12 +139,15 @@
             </VBox>
          </bottom>
          <center>
-            <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+            <VBox alignment="CENTER" prefHeight="225.0" prefWidth="206.0" BorderPane.alignment="CENTER">
                <Label fx:id="lastRollPlayerLabel" text="%rolled1" />
                <Label fx:id="lastRollLabel" text="5" />
                <Label text="%rolled2" />
             </VBox>
          </center>
+         <top>
+            <VBox fx:id="insertChat" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+         </top>
       </BorderPane>
    </left>
 </BorderPane>

@@ -16,22 +16,27 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
-public class InGameController extends LoggedInController{
+public class InGameController extends LoggedInController {
     private final App app;
     private final ResourceBundle bundle;
     private final GameMemberService gameMemberService;
 
-    @FXML public Label numSheepLabel;
+    @FXML
+    public Label numSheepLabel;
     @FXML
     private ImageView soundImage;
+    @FXML
+    public VBox insertChat;
     public Label numWoodLabel;
     public Label numBricksLabel;
     public Label numOreLabel;
@@ -42,6 +47,8 @@ public class InGameController extends LoggedInController{
     public Label lastRollPlayerLabel;
     public Label lastRollLabel;
 
+    public Provider<InGameChatController> inGameChatController;
+
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
 
@@ -51,11 +58,12 @@ public class InGameController extends LoggedInController{
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService) {
+    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService, Provider<InGameChatController> inGameChatController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.gameMemberService = gameMemberService;
+        this.inGameChatController = inGameChatController;
 
     }
 
@@ -78,13 +86,13 @@ public class InGameController extends LoggedInController{
         disposables.add(gameMemberService.getMember(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                    String colourString = "-fx-background-color: #" + member.color().toString().substring(2,8);
+                    String colourString = "-fx-background-color: #" + member.color().toString().substring(2, 8);
                     rollButton.setStyle(colourString);
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                 }));
         soundImage.setImage(muteImage);
-
+        loadChat();
 
         return parent;
     }
@@ -93,11 +101,18 @@ public class InGameController extends LoggedInController{
 
     }
 
+    public void loadChat() {
+        InGameChatController controller = inGameChatController.get();
+        controller.init();
+        insertChat.getChildren().add(controller.render());
+
+    }
+
     public void rollDice(ActionEvent actionEvent) {
-     if(soundImage.getImage()==muteImage){
-         GameSounds diceSound =new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
-         diceSound.play();
-     }
+        if (soundImage.getImage() == muteImage) {
+            GameSounds diceSound = new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
+            diceSound.play();
+        }
     }
 
     public void leaveGame(ActionEvent actionEvent) {
@@ -105,14 +120,19 @@ public class InGameController extends LoggedInController{
 
     }
 
-   public void soundOnOff(MouseEvent mouseEvent) {
-        if (gameSound.isRunning()){
+    public void soundOnOff(MouseEvent mouseEvent) {
+        if (gameSound.isRunning()) {
             soundImage.setImage(unmuteImage);
             gameSound.pause();
-        }else {
+        } else {
             soundImage.setImage(muteImage);
             gameSound.play();
 
         }
+    }
+
+    @Override
+    public void destroy(boolean closed) {
+        disposables.dispose();
     }
 }
