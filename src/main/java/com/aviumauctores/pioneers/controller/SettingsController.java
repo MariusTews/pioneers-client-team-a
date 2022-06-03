@@ -118,24 +118,24 @@ public class SettingsController implements Controller {
         if (type_of_change.equals("name")) {
             changeBackToTextField();
             acceptChangesButton.setOnAction(this::changeName);
-            changeWindowLabel.setText("Nutzernamen ändern");
-            newParameterField.setPromptText("neuen Nutzernamen angeben");
+            changeWindowLabel.setText(bundle.getString("change.username"));
+            newParameterField.setPromptText(bundle.getString("enter.new.username"));
             confirmField.setDisable(true);
             confirmField.setVisible(false);
         }
         if (type_of_change.equals("password")) {
             changeToPasswordField();
             acceptChangesButton.setOnAction(this::changePassword);
-            changeWindowLabel.setText("Passwort ändern");
+            changeWindowLabel.setText(bundle.getString("change.password"));
             confirmField.setDisable(false);
             confirmField.setVisible(true);
-            confirmField.setPromptText("neues Passwort bestätigen");
+            confirmField.setPromptText(bundle.getString("confirm.new.password"));
         }
         if (type_of_change.equals("avatar")) {
             changeBackToTextField();
             acceptChangesButton.setOnAction(this::changeAvatar);
-            changeWindowLabel.setText("Avatar ändern");
-            newParameterField.setPromptText("neuen Avatar angeben");
+            changeWindowLabel.setText(bundle.getString("change.avatar"));
+            newParameterField.setPromptText(bundle.getString("enter.new.avatar"));
             confirmField.setDisable(true);
             confirmField.setVisible(false);
         }
@@ -207,7 +207,7 @@ public class SettingsController implements Controller {
 
     public void changeToPasswordField() {
         PasswordField newPasswordField = new PasswordField();
-        newPasswordField.setPromptText("neues Passwort angeben");
+        newPasswordField.setPromptText(bundle.getString("enter.new.password"));
         changeWindowVBox.getChildren().remove(2);
         changeWindowVBox.getChildren().add(2, newPasswordField);
     }
