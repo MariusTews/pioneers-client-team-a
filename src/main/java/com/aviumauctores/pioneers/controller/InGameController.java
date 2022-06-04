@@ -131,7 +131,17 @@ public class InGameController extends LoggedInController{
         }
     }
 
-    public void changeVP(int vpGain) {
+    public void buildSettlement() {
+        // build a settlement (if possible), then
+        gainVP(1);
+    }
+
+    public void buildTown() {
+        // upgrade a settlement to a town (if possible), then
+        gainVP(1);
+    }
+
+    public void gainVP(int vpGain) {
         memberVP += vpGain;
         switch (memberVP) {
             case 1:
