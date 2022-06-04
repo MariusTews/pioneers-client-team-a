@@ -26,12 +26,13 @@ import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
-public class InGameController extends LoggedInController{
+public class InGameController extends LoggedInController {
     private final App app;
     private final ResourceBundle bundle;
     private final GameMemberService gameMemberService;
 
-    @FXML public Label numSheepLabel;
+    @FXML
+    public Label numSheepLabel;
     @FXML
     private ImageView soundImage;
     public Label numWoodLabel;
@@ -44,16 +45,26 @@ public class InGameController extends LoggedInController{
     public Label lastRollPlayerLabel;
     public Label lastRollLabel;
 
-    @FXML public Circle vp01;
-    @FXML public Circle vp02;
-    @FXML public Circle vp03;
-    @FXML public Circle vp04;
-    @FXML public Circle vp05;
-    @FXML public Circle vp06;
-    @FXML public Circle vp07;
-    @FXML public Circle vp08;
-    @FXML public Circle vp09;
-    @FXML public Circle vp10;
+    @FXML
+    public Circle vp01;
+    @FXML
+    public Circle vp02;
+    @FXML
+    public Circle vp03;
+    @FXML
+    public Circle vp04;
+    @FXML
+    public Circle vp05;
+    @FXML
+    public Circle vp06;
+    @FXML
+    public Circle vp07;
+    @FXML
+    public Circle vp08;
+    @FXML
+    public Circle vp09;
+    @FXML
+    public Circle vp10;
 
     public int memberVP;
 
@@ -93,7 +104,7 @@ public class InGameController extends LoggedInController{
         disposables.add(gameMemberService.getMember(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                    String colourString = "-fx-background-color: #" + member.color().toString().substring(2,8);
+                    String colourString = "-fx-background-color: #" + member.color().toString().substring(2, 8);
                     rollButton.setStyle(colourString);
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
@@ -109,10 +120,10 @@ public class InGameController extends LoggedInController{
     }
 
     public void rollDice(ActionEvent actionEvent) {
-     if(soundImage.getImage()==muteImage){
-         GameSounds diceSound =new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
-         diceSound.play();
-     }
+        if (soundImage.getImage() == muteImage) {
+            GameSounds diceSound = new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
+            diceSound.play();
+        }
     }
 
     public void leaveGame(ActionEvent actionEvent) {
@@ -120,11 +131,11 @@ public class InGameController extends LoggedInController{
 
     }
 
-   public void soundOnOff(MouseEvent mouseEvent) {
-        if (gameSound.isRunning()){
+    public void soundOnOff(MouseEvent mouseEvent) {
+        if (gameSound.isRunning()) {
             soundImage.setImage(unmuteImage);
             gameSound.pause();
-        }else {
+        } else {
             soundImage.setImage(muteImage);
             gameSound.play();
 
