@@ -80,13 +80,18 @@ public class SettingsController implements Controller {
             currentUser = res;
             currentNameLabel.setText(res.name());
             String avatarUrl = currentUser.avatar();
-            Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
-            avatarView.setImage(avatar);
+            try {
+                Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+                avatarView.setImage(avatar);
+            } catch(IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+            //Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+            //avatarView.setImage(avatar);
         });
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("incorrect.password"));
         errorCodes.put("403", bundle.getString("other.user.error"));
-        //errorCodes.put("404", bundle.getString("not.found"));
         errorCodes.put("409", bundle.getString("username.taken"));
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
@@ -214,7 +219,11 @@ public class SettingsController implements Controller {
             userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
                     .observeOn(FX_SCHEDULER)
                     .subscribe(r -> {
-                        avatarView.setImage(avatar);
+                        try {
+                            avatarView.setImage(avatar);
+                        } catch(IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
                         closeWindow();
                     }, this::handleError);
         }, this::handleError);
@@ -230,6 +239,7 @@ public class SettingsController implements Controller {
 
     public void changeToPasswordField() {
         PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setId("newPasswordField");
         newPasswordField.setPromptText(bundle.getString("enter.new.password"));
         changeWindowVBox.getChildren().remove(2);
         changeWindowVBox.getChildren().add(2, newPasswordField);
