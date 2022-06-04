@@ -143,7 +143,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void buildSettlement() {
-        // build a settlement (if possible), then
+        // build a settlement (if possible), then gain 1 VP
         gainVP(1);
     }
 
