@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.sounds.GameMusic;
@@ -61,8 +60,8 @@ public class InGameController extends LoggedInController{
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
 
     // These are the Sound-Icons
-    Image soundButtonImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
-    Image soundButtonImage2 = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
+    Image muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
+    Image unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
 
 
     @Inject
@@ -71,6 +70,7 @@ public class InGameController extends LoggedInController{
         this.app = app;
         this.bundle = bundle;
         this.gameMemberService = gameMemberService;
+
     }
 
     @Override
@@ -98,7 +98,7 @@ public class InGameController extends LoggedInController{
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                 }));
-        soundImage.setImage(soundButtonImage);
+        soundImage.setImage(muteImage);
 
 
         return parent;
@@ -109,7 +109,7 @@ public class InGameController extends LoggedInController{
     }
 
     public void rollDice(ActionEvent actionEvent) {
-     if(soundImage.getImage()==soundButtonImage){
+     if(soundImage.getImage()==muteImage){
          GameSounds diceSound =new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
          diceSound.play();
      }
@@ -117,14 +117,15 @@ public class InGameController extends LoggedInController{
 
     public void leaveGame(ActionEvent actionEvent) {
 
+
     }
 
    public void soundOnOff(MouseEvent mouseEvent) {
         if (gameSound.isRunning()){
-            soundImage.setImage(soundButtonImage2);
+            soundImage.setImage(unmuteImage);
             gameSound.pause();
         }else {
-            soundImage.setImage(soundButtonImage);
+            soundImage.setImage(muteImage);
             gameSound.play();
 
         }
