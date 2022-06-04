@@ -2,10 +2,13 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,10 +20,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -31,6 +36,8 @@ public class SettingsController implements Controller {
 
     private final App app;
 
+    private final ErrorService errorService;
+
     private final UserService userService;
 
     private final LoginService loginService;
@@ -38,6 +45,8 @@ public class SettingsController implements Controller {
     private final Provider<LobbyController> lobbyController;
 
     private User currentUser;
+
+    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML public ImageView avatarView;
     @FXML public VBox changeWindowVBox;
@@ -56,9 +65,10 @@ public class SettingsController implements Controller {
 
 
     @Inject
-    public SettingsController(ResourceBundle bundle, App app, UserService userService, LoginService loginService, Provider<LobbyController> lobbyController) {
+    public SettingsController(ResourceBundle bundle, App app, ErrorService errorService, UserService userService, LoginService loginService, Provider<LobbyController> lobbyController) {
         this.bundle = bundle;
         this.app = app;
+        this.errorService = errorService;
         this.userService = userService;
         this.loginService = loginService;
         this.lobbyController = lobbyController;
@@ -73,6 +83,12 @@ public class SettingsController implements Controller {
             Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
             avatarView.setImage(avatar);
         });
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("incorrect.password"));
+        errorCodes.put("403", bundle.getString("other.user.error"));
+        //errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("username.taken"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
 
@@ -157,10 +173,13 @@ public class SettingsController implements Controller {
             if (newName.isBlank()) {
                 return;
             }
-            userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null)).observeOn(FX_SCHEDULER).subscribe();
-            currentNameLabel.setText(newName);
-            closeWindow();
-        });
+            userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null))
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(r -> {
+                        currentNameLabel.setText(r.name());
+                        closeWindow();
+                    }, this::handleError);
+        }, this::handleError);
     }
 
     public void changePassword(ActionEvent event) {
@@ -178,9 +197,10 @@ public class SettingsController implements Controller {
             if (newPassword.isBlank()) {
                 return;
             }
-            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null)).observeOn(FX_SCHEDULER).subscribe();
-            closeWindow();
-        });
+            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null))
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(r -> closeWindow(), this::handleError);
+        }, this::handleError);
     }
 
     public void changeAvatar(ActionEvent event) {
@@ -191,10 +211,13 @@ public class SettingsController implements Controller {
             //change the avatar to the new Parameter
             String avatarUrl = newParameterField.getText();
             Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
-            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null)).observeOn(FX_SCHEDULER).subscribe();
-            avatarView.setImage(avatar);
-            closeWindow();
-        });
+            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(r -> {
+                        avatarView.setImage(avatar);
+                        closeWindow();
+                    }, this::handleError);
+        }, this::handleError);
     }
 
     public void closeWindow() {
@@ -215,5 +238,17 @@ public class SettingsController implements Controller {
     public void changeBackToTextField() {
         changeWindowVBox.getChildren().remove(2);
         changeWindowVBox.getChildren().add(2, newParameterField);
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    public void handleError(Throwable throwable) {
+        if (throwable instanceof HttpException ex) {
+            ErrorResponse response = errorService.readErrorMessage(ex);
+            String message = errorCodes.get(Integer.toString(response.statusCode()));
+            app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+        }
     }
 }
