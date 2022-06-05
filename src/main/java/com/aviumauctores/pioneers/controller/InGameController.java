@@ -49,7 +49,10 @@ public class InGameController extends LoggedInController {
     public Label lastRollPlayerLabel;
     public Label lastRollLabel;
 
-    public Provider<InGameChatController> inGameChatController;
+    private final Provider<InGameChatController> inGameChatController;
+
+    private final Provider<GameReadyController> gameReadyController;
+
 
     @FXML
     public Circle vp01;
@@ -72,6 +75,7 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
+
     public int memberVP;
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -82,11 +86,12 @@ public class InGameController extends LoggedInController {
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService, Provider<InGameChatController> inGameChatController) {
+    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService, Provider<GameReadyController> gameReadyController,Provider<InGameChatController> inGameChatController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.gameMemberService = gameMemberService;
+        this.gameReadyController = gameReadyController;
         this.inGameChatController = inGameChatController;
 
     }
@@ -142,6 +147,8 @@ public class InGameController extends LoggedInController {
 
     public void leaveGame(ActionEvent actionEvent) {
 
+        final GameReadyController gamecontroller = gameReadyController.get();
+        app.show(gamecontroller);
 
     }
 
