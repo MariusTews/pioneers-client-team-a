@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 
+import static com.aviumauctores.pioneers.Constants.*;
+
 @Singleton
 public class GameMemberService {
 
@@ -31,7 +33,7 @@ public class GameMemberService {
     }
 
     public Observable<Member> createMember(){
-        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, gameService.password,null));
+        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, null, gameService.password));
     }
 
     public Observable<List<Member>> listCurrentGameMembers() {
@@ -42,10 +44,11 @@ public class GameMemberService {
 
     }
 
-    public Observable<Member> updateMember(String memberID, String color){
+
+    public Observable<Member> updateMember(String memberID){
         Observable<Member> member = getMember(memberID);
         boolean status = !(member.blockingFirst().ready());
-        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status,color));
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status, null));
     }
 
     public Observable<Member> updateColour(String memberID, String colour) {
@@ -59,5 +62,9 @@ public class GameMemberService {
 
     public void updateID(){
         this.gameID = gameService.getCurrentGameID();
+    }
+
+    public void setGameID(String id){
+        this.gameID = id;
     }
 }

@@ -20,11 +20,12 @@ public class ColorService {
         colors.put(COLOR_CODE_LIMEGREEN, COLOR_LIMEGREEN);
         colors.put(COLOR_CODE_MAGENTA, COLOR_MAGENTA);
         colors.put(COLOR_CODE_CHOCOLATE, COLOR_CHOCOLATE);
+        colors.put(COLOR_CODE_WHITE, COLOR_WHITE);
 
     }
 
     public String getColor(String color) {
-        return colors.get(("color"));
+        return colors.get((color));
     }
 
     public String getColorCode(String color){

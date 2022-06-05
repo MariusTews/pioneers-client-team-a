@@ -376,7 +376,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void gameReady(ActionEvent actionEvent) {
-        gameMemberService.updateMember(userService.getCurrentUserID(),null) //maybe null is not correct
+        gameMemberService.updateMember(userService.getCurrentUserID()) //maybe null is not correct
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
                             String buttonText = member.ready() ? bundle.getString("ready") : bundle.getString("not.ready");
@@ -427,7 +427,7 @@ public class GameReadyController extends PlayerListController {
             }
         }
         gameService.setCurrentGameID(null);
-        gameMemberService.updateID();
+        gameMemberService.setGameID(null);
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
