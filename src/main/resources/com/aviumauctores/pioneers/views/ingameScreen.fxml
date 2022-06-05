@@ -8,16 +8,15 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
       <Pane prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER">
-         <ImageView fitHeight="99.0" fitWidth="505.0" layoutX="62.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@victoryPointsPlaceholder.png" />
-         </ImageView>
          <ImageView id="hexagon20_2" fitHeight="89.375" fitWidth="103.75" layoutX="113.375" layoutY="166.375" pickOnBounds="true" preserveRatio="true">
             <Image url="@tiles/ore.png" />
          </ImageView>
@@ -75,6 +74,20 @@
          <ImageView id="hexagon_202" fitHeight="89.375" fitWidth="103.75" layoutX="424.625" layoutY="345.125" pickOnBounds="true" preserveRatio="true">
             <Image url="@tiles/wheat.png" />
          </ImageView>
+         <HBox prefHeight="77.0" prefWidth="628.0">
+            <children>
+               <Circle fx:id="vp01" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp02" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp03" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp04" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp05" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp06" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp07" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp08" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp09" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp10" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+            </children>
+         </HBox>
       </Pane>
    </center>
    <right>

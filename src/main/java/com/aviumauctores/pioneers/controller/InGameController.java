@@ -16,6 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -49,6 +51,28 @@ public class InGameController extends LoggedInController {
 
     public Provider<InGameChatController> inGameChatController;
 
+    @FXML
+    public Circle vp01;
+    @FXML
+    public Circle vp02;
+    @FXML
+    public Circle vp03;
+    @FXML
+    public Circle vp04;
+    @FXML
+    public Circle vp05;
+    @FXML
+    public Circle vp06;
+    @FXML
+    public Circle vp07;
+    @FXML
+    public Circle vp08;
+    @FXML
+    public Circle vp09;
+    @FXML
+    public Circle vp10;
+
+    public int memberVP;
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
 
@@ -70,6 +94,7 @@ public class InGameController extends LoggedInController {
     @Override
     public void init() {
         disposables = new CompositeDisposable();
+        memberVP = 0;
     }
 
     @Override
@@ -128,6 +153,42 @@ public class InGameController extends LoggedInController {
             soundImage.setImage(muteImage);
             gameSound.play();
 
+        }
+    }
+
+    public void buildSettlement() {
+        // build a settlement (if possible), then gain 1 VP
+        gainVP(1);
+    }
+
+    public void buildTown() {
+        // upgrade a settlement to a town (if possible), then
+        gainVP(1);
+    }
+
+    public void gainVP(int vpGain) {
+        memberVP += vpGain;
+        switch (memberVP) {
+            case 1:
+                vp01.setFill(Color.GOLD);
+            case 2:
+                vp02.setFill(Color.GOLD);
+            case 3:
+                vp03.setFill(Color.GOLD);
+            case 4:
+                vp04.setFill(Color.GOLD);
+            case 5:
+                vp05.setFill(Color.GOLD);
+            case 6:
+                vp06.setFill(Color.GOLD);
+            case 7:
+                vp07.setFill(Color.GOLD);
+            case 8:
+                vp08.setFill(Color.GOLD);
+            case 9:
+                vp09.setFill(Color.GOLD);
+            case 10:
+                vp10.setFill(Color.GOLD);
         }
     }
 
