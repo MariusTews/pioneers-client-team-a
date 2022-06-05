@@ -15,6 +15,7 @@ public class GameMusic {
         Media media = new Media(filePath.toString());
         this.mediaPlayer = new MediaPlayer(media);
 
+
     }
 
     public void play(){
