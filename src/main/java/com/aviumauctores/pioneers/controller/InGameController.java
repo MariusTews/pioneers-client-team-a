@@ -49,8 +49,6 @@ public class InGameController extends LoggedInController {
     private final Provider<GameReadyController> gameReadyController;
 
 
-
-
     @FXML
     public Circle vp01;
     @FXML
@@ -83,12 +81,12 @@ public class InGameController extends LoggedInController {
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService,Provider<GameReadyController> gameReadyController) {
+    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService, Provider<GameReadyController> gameReadyController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.gameMemberService = gameMemberService;
-        this.gameReadyController=gameReadyController;
+        this.gameReadyController = gameReadyController;
 
     }
 
@@ -136,13 +134,8 @@ public class InGameController extends LoggedInController {
 
     public void leaveGame(ActionEvent actionEvent) {
 
-        gameMemberService.deleteMember(userService.getCurrentUserID())
-                .observeOn(FX_SCHEDULER)
-                .subscribe();
-
         final GameReadyController gamecontroller = gameReadyController.get();
         app.show(gamecontroller);
-
 
     }
 
