@@ -462,7 +462,7 @@ public class GameReadyController extends PlayerListController {
                 // the hexcode is created
                 String colour = "#" + pickColourMenu.getValue().toString().substring(2,8);
                 // send to the server
-                gameMemberService.updateMember(userService.getCurrentUserID(), colour)
+                gameMemberService.updateColour(userService.getCurrentUserID(), colour)
                         .observeOn(FX_SCHEDULER)
                         .subscribe(member -> {
                             // and stored locally
