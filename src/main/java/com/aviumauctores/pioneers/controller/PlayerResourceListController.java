@@ -72,10 +72,12 @@ public class PlayerResourceListController {
 
     public void updateResourceList(){
         for (String playerID : listItems.keySet()){
-            listItems.get(playerID).updateResources(pioneerService.getPlayer(playerID).blockingFirst());
+            Player player = pioneerService.getPlayer(playerID).blockingFirst();
+            listItems.get(player.userId()).setPlayer(player);
+            listItems.get(playerID).updateResources(player);
         }
-
     }
+
 
     public void hideArrow(Player player){
         listItems.get(player.userId()).hideArrow();

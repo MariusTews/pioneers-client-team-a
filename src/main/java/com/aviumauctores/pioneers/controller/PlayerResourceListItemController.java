@@ -14,7 +14,7 @@ import java.util.Objects;
 public class PlayerResourceListItemController {
 
 
-    private final Player player;
+    private Player player;
 
     private ImageView arrowView;
 
@@ -127,4 +127,7 @@ public class PlayerResourceListItemController {
         brickDisplay.setText(Integer.toString(player.brick()));
     }
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
 }
