@@ -30,8 +30,7 @@ import java.util.ResourceBundle;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.ListViewMatchers.hasItems;
 
@@ -53,6 +52,9 @@ class GameReadyControllerTest extends ApplicationTest {
     EventListener eventListener;
 
     @Mock
+    Provider<InGameController> inGameController;
+
+    @Mock
     Provider<LobbyController> lobbyController;
 
     @Spy
@@ -67,6 +69,7 @@ class GameReadyControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         Member existingMember = new Member("", "", "12", "1", true,null);
+
         when(userService.getUserByID("1")).thenReturn(
                 Observable.just(new User("1", "Player1", "online", null,null)));
 
@@ -97,11 +100,11 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Test
     void gameReady(){
-        when(gameMemberService.updateMember(anyString(),any())).thenReturn(Observable.just(new Member("","", "12", "1", false,null)));
+        when(gameMemberService.updateMember(anyString())).thenReturn(Observable.just(new Member("","", "12", "1", false,null)));
         when(userService.getCurrentUserID()).thenReturn("1");
         clickOn("#gameReadyButton");
 
-        verify(gameMemberService).updateMember("1",null);
+        verify(gameMemberService).updateMember("1");
     }
 
     @Test
@@ -152,9 +155,9 @@ class GameReadyControllerTest extends ApplicationTest {
     void testColour(){
         when(userService.getCurrentUserID()).thenReturn("1");
         String colourHexBlue = "#" + Color.BLUE.toString().substring(2,8);
-        when(gameMemberService.updateMember("1", colourHexBlue)).thenReturn(Observable.just(new Member("","", "12", "1", false,Color.BLUE)));
+        when(gameMemberService.updateColour("1", colourHexBlue)).thenReturn(Observable.just(new Member("","", "12", "1", false,Color.BLUE)));
         clickOn("#pickColourMenu");
         clickOn("#item_" + Color.BLUE);
-        verify(gameMemberService).updateMember("1",colourHexBlue);
+        verify(gameMemberService).updateColour("1",colourHexBlue);
     }
 }
