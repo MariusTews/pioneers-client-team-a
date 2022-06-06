@@ -15,7 +15,9 @@
     </Label>
     <HBox alignment="CENTER">
         <VBox alignment="TOP_CENTER">
-            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@Town/Town_Green.png"/>
+            </ImageView>
             <Label text="%city" />
             <Label text="2">
                 <graphic>
@@ -33,7 +35,9 @@
             </Label>
         </VBox>
         <VBox alignment="TOP_CENTER">
-            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@House/House_Green.png"/>
+            </ImageView>
             <Label text="%settlement" />
             <Label text="1">
                 <graphic>
@@ -65,7 +69,9 @@
             </Label>
         </VBox>
         <VBox alignment="TOP_CENTER">
-            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@Street/Street_Green.png"/>
+            </ImageView>
             <Label text="%road" />
             <Label text="1">
                 <graphic>
