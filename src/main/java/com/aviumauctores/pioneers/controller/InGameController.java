@@ -10,12 +10,14 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -30,6 +32,7 @@ public class InGameController extends LoggedInController{
     private final GameMemberService gameMemberService;
 
     @FXML public Label numSheepLabel;
+    @FXML public Pane mainPane;
     @FXML
     private ImageView soundImage;
     public Label numWoodLabel;
@@ -42,6 +45,8 @@ public class InGameController extends LoggedInController{
     public Label lastRollPlayerLabel;
     public Label lastRollLabel;
 
+    private BuildMenuController buildMenuController;
+    private Parent buildMenu;
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
 
@@ -89,6 +94,12 @@ public class InGameController extends LoggedInController{
         return parent;
     }
 
+    @Override
+    public void destroy(boolean closed) {
+        super.destroy(closed);
+        closeBuildMenu(closed);
+    }
+
     public void finishMove(ActionEvent actionEvent) {
 
     }
@@ -98,6 +109,37 @@ public class InGameController extends LoggedInController{
          GameSounds diceSound =new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
          diceSound.play();
      }
+    }
+
+    public void onFieldClicked(MouseEvent mouseEvent) {
+        if (!(mouseEvent.getSource() instanceof Node source)) {
+            return;
+        }
+        closeBuildMenu(false);
+        buildMenuController = new BuildMenuController(bundle);
+        buildMenu = buildMenuController.render();
+        buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+            buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutY(Math.min(source.getLayoutY(), mainPane.getHeight() - newValue.getHeight()));
+        });
+        mainPane.getChildren().add(buildMenu);
+        // Prevent the event handler from main pane to close the build menu immediately after this
+        mouseEvent.consume();
+    }
+
+    private void closeBuildMenu(boolean appClosed) {
+        if (buildMenuController != null) {
+            buildMenuController.destroy(appClosed);
+            buildMenuController = null;
+        }
+        if (buildMenu != null) {
+            mainPane.getChildren().remove(buildMenu);
+            buildMenu = null;
+        }
+    }
+
+    public void onMainPaneClicked(MouseEvent mouseEvent) {
+        closeBuildMenu(false);
     }
 
     public void leaveGame(ActionEvent actionEvent) {

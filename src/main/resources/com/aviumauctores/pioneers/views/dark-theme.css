@@ -131,3 +131,7 @@
 .combo-box-base {
     -fx-background-color: #00496c;
 }
+
+.build-menu {
+    -fx-background-color: #333333;
+}
