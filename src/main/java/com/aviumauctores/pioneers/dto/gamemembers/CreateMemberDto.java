@@ -1,12 +1,12 @@
 package com.aviumauctores.pioneers.dto.gamemembers;
 
 
-import java.awt.*;
+import javafx.scene.paint.Color;
 
 public record CreateMemberDto(
 
         boolean ready,
-        String password,
-        String color
+        String color,
+        String password
 ) {
 }
