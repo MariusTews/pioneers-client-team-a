@@ -18,8 +18,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -35,6 +37,8 @@ public class InGameController extends LoggedInController {
     public Label numSheepLabel;
     @FXML
     private ImageView soundImage;
+    @FXML
+    public VBox insertChat;
     public Label numWoodLabel;
     public Label numBricksLabel;
     public Label numOreLabel;
@@ -44,6 +48,11 @@ public class InGameController extends LoggedInController {
     public Button leaveGameButton;
     public Label lastRollPlayerLabel;
     public Label lastRollLabel;
+
+    private final Provider<InGameChatController> inGameChatController;
+
+    private final Provider<GameReadyController> gameReadyController;
+
 
     @FXML
     public Circle vp01;
@@ -66,6 +75,7 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
+
     public int memberVP;
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -76,11 +86,13 @@ public class InGameController extends LoggedInController {
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService) {
+    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService, Provider<GameReadyController> gameReadyController,Provider<InGameChatController> inGameChatController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.gameMemberService = gameMemberService;
+        this.gameReadyController = gameReadyController;
+        this.inGameChatController = inGameChatController;
 
     }
 
@@ -110,12 +122,19 @@ public class InGameController extends LoggedInController {
                     finishMoveButton.setStyle(colourString);
                 }));
         soundImage.setImage(muteImage);
-
+        loadChat();
 
         return parent;
     }
 
     public void finishMove(ActionEvent actionEvent) {
+
+    }
+
+    public void loadChat() {
+        InGameChatController controller = inGameChatController.get();
+        controller.init();
+        insertChat.getChildren().add(controller.render());
 
     }
 
@@ -128,6 +147,8 @@ public class InGameController extends LoggedInController {
 
     public void leaveGame(ActionEvent actionEvent) {
 
+        final GameReadyController gamecontroller = gameReadyController.get();
+        app.show(gamecontroller);
 
     }
 
@@ -176,5 +197,10 @@ public class InGameController extends LoggedInController {
             case 10:
                 vp10.setFill(Color.GOLD);
         }
+    }
+
+    @Override
+    public void destroy(boolean closed) {
+        disposables.dispose();
     }
 }

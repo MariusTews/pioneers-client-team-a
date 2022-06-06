@@ -152,9 +152,9 @@ class GameReadyControllerTest extends ApplicationTest {
     void testColour(){
         when(userService.getCurrentUserID()).thenReturn("1");
         String colourHexBlue = "#" + Color.BLUE.toString().substring(2,8);
-        when(gameMemberService.updateMember("1", colourHexBlue)).thenReturn(Observable.just(new Member("","", "12", "1", false,Color.BLUE)));
+        when(gameMemberService.updateColour("1", colourHexBlue)).thenReturn(Observable.just(new Member("","", "12", "1", false,Color.BLUE)));
         clickOn("#pickColourMenu");
         clickOn("#item_" + Color.BLUE);
-        verify(gameMemberService).updateMember("1",colourHexBlue);
+        verify(gameMemberService).updateColour("1",colourHexBlue);
     }
 }
