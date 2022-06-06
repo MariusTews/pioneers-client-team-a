@@ -48,11 +48,11 @@ public class InGameController extends LoggedInController{
     private BuildMenuController buildMenuController;
     private Parent buildMenu;
 
-    GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+    GameMusic gameSound;
 
     // These are the Sound-Icons
-    Image muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
-    Image unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
+    Image muteImage;
+    Image unmuteImage;
 
 
     @Inject
@@ -61,12 +61,16 @@ public class InGameController extends LoggedInController{
         this.app = app;
         this.bundle = bundle;
         this.gameMemberService = gameMemberService;
-
     }
 
     @Override
     public void init() {
         disposables = new CompositeDisposable();
+
+        // Initialize these objects here because else the tests would fail
+        gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+        muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
+        unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
     }
 
     @Override
