@@ -8,7 +8,6 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -215,11 +214,11 @@ public class SettingsController implements Controller {
             //this only happens, if the login was successful
             //change the avatar to the new Parameter
             String avatarUrl = newParameterField.getText();
-            Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
             userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
                     .observeOn(FX_SCHEDULER)
                     .subscribe(r -> {
                         try {
+                            Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
                             avatarView.setImage(avatar);
                         } catch(IllegalArgumentException e) {
                             e.printStackTrace();

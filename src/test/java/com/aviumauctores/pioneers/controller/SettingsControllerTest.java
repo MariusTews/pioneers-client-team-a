@@ -15,14 +15,12 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
-import org.testfx.util.WaitForAsyncUtils;
 
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,7 +65,7 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Test
     void changeAvatar() {
-        /*when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", "xyz", null, null, null)));
+        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", "xyz", null, null, null)));
         when(userService.updateUser(any(), new UpdateUserDto(null, null, any(), null, null)))
                 .thenReturn(Observable.empty());
 
@@ -75,9 +73,10 @@ class SettingsControllerTest extends ApplicationTest {
         clickOn("#changeAvatarButton");
         clickOn("#newParameterField");
         write("abc");
+
         clickOn("#acceptChangesButton");
 
-        verify(userService).updateUser("123", new UpdateUserDto(null, null, "abc", null, null));*/
+        verify(userService).updateUser("123", new UpdateUserDto(null, null, "abc", null, null));
     }
 
     @Test
