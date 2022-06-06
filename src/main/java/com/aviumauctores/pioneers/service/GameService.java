@@ -7,7 +7,9 @@ import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import com.aviumauctores.pioneers.rest.GamesApiService;
+import static com.aviumauctores.pioneers.Constants.*;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -38,17 +40,18 @@ public class GameService {
 
     public void setCurrentGameID(String currentGameID) {
         this.currentGameID = currentGameID;
+
     }
 
     public Observable<String> create(String name, String password){
         this.name = name;
         this.password = password;
-        return gamesApiService.createGame(new CreateGameDto(name, password,false))
+        return gamesApiService.createGame(new CreateGameDto(name,false, password))
                 .map(Game::_id);
     }
 
     public Observable<Member> joinGame(String password) {
-        return gameMembersApiService.createMember(currentGameID, new CreateMemberDto(true, password,null));
+        return gameMembersApiService.createMember(currentGameID, new CreateMemberDto(true, null, password));
     }
 
     public Observable<List<Game>> listGames() {
@@ -66,11 +69,11 @@ public class GameService {
 
     public Observable<Game> updateGame(Boolean started ){
 
-        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, password,started));
+        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, started, password));
     }
 
     public Observable<Game> startGame() {
-        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(null, null, null, true));
+        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(null, null, true, null));
     }
 
     public String getOwnerID(){

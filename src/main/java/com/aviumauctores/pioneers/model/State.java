@@ -1,7 +1,9 @@
 package com.aviumauctores.pioneers.model;
 
+import java.util.List;
+
 public record State(  String updatedAt,
                       String gameId,
-                      ExpectedMove expectedMoves
+                      List<ExpectedMove> expectedMoves
 ) {
 }
