@@ -25,8 +25,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.HashMap;
@@ -48,6 +50,8 @@ public class InGameController extends LoggedInController {
     public Label numSheepLabel;
     @FXML
     private ImageView soundImage;
+    @FXML
+    public VBox insertChat;
     public Label numWoodLabel;
     public Label numBricksLabel;
     public Label numOreLabel;
@@ -61,6 +65,11 @@ public class InGameController extends LoggedInController {
     public VBox playerList;
     private String currentPlayerID;
     private String userID;
+
+    private final Provider<InGameChatController> inGameChatController;
+
+    private final Provider<GameReadyController> gameReadyController;
+
 
     @FXML
     public Circle vp01;
@@ -83,6 +92,7 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
+
     public int memberVP;
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -96,12 +106,15 @@ public class InGameController extends LoggedInController {
     @Inject
     public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
-                            EventListener eventListener) {
+                            EventListener eventListener, Provider<GameReadyController> gameReadyController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.playerResourceListController = playerResourceListController;
         this.gameMemberService = gameMemberService;
+        this.gameReadyController = gameReadyController;
+        this.inGameChatController = inGameChatController;
+
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.eventListener = eventListener;
@@ -165,6 +178,7 @@ public class InGameController extends LoggedInController {
 
         this.currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         soundImage.setImage(muteImage);
+        loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
         updateOwnResources();
         finishMoveButton.setDisable(true);
@@ -179,6 +193,13 @@ public class InGameController extends LoggedInController {
     }
 
 
+    public void loadChat() {
+        InGameChatController controller = inGameChatController.get();
+        controller.init();
+        insertChat.getChildren().add(controller.render());
+
+    }
+
     public void rollDice(ActionEvent actionEvent) {
         if (soundImage.getImage() == muteImage) {
             GameSounds diceSound = new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
@@ -187,6 +208,9 @@ public class InGameController extends LoggedInController {
     }
 
     public void leaveGame(ActionEvent actionEvent) {
+
+        final GameReadyController gamecontroller = gameReadyController.get();
+        app.show(gamecontroller);
 
     }
 
@@ -238,6 +262,11 @@ public class InGameController extends LoggedInController {
             case 10:
                 vp10.setFill(Color.GOLD);
         }
+    }
+
+    @Override
+    public void destroy(boolean closed) {
+        disposables.dispose();
     }
 
 
