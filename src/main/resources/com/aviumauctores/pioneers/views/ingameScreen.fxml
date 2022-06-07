@@ -96,10 +96,8 @@
    <right>
       <BorderPane prefWidth="200.0" BorderPane.alignment="CENTER">
          <center>
-            <VBox alignment="TOP_CENTER" spacing="80.0" BorderPane.alignment="CENTER">
-               <ImageView fitHeight="135.0" fitWidth="185.0" pickOnBounds="true" preserveRatio="true">
-                  <Image url="@playerListPlaceholder.png" />
-               </ImageView>
+            <VBox fx:id="playerList" alignment="TOP_CENTER" spacing="80.0" BorderPane.alignment="CENTER">
+
                <GridPane alignment="TOP_RIGHT">
                   <columnConstraints>
                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />

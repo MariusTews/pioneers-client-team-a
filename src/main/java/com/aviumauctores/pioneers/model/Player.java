@@ -1,13 +1,15 @@
 package com.aviumauctores.pioneers.model;
 
+import javafx.scene.paint.Color;
+
 import java.awt.*;
 
 public record Player(String gameID,
                      String userId,
-                     Color color,
+                     String color,
                      int foundingRoll,
-                     int unknow,
-                     int gain,
+                     int unknown,
+                     int grain,
                      int brick,
                      int ore,
                      int lumber,
