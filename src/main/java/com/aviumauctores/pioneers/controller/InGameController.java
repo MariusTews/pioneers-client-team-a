@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -66,6 +67,8 @@ public class InGameController extends LoggedInController {
 
     private final Provider<GameReadyController> gameReadyController;
 
+    @FXML
+    private Slider soundSlider;
 
     @FXML
     public Circle vp01;
@@ -95,6 +98,7 @@ public class InGameController extends LoggedInController {
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
 
+
     // These are the Sound-Icons
     Image muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
     Image unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
@@ -120,6 +124,7 @@ public class InGameController extends LoggedInController {
         this.player = pioneerService.getPlayer(userID).blockingFirst();
         this.tileController = tileController;
     }
+
 
 
     @Override
@@ -148,6 +153,8 @@ public class InGameController extends LoggedInController {
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                 }));
+        this.soundImage.setImage(muteImage);
+
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                         .observeOn(FX_SCHEDULER)
                         .subscribe(this::adaptToState));
@@ -199,6 +206,7 @@ public class InGameController extends LoggedInController {
     public void loadChat() {
         InGameChatController controller = inGameChatController.get();
         controller.init();
+        controller.setInGameController(this);
         insertChat.getChildren().add(controller.render());
 
     }
@@ -211,7 +219,12 @@ public class InGameController extends LoggedInController {
     }
 
     public void leaveGame(ActionEvent actionEvent) {
-        app.show(gameReadyController.get());
+        if (gameSound.isRunning()) {
+            gameSound.stop();
+        }
+        final GameReadyController gamecontroller = gameReadyController.get();
+        app.show(gamecontroller);
+
     }
 
 
@@ -293,6 +306,15 @@ public class InGameController extends LoggedInController {
     public void destroy(boolean closed) {
         disposables.dispose();
     }
+
+    public Image getSoundImage() {
+        return this.soundImage.getImage();
+    }
+
+    public void changeVolume(MouseEvent mouseEvent) {
+        gameSound.soundCenter(soundSlider.getValue());
+    }
+
 
     private void updateOwnResources(){
         String brick = Integer.toString(player.brick());

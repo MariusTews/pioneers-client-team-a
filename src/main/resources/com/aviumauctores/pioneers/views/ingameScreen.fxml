@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -13,8 +14,10 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
       <Pane prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER">
          <ImageView id="hexagon20_2" fitHeight="89.375" fitWidth="103.75" layoutX="113.375" layoutY="166.375" pickOnBounds="true" preserveRatio="true">
@@ -145,6 +148,25 @@
                      </ImageView>
                   </graphic>
                </Button>
+               <VBox prefHeight="55.0" prefWidth="142.0">
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
+                        <font>
+                           <Font size="14.0" />
+                        </font>
+                        <VBox.margin>
+                           <Insets left="45.0" />
+                        </VBox.margin>
+                     </Text>
+                     <HBox prefHeight="36.0" prefWidth="131.0" spacing="10.0">
+                        <children>
+                           <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Min" />
+                           <Slider fx:id="soundSlider" blockIncrement="0.1" majorTickUnit="1.0" max="1.0" minorTickCount="0" onMouseReleased="#changeVolume" prefHeight="32.0" prefWidth="72.0" showTickMarks="true" />
+                           <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max" />
+                        </children>
+                     </HBox>
+                  </children>
+               </VBox>
                <ImageView fx:id="soundImage" fitHeight="25.0" fitWidth="25.0" onMousePressed="#soundOnOff" pickOnBounds="true" preserveRatio="true" />
                <Button fx:id="leaveGameButton" mnemonicParsing="false" onAction="#leaveGame" text="%leave" />
             </VBox>
