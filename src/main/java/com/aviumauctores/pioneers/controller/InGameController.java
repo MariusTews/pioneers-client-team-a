@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -53,6 +54,8 @@ public class InGameController extends LoggedInController {
 
     private final Provider<GameReadyController> gameReadyController;
 
+    @FXML
+    private Slider soundSlider;
 
     @FXML
     public Circle vp01;
@@ -75,10 +78,10 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
-
     public int memberVP;
 
     GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+
 
     // These are the Sound-Icons
     Image muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
@@ -86,7 +89,7 @@ public class InGameController extends LoggedInController {
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService, Provider<GameReadyController> gameReadyController,Provider<InGameChatController> inGameChatController) {
+    public InGameController(App app, UserService userService, ResourceBundle bundle, GameMemberService gameMemberService, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
@@ -95,6 +98,7 @@ public class InGameController extends LoggedInController {
         this.inGameChatController = inGameChatController;
 
     }
+
 
     @Override
     public void init() {
@@ -121,7 +125,8 @@ public class InGameController extends LoggedInController {
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                 }));
-        soundImage.setImage(muteImage);
+        this.soundImage.setImage(muteImage);
+
         loadChat();
 
         return parent;
@@ -134,6 +139,7 @@ public class InGameController extends LoggedInController {
     public void loadChat() {
         InGameChatController controller = inGameChatController.get();
         controller.init();
+        controller.setInGameController(this);
         insertChat.getChildren().add(controller.render());
 
     }
@@ -146,7 +152,9 @@ public class InGameController extends LoggedInController {
     }
 
     public void leaveGame(ActionEvent actionEvent) {
-
+        if (gameSound.isRunning()) {
+            gameSound.stop();
+        }
         final GameReadyController gamecontroller = gameReadyController.get();
         app.show(gamecontroller);
 
@@ -202,5 +210,13 @@ public class InGameController extends LoggedInController {
     @Override
     public void destroy(boolean closed) {
         disposables.dispose();
+    }
+
+    public Image getSoundImage() {
+        return this.soundImage.getImage();
+    }
+
+    public void changeVolume(MouseEvent mouseEvent) {
+        gameSound.soundCenter(soundSlider.getValue());
     }
 }

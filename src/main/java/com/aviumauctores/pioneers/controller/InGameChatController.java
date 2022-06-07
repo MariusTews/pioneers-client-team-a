@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
@@ -23,6 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -56,7 +58,10 @@ public class InGameChatController implements Controller {
 
     private Label deleteLabel;
 
+    private InGameController inGameController;
+
     private CompositeDisposable disposables;
+
 
     @Inject
     public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -72,6 +77,7 @@ public class InGameChatController implements Controller {
         this.errorService = errorService;
         this.bundle = bundle;
         this.messageService = messageService;
+
     }
 
     ;
@@ -83,6 +89,10 @@ public class InGameChatController implements Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
+                    if (inGameController.getSoundImage() == inGameController.muteImage) {
+                        GameSounds soundMessage = new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
+                        soundMessage.play();
+                    }
                     //if message is sent by myself then ignore it as it is already displayed in the sendMessage method
                     if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
                         HBox msgLabel = createMessageLabel(event.data());
@@ -99,6 +109,10 @@ public class InGameChatController implements Controller {
                 }));
 
 
+    }
+
+    public void setInGameController(InGameController inGameController) {
+        this.inGameController = inGameController;
     }
 
     public Parent render() {
