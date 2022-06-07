@@ -159,7 +159,13 @@
          <center>
             <VBox alignment="CENTER" BorderPane.alignment="CENTER">
                <Label fx:id="lastRollPlayerLabel" text="%rolled1" />
-               <Label fx:id="lastRollLabel" text="5" />
+               <HBox prefHeight="100.0" prefWidth="145.0">
+                  <children>
+                     <ImageView fx:id="diceImage1" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
+                     <ImageView fx:id="diceImage2" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
+                  </children>
+               </HBox>
+               <Label fx:id="rollSum" />
                <Label text="%rolled2" />
             </VBox>
          </center>

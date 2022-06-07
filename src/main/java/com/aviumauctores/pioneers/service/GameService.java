@@ -3,10 +3,14 @@ package com.aviumauctores.pioneers.service;
 import com.aviumauctores.pioneers.dto.gamemembers.CreateMemberDto;
 import com.aviumauctores.pioneers.dto.games.CreateGameDto;
 import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
+import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
+import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
+import com.aviumauctores.pioneers.model.Move;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import com.aviumauctores.pioneers.rest.GamesApiService;
+import com.aviumauctores.pioneers.rest.PioneersApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -17,6 +21,7 @@ import java.util.List;
 public class GameService {
     private final GameMembersApiService gameMembersApiService;
     private final GamesApiService gamesApiService;
+    private final PioneersApiService pioneersApiService;
 
     private String currentGameID;
 
@@ -27,9 +32,10 @@ public class GameService {
     public String password;
 
     @Inject
-    public GameService(GameMembersApiService gameMembersApiService, GamesApiService gamesApiService) {
+    public GameService(GameMembersApiService gameMembersApiService, GamesApiService gamesApiService, PioneersApiService pioneersApiService) {
         this.gameMembersApiService = gameMembersApiService;
         this.gamesApiService = gamesApiService;
+        this.pioneersApiService = pioneersApiService;
     }
 
     public String getCurrentGameID() {
@@ -79,6 +85,10 @@ public class GameService {
 
     public void setOwnerID(String ID){
         this.ownerID = ID;
+    }
+
+    public Observable<Move> setMove(String action, Building building) {
+        return pioneersApiService.createMove(currentGameID, new CreateMoveDto(action, building));
     }
 
 }
