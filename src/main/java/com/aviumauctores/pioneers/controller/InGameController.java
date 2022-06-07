@@ -2,11 +2,12 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.model.*;
+import com.aviumauctores.pioneers.model.Building;
+import com.aviumauctores.pioneers.model.Player;
+import com.aviumauctores.pioneers.model.State;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.PioneerService;
-import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
@@ -17,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -28,13 +28,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -46,8 +45,8 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
-    private HashMap<Player, Player> moveOrder = new HashMap<>();
-    private final Player player;
+    private final HashMap<Player, Player> moveOrder = new HashMap<>();
+    private Player player;
 
     @FXML
     public Label numSheepLabel;
@@ -108,7 +107,7 @@ public class InGameController extends LoggedInController {
     // These are the Sound-Icons
     Image muteImage;
     Image unmuteImage;
-    private EventListener eventListener;
+    private final EventListener eventListener;
 
     @Inject
     public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
@@ -125,9 +124,6 @@ public class InGameController extends LoggedInController {
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.eventListener = eventListener;
-        this.userID = userService.getCurrentUserID();
-        this.player = pioneerService.getPlayer(userID).blockingFirst();
-        System.out.println(gameService.getCurrentGameID());
     }
 
 
@@ -138,6 +134,9 @@ public class InGameController extends LoggedInController {
         memberVP = 0;
 
         // Initialize these objects here because else the tests would fail
+        userID = userService.getCurrentUserID();
+        player = pioneerService.getPlayer(userID).blockingFirst();
+
         gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
