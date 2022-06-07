@@ -11,17 +11,29 @@ import java.util.HashMap;
 public class TileController {
 
     private final PioneerService pioneerService;
+    protected final InGameController inGameController;
 
-    private HashMap<String, TileSubController> tiles = new HashMap<String, TileSubController>();
+    private HashMap<String, TileSubController> tiles = new HashMap<>();
 
     @Inject
-    public TileController(PioneerService pioneerService){
+    public TileController(PioneerService pioneerService, InGameController inGameController){
         this.pioneerService = pioneerService;
+        this.inGameController = inGameController;
         Map map = pioneerService.getMap().blockingFirst();
         for(Tile t : map.tiles()){
-            String coordinate = Integer.toString(t.x()) + ", " + Integer.toString(t.y()) + ", " + Integer.toString(t.z());
-            System.out.println(coordinate);
+            String tileCoordinate = getCoordinate(t);
+            TileSubController controller = new TileSubController(t, tileCoordinate.replace("-", "_"), this);
+            tiles.put(tileCoordinate, controller);
         }
     }
+
+    public void onTileSelected(){
+    }
+
+    public String getCoordinate(Tile tile){
+        return tile.x() + Integer.toString(tile.y()) + tile.z();
+    }
+
+
 
 }

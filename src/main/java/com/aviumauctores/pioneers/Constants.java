@@ -134,5 +134,19 @@ public class Constants {
     public static final String COLOR_CODE_CHOCOLATE = "#d2691e";
     public static final String COLOR_CODE_WHITE = "#ffffff";
 
+    //Buildings
+    public static final String BUILDING_TYPE_SETTLEMENT = "settlement";
+    public static final String BUILDING_TYPE_ROAD = "road";
+    public static final String BUILDING_TYPE_CITY = "city";
+
+    //Actions
+    public static final String MOVE_FOUNDING_SETTLEMENT_1 = "founding-settlement-1";
+    public static final String MOVE_FOUNDING_SETTLEMENT_2 = "founding-settlement-2";
+    public static final String MOVE_FOUNDING_ROAD_1 = "founding-road-1";
+    public static final String MOVE_FOUNDING_ROAD_2 = "founding-road-2";
+    public static final String MOVE_FOUNDING_ROLL = "founding-roll";
+    public static final String MOVE_ROLL = "roll";
+    public static final String MOVE_BUILD = "build";
+
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }

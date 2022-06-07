@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+import static com.aviumauctores.pioneers.Constants.*;
 
 public class InGameController extends LoggedInController {
     private final App app;
@@ -153,7 +153,7 @@ public class InGameController extends LoggedInController {
                         .subscribe(this::adaptToState));
 
         this.currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
-        currentAction = "founding-roll";
+        currentAction = MOVE_FOUNDING_ROLL;
         soundImage.setImage(muteImage);
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
@@ -172,10 +172,10 @@ public class InGameController extends LoggedInController {
             playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
         }
         if(currentPlayerID.equals(userID)){
-            if(currentAction.endsWith("roll")){
+            if(currentAction.endsWith(MOVE_ROLL)){
                 rollButton.setDisable(false);
             }
-            if( rollButton.disabledProperty().get() || currentAction.startsWith("build")){
+            if( rollButton.disabledProperty().get() || currentAction.startsWith(MOVE_BUILD)){
                 finishMoveButton.setDisable(false);
             }
         }else{
@@ -190,7 +190,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void finishMove(ActionEvent actionEvent) {
-        pioneerService.createMove("build", null)
+        pioneerService.createMove(MOVE_BUILD, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
@@ -223,6 +223,34 @@ public class InGameController extends LoggedInController {
             soundImage.setImage(muteImage);
             gameSound.play();
         }
+    }
+
+    public void buildFoundingSettlement(){
+        if (!selectedTile.type().equals(BUILDING_TYPE_SETTLEMENT)){
+            return;
+        }
+        pioneerService.createMove(MOVE_FOUNDING_SETTLEMENT_1, new Building(selectedTile.x(), selectedTile.y(), selectedTile.z(),
+                11,BUILDING_TYPE_SETTLEMENT, gameService.getCurrentGameID(), userID ))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(move -> {
+
+                }, throwable -> {
+
+                });
+    }
+
+    public void buildFoundingRoad(){
+        if (!selectedTile.type().equals(BUILDING_TYPE_ROAD)){
+            return;
+        }
+        pioneerService.createMove(MOVE_FOUNDING_ROAD_1, new Building(selectedTile.x(), selectedTile.y(), selectedTile.z(),
+                11,BUILDING_TYPE_ROAD, gameService.getCurrentGameID(), userID))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(move -> {
+
+                },throwable -> {
+
+                });
     }
 
     public void buildSettlement() {
@@ -281,6 +309,7 @@ public class InGameController extends LoggedInController {
 
     public void setSelectedTile(Tile tile){
         selectedTile = tile;
+        System.out.println(tile);
     }
 
     public Tile getSelectedTile(){
