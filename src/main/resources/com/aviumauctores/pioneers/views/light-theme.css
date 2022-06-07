@@ -116,3 +116,8 @@
 .combo-box {
     -fx-background-color: #00496c;
 }
+
+#changeWindowVBox {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+}
