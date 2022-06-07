@@ -2,21 +2,19 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.PioneerService;
-import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
-import com.aviumauctores.pioneers.sounds.GameMusic;
-import com.aviumauctores.pioneers.sounds.GameSounds;
+import com.aviumauctores.pioneers.sounds.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -25,13 +23,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.layout.VBox;
-
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -43,8 +38,8 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
-    private HashMap<Player, Player> moveOrder = new HashMap<>();
     private final Player player;
+    private final TileController tileController;
 
     @FXML
     public Label numSheepLabel;
@@ -65,6 +60,7 @@ public class InGameController extends LoggedInController {
     public VBox playerList;
     private String currentPlayerID;
     private String userID;
+    private String currentAction;
 
     private final Provider<InGameChatController> inGameChatController;
 
@@ -92,6 +88,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
+    private Tile selectedTile;
+
 
     public int memberVP;
 
@@ -106,7 +104,8 @@ public class InGameController extends LoggedInController {
     @Inject
     public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
-                            EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController) {
+                            EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
+                            TileController tileController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
@@ -114,13 +113,12 @@ public class InGameController extends LoggedInController {
         this.gameMemberService = gameMemberService;
         this.gameReadyController = gameReadyController;
         this.inGameChatController = inGameChatController;
-
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.eventListener = eventListener;
         this.userID = userService.getCurrentUserID();
         this.player = pioneerService.getPlayer(userID).blockingFirst();
-        System.out.println(gameService.getCurrentGameID());
+        this.tileController = tileController;
     }
 
 
@@ -152,31 +150,10 @@ public class InGameController extends LoggedInController {
                 }));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                         .observeOn(FX_SCHEDULER)
-                                .subscribe(state -> {
-                                    String oldPlayer = currentPlayerID;
-                                    currentPlayerID = state.data().expectedMoves().get(0).players().get(0);
-                                    String action = state.data().expectedMoves().get(0).action();
-                                    if (!currentPlayerID.equals(oldPlayer)) {
-                                        playerResourceListController.hideArrow(pioneerService.getPlayer(oldPlayer).blockingFirst());
-                                        playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
-                                    }
-                                    if(currentPlayerID.equals(userID)){
-
-                                        if(action.endsWith("roll")){
-                                            rollButton.setDisable(false);
-                                        }
-                                        if( rollButton.disabledProperty().get() || action.startsWith("build")){
-                                            finishMoveButton.setDisable(false);
-                                        }
-                                    }else{
-                                        finishMoveButton.setDisable(true);
-                                        rollButton.setDisable(true);
-                                    }
-                                    playerResourceListController.updateResourceList();
-                                    updateOwnResources();
-                                }));
+                        .subscribe(this::adaptToState));
 
         this.currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
+        currentAction = "founding-roll";
         soundImage.setImage(muteImage);
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
@@ -184,6 +161,32 @@ public class InGameController extends LoggedInController {
         finishMoveButton.setDisable(true);
 
         return parent;
+    }
+
+    private void adaptToState(EventDto<State> state) {
+        String oldPlayer = currentPlayerID;
+        currentPlayerID = state.data().expectedMoves().get(0).players().get(0);
+        currentAction = state.data().expectedMoves().get(0).action();
+        if (!currentPlayerID.equals(oldPlayer)) {
+            playerResourceListController.hideArrow(pioneerService.getPlayer(oldPlayer).blockingFirst());
+            playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
+        }
+        if(currentPlayerID.equals(userID)){
+            if(currentAction.endsWith("roll")){
+                rollButton.setDisable(false);
+            }
+            if( rollButton.disabledProperty().get() || currentAction.startsWith("build")){
+                finishMoveButton.setDisable(false);
+            }
+        }else{
+            finishMoveButton.setDisable(true);
+            rollButton.setDisable(true);
+        }
+        playerResourceListController.updateResourceList();
+        updateOwnResources();
+    }
+
+    private void makeFoundingMove() {
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -208,13 +211,8 @@ public class InGameController extends LoggedInController {
     }
 
     public void leaveGame(ActionEvent actionEvent) {
-
-        final GameReadyController gamecontroller = gameReadyController.get();
-        app.show(gamecontroller);
-
+        app.show(gameReadyController.get());
     }
-
-
 
 
     public void soundOnOff(MouseEvent mouseEvent) {
@@ -224,7 +222,6 @@ public class InGameController extends LoggedInController {
         } else {
             soundImage.setImage(muteImage);
             gameSound.play();
-
         }
     }
 
@@ -269,7 +266,6 @@ public class InGameController extends LoggedInController {
         disposables.dispose();
     }
 
-
     private void updateOwnResources(){
         String brick = Integer.toString(player.brick());
         String grain = Integer.toString(player.grain());
@@ -281,5 +277,13 @@ public class InGameController extends LoggedInController {
         numOreLabel.setText(ore);
         numWoodLabel.setText(lumber);
         numSheepLabel.setText(wool);
+    }
+
+    public void setSelectedTile(Tile tile){
+        selectedTile = tile;
+    }
+
+    public Tile getSelectedTile(){
+        return selectedTile;
     }
 }

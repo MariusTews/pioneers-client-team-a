@@ -1,10 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
-import com.aviumauctores.pioneers.model.Building;
-import com.aviumauctores.pioneers.model.Move;
-import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.model.State;
+import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.rest.PioneersApiService;
 import io.reactivex.rxjava3.core.Observable;
 
@@ -29,8 +26,10 @@ public class PioneerService {
         this.pioneersApiService = pioneersApiService;
     }
 
+    public Observable<Map> getMap(){
+        return pioneersApiService.getMap(gameService.getCurrentGameID());
+    }
     public Observable<State> getState(){
-        System.out.println(gameService.getCurrentGameID());
         return pioneersApiService.getState(gameService.getCurrentGameID());
     }
 
