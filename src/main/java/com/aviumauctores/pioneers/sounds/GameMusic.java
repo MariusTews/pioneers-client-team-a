@@ -15,6 +15,7 @@ public class GameMusic {
         Media media = new Media(filePath.toString());
         this.mediaPlayer = new MediaPlayer(media);
 
+
     }
 
     public void play(){
@@ -23,6 +24,10 @@ public class GameMusic {
 
     public void pause() {
         this.mediaPlayer.pause();
+    }
+
+    public void soundCenter(double volume) {
+        mediaPlayer.setVolume(volume);
     }
 
     public void stop() {

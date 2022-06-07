@@ -120,3 +120,8 @@
 .build-menu {
     -fx-background-color: #f0f0f0;
 }
+
+#changeWindowVBox {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+}

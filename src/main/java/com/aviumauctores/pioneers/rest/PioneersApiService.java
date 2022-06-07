@@ -34,7 +34,7 @@ public interface PioneersApiService {
     @GET(GET_STATE_URL)
     Observable<State> getState (@Path(PATH_GAME_ID) String gameId);
 
-    @PATCH(CREATE_MOVE_URL)
+    @POST(CREATE_MOVE_URL)
     Observable<Move> createMove(@Path(PATH_GAME_ID) String gameId, @Body CreateMoveDto createMoveDto);
 
 

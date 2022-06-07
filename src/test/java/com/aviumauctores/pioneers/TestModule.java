@@ -13,11 +13,13 @@ import com.aviumauctores.pioneers.dto.groups.CreateGroupDto;
 import com.aviumauctores.pioneers.dto.groups.UpdateGroupDto;
 import com.aviumauctores.pioneers.dto.messages.CreateMessageDto;
 import com.aviumauctores.pioneers.dto.messages.UpdateMessageDto;
+import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
 import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.rest.*;
 import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import dagger.Module;
@@ -327,4 +329,46 @@ public class TestModule {
             }
         };
     }
+
+    @Provides
+    @Singleton
+    PioneersApiService pioneersApiService(){
+        return new PioneersApiService() {
+            @Override
+            public Observable<List<Building>> listBuildings(String gameId) {
+                return null;
+            }
+
+            @Override
+            public Observable<Building> getBuilding(String gameId, String buildingId) {
+                return null;
+            }
+
+            @Override
+            public Observable<Map> getMap(String id) {
+                return null;
+            }
+
+            @Override
+            public Observable<List<Player>> listMembers(String gameId) {
+                return null;
+            }
+
+            @Override
+            public Observable<Player> getPlayer(String gameId, String userId) {
+                return null;
+            }
+
+            @Override
+            public Observable<State> getState(String gameId) {
+                return null;
+            }
+
+            @Override
+            public Observable<Move> createMove(String gameId, CreateMoveDto createMoveDto) {
+                return null;
+            }
+        };
+    }
+
 }
