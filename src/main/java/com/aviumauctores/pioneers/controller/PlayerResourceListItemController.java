@@ -56,8 +56,7 @@ public class PlayerResourceListItemController {
         playerBox.setId(id);
 
         String avatarUrl = userService.getUserByID(player.userId()).blockingFirst().avatar();
-        Image playerIcon;
-        playerIcon = new Image(Objects.requireNonNull(Main.class.getResource(Objects.requireNonNullElseGet(avatarUrl, () -> "icons/playerIcon_" + color + ".png"))).toString());
+        Image playerIcon = avatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + color + ".png")).toString()) : new Image(avatarUrl);
 
         ImageView playerView = new ImageView(playerIcon);
         playerView.setFitHeight(40.0);
