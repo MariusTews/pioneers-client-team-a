@@ -49,4 +49,8 @@ public class LoginService {
                         })
                         .ignoreElements());
     }
+
+    public Observable<LoginResult> checkPasswordLogin(String username, String password){
+        return authenticationApiService.login(new LoginDto(username, password));
+    }
 }

@@ -3,7 +3,7 @@ package com.aviumauctores.pioneers.dto.games;
 public record UpdateGameDto(
         String name,
         String owner,
-        String password,
-        boolean started
+        boolean started,
+        String password
 ) {
 }

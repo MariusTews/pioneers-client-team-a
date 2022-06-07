@@ -103,6 +103,7 @@ public class GameReadyController extends PlayerListController {
         this.lobbyController = lobbyController;
         this.inGameController = inGameController;
         gameMemberService.updateID();
+
     }
 
     public void init() {
@@ -159,7 +160,21 @@ public class GameReadyController extends PlayerListController {
                                 this.deleteLabel = (Label) l;
                             }
                         }
-                        chatBox.getChildren().remove(this.deleteLabel);
+                        chatBox.getChildren()
+                                .remove(this.deleteLabel);
+
+                    }
+                }));
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".deleted", Game.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(event -> {
+                    if(!userService.getCurrentUserID().equals(gameService.getOwnerID())) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Game deleted");
+                        alert.setHeaderText(bundle.getString("game.deleted"));
+                        alert.showAndWait();
+                        gameService.setCurrentGameID(null);
+                        app.show(lobbyController.get());
                     }
                 }));
 
@@ -361,7 +376,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void gameReady(ActionEvent actionEvent) {
-        gameMemberService.updateMember(userService.getCurrentUserID(),null) //maybe null is not correct
+        gameMemberService.updateMember(userService.getCurrentUserID()) //maybe null is not correct
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
                             String buttonText = member.ready() ? bundle.getString("ready") : bundle.getString("not.ready");
@@ -407,10 +422,12 @@ public class GameReadyController extends PlayerListController {
                         .observeOn(FX_SCHEDULER)
                         .subscribe();
             }else {
+                memberAlert.close();
                 return;
             }
         }
         gameService.setCurrentGameID(null);
+        gameMemberService.setGameID(null);
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
@@ -490,10 +507,8 @@ public class GameReadyController extends PlayerListController {
             if (res.get() == proceedButton){
                 this.deleteLabel = label;
                 delete(this.deleteLabel.getId());
-                alert.close();
-            } else {
-                alert.close();
             }
+            alert.close();
         }
     }
 
@@ -502,4 +517,5 @@ public class GameReadyController extends PlayerListController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
+
 }
