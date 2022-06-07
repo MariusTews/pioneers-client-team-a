@@ -30,7 +30,6 @@ public class PioneerService {
     }
 
     public Observable<State> getState(){
-        System.out.println(gameService.getCurrentGameID());
         return pioneersApiService.getState(gameService.getCurrentGameID());
     }
 

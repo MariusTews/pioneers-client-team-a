@@ -123,7 +123,6 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.userID = userService.getCurrentUserID();
         this.player = pioneerService.getPlayer(userID).blockingFirst();
-        System.out.println(gameService.getCurrentGameID());
     }
 
 
