@@ -9,9 +9,11 @@ import java.util.ResourceBundle;
 
 public class BuildMenuController implements Controller {
     private final ResourceBundle bundle;
+    private final String buildingType;
 
-    public BuildMenuController(ResourceBundle bundle) {
+    public BuildMenuController(ResourceBundle bundle, String buildingType) {
         this.bundle = bundle;
+        this.buildingType = buildingType;
     }
 
     @Override
@@ -26,7 +28,10 @@ public class BuildMenuController implements Controller {
 
     @Override
     public Parent render() {
-        final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/buildMenu.fxml"), bundle);
+        // Capitalize the building type string
+        final String capitalizedBuildingType = buildingType.substring(0, 1).toUpperCase() + buildingType.substring(1);
+        final FXMLLoader loader =
+                new FXMLLoader(Main.class.getResource("views/buildMenu" + capitalizedBuildingType + ".fxml"), bundle);
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {

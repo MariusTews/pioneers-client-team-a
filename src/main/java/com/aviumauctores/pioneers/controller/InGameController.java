@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.sounds.GameMusic;
@@ -120,7 +121,20 @@ public class InGameController extends LoggedInController{
             return;
         }
         closeBuildMenu(false);
-        buildMenuController = new BuildMenuController(bundle);
+        Building coordinateHolder = Building.readCoordinatesFromID(source.getId());
+        if (coordinateHolder == null) {
+            return;
+        }
+
+        int side = coordinateHolder.side();
+        String buildingType;
+        if (side == 0 || side == 6) {
+            // TODO Check for city
+            buildingType = "settlement";
+        } else {
+            buildingType = "road";
+        }
+        buildMenuController = new BuildMenuController(bundle, buildingType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
