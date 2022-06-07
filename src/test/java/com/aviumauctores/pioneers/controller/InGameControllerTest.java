@@ -52,23 +52,29 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     EventListener eventListener;
 
+    // For some reason Mockito doesn't want a lambda expression
+    @SuppressWarnings("Convert2Lambda")
     @Spy
-    Provider<InGameChatController> inGameChatController = () -> new InGameChatController(
-            null, null, null, null,
-            null, null, null, null) {
+    Provider<InGameChatController> inGameChatController = new Provider<>() {
         @Override
-        public void init() {
-            // Do nothing
-        }
+        public InGameChatController get() {
+            return new InGameChatController(null, null, null, null,
+                    null, null, null, null) {
+                @Override
+                public void init() {
+                    // Do nothing
+                }
 
-        @Override
-        public Parent render() {
-            return new VBox();
-        }
+                @Override
+                public Parent render() {
+                    return new VBox();
+                }
 
-        @Override
-        public void destroy(boolean closed) {
-            // Do nothing
+                @Override
+                public void destroy(boolean closed) {
+                    // Do nothing
+                }
+            };
         }
     };
 
