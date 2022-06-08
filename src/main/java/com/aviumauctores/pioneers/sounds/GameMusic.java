@@ -26,6 +26,10 @@ public class GameMusic {
         this.mediaPlayer.pause();
     }
 
+    public void soundCenter(double volume) {
+        mediaPlayer.setVolume(volume);
+    }
+
     public void stop() {
         if (this.mediaPlayer != null) {
             this.mediaPlayer.stop();

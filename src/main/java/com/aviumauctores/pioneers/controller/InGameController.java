@@ -2,12 +2,10 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.model.*;
-import com.aviumauctores.pioneers.service.GameMemberService;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.PioneerService;
-import com.aviumauctores.pioneers.service.GameMemberService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.model.Building;
+import com.aviumauctores.pioneers.model.Player;
+import com.aviumauctores.pioneers.model.State;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -15,23 +13,24 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -43,11 +42,13 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
-    private HashMap<Player, Player> moveOrder = new HashMap<>();
-    private final Player player;
+    private final SoundService soundService;
+    private final HashMap<Player, Player> moveOrder = new HashMap<>();
+    private Player player;
 
     @FXML
     public Label numSheepLabel;
+    @FXML public Pane mainPane;
     @FXML
     private ImageView soundImage;
     @FXML
@@ -67,9 +68,10 @@ public class InGameController extends LoggedInController {
     private String userID;
 
     private final Provider<InGameChatController> inGameChatController;
-
     private final Provider<GameReadyController> gameReadyController;
 
+    @FXML
+    private Slider soundSlider;
 
     @FXML
     public Circle vp01;
@@ -92,42 +94,51 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
-
     public int memberVP;
 
-    GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+    private BuildMenuController buildMenuController;
+    private Parent buildMenu;
+
+    GameMusic gameSound;
 
     // These are the Sound-Icons
-    Image muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
-    Image unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
-    private EventListener eventListener;
-
+    Image muteImage;
+    Image unmuteImage;
+    private final EventListener eventListener;
 
     @Inject
     public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
+                            SoundService soundService,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.playerResourceListController = playerResourceListController;
         this.gameMemberService = gameMemberService;
+        this.soundService = soundService;
         this.gameReadyController = gameReadyController;
         this.inGameChatController = inGameChatController;
 
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.eventListener = eventListener;
-        this.userID = userService.getCurrentUserID();
-        this.player = pioneerService.getPlayer(userID).blockingFirst();
-        System.out.println(gameService.getCurrentGameID());
     }
+
 
 
     @Override
     public void init() {
         disposables = new CompositeDisposable();
         memberVP = 0;
+
+        // Initialize these objects here because else the tests would fail
+        userID = userService.getCurrentUserID();
+        player = pioneerService.getPlayer(userID).blockingFirst();
+
+        gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+        muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
+        unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
     }
 
     @Override
@@ -150,6 +161,8 @@ public class InGameController extends LoggedInController {
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                 }));
+        this.soundImage.setImage(muteImage);
+
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                         .observeOn(FX_SCHEDULER)
                                 .subscribe(state -> {
@@ -186,6 +199,12 @@ public class InGameController extends LoggedInController {
         return parent;
     }
 
+    @Override
+    public void destroy(boolean closed) {
+        super.destroy(closed);
+        closeBuildMenu(closed);
+    }
+
     public void finishMove(ActionEvent actionEvent) {
         pioneerService.createMove("build", null)
                 .observeOn(FX_SCHEDULER)
@@ -196,19 +215,67 @@ public class InGameController extends LoggedInController {
     public void loadChat() {
         InGameChatController controller = inGameChatController.get();
         controller.init();
+        controller.setInGameController(this);
         insertChat.getChildren().add(controller.render());
 
     }
 
     public void rollDice(ActionEvent actionEvent) {
         if (soundImage.getImage() == muteImage) {
-            GameSounds diceSound = new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
+            GameSounds diceSound = soundService
+                    .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
             diceSound.play();
         }
     }
 
-    public void leaveGame(ActionEvent actionEvent) {
+    public void onFieldClicked(MouseEvent mouseEvent) {
+        if (!(mouseEvent.getSource() instanceof Node source)) {
+            return;
+        }
+        closeBuildMenu(false);
+        Building coordinateHolder = Building.readCoordinatesFromID(source.getId());
+        if (coordinateHolder == null) {
+            return;
+        }
 
+        int side = coordinateHolder.side();
+        String buildingType;
+        if (side == 0 || side == 6) {
+            // TODO Check for city
+            buildingType = "settlement";
+        } else {
+            buildingType = "road";
+        }
+        buildMenuController = new BuildMenuController(bundle, buildingType);
+        buildMenu = buildMenuController.render();
+        buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+            buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutY(Math.min(source.getLayoutY(), mainPane.getHeight() - newValue.getHeight()));
+        });
+        mainPane.getChildren().add(buildMenu);
+        // Prevent the event handler from main pane to close the build menu immediately after this
+        mouseEvent.consume();
+    }
+
+    private void closeBuildMenu(boolean appClosed) {
+        if (buildMenuController != null) {
+            buildMenuController.destroy(appClosed);
+            buildMenuController = null;
+        }
+        if (buildMenu != null) {
+            mainPane.getChildren().remove(buildMenu);
+            buildMenu = null;
+        }
+    }
+
+    public void onMainPaneClicked(MouseEvent mouseEvent) {
+        closeBuildMenu(false);
+    }
+
+    public void leaveGame(ActionEvent actionEvent) {
+        if (gameSound.isRunning()) {
+            gameSound.stop();
+        }
         final GameReadyController gamecontroller = gameReadyController.get();
         app.show(gamecontroller);
 
@@ -264,9 +331,12 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    @Override
-    public void destroy(boolean closed) {
-        disposables.dispose();
+    public Image getSoundImage() {
+        return this.soundImage.getImage();
+    }
+
+    public void changeVolume(MouseEvent mouseEvent) {
+        gameSound.soundCenter(soundSlider.getValue());
     }
 
 
