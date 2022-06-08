@@ -2,7 +2,9 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Building;
+import com.aviumauctores.pioneers.model.Move;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
 import com.aviumauctores.pioneers.service.GameService;
@@ -110,14 +112,12 @@ public class InGameController extends LoggedInController {
     public ImageView diceImage1;
     @FXML
     public ImageView diceImage2;
-    Image dice1 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_1.png")).toString());
-    Image dice2 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_2.png")).toString());
-    Image dice3 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_3.png")).toString());
-    Image dice4 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_4.png")).toString());
-    Image dice5 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_5.png")).toString());
-    Image dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
-
-    GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+    Image dice1;
+    Image dice2;
+    Image dice3;
+    Image dice4;
+    Image dice5;
+    Image dice6;
 
     GameMusic gameSound;
 
@@ -159,6 +159,13 @@ public class InGameController extends LoggedInController {
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
+
+        dice1 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_1.png")).toString());
+        dice2 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_2.png")).toString());
+        dice3 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_3.png")).toString());
+        dice4 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_4.png")).toString());
+        dice5 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_5.png")).toString());
+        dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
         // Listen to game-move events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".moves.*",
@@ -174,15 +181,60 @@ public class InGameController extends LoggedInController {
             int rolled = move.roll();
             rollSum.setText(" " + rolled + " ");
             rollAllDice();
+            switch (rolled) {
+                case 2:
+                    diceImage1.setImage(dice1);
+                    diceImage1.setImage(dice1);
+                    break;
+                case 3:
+                    diceImage1.setImage(dice1);
+                    diceImage2.setImage(dice2);
+                    break;
+                case 4:
+                    diceImage1.setImage(dice3);
+                    diceImage2.setImage(dice1);
+                    break;
+                case 5:
+                    diceImage1.setImage(dice2);
+                    diceImage2.setImage(dice3);
+                case 6:
+                    diceImage1.setImage(dice2);
+                    diceImage2.setImage(dice4);
+                    break;
+                case 7:
+                    diceImage1.setImage(dice2);
+                    diceImage2.setImage(dice5);
+                    break;
+                case 8:
+                    diceImage1.setImage(dice5);
+                    diceImage2.setImage(dice3);
+                    break;
+                case 9:
+                    diceImage1.setImage(dice4);
+                    diceImage2.setImage(dice5);
+                    break;
+                case 10:
+                    diceImage1.setImage(dice6);
+                    diceImage2.setImage(dice4);
+                    break;
+                case 11:
+                    diceImage1.setImage(dice5);
+                    diceImage2.setImage(dice6);
+                    break;
+                case 12:
+                    diceImage1.setImage(dice6);
+                    diceImage2.setImage(dice6);
+                    break;
+            }
         }
     }
 
     public void rollAllDice() throws InterruptedException {
-        int i = 10;
+        int i = 12;
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(250);
             i--;
         }
     }
@@ -221,6 +273,8 @@ public class InGameController extends LoggedInController {
                     diceImage1.setStyle(colourString);
                     diceImage2.setStyle(colourString);
                 }));
+        diceImage1.setImage(dice1);
+        diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
 
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
@@ -286,12 +340,9 @@ public class InGameController extends LoggedInController {
                     .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
             diceSound.play();
         }
-        disposables.add(gameService.setMove("roll", null)
+        disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {},
-                        throwable -> {
-                            throwable.printStackTrace();
-                        }));
+                .subscribe());
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {

@@ -90,8 +90,4 @@ public class GameService {
         this.ownerID = ID;
     }
 
-    public Observable<Move> setMove(String action, Building building) {
-        return pioneersApiService.createMove(currentGameID, new CreateMoveDto(action, building));
-    }
-
 }
