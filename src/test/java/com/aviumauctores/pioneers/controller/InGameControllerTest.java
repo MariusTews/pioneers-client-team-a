@@ -1,10 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
-import com.aviumauctores.pioneers.model.ExpectedMove;
-import com.aviumauctores.pioneers.model.Member;
-import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.model.State;
+import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
@@ -30,6 +27,7 @@ import java.util.ResourceBundle;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,7 +119,7 @@ public class InGameControllerTest extends ApplicationTest {
                 2, 0, 0, 0, 0, 0,0, 0, 0, 0);
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
-                List.of(new ExpectedMove("roll", List.of("12"))))));
+                List.of(new ExpectedMove("roll", List.of("1"))))));
         when(soundService.createGameMusic(any())).thenReturn(null);
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
@@ -142,5 +140,13 @@ public class InGameControllerTest extends ApplicationTest {
         clickOn("#mainPane");
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
         assertThat(settlementLabel).isNotPresent();
+    }
+
+    @Test
+    void onRollClicked() {
+        when(pioneerService.createMove("roll", null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null)));
+        when(soundService.createGameSounds(any())).thenReturn(null);
+        clickOn("#rollButton");
+        verify(pioneerService).createMove("roll", null);
     }
 }

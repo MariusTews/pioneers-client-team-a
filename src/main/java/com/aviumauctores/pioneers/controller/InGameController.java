@@ -338,7 +338,9 @@ public class InGameController extends LoggedInController {
         if (soundImage.getImage() == muteImage) {
             GameSounds diceSound = soundService
                     .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
-            diceSound.play();
+            if (diceSound != null) {
+                diceSound.play();
+            }
         }
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)

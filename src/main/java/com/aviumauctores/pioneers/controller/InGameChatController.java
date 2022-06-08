@@ -92,7 +92,9 @@ public class InGameChatController implements Controller {
                     if (inGameController.getSoundImage() == inGameController.muteImage) {
                         GameSounds soundMessage = soundService
                                 .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
-                        soundMessage.play();
+                        if (soundMessage != null) {
+                            soundMessage.play();
+                        }
                     }
                     //if message is sent by myself then ignore it as it is already displayed in the sendMessage method
                     if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
