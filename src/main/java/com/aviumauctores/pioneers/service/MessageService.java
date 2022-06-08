@@ -23,17 +23,17 @@ public class MessageService {
     }
 
 
-    public Observable<String> sendGroupMessage(String message, String groupId) {
+    public Observable<String> sendGroupMessage(String namespace, String message, String groupId) {
 
-        return messagesApiService.sendMessage("groups", groupId, new CreateMessageDto(message))
+        return messagesApiService.sendMessage(namespace, groupId, new CreateMessageDto(message))
                 .map(Message::body);
     }
 
 
 
-    public Observable<Message> deleteMessage(String id, String groupId) {
+    public Observable<Message> deleteMessage(String namespace, String id, String groupId) {
 
-        return messagesApiService.deleteMessage("groups", groupId, id);
+        return messagesApiService.deleteMessage(namespace, groupId, id);
     }
 
     public Observable<Message> deleteGameMessage(String messageId, String gameId) {

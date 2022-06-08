@@ -94,21 +94,15 @@ public class ChatController extends PlayerListController {
         //get all users for the usernames of the old messages
         userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
             allUsers = res;
-            showOldMessages("groups", ALLCHAT_ID, LocalDateTime.now().toString() , 100);
+            showOldMessages("global", ALLCHAT_ID, LocalDateTime.now().toString() , 100);
         });
 
-        // get all online users, their ids and update the All-Group
-        userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
-            usersIdList = getAllUserIDs(onlineUsers);
-            usersIdList.add(userService.getCurrentUserID());
-            groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
-        });
+
         disposables.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     this.users.setAll(result);
                     usersIdList = getAllUserIDs(users);
                     usersIdList.add(userService.getCurrentUserID());
-                    groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     result.forEach(this::addPlayerToList);
                     if (onlinePlayerLabel != null) {
                         updatePlayerLabel();
@@ -119,19 +113,16 @@ public class ChatController extends PlayerListController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.data().status().equals("online")) {
-                        //update AllGroup
                         usersIdList.add(event.data()._id());
-                        groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                     if (event.data().status().equals("offline")) {
                         usersIdList.remove(event.data()._id());
-                        groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                     // Update user list
                     onUserEvent(event);
                 }));
         // listen for incoming messages and show them as a Label
-        disposables.add(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)
+        disposables.add(eventListener.listen("*." + ALLCHAT_ID + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.event().endsWith(".created")) {
@@ -229,8 +220,12 @@ public class ChatController extends PlayerListController {
         if (message.isBlank()) {
             return;
         }
+        String namespace = "groups";
+        if (groupId.equals(ALLCHAT_ID)) {
+            namespace = "global";
+        }
         // send the message
-        messageService.sendGroupMessage(message, groupId)
+        messageService.sendGroupMessage(namespace, message, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
@@ -241,7 +236,11 @@ public class ChatController extends PlayerListController {
 
     // delete the message
     public void delete(String messageId, String groupId) {
-        messageService.deleteMessage(messageId, groupId)
+        String namespace = "groups";
+        if (groupId.equals(ALLCHAT_ID)) {
+            namespace = "global";
+        }
+        messageService.deleteMessage(namespace, messageId, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
@@ -378,7 +377,11 @@ public class ChatController extends PlayerListController {
         if (event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete, only if you click on your message
             Label msg = (Label) event.getSource();
-            messageService.getMessage("groups",selectedTab.getId(), msg.getId()).observeOn(FX_SCHEDULER).subscribe(res ->  {
+            String namespace = "groups";
+            if (selectedTab.getId().equals(ALLCHAT_ID)) {
+                namespace = "global";
+            }
+            messageService.getMessage(namespace, selectedTab.getId(), msg.getId()).observeOn(FX_SCHEDULER).subscribe(res ->  {
                 deleteMessage = res;
                 if (!userService.getCurrentUserID().equals(deleteMessage.sender())) {
                     return;
