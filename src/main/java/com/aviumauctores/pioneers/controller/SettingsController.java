@@ -85,8 +85,6 @@ public class SettingsController implements Controller {
             } catch(IllegalArgumentException e) {
                 e.printStackTrace();
             }
-            //Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
-            //avatarView.setImage(avatar);
         });
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("incorrect.password"));
@@ -134,8 +132,8 @@ public class SettingsController implements Controller {
         }
     }
 
-    public void openWindow(String type_of_change) {
-        if (type_of_change.equals("name")) {
+    public void openWindow(String typeOfChange) {
+        if (typeOfChange.equals("name")) {
             changeBackToTextField();
             acceptChangesButton.setOnAction(this::changeName);
             changeWindowLabel.setText(bundle.getString("change.username"));
@@ -143,7 +141,7 @@ public class SettingsController implements Controller {
             confirmField.setDisable(true);
             confirmField.setVisible(false);
         }
-        if (type_of_change.equals("password")) {
+        if (typeOfChange.equals("password")) {
             changeToPasswordField();
             acceptChangesButton.setOnAction(this::changePassword);
             changeWindowLabel.setText(bundle.getString("change.password"));
@@ -151,7 +149,7 @@ public class SettingsController implements Controller {
             confirmField.setVisible(true);
             confirmField.setPromptText(bundle.getString("confirm.new.password"));
         }
-        if (type_of_change.equals("avatar")) {
+        if (typeOfChange.equals("avatar")) {
             changeBackToTextField();
             acceptChangesButton.setOnAction(this::changeAvatar);
             changeWindowLabel.setText(bundle.getString("change.avatar"));
@@ -247,10 +245,6 @@ public class SettingsController implements Controller {
     public void changeBackToTextField() {
         changeWindowVBox.getChildren().remove(2);
         changeWindowVBox.getChildren().add(2, newParameterField);
-    }
-
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
     }
 
     public void handleError(Throwable throwable) {
