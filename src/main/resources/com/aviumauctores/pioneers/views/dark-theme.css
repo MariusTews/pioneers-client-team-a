@@ -132,6 +132,10 @@
     -fx-background-color: #00496c;
 }
 
+.build-menu {
+    -fx-background-color: #333333;
+}
+
 #changeWindowVBox {
     -fx-background-color: #333333;
     -fx-background-radius: 8px;
