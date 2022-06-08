@@ -21,7 +21,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -36,6 +35,7 @@ public class InGameChatController implements Controller {
     private final UserService userService;
     private final GameService gameService;
     private final GameMemberService gameMemberService;
+    private final SoundService soundService;
     private final EventListener eventListener;
     private final ErrorService errorService;
     private final ResourceBundle bundle;
@@ -65,6 +65,7 @@ public class InGameChatController implements Controller {
 
     @Inject
     public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
+                                SoundService soundService,
                                 EventListener eventListener, ErrorService errorService,
                                 ResourceBundle bundle, MessageService messageService
     ) {
@@ -73,14 +74,13 @@ public class InGameChatController implements Controller {
         this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
+        this.soundService = soundService;
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.bundle = bundle;
         this.messageService = messageService;
 
     }
-
-    ;
 
     public void init() {
         disposables = new CompositeDisposable();
@@ -90,7 +90,8 @@ public class InGameChatController implements Controller {
                 .subscribe(event -> {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     if (inGameController.getSoundImage() == inGameController.muteImage) {
-                        GameSounds soundMessage = new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
+                        GameSounds soundMessage = soundService
+                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
                         soundMessage.play();
                     }
                     //if message is sent by myself then ignore it as it is already displayed in the sendMessage method
@@ -166,9 +167,8 @@ public class InGameChatController implements Controller {
                 );
         msgLabel.setOnMouseClicked(this::onMessageClicked);
         msgLabel.setId(message._id());
-        HBox playerBox = new HBox(5, avatarView, msgLabel);
 
-        return playerBox;
+        return new HBox(5, avatarView, msgLabel);
     }
 
     public void onMessageClicked(MouseEvent event) {
