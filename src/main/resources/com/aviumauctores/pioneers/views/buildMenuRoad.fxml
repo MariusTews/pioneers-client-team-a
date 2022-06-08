@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" styleClass="build-menu" xmlns="http://javafx.com/javafx/18"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.BuildMenuController">
+   <padding>
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+   </padding>
+   <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@Street/Street_Green.png"/>
+   </ImageView>
+   <Label text="%road"/>
+   <Label text="1">
+      <graphic>
+         <ImageView fitHeight="77.7" fitWidth="54.95" pickOnBounds="true" preserveRatio="true">
+            <Image url="@Wood_icon.png"/>
+         </ImageView>
+      </graphic>
+   </Label>
+   <Label text="1">
+      <graphic>
+         <ImageView fitHeight="77.7" fitWidth="54.95" pickOnBounds="true" preserveRatio="true">
+            <Image url="@Bricks_icon.png"/>
+         </ImageView>
+      </graphic>
+   </Label>
+</VBox>
