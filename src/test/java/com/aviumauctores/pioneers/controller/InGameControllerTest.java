@@ -5,10 +5,7 @@ import com.aviumauctores.pioneers.model.ExpectedMove;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
-import com.aviumauctores.pioneers.service.GameMemberService;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.PioneerService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
@@ -50,6 +47,9 @@ public class InGameControllerTest extends ApplicationTest {
     PioneerService pioneerService;
 
     @Mock
+    SoundService soundService;
+
+    @Mock
     EventListener eventListener;
 
     // For some reason Mockito doesn't want a lambda expression
@@ -59,7 +59,7 @@ public class InGameControllerTest extends ApplicationTest {
         @Override
         public InGameChatController get() {
             return new InGameChatController(null, null, null, null,
-                    null, null, null, null) {
+                    null, null, null, null, null) {
                 @Override
                 public void init() {
                     // Do nothing
@@ -122,6 +122,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("12"))))));
+        when(soundService.createGameMusic(any())).thenReturn(null);
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
     }

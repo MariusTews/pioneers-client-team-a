@@ -5,10 +5,7 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
-import com.aviumauctores.pioneers.service.GameMemberService;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.PioneerService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -45,6 +42,7 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
+    private final SoundService soundService;
     private final HashMap<Player, Player> moveOrder = new HashMap<>();
     private Player player;
 
@@ -70,7 +68,6 @@ public class InGameController extends LoggedInController {
     private String userID;
 
     private final Provider<InGameChatController> inGameChatController;
-
     private final Provider<GameReadyController> gameReadyController;
 
     @FXML
@@ -112,12 +109,14 @@ public class InGameController extends LoggedInController {
     @Inject
     public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
+                            SoundService soundService,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.playerResourceListController = playerResourceListController;
         this.gameMemberService = gameMemberService;
+        this.soundService = soundService;
         this.gameReadyController = gameReadyController;
         this.inGameChatController = inGameChatController;
 
@@ -137,7 +136,7 @@ public class InGameController extends LoggedInController {
         userID = userService.getCurrentUserID();
         player = pioneerService.getPlayer(userID).blockingFirst();
 
-        gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+        gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
     }
@@ -223,7 +222,8 @@ public class InGameController extends LoggedInController {
 
     public void rollDice(ActionEvent actionEvent) {
         if (soundImage.getImage() == muteImage) {
-            GameSounds diceSound = new GameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
+            GameSounds diceSound = soundService
+                    .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
             diceSound.play();
         }
     }
