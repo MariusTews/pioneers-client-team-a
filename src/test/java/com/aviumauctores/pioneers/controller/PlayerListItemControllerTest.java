@@ -41,6 +41,15 @@ class PlayerListItemControllerTest extends ApplicationTest {
         root = stage.getScene().getRoot();
     }
 
+    @Override
+    public void stop() {
+        this.items = null;
+        this.parentController = null;
+        this.playerListItemController = null;
+        this.root = null;
+        this.user = null;
+    }
+
     @Test
     void onItemClicked() {
         clickOn(root);

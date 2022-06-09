@@ -43,6 +43,15 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
         new App(playerListItemController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.parentController = null;
+        this.playerListItemController = null;
+        this.gameMember = null;
+        this.items = null;
+        this.user = null;
+    }
+
     @Test
     void onGameMemberUpdatedNotReadyToReady() {
         // The view does contain only to image views, the avatar and the ready icon
