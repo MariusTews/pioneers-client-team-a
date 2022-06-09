@@ -45,6 +45,10 @@ public class PioneerService {
         return pioneersApiService.listMembers(gameService.getCurrentGameID());
     }
 
+    public Observable<List<Building>> listBuildings(){
+        return pioneersApiService.listBuildings(gameService.getCurrentGameID());
+    }
+
     public void setGameID(String id){
         this.gameID = id;
     }

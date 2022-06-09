@@ -43,10 +43,15 @@ public class InGameControllerTest extends ApplicationTest {
     GameService gameService;
 
     @Mock
+    BuildService buildService;
+
+    @Mock
     PioneerService pioneerService;
 
     @Mock
     SoundService soundService;
+
+
 
     @Mock
     EventListener eventListener;

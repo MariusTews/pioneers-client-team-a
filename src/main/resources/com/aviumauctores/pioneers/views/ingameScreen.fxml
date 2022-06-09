@@ -839,16 +839,19 @@
             </ImageView>
          </Pane>
          <HBox prefHeight="77.0" prefWidth="628.0">
-            <Circle fx:id="vp01" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp02" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp03" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp04" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp05" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp06" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp07" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp08" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp09" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
-            <Circle fx:id="vp10" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
+            <children>
+               <Circle fx:id="vp01" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp02" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp03" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp04" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp05" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp06" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp07" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp08" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp09" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="vp10" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+               <Button fx:id="buildButton" disable="true" mnemonicParsing="false" onAction="#build" text="Button" visible="false" />
+            </children>
          </HBox>
       </Pane>
    </center>
@@ -910,18 +913,16 @@
                <VBox prefHeight="55.0" prefWidth="142.0">
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
                      <font>
-                        <Font size="14.0"/>
+                        <Font size="14.0" />
                      </font>
                      <VBox.margin>
-                        <Insets left="45.0"/>
+                        <Insets left="45.0" />
                      </VBox.margin>
                   </Text>
                   <HBox prefHeight="36.0" prefWidth="131.0" spacing="10.0">
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Min"/>
-                     <Slider fx:id="soundSlider" blockIncrement="0.1" majorTickUnit="1.0" max="1.0"
-                             minorTickCount="0" onMouseReleased="#changeVolume" prefHeight="32.0" prefWidth="72.0"
-                             showTickMarks="true"/>
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max"/>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Min" />
+                     <Slider fx:id="soundSlider" blockIncrement="0.1" majorTickUnit="1.0" max="1.0" minorTickCount="0" onMouseReleased="#changeVolume" prefHeight="32.0" prefWidth="72.0" showTickMarks="true" />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max" />
                   </HBox>
                </VBox>
                <ImageView fx:id="soundImage" fitHeight="25.0" fitWidth="25.0" onMousePressed="#soundOnOff" pickOnBounds="true" preserveRatio="true" />
@@ -932,10 +933,8 @@
             <VBox alignment="CENTER" prefHeight="225.0" prefWidth="206.0" BorderPane.alignment="CENTER">
                <Label fx:id="lastRollPlayerLabel" text="%rolled1" />
                <HBox prefHeight="100.0" prefWidth="145.0">
-                  <ImageView fx:id="diceImage1" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true"
-                             preserveRatio="true"/>
-                  <ImageView fx:id="diceImage2" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true"
-                             preserveRatio="true"/>
+                  <ImageView fx:id="diceImage1" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="diceImage2" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
                </HBox>
                <Label fx:id="rollSum" />
                <Label text="%rolled2" />

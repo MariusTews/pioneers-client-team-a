@@ -2,13 +2,9 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.*;
-import com.aviumauctores.pioneers.service.GameMemberService;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.PioneerService;
-import com.aviumauctores.pioneers.service.UserService;
-import com.aviumauctores.pioneers.sounds.*;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Move;
@@ -19,6 +15,7 @@ import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -34,6 +31,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import retrofit2.HttpException;
+
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -55,10 +54,11 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
-    private final Player player;
-    private final TileController tileController;
+    private Player player;
+    private final EventListener eventListener;
     private final SoundService soundService;
-    private final HashMap<Player, Player> moveOrder = new HashMap<>();
+
+    private String sideType;
 
 
     @FXML
@@ -86,10 +86,12 @@ public class InGameController extends LoggedInController {
     private String currentAction;
 
     private final Provider<InGameChatController> inGameChatController;
+    private final ColorService colorService;
     private final Provider<GameReadyController> gameReadyController;
 
     @FXML
     private Slider soundSlider;
+
 
     @FXML
     public Circle vp01;
@@ -111,14 +113,20 @@ public class InGameController extends LoggedInController {
     public Circle vp09;
     @FXML
     public Circle vp10;
+    @FXML
+    public Button buildButton;
 
-    private Tile selectedTile;
+
+    private final HashMap<String, String> errorCodes = new HashMap<>();
+
 
 
     public int memberVP;
 
-    private BuildMenuController buildMenuController;
-    private Parent buildMenu;
+    private ImageView selectedField;
+    private String selectedFieldCoordinates;
+
+
     @FXML
     public Label rollSum;
 
@@ -133,33 +141,41 @@ public class InGameController extends LoggedInController {
     Image dice5;
     Image dice6;
 
-    GameMusic gameSound;
+    GameMusic gameSound = new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+    private BuildMenuController buildMenuController;
+    private Parent buildMenu;
+    private Building foundingSettlement;
+
+
 
     // These are the Sound-Icons
-    Image muteImage;
-    Image unmuteImage;
-    private final EventListener eventListener;
+
+    Image muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
+    Image unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
+    private ErrorService errorService;
+    private final BuildService buildService;
+
 
     @Inject
     public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
-                            SoundService soundService,
+                            SoundService soundService, ColorService colorService,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            TileController tileController) {
+                            ErrorService errorService, BuildService buildService) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
         this.playerResourceListController = playerResourceListController;
         this.gameMemberService = gameMemberService;
         this.soundService = soundService;
+        this.colorService = colorService;
         this.gameReadyController = gameReadyController;
         this.inGameChatController = inGameChatController;
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.eventListener = eventListener;
-        this.userID = userService.getCurrentUserID();
-        this.player = pioneerService.getPlayer(userID).blockingFirst();
-        this.tileController = tileController;
+        this.errorService = errorService;
+        this.buildService = buildService;
     }
 
 
@@ -168,6 +184,10 @@ public class InGameController extends LoggedInController {
     public void init() {
         disposables = new CompositeDisposable();
         memberVP = 0;
+        errorCodes.put("401", "Das ist nur ein Test");
+        errorCodes.put("403", "Auch nur ein tets");
+        errorCodes.put("400", "TEEEEEEEEST");
+        errorCodes.put("429", "man auch nur ein test");
 
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
@@ -313,6 +333,7 @@ public class InGameController extends LoggedInController {
         String oldPlayer = currentPlayerID;
         currentPlayerID = state.data().expectedMoves().get(0).players().get(0);
         currentAction = state.data().expectedMoves().get(0).action();
+        buildService.setCurrentAction(currentAction);
         if (!currentPlayerID.equals(oldPlayer)) {
             playerResourceListController.hideArrow(pioneerService.getPlayer(oldPlayer).blockingFirst());
             playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
@@ -320,20 +341,31 @@ public class InGameController extends LoggedInController {
         if(currentPlayerID.equals(userID)){
             if(currentAction.endsWith(MOVE_ROLL)){
                 rollButton.setDisable(false);
+                disableEmptyFields(crossingPane, roadPane);
+            }else{
+                if(currentAction.startsWith(MOVE_FOUNDING_SETTLEMENT)){
+                    enableEmptyFields(crossingPane);
+                    disableEmptyFields(roadPane);
+                }else if (currentAction.startsWith(MOVE_FOUNDING_ROAD)){
+                    enableEmptyFields(roadPane);
+                    disableEmptyFields(crossingPane);
+                }
             }
+
             if( rollButton.disabledProperty().get() || currentAction.startsWith(MOVE_BUILD)){
                 finishMoveButton.setDisable(false);
             }
+
         }else{
             finishMoveButton.setDisable(true);
             rollButton.setDisable(true);
         }
+        player = pioneerService.getPlayer(userID).blockingFirst();
+        buildService.setPlayer(player);
         playerResourceListController.updateResourceList();
         updateOwnResources();
     }
 
-    private void makeFoundingMove() {
-    }
 
     @Override
     public void destroy(boolean closed) {
@@ -345,6 +377,10 @@ public class InGameController extends LoggedInController {
         pioneerService.createMove(MOVE_BUILD, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
+    }
+
+    public void build(ActionEvent event){
+        buildService.build();
     }
 
 
@@ -364,30 +400,33 @@ public class InGameController extends LoggedInController {
                 diceSound.play();
             }
         }
+        //For test purpose: First move needs to be "founding-roll"
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe());
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
-        if (!(mouseEvent.getSource() instanceof Node source)) {
+        if (!(mouseEvent.getSource() instanceof ImageView source)) {
             return;
         }
+        buildService.setSelectedField(source);
+        buildService.setSelectedFieldCoordinates(coordsToPath(source.getId()));
         closeBuildMenu(false);
         Building coordinateHolder = Building.readCoordinatesFromID(source.getId());
         if (coordinateHolder == null) {
             return;
         }
-
         int side = coordinateHolder.side();
-        String buildingType;
         if (side == 0 || side == 6) {
             // TODO Check for city
-            buildingType = "settlement";
+            sideType = BUILDING_TYPE_SETTLEMENT;
+
         } else {
-            buildingType = "road";
+            sideType = BUILDING_TYPE_ROAD;
         }
-        buildMenuController = new BuildMenuController(bundle, buildingType);
+        buildService.setBuildingType(sideType);
+        buildMenuController = new BuildMenuController(bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -396,7 +435,29 @@ public class InGameController extends LoggedInController {
         mainPane.getChildren().add(buildMenu);
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
+
     }
+
+    private String coordsToPath(String source) {
+        String res = null;
+        if(source.startsWith("building")){
+            return res;
+        }
+        res = "building " + source.replace("-", "_");
+        return res;
+
+    }
+
+    private String pathToCoords(String source){
+        String res  = null;
+        if(source.startsWith("building")){
+             res =  source.substring(8).replace("_", "-");
+            System.out.println(res);
+        }
+        return res;
+    }
+
+
 
     private void closeBuildMenu(boolean appClosed) {
         if (buildMenuController != null) {
@@ -407,18 +468,23 @@ public class InGameController extends LoggedInController {
             mainPane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
+        buildButton.setDisable(appClosed);
+        buildButton.setVisible(!appClosed);
     }
 
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         closeBuildMenu(false);
+        buildButton.setDisable(true);
+        buildButton.setVisible(false);
+        selectedField = null;
+        selectedFieldCoordinates = null;
     }
 
     public void leaveGame(ActionEvent actionEvent) {
         if (gameSound.isRunning()) {
             gameSound.stop();
         }
-        final GameReadyController gamecontroller = gameReadyController.get();
-        app.show(gamecontroller);
+        app.show(gameReadyController.get());
 
     }
 
@@ -433,67 +499,41 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    public void buildFoundingSettlement(){
-        if (!selectedTile.type().equals(BUILDING_TYPE_SETTLEMENT)){
-            return;
-        }
-        pioneerService.createMove(MOVE_FOUNDING_SETTLEMENT_1, new Building(selectedTile.x(), selectedTile.y(), selectedTile.z(),
-                11,BUILDING_TYPE_SETTLEMENT, gameService.getCurrentGameID(), userID ))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
 
-                }, throwable -> {
-
-                });
-    }
-
-    public void buildFoundingRoad(){
-        if (!selectedTile.type().equals(BUILDING_TYPE_ROAD)){
-            return;
-        }
-        pioneerService.createMove(MOVE_FOUNDING_ROAD_1, new Building(selectedTile.x(), selectedTile.y(), selectedTile.z(),
-                11,BUILDING_TYPE_ROAD, gameService.getCurrentGameID(), userID))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-
-                },throwable -> {
-
-                });
-    }
-
-    public void buildSettlement() {
-        // build a settlement (if possible), then gain 1 VP
-        gainVP(1);
-    }
-
-    public void buildTown() {
-        // upgrade a settlement to a town (if possible), then
-        gainVP(1);
-    }
 
     public void gainVP(int vpGain) {
         memberVP += vpGain;
         switch (memberVP) {
             case 1:
                 vp01.setFill(Color.GOLD);
+                break;
             case 2:
                 vp02.setFill(Color.GOLD);
+                break;
             case 3:
                 vp03.setFill(Color.GOLD);
+                break;
             case 4:
                 vp04.setFill(Color.GOLD);
+                break;
             case 5:
                 vp05.setFill(Color.GOLD);
+                break;
             case 6:
                 vp06.setFill(Color.GOLD);
+                break;
             case 7:
                 vp07.setFill(Color.GOLD);
+                break;
             case 8:
                 vp08.setFill(Color.GOLD);
+                break;
             case 9:
                 vp09.setFill(Color.GOLD);
+                break;
             case 10:
                 vp10.setFill(Color.GOLD);
+                break;
         }
     }
 
@@ -519,12 +559,19 @@ public class InGameController extends LoggedInController {
         numSheepLabel.setText(wool);
     }
 
-    public void setSelectedTile(Tile tile){
-        selectedTile = tile;
-        System.out.println(tile);
+    public void disableEmptyFields(Pane... panes){
+        for(Pane pane : panes){
+            pane.setDisable(true);
+            pane.setVisible(false);
+        }
     }
 
-    public Tile getSelectedTile(){
-        return selectedTile;
+    public void enableEmptyFields(Pane... panes){
+        for(Pane pane : panes) {
+            pane.setDisable(false);
+            pane.setVisible(true);
+        }
+
     }
+
 }

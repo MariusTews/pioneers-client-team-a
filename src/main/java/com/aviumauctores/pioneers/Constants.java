@@ -140,10 +140,8 @@ public class Constants {
     public static final String BUILDING_TYPE_CITY = "city";
 
     //Actions
-    public static final String MOVE_FOUNDING_SETTLEMENT_1 = "founding-settlement-1";
-    public static final String MOVE_FOUNDING_SETTLEMENT_2 = "founding-settlement-2";
-    public static final String MOVE_FOUNDING_ROAD_1 = "founding-road-1";
-    public static final String MOVE_FOUNDING_ROAD_2 = "founding-road-2";
+    public static final String MOVE_FOUNDING_SETTLEMENT = "founding-settlement-";
+    public static final String MOVE_FOUNDING_ROAD = "founding-road-";
     public static final String MOVE_FOUNDING_ROLL = "founding-roll";
     public static final String MOVE_ROLL = "roll";
     public static final String MOVE_BUILD = "build";
