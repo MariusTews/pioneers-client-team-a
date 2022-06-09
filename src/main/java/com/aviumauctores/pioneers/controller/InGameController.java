@@ -51,10 +51,14 @@ public class InGameController extends LoggedInController {
     private final PioneerService pioneerService;
     private final SoundService soundService;
     private final HashMap<Player, Player> moveOrder = new HashMap<>();
+
     private Player player;
 
     @FXML
     public Label numSheepLabel;
+
+    @FXML
+    public Label yourTurnLabel;
     @FXML public Pane mainPane;
     @FXML
     private ImageView soundImage;

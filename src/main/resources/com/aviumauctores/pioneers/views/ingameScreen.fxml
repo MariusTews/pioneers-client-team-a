@@ -18,9 +18,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
-      <Pane fx:id="mainPane" prefHeight="580.0" prefWidth="583.0" onMouseClicked="#onMainPaneClicked" BorderPane.alignment="CENTER">
+      <Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER">
          <ImageView id="hexagon20_2" fitHeight="89.375" fitWidth="103.75" layoutX="113.375" layoutY="166.375" pickOnBounds="true" preserveRatio="true">
             <Image url="@tiles/ore.png" />
          </ImageView>
@@ -944,6 +944,9 @@
          <top>
             <VBox fx:id="insertChat" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
          </top>
+         <left>
+            <Label fx:id="yourTurnLabel" prefHeight="24.0" prefWidth="163.0" text="%your.turn" BorderPane.alignment="BOTTOM_LEFT" />
+         </left>
       </BorderPane>
    </left>
 </BorderPane>
