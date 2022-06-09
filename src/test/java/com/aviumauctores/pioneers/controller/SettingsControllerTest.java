@@ -7,6 +7,7 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.Locale;
@@ -42,17 +45,25 @@ class SettingsControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         //create User for the settings
-        User user = new User("123", "Hans", "online", "xyz", null);
-        settingsController.setCurrentUser(user);
+        User user = new User("123", "Hans", "online", null, null);
         when(userService.getUserByID(any())).thenReturn(Observable.just(user));
         new App(settingsController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.loginService = null;
+        this.bundle = null;
+        this.settingsController = null;
+        this.userService = null;
+    }
+
     @Test
     void changeUserName() {
+        User user = new User("123", "Peter", "online", "xyz", null);
         when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", null, null, null, null)));
         when(userService.updateUser(any(), new UpdateUserDto(any(), null, null, null, null)))
-                .thenReturn(Observable.empty());
+                .thenReturn(Observable.just(user));
 
         //click through the screen and change Name from Hans to Peter
         clickOn("#changeNameButton");
@@ -60,12 +71,16 @@ class SettingsControllerTest extends ApplicationTest {
         write("Peter");
         clickOn("#acceptChangesButton");
 
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Label currentNameLabel = lookup("#currentNameLabel").query();
+        assertEquals(currentNameLabel.getText(), "Peter");
         verify(userService).updateUser("123", new UpdateUserDto("Peter", null, null, null, null));
     }
 
     @Test
     void changeAvatar() {
-        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", "xyz", null, null, null)));
+        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", null, null, null, null)));
         when(userService.updateUser(any(), new UpdateUserDto(null, null, any(), null, null)))
                 .thenReturn(Observable.empty());
 
@@ -85,7 +100,7 @@ class SettingsControllerTest extends ApplicationTest {
         when(userService.updateUser(any(), new UpdateUserDto(null, null, null, any(), null)))
                 .thenReturn(Observable.empty());
 
-        //check that it not works, if you don`t confirm the password
+        //check that it does not work, if you don`t confirm the password
         clickOn("#changePasswordButton");
         clickOn("#newPasswordField");
         write("abc");

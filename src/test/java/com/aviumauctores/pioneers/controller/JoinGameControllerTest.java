@@ -58,6 +58,16 @@ class JoinGameControllerTest extends ApplicationTest {
         new App(joinGameController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.bundle = null;
+        this.app = null;
+        this.preferenceService = null;
+        this.eventListener = null;
+        this.gameService = null;
+        this.joinGameController = null;
+    }
+
     @Test
     void gameNameLabel() {
         // Ensure the game name is shown

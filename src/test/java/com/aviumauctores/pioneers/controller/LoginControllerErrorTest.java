@@ -60,6 +60,17 @@ class LoginControllerErrorTest extends ApplicationTest {
         app.start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.loginController = null;
+        this.bundle = null;
+        this.app = null;
+        this.userService = null;
+        this.preferenceService = null;
+        this.loginService = null;
+        this.lobbyController = null;
+    }
+
     @Test
     void login(){
         when(loginService.login(any(), any())).thenReturn(Observable.error(new Throwable()));
