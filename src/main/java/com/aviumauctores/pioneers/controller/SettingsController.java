@@ -110,7 +110,6 @@ public class SettingsController implements Controller {
         return parent;
     }
 
-
     public void destroy(boolean closed) {
 
     }
