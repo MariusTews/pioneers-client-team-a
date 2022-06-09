@@ -3,10 +3,8 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Building;
-import com.aviumauctores.pioneers.model.Move;
-import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.model.State;
+import com.aviumauctores.pioneers.model.*;
+import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
@@ -31,6 +29,7 @@ import javafx.scene.shape.Circle;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.*;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -51,7 +50,8 @@ public class InGameController extends LoggedInController {
 
     @FXML
     public Label numSheepLabel;
-    @FXML public Pane mainPane;
+    @FXML
+    public Pane mainPane;
     @FXML public Pane crossingPane;
     @FXML public Pane roadPane;
     @FXML
@@ -99,6 +99,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
+    public Circle[] vpCircles = {vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
+
     public int memberVP;
 
     private BuildMenuController buildMenuController;
@@ -116,6 +118,13 @@ public class InGameController extends LoggedInController {
     Image dice4;
     Image dice5;
     Image dice6;
+
+    Image desert;
+    Image fields;
+    Image hills;
+    Image mountains;
+    Image forest;
+    Image pasture;
 
     GameMusic gameSound;
 
@@ -144,7 +153,6 @@ public class InGameController extends LoggedInController {
     }
 
 
-
     @Override
     public void init() {
         disposables = new CompositeDisposable();
@@ -164,13 +172,22 @@ public class InGameController extends LoggedInController {
         dice4 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_4.png")).toString());
         dice5 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_5.png")).toString());
         dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
+        desert = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/desert.png")).toString());
+        fields = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/wheat.png")).toString());
+        hills = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/brick.png")).toString());
+        mountains = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/ore.png")).toString());
+        forest = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/forest.png")).toString());
+        pasture = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/pasture.png")).toString());
         // Listen to game-move events
         disposables.add(eventListener.listen(
-                        "games." + gameService.getCurrentGameID() + ".moves.*",
+                        "games." + gameService.getCurrentGameID() + ".moves.*.*",
                         Move.class
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
+        disposables.add(pioneerService.createMove("founding-roll", null)
+                .observeOn(FX_SCHEDULER)
+                .subscribe());
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
@@ -178,62 +195,69 @@ public class InGameController extends LoggedInController {
         if (move.action().equals("roll")) {
             int rolled = move.roll();
             rollSum.setText(" " + rolled + " ");
-            rollAllDice();
-            switch (rolled) {
-                case 2:
-                    diceImage1.setImage(dice1);
-                    diceImage1.setImage(dice1);
-                    break;
-                case 3:
-                    diceImage1.setImage(dice1);
-                    diceImage2.setImage(dice2);
-                    break;
-                case 4:
-                    diceImage1.setImage(dice3);
-                    diceImage2.setImage(dice1);
-                    break;
-                case 5:
-                    diceImage1.setImage(dice2);
-                    diceImage2.setImage(dice3);
-                case 6:
-                    diceImage1.setImage(dice2);
-                    diceImage2.setImage(dice4);
-                    break;
-                case 7:
-                    diceImage1.setImage(dice2);
-                    diceImage2.setImage(dice5);
-                    break;
-                case 8:
-                    diceImage1.setImage(dice5);
-                    diceImage2.setImage(dice3);
-                    break;
-                case 9:
-                    diceImage1.setImage(dice4);
-                    diceImage2.setImage(dice5);
-                    break;
-                case 10:
-                    diceImage1.setImage(dice6);
-                    diceImage2.setImage(dice4);
-                    break;
-                case 11:
-                    diceImage1.setImage(dice5);
-                    diceImage2.setImage(dice6);
-                    break;
-                case 12:
-                    diceImage1.setImage(dice6);
-                    diceImage2.setImage(dice6);
-                    break;
-            }
+            new Thread(() -> {
+                try {
+                    rollAllDice(rolled);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
         }
     }
 
-    public void rollAllDice() throws InterruptedException {
-        int i = 12;
+    public void rollAllDice(int rolled) throws InterruptedException {
+        int i = 6;
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
-            TimeUnit.MILLISECONDS.sleep(250);
+            TimeUnit.MILLISECONDS.sleep(500);
             i--;
+        }
+        switch (rolled) {
+            case 2:
+                diceImage1.setImage(dice1);
+                diceImage1.setImage(dice1);
+                break;
+            case 3:
+                diceImage1.setImage(dice1);
+                diceImage2.setImage(dice2);
+                break;
+            case 4:
+                diceImage1.setImage(dice3);
+                diceImage2.setImage(dice1);
+                break;
+            case 5:
+                diceImage1.setImage(dice2);
+                diceImage2.setImage(dice3);
+                break;
+            case 6:
+                diceImage1.setImage(dice2);
+                diceImage2.setImage(dice4);
+                break;
+            case 7:
+                diceImage1.setImage(dice2);
+                diceImage2.setImage(dice5);
+                break;
+            case 8:
+                diceImage1.setImage(dice5);
+                diceImage2.setImage(dice3);
+                break;
+            case 9:
+                diceImage1.setImage(dice4);
+                diceImage2.setImage(dice5);
+                break;
+            case 10:
+                diceImage1.setImage(dice6);
+                diceImage2.setImage(dice4);
+                break;
+            case 11:
+                diceImage1.setImage(dice5);
+                diceImage2.setImage(dice6);
+                break;
+            case 12:
+                diceImage1.setImage(dice6);
+                diceImage2.setImage(dice6);
+                break;
         }
     }
 
@@ -276,30 +300,30 @@ public class InGameController extends LoggedInController {
         this.soundImage.setImage(muteImage);
 
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
-                        .observeOn(FX_SCHEDULER)
-                                .subscribe(state -> {
-                                    String oldPlayer = currentPlayerID;
-                                    currentPlayerID = state.data().expectedMoves().get(0).players().get(0);
-                                    String action = state.data().expectedMoves().get(0).action();
-                                    if (!currentPlayerID.equals(oldPlayer)) {
-                                        playerResourceListController.hideArrow(pioneerService.getPlayer(oldPlayer).blockingFirst());
-                                        playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
-                                    }
-                                    if(currentPlayerID.equals(userID)){
+                .observeOn(FX_SCHEDULER)
+                .subscribe(state -> {
+                    String oldPlayer = currentPlayerID;
+                    currentPlayerID = state.data().expectedMoves().get(0).players().get(0);
+                    String action = state.data().expectedMoves().get(0).action();
+                    if (!currentPlayerID.equals(oldPlayer)) {
+                        playerResourceListController.hideArrow(pioneerService.getPlayer(oldPlayer).blockingFirst());
+                        playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
+                    }
+                    if (currentPlayerID.equals(userID)) {
 
-                                        if(action.endsWith("roll")){
-                                            rollButton.setDisable(false);
-                                        }
-                                        if( rollButton.disabledProperty().get() || action.startsWith("build")){
-                                            finishMoveButton.setDisable(false);
-                                        }
-                                    }else{
-                                        finishMoveButton.setDisable(true);
-                                        rollButton.setDisable(true);
-                                    }
-                                    playerResourceListController.updateResourceList();
-                                    updateOwnResources();
-                                }));
+                        if (action.endsWith("roll")) {
+                            rollButton.setDisable(false);
+                        }
+                        if (rollButton.disabledProperty().get() || action.startsWith("build")) {
+                            finishMoveButton.setDisable(false);
+                        }
+                    } else {
+                        finishMoveButton.setDisable(true);
+                        rollButton.setDisable(true);
+                    }
+                    playerResourceListController.updateResourceList();
+                    updateOwnResources();
+                }));
 
         this.currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         soundImage.setImage(muteImage);
@@ -308,7 +332,33 @@ public class InGameController extends LoggedInController {
         updateOwnResources();
         finishMoveButton.setDisable(true);
 
+        buildMap();
+
         return parent;
+    }
+
+    public void buildMap() {
+        disposables.add(pioneerService.getMap()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(map ->{
+                    List<Tile> tiles = map.tiles();
+                    for (Tile tile: tiles) {
+                        String hexID = "" + tile.x() + tile.y() + tile.z();
+                        hexID = hexID.replace('-', '_');
+                        ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
+                        switch (tile.type()) {
+                            case "desert" -> tileImage.setImage(desert);
+                            case "fields" -> tileImage.setImage(fields);
+                            case "hills" -> tileImage.setImage(hills);
+                            case "mountains" -> tileImage.setImage(mountains);
+                            case "forest" -> tileImage.setImage(forest);
+                            case "pasture" -> tileImage.setImage(pasture);
+                        }
+                        Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
+                        tileLabel.setText("  " + tile.numberToken());
+                    }
+                })
+        );
     }
 
     @Override
@@ -358,7 +408,6 @@ public class InGameController extends LoggedInController {
         int side = coordinateHolder.side();
         String buildingType;
         if (side == 0 || side == 6) {
-            // TODO Check for city
             buildingType = "settlement";
         } else {
             buildingType = "road";
@@ -399,8 +448,6 @@ public class InGameController extends LoggedInController {
     }
 
 
-
-
     public void soundOnOff(MouseEvent mouseEvent) {
         if (gameSound.isRunning()) {
             soundImage.setImage(unmuteImage);
@@ -424,27 +471,29 @@ public class InGameController extends LoggedInController {
 
     public void gainVP(int vpGain) {
         memberVP += vpGain;
-        switch (memberVP) {
-            case 1:
-                vp01.setFill(Color.GOLD);
-            case 2:
-                vp02.setFill(Color.GOLD);
-            case 3:
-                vp03.setFill(Color.GOLD);
-            case 4:
-                vp04.setFill(Color.GOLD);
-            case 5:
-                vp05.setFill(Color.GOLD);
-            case 6:
-                vp06.setFill(Color.GOLD);
-            case 7:
-                vp07.setFill(Color.GOLD);
-            case 8:
-                vp08.setFill(Color.GOLD);
-            case 9:
-                vp09.setFill(Color.GOLD);
-            case 10:
-                vp10.setFill(Color.GOLD);
+        for (int i = 0; i < 10; i++) {
+            if (memberVP > i) {
+                vpCircles[i].setFill(Color.GOLD);
+                int finalI = i;
+                new Thread(() -> {
+                    try {
+                        vpAnimation(finalI);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+            } else {
+                vpCircles[i].setFill(Color.GRAY);
+            }
+        }
+    }
+
+    public void vpAnimation(int intdex) throws InterruptedException {
+        double radius = 100.0;
+        while (radius >= 10.0) {
+            vpCircles[intdex].setRadius(radius);
+            radius -= 1.0;
+            TimeUnit.MILLISECONDS.sleep(10);
         }
     }
 
@@ -457,7 +506,7 @@ public class InGameController extends LoggedInController {
     }
 
 
-    private void updateOwnResources(){
+    private void updateOwnResources() {
         String brick = Integer.toString(player.brick());
         String grain = Integer.toString(player.grain());
         String ore = Integer.toString(player.ore());
