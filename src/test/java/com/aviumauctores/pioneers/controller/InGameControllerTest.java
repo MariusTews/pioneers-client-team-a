@@ -128,6 +128,9 @@ public class InGameControllerTest extends ApplicationTest {
                 List.of(new ExpectedMove("roll", List.of("1"))))));
         when(soundService.createGameMusic(any())).thenReturn(null);
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
+        when(pioneerService.createMove("founding-roll", null)).thenReturn(Observable.just(new Move("69",
+                "420", "12", "1", "founding-roll", 2, null)));
+        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile[]{new Tile(0, 0, 0, "desert", 10)}))));
         new App(inGameController).start(stage);
     }
 

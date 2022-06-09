@@ -18,7 +18,7 @@ public class PioneerService {
 
     @Inject
     public PioneerService(GameService gameService, GameMemberService gameMemberService, ColorService colorService,
-                          PioneersApiService pioneersApiService){
+                          PioneersApiService pioneersApiService) {
 
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
@@ -29,19 +29,19 @@ public class PioneerService {
     public Observable<Map> getMap(){
         return pioneersApiService.getMap(gameService.getCurrentGameID());
     }
-    public Observable<State> getState(){
+    public Observable<State> getState() {
         return pioneersApiService.getState(gameService.getCurrentGameID());
     }
 
-    public Observable<Move> createMove(String action, Building building){
+    public Observable<Move> createMove(String action, Building building) {
         return pioneersApiService.createMove(gameService.getCurrentGameID(), new CreateMoveDto(action, building));
     }
 
-    public Observable<Player> getPlayer(String playerID){
+    public Observable<Player> getPlayer(String playerID) {
         return pioneersApiService.getPlayer(gameService.getCurrentGameID(), playerID);
     }
 
-    public Observable<List<Player>> listPlayers(){
+    public Observable<List<Player>> listPlayers() {
         return pioneersApiService.listMembers(gameService.getCurrentGameID());
     }
 
@@ -49,7 +49,11 @@ public class PioneerService {
         return pioneersApiService.listBuildings(gameService.getCurrentGameID());
     }
 
-    public void setGameID(String id){
+    public Observable<Map> getMap() {
+        return pioneersApiService.getMap(gameService.getCurrentGameID());
+    }
+
+    public void setGameID(String id) {
         this.gameID = id;
     }
 }
