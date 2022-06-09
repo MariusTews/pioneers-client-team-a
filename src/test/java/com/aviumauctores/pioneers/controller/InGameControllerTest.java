@@ -1,12 +1,16 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -16,7 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.inject.Provider;
 import java.util.List;
@@ -36,6 +42,9 @@ public class InGameControllerTest extends ApplicationTest {
     UserService userService;
 
     @Mock
+    ColorService colorService;
+
+    @Mock
     GameMemberService gameMemberService;
 
     @Mock
@@ -49,6 +58,7 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
+
 
     // For some reason Mockito doesn't want a lambda expression
     @SuppressWarnings("Convert2Lambda")
@@ -110,6 +120,10 @@ public class InGameControllerTest extends ApplicationTest {
     @InjectMocks
     InGameController inGameController;
 
+    private PublishSubject<EventDto<State>> stateUpdates;
+
+
+
     @Override
     public void start(Stage stage) throws Exception {
         when(userService.getCurrentUserID()).thenReturn("1");
@@ -121,8 +135,29 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))))));
         when(soundService.createGameMusic(any())).thenReturn(null);
+        //
+        stateUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
+        when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
+        //
+        //when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
+    }
+
+    @Override
+    public void stop() {
+        this.stateUpdates = null;
+        this.bundle = null;
+        this.colorService = null;
+        this.eventListener = null;
+        this.gameMemberService = null;
+        this.gameService = null;
+        this.inGameChatController = null;
+        this.inGameController = null;
+        this.playerResourceListController = null;
+        this.soundService = null;
+        this.userService = null;
+        this.pioneerService = null;
     }
 
     @Test
@@ -152,6 +187,17 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void showYourTurn() {
+        State state = new State("", "12", List.of(new ExpectedMove("build", List.of("1"))));
 
+        ImageView arrow = lookup("#arrowOnDice").query();
+        Label yourTurn = lookup("#yourTurnLabel").query();
+        assertThat(arrow.isVisible()).isTrue();
+        assertThat(yourTurn.isVisible()).isTrue();
+
+        stateUpdates.onNext(new EventDto<>("build", state));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertThat(arrow.isVisible()).isFalse();
     }
 }

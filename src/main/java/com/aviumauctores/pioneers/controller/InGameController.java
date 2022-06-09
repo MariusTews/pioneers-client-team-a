@@ -283,8 +283,12 @@ public class InGameController extends LoggedInController {
                     finishMoveButton.setStyle(colourString);
                     diceImage1.setStyle(colourString);
                     diceImage2.setStyle(colourString);
-                    Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                    arrowOnDice.setImage(arrowIcon);
+                    try {
+                        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                        arrowOnDice.setImage(arrowIcon);
+                    } catch(NullPointerException e) {
+                        e.printStackTrace();
+                    }
                 }));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
@@ -309,6 +313,7 @@ public class InGameController extends LoggedInController {
                                         }
                                         if( rollButton.disabledProperty().get() || action.startsWith("build")){
                                             finishMoveButton.setDisable(false);
+                                            arrowOnDice.setVisible(false);
                                         }
                                     }else{
                                         arrowOnDice.setVisible(false);

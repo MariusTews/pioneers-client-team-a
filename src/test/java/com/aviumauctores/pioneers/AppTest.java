@@ -25,6 +25,11 @@ class AppTest extends ApplicationTest {
         app.show(testComponent.loginController());
     }
 
+    @Override
+    public void stop() {
+        this.stage = null;
+    }
+
     @Test
     void criticalPath() {
         assertThat(stage.getTitle()).isEqualTo("Pioneers");
