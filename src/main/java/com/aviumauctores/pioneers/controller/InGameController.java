@@ -101,6 +101,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Circle vp10;
 
+    public Circle[] vpCircles = {vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
+
     public int memberVP;
 
     private BuildMenuController buildMenuController;
@@ -230,7 +232,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void rollAllDice() throws InterruptedException {
-        int i = 12;
+        int i = 6;
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
@@ -414,39 +416,34 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    public void buildSettlement() {
+    public void buildSettlement() throws InterruptedException {
         // build a settlement (if possible), then gain 1 VP
         gainVP(1);
     }
 
-    public void buildTown() {
+    public void buildTown() throws InterruptedException {
         // upgrade a settlement to a town (if possible), then
         gainVP(1);
     }
 
-    public void gainVP(int vpGain) {
+    public void gainVP(int vpGain) throws InterruptedException {
         memberVP += vpGain;
-        switch (memberVP) {
-            case 1:
-                vp01.setFill(Color.GOLD);
-            case 2:
-                vp02.setFill(Color.GOLD);
-            case 3:
-                vp03.setFill(Color.GOLD);
-            case 4:
-                vp04.setFill(Color.GOLD);
-            case 5:
-                vp05.setFill(Color.GOLD);
-            case 6:
-                vp06.setFill(Color.GOLD);
-            case 7:
-                vp07.setFill(Color.GOLD);
-            case 8:
-                vp08.setFill(Color.GOLD);
-            case 9:
-                vp09.setFill(Color.GOLD);
-            case 10:
-                vp10.setFill(Color.GOLD);
+        for(int i = 0; i < 10; i++) {
+            if (memberVP > i) {
+                vpCircles[i].setFill(Color.GOLD);
+                vpAnimation(i);
+            } else {
+                vpCircles[i].setFill(Color.GRAY);
+            }
+        }
+    }
+
+    public void vpAnimation(int intdex) throws InterruptedException {
+        double radius = 100.0;
+        while (radius >= 10.0) {
+            vpCircles[intdex].setRadius(radius);
+            radius -= 1.0;
+            TimeUnit.MILLISECONDS.sleep(10);
         }
     }
 
