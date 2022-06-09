@@ -92,6 +92,8 @@ public class HttpModule {
 
     @Provides
     @Singleton
-    PioneersApiService pioneersApiService(Retrofit retrofit){ return retrofit.create(PioneersApiService.class);}
+    PioneersApiService pioneersApiService(Retrofit retrofit) {
+        return retrofit.create(PioneersApiService.class);
+    }
 }
 

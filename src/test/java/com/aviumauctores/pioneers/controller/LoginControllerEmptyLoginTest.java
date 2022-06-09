@@ -35,6 +35,13 @@ class LoginControllerEmptyLoginTest extends ApplicationTest {
         new App(loginController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.loginController = null;
+        this.bundle = null;
+        this.preferenceService = null;
+    }
+
     @Test
     void emptyLogin(){
         type(KeyCode.TAB);

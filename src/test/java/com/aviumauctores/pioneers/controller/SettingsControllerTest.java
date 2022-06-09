@@ -42,10 +42,18 @@ class SettingsControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         //create User for the settings
-        User user = new User("123", "Hans", "online", "xyz", null);
+        User user = new User("123", "Hans", "online", null, null);
         settingsController.setCurrentUser(user);
         when(userService.getUserByID(any())).thenReturn(Observable.just(user));
         new App(settingsController).start(stage);
+    }
+
+    @Override
+    public void stop() {
+        this.loginService = null;
+        this.bundle = null;
+        this.settingsController = null;
+        this.userService = null;
     }
 
     @Test
@@ -65,7 +73,7 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Test
     void changeAvatar() {
-        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", "xyz", null, null, null)));
+        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", null, null, null, null)));
         when(userService.updateUser(any(), new UpdateUserDto(null, null, any(), null, null)))
                 .thenReturn(Observable.empty());
 
