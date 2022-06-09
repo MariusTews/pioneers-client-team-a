@@ -55,6 +55,17 @@ class LoginControllerTest extends ApplicationTest {
         new App(loginController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.loginController = null;
+        this.bundle = null;
+        this.app = null;
+        this.userService = null;
+        this.preferenceService = null;
+        this.loginService = null;
+        this.lobbyController = null;
+    }
+
     @Test
     void login() {
         when(loginService.login(any(), any())).thenReturn(Observable.just(new LoginResult("1", "Struppi", "online", null, "a", "r",null)));

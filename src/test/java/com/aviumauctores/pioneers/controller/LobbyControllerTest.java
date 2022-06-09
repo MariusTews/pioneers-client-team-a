@@ -76,6 +76,20 @@ class LobbyControllerTest extends ApplicationTest {
         new App(lobbyController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.userUpdates = null;
+        this.bundle = null;
+        this.app = null;
+        this.userService = null;
+        this.preferenceService = null;
+        this.loginService = null;
+        this.lobbyController = null;
+        this.eventListener = null;
+        this.gameService = null;
+        this.gameUpdates = null;
+    }
+
     @Test
     void gameListUpdates() {
         final ListView<Parent> gameListView = lookup("#gameListView").queryListView();
