@@ -7,6 +7,7 @@ import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -127,6 +128,8 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onFieldClicked() {
+        Pane crossingPane = lookup("#crossingPane").query();
+        crossingPane.setVisible(true);
         // Open the build menu
         clickOn("#building01_10");
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
@@ -135,6 +138,8 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onMainPaneClicked() {
+        Pane crossingPane = lookup("#crossingPane").query();
+        crossingPane.setVisible(true);
         clickOn("#building01_10");
         // Click on main pane to close the build menu
         clickOn("#mainPane");

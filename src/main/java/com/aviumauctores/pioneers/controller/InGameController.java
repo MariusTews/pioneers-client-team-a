@@ -14,7 +14,6 @@ import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Move;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
-import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
@@ -45,7 +44,6 @@ import java.util.Objects;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -66,6 +64,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label numSheepLabel;
     @FXML public Pane mainPane;
+    @FXML public Pane crossingPane;
+    @FXML public Pane roadPane;
     @FXML
     private ImageView soundImage;
     @FXML
