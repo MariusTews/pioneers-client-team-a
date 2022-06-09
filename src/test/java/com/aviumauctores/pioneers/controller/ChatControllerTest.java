@@ -79,6 +79,14 @@ class ChatControllerTest extends ApplicationTest {
     @Override
     public void stop() {
         this.chatController = null;
+        this.app = null;
+        this.messageService = null;
+        this.eventListener = null;
+        this.groupService = null;
+        this.bundle = null;
+        this.userUpdates = null;
+        this.userService = null;
+        this.messageCreateUpdates = null;
     }
 
     @Test
