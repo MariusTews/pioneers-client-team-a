@@ -7,7 +7,6 @@ import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Move;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
-import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
@@ -32,12 +31,9 @@ import javafx.scene.shape.Circle;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.sql.Time;
-import java.util.Objects;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -56,6 +52,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label numSheepLabel;
     @FXML public Pane mainPane;
+    @FXML public Pane crossingPane;
+    @FXML public Pane roadPane;
     @FXML
     private ImageView soundImage;
     @FXML
