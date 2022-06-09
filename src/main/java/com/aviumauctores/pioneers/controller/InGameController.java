@@ -170,16 +170,19 @@ public class InGameController extends LoggedInController {
         dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
         // Listen to game-move events
         disposables.add(eventListener.listen(
-                        "games." + gameService.getCurrentGameID() + ".moves.*",
+                        "games." + gameService.getCurrentGameID() + ".moves.*.*",
                         Move.class
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
+        disposables.add(pioneerService.createMove("founding-roll", null)
+                .observeOn(FX_SCHEDULER)
+                .subscribe());
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
         Move move = eventDto.data();
-        if (move.action().equals("roll")) {
+        if (move.action().equals("roll") || move.action().equals("founding-roll")) {
             int rolled = move.roll();
             rollSum.setText(" " + rolled + " ");
             rollAllDice();
@@ -199,6 +202,7 @@ public class InGameController extends LoggedInController {
                 case 5:
                     diceImage1.setImage(dice2);
                     diceImage2.setImage(dice3);
+                    break;
                 case 6:
                     diceImage1.setImage(dice2);
                     diceImage2.setImage(dice4);
@@ -236,7 +240,7 @@ public class InGameController extends LoggedInController {
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
-            TimeUnit.MILLISECONDS.sleep(250);
+            TimeUnit.MILLISECONDS.sleep(500);
             i--;
         }
     }
@@ -362,7 +366,6 @@ public class InGameController extends LoggedInController {
         int side = coordinateHolder.side();
         String buildingType;
         if (side == 0 || side == 6) {
-            // TODO Check for city
             buildingType = "settlement";
         } else {
             buildingType = "road";
