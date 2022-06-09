@@ -100,7 +100,6 @@ public class Constants {
 
     public static final String JSON_DATA = "data";
 
-    //public static final String ALLCHAT_ID = "627cf3c93496bc00158f3859";
     public static final String ALLCHAT_ID = "62a0bcc71359da00145ce5a8";
 
 

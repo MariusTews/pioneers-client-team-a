@@ -149,4 +149,9 @@ public class InGameControllerTest extends ApplicationTest {
         clickOn("#rollButton");
         verify(pioneerService).createMove("roll", null);
     }
+
+    @Test
+    void showYourTurn() {
+
+    }
 }

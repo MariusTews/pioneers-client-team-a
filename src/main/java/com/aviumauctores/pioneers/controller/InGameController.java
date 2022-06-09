@@ -32,12 +32,9 @@ import javafx.scene.shape.Circle;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.Objects;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -45,6 +42,8 @@ import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 public class InGameController extends LoggedInController {
     private final App app;
     private final ResourceBundle bundle;
+
+    private final ColorService colorService;
     private final PlayerResourceListController playerResourceListController;
     private final GameMemberService gameMemberService;
     private final GameService gameService;
@@ -56,6 +55,10 @@ public class InGameController extends LoggedInController {
 
     @FXML
     public Label numSheepLabel;
+
+
+    @FXML
+    public ImageView arrowOnDice;
 
     @FXML
     public Label yourTurnLabel;
@@ -131,13 +134,14 @@ public class InGameController extends LoggedInController {
     private final EventListener eventListener;
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
+    public InGameController(App app, UserService userService, ResourceBundle bundle, ColorService colorService, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController) {
         super(userService);
         this.app = app;
         this.bundle = bundle;
+        this.colorService = colorService;
         this.playerResourceListController = playerResourceListController;
         this.gameMemberService = gameMemberService;
         this.soundService = soundService;
@@ -266,16 +270,21 @@ public class InGameController extends LoggedInController {
             return null;
         }
 
+        arrowOnDice.setFitHeight(40.0);
+        arrowOnDice.setFitWidth(40.0);
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
                     Color colour = member.color();
                     String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                    String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
                     rollButton.setStyle(colourString);
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                     diceImage1.setStyle(colourString);
                     diceImage2.setStyle(colourString);
+                    Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                    arrowOnDice.setImage(arrowIcon);
                 }));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
@@ -292,14 +301,18 @@ public class InGameController extends LoggedInController {
                                         playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
                                     }
                                     if(currentPlayerID.equals(userID)){
+                                        yourTurnLabel.setVisible(true);
 
                                         if(action.endsWith("roll")){
                                             rollButton.setDisable(false);
+                                            arrowOnDice.setVisible(true);
                                         }
                                         if( rollButton.disabledProperty().get() || action.startsWith("build")){
                                             finishMoveButton.setDisable(false);
                                         }
                                     }else{
+                                        arrowOnDice.setVisible(false);
+                                        yourTurnLabel.setVisible(false);
                                         finishMoveButton.setDisable(true);
                                         rollButton.setDisable(true);
                                     }

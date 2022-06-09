@@ -898,13 +898,18 @@
       <BorderPane prefHeight="580.0" prefWidth="236.0" BorderPane.alignment="CENTER">
          <bottom>
             <VBox alignment="BOTTOM_LEFT" spacing="20.0" BorderPane.alignment="CENTER">
-               <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDice">
-                  <graphic>
-                     <ImageView disable="true" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@rollIcon.png" />
-                     </ImageView>
-                  </graphic>
-               </Button>
+               <HBox prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                     <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDice">
+                        <graphic>
+                           <ImageView disable="true" pickOnBounds="true" preserveRatio="true">
+                              <Image url="@rollIcon.png" />
+                           </ImageView>
+                        </graphic>
+                     </Button>
+                     <ImageView fx:id="arrowOnDice" fitHeight="48.0" fitWidth="159.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
+                  </children>
+               </HBox>
                <VBox prefHeight="55.0" prefWidth="142.0">
                   <children>
                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
