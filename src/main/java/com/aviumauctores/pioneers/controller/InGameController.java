@@ -2,9 +2,12 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Building;
+import com.aviumauctores.pioneers.model.Move;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
+import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
@@ -29,9 +32,13 @@ import javafx.scene.shape.Circle;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.sql.Time;
+import java.util.Objects;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -98,6 +105,19 @@ public class InGameController extends LoggedInController {
 
     private BuildMenuController buildMenuController;
     private Parent buildMenu;
+    @FXML
+    public Label rollSum;
+
+    @FXML
+    public ImageView diceImage1;
+    @FXML
+    public ImageView diceImage2;
+    Image dice1;
+    Image dice2;
+    Image dice3;
+    Image dice4;
+    Image dice5;
+    Image dice6;
 
     GameMusic gameSound;
 
@@ -139,6 +159,95 @@ public class InGameController extends LoggedInController {
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
+
+        dice1 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_1.png")).toString());
+        dice2 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_2.png")).toString());
+        dice3 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_3.png")).toString());
+        dice4 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_4.png")).toString());
+        dice5 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_5.png")).toString());
+        dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
+        // Listen to game-move events
+        disposables.add(eventListener.listen(
+                        "games." + gameService.getCurrentGameID() + ".moves.*",
+                        Move.class
+                )
+                .observeOn(FX_SCHEDULER)
+                .subscribe(this::onMoveEvent));
+    }
+
+    protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
+        Move move = eventDto.data();
+        if (move.action().equals("roll")) {
+            int rolled = move.roll();
+            rollSum.setText(" " + rolled + " ");
+            rollAllDice();
+            switch (rolled) {
+                case 2:
+                    diceImage1.setImage(dice1);
+                    diceImage1.setImage(dice1);
+                    break;
+                case 3:
+                    diceImage1.setImage(dice1);
+                    diceImage2.setImage(dice2);
+                    break;
+                case 4:
+                    diceImage1.setImage(dice3);
+                    diceImage2.setImage(dice1);
+                    break;
+                case 5:
+                    diceImage1.setImage(dice2);
+                    diceImage2.setImage(dice3);
+                case 6:
+                    diceImage1.setImage(dice2);
+                    diceImage2.setImage(dice4);
+                    break;
+                case 7:
+                    diceImage1.setImage(dice2);
+                    diceImage2.setImage(dice5);
+                    break;
+                case 8:
+                    diceImage1.setImage(dice5);
+                    diceImage2.setImage(dice3);
+                    break;
+                case 9:
+                    diceImage1.setImage(dice4);
+                    diceImage2.setImage(dice5);
+                    break;
+                case 10:
+                    diceImage1.setImage(dice6);
+                    diceImage2.setImage(dice4);
+                    break;
+                case 11:
+                    diceImage1.setImage(dice5);
+                    diceImage2.setImage(dice6);
+                    break;
+                case 12:
+                    diceImage1.setImage(dice6);
+                    diceImage2.setImage(dice6);
+                    break;
+            }
+        }
+    }
+
+    public void rollAllDice() throws InterruptedException {
+        int i = 12;
+        while (i > 0) {
+            rollOneDice(((int) (Math.random() * 6)), diceImage1);
+            rollOneDice(((int) (Math.random() * 6)), diceImage2);
+            TimeUnit.MILLISECONDS.sleep(250);
+            i--;
+        }
+    }
+
+    public void rollOneDice(int randomInteger, ImageView imageView) {
+        switch (randomInteger) {
+            case 1 -> imageView.setImage(dice1);
+            case 2 -> imageView.setImage(dice2);
+            case 3 -> imageView.setImage(dice3);
+            case 4 -> imageView.setImage(dice4);
+            case 5 -> imageView.setImage(dice5);
+            case 6 -> imageView.setImage(dice6);
+        }
     }
 
     @Override
@@ -156,11 +265,16 @@ public class InGameController extends LoggedInController {
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                    String colourString = "-fx-background-color: #" + member.color().toString().substring(2, 8);
+                    Color colour = member.color();
+                    String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
                     rollButton.setStyle(colourString);
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
+                    diceImage1.setStyle(colourString);
+                    diceImage2.setStyle(colourString);
                 }));
+        diceImage1.setImage(dice1);
+        diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
 
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
@@ -224,8 +338,13 @@ public class InGameController extends LoggedInController {
         if (soundImage.getImage() == muteImage) {
             GameSounds diceSound = soundService
                     .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
-            diceSound.play();
+            if (diceSound != null) {
+                diceSound.play();
+            }
         }
+        disposables.add(pioneerService.createMove("roll", null)
+                .observeOn(FX_SCHEDULER)
+                .subscribe());
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {

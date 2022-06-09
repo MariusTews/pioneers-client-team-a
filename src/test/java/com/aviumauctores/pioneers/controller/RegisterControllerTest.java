@@ -54,6 +54,15 @@ class RegisterControllerTest extends ApplicationTest {
         new App(registerController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.loginController = null;
+        this.bundle = null;
+        this.registerController = null;
+        this.userService = null;
+        this.preferenceService = null;
+    }
+
     @Test
     void testRegisterController() {
         when(userService.register(anyString(), anyString())).thenReturn(Observable.just(new User("1", "Jannis", "online", "Lion",null)));

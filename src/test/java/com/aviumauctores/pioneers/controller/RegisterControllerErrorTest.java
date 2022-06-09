@@ -52,6 +52,15 @@ public class RegisterControllerErrorTest extends ApplicationTest {
         new App(registerController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.loginController = null;
+        this.bundle = null;
+        this.registerController = null;
+        this.userService = null;
+        this.preferenceService = null;
+    }
+
     @Test
     void testUsernameTaken() {
         when(userService.register(anyString(), anyString())).thenReturn(Observable.error(new Throwable()));
