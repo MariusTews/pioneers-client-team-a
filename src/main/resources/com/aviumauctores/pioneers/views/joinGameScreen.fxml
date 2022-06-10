@@ -30,11 +30,6 @@
             </VBox.margin>
          </Label>
          <Pane prefWidth="600.0">
-            <PasswordField fx:id="passwordTextField" layoutX="176.0" layoutY="12.0">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </PasswordField>
             <TextField fx:id="showPasswordTextField" layoutX="176.0" layoutY="12.0" visible="false">
                <font>
                   <Font size="20.0" />
@@ -46,26 +41,20 @@
                </ImageView>
                <Button id="showPasswordButton" fx:id="showPasswordButton" mnemonicParsing="false" onAction="#showPassword" text="%show" />
             </HBox>
+            <PasswordField fx:id="passwordTextField" layoutX="205.0" layoutY="22.0" prefHeight="30.0" prefWidth="200.0" promptText="%password" />
+            <Button id="createGameButton" fx:id="joinGameButton" disable="true" layoutX="285.0" layoutY="78.0" mnemonicParsing="false" onAction="#joinGame" text="%join" />
          </Pane>
-         <Button fx:id="joinGameButton" defaultButton="true" mnemonicParsing="false" onAction="#joinGame" text="%join">
-            <VBox.margin>
-               <Insets top="20.0" />
-            </VBox.margin>
-            <font>
-               <Font size="20.0" />
-            </font>
-         </Button>
       </VBox>
    </center>
    <bottom>
       <HBox alignment="CENTER_RIGHT" prefHeight="64.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-         <Button fx:id="leaveButton" cancelButton="true" mnemonicParsing="false" onAction="#quit" text="%cancel">
+         <Button fx:id="leaveButton" mnemonicParsing="false" onAction="#quit" text="%cancel">
+            <opaqueInsets>
+               <Insets />
+            </opaqueInsets>
             <HBox.margin>
-               <Insets right="20.0" />
+               <Insets right="80.0" />
             </HBox.margin>
-            <font>
-               <Font size="20.0" />
-            </font>
          </Button>
       </HBox>
    </bottom>

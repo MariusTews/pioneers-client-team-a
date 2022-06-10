@@ -23,6 +23,7 @@ import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -50,6 +51,9 @@ public class JoinGameController extends LoggedInController {
     public Button joinGameButton;
     @FXML
     public Button leaveButton;
+
+    @FXML
+    public ImageView viewPassword;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
@@ -121,6 +125,7 @@ public class JoinGameController extends LoggedInController {
     }
 
     public void showPassword(ActionEvent actionEvent) {
+
         boolean passwordShowed = showPasswordTextField.isVisible();
         passwordTextField.setVisible(passwordShowed);
         passwordTextField.setManaged(passwordShowed);
