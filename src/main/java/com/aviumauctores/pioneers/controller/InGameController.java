@@ -329,19 +329,27 @@ public class InGameController extends LoggedInController {
                         playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
                     }
                     if (currentPlayerID.equals(userID)) {
-                                        yourTurnLabel.setVisible(true);
+                        crossingPane.setDisable(false);
+                        crossingPane.setVisible(false);
+                        roadPane.setDisable(true);
+                        roadPane.setVisible(false);
+                        yourTurnLabel.setVisible(true);
 
-                                        if(action.endsWith("roll")){
-                                            rollButton.setDisable(false);
-                                            arrowOnDice.setVisible(true);
-                                        }
-                                        if( rollButton.disabledProperty().get() || action.startsWith("build")){
-                                            finishMoveButton.setDisable(false);
-                                            arrowOnDice.setVisible(false);
-                                        }
-                                    }else{
-                                        arrowOnDice.setVisible(false);
-                                        yourTurnLabel.setVisible(false);
+                        if(action.endsWith("roll")){
+                            rollButton.setDisable(false);
+                            arrowOnDice.setVisible(true);
+                        }
+                        if( rollButton.disabledProperty().get() || action.startsWith("build")){
+                            finishMoveButton.setDisable(false);
+                            arrowOnDice.setVisible(false);
+                        }
+                    }else{
+                        crossingPane.setDisable(true);
+                        roadPane.setDisable(true);
+                        crossingPane.setVisible(false);
+                        roadPane.setVisible(false);
+                        arrowOnDice.setVisible(false);
+                        yourTurnLabel.setVisible(false);
                         finishMoveButton.setDisable(true);
                         rollButton.setDisable(true);
                     }
@@ -350,6 +358,24 @@ public class InGameController extends LoggedInController {
                 }));
 
         this.currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
+        arrowOnDice.setFitHeight(40.0);
+        arrowOnDice.setFitWidth(40.0);
+        yourTurnLabel.setVisible(false);
+        if (currentPlayerID.equals(userID)) {
+            arrowOnDice.setVisible(true);
+            crossingPane.setDisable(false);
+            crossingPane.setVisible(true);
+            roadPane.setDisable(true);
+            roadPane.setVisible(false);
+            yourTurnLabel.setVisible(true);
+        } else {
+            arrowOnDice.setVisible(false);
+            crossingPane.setDisable(true);
+            crossingPane.setVisible(false);
+            roadPane.setDisable(true);
+            roadPane.setVisible(false);
+            yourTurnLabel.setVisible(false);
+        }
         soundImage.setImage(muteImage);
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
