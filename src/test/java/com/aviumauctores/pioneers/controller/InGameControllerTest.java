@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -138,6 +139,9 @@ public class InGameControllerTest extends ApplicationTest {
         //
         stateUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
+        when(pioneerService.createMove("founding-roll", null)).thenReturn(Observable.just(new Move("69",
+                "420", "12", "1", "founding-roll", 2, null)));
+        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile[]{new Tile(0, 0, 0, "desert", 10)}))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
         //
         //when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
@@ -162,6 +166,8 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onFieldClicked() {
+        Pane crossingPane = lookup("#crossingPane").query();
+        crossingPane.setVisible(true);
         // Open the build menu
         clickOn("#building01_10");
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
@@ -170,6 +176,8 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onMainPaneClicked() {
+        Pane crossingPane = lookup("#crossingPane").query();
+        crossingPane.setVisible(true);
         clickOn("#building01_10");
         // Click on main pane to close the build menu
         clickOn("#mainPane");
