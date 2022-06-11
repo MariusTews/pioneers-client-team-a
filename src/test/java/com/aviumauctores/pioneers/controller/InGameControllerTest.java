@@ -78,33 +78,8 @@ public class InGameControllerTest extends ApplicationTest {
         }
     };
 
-    @Spy
-    PlayerResourceListController playerResourceListController = new PlayerResourceListController(null, null, null) {
-        @Override
-        public void init(VBox node, String startingPlayer) {
-            // Do nothing
-        }
-
-        @Override
-        public void createPlayerBox(Player player) {
-            // Do nothing
-        }
-
-        @Override
-        public void updateResourceList() {
-            // Do nothing
-        }
-
-        @Override
-        public void hideArrow(Player player) {
-            // Do nothing
-        }
-
-        @Override
-        public void showArrow(Player player) {
-            // Do nothing
-        }
-    };
+   @Mock
+   PlayerResourceListController playerResourceListController;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
