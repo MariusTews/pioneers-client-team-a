@@ -2,11 +2,13 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.*;
+import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -20,10 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,19 +38,16 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     GameMemberService gameMemberService;
 
-    @Mock
-    GameService gameService;
+    @Mock BuildService buildService;
 
     @Mock
-    BuildService buildService;
+    GameService gameService;
 
     @Mock
     PioneerService pioneerService;
 
     @Mock
     SoundService soundService;
-
-
 
     @Mock
     EventListener eventListener;
@@ -122,7 +118,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN)));
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000",
-                2, 0, 0, 0, 0, 0,0, 0, 0, 0);
+                2, new HashMap<String, Integer>(), new HashMap<String, Integer>());
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))))));
@@ -130,7 +126,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(pioneerService.createMove("founding-roll", null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null)));
-        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile[]{new Tile(0, 0, 0, "desert", 10)}))));
+       // when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile[]{new Tile(0, 0, 0, "desert", 10)}))));
         new App(inGameController).start(stage);
     }
 

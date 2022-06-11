@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
@@ -34,6 +35,7 @@ public class PlayerResourceListController {
     private  Observable<State> state;
     private String currentPlayerID;
     private HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
+    private Player player;
 
     @Inject
     public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService)
@@ -73,10 +75,38 @@ public class PlayerResourceListController {
     public void updateResourceList(){
         for (String playerID : listItems.keySet()){
             Player player = pioneerService.getPlayer(playerID).blockingFirst();
-            listItems.get(player.userId()).setPlayer(player);
-            listItems.get(playerID).updateResources(player);
+            updatePlayerLabel(player);
         }
     }
+
+    public void updatePlayerLabel(Player player){
+        listItems.get(player.userId()).setPlayer(player);
+        listItems.get(player.userId()).updateResources(player);
+    }
+
+    public void updateOwnResources(Label[] labels, String[] resources){
+        for(int i = 0 ; i < resources.length; i++){
+            updateLabel(labels[i], resources[i]);
+        }
+
+
+    }
+
+    public void updateLabel(Label label, String resource){
+        HashMap<String, Integer> resources = player.resources();
+        if(resources.containsKey(resource)){
+            label.setText(Integer.toString(resources.get(resource)));
+        }else{
+            label.setText("0");
+        }
+
+
+    }
+
+    public void setPlayer(Player player){
+        this.player = player;
+    }
+
 
 
     public void hideArrow(Player player){

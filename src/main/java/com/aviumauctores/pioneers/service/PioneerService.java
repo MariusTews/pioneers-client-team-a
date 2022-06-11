@@ -26,9 +26,6 @@ public class PioneerService {
         this.pioneersApiService = pioneersApiService;
     }
 
-    public Observable<Map> getMap(){
-        return pioneersApiService.getMap(gameService.getCurrentGameID());
-    }
     public Observable<State> getState() {
         return pioneersApiService.getState(gameService.getCurrentGameID());
     }

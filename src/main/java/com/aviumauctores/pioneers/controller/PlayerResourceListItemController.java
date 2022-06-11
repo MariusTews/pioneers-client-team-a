@@ -9,6 +9,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+
+import java.util.HashMap;
 import java.util.Objects;
 
 public class PlayerResourceListItemController {
@@ -118,12 +120,24 @@ public class PlayerResourceListItemController {
         arrowView.setVisible(false);
     }
 
-    public void updateResources(Player player){
-        woodDisplay.setText(Integer.toString(player.lumber()));
-        oreDisplay.setText(Integer.toString(player.ore()));
-        sheepDisplay.setText(Integer.toString(player.wool()));
-        breadDisplay.setText(Integer.toString(player.grain()));
-        brickDisplay.setText(Integer.toString(player.brick()));
+    public void updateResources(Player player) {
+        HashMap<String, Integer> resources = player.resources();
+        if (resources.containsKey("lumber")) {
+            woodDisplay.setText(Integer.toString(player.resources().get("lumber")));
+        }
+        if (resources.containsKey("ore")) {
+            oreDisplay.setText(Integer.toString(player.resources().get("ore")));
+        }
+        if (resources.containsKey("wool")){
+            sheepDisplay.setText(Integer.toString(player.resources().get("wool")));
+        }
+        if (resources.containsKey("grain")){
+            breadDisplay.setText(Integer.toString(player.resources().get("grain")));
+
+        }
+        if (resources.containsKey("brick")) {
+            brickDisplay.setText(Integer.toString(player.resources().get("brick")));
+        }
     }
 
     public void setPlayer(Player player) {

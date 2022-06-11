@@ -146,5 +146,17 @@ public class Constants {
     public static final String MOVE_ROLL = "roll";
     public static final String MOVE_BUILD = "build";
 
+    //Resources
+
+    public static final String RESOURCE_BRICK = "brick";
+    public static final String RESOURCE_GRAIN = "grain";
+
+    public static final String RESOURCE_LUMBER = "lumber";
+
+    public static final String RESOURCE_ORE = "ore";
+
+    public static final String RESOURCE_WOOL = "wool";
+
+
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }

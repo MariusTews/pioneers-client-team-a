@@ -5,8 +5,10 @@ import com.aviumauctores.pioneers.controller.BuildMenuController;
 import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Player;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import java.util.Objects;
@@ -52,7 +54,12 @@ public class BuildService {
                 .subscribe(move -> {
                     loadBuildingImage(move.building(), player);
                     foundingSettlement = null;
-                });
+                }, throwable -> {
+                    if(throwable instanceof HttpException ex){
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setContentText("You have to place the road next to your settlement");
+                        alert.showAndWait();
+                    }});
 
 
     }
@@ -60,20 +67,23 @@ public class BuildService {
     public void buildFoundingSettlement(){
         char num = currentAction.charAt(currentAction.length() - 1);
         Building b = Building.readCoordinatesFromID(selectedField.getId());
-        System.out.println(currentAction);
         pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), BUILDING_TYPE_SETTLEMENT,
                         gameService.getCurrentGameID(), userID))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                     loadBuildingImage(move.building(), player);
                     foundingSettlement = b;
+                }, throwable -> {
+                    if(throwable instanceof HttpException ex){
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setContentText("You have to place the settlement somewhere else.");
+                        alert.showAndWait();
+                    }
                 });
 
         if(num == 2) {
             collectResources();
         }
-
-
     }
 
     private void collectResources() {
@@ -115,7 +125,6 @@ public class BuildService {
 
     public void build(){
         if(selectedField == null){
-            System.out.println("Please select a Field first");
             return;
         }
         switch (buildingType){
@@ -127,7 +136,6 @@ public class BuildService {
     }
 
     private void buildCity() {
-        //TODO: build a city
     }
 
     private void loadBuildingImage(String buildingID, Player player) {
@@ -182,7 +190,6 @@ public class BuildService {
         String res  = null;
         if(source.startsWith("building")){
             res =  source.substring(8).replace("_", "-");
-            System.out.println(res);
         }
         return res;
     }
