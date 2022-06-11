@@ -2,11 +2,13 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.*;
+import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -20,16 +22,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import javax.inject.Provider;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 public class InGameControllerTest extends ApplicationTest {
@@ -38,6 +38,9 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Mock
     GameMemberService gameMemberService;
+
+    @Mock
+    BuildService buildService;
 
     @Mock
     GameService gameService;
@@ -77,33 +80,8 @@ public class InGameControllerTest extends ApplicationTest {
         }
     };
 
-    @Spy
-    PlayerResourceListController playerResourceListController = new PlayerResourceListController(null, null, null) {
-        @Override
-        public void init(VBox node, String startingPlayer) {
-            // Do nothing
-        }
-
-        @Override
-        public void createPlayerBox(Player player) {
-            // Do nothing
-        }
-
-        @Override
-        public void updateResourceList() {
-            // Do nothing
-        }
-
-        @Override
-        public void hideArrow(Player player) {
-            // Do nothing
-        }
-
-        @Override
-        public void showArrow(Player player) {
-            // Do nothing
-        }
-    };
+   @Mock
+   PlayerResourceListController playerResourceListController;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
@@ -117,7 +95,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN)));
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000",
-                2, 0, 0, 0, 0, 0,0, 0, 0, 0);
+                2, new HashMap<String, Integer>(), new HashMap<String, Integer>());
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))))));
