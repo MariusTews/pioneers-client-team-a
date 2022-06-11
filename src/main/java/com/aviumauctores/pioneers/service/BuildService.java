@@ -1,10 +1,8 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.controller.BuildMenuController;
 import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Player;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,9 +10,9 @@ import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
-import static com.aviumauctores.pioneers.Constants.BUILDING_TYPE_ROAD;
 
 public class BuildService {
 
@@ -27,14 +25,14 @@ public class BuildService {
     private ImageView selectedField;
     private String currentAction;
     private String userID;
+    private final ResourceBundle bundle;
     private Player player;
     private String buildingType;
-    private Building foundingSettlement;
     private String selectedFieldCoordinates;
 
     @Inject
     public BuildService(PioneerService pioneerService, GameMemberService gameMemberService, GameService gameService, ErrorService errorService,
-                        UserService userService, ColorService colorService){
+                        UserService userService, ColorService colorService, ResourceBundle bundle){
 
         this.pioneerService = pioneerService;
         this.gameMemberService = gameMemberService;
@@ -43,94 +41,32 @@ public class BuildService {
         this.userService = userService;
         this.colorService = colorService;
         this.userID = userService.getCurrentUserID();
+        this.bundle = bundle;
     }
 
-    public void buildFoundingRoad(){
-        char num = currentAction.charAt(currentAction.length() - 1);
-        Building b = Building.readCoordinatesFromID(selectedField.getId());
-        pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), BUILDING_TYPE_ROAD,
-                        gameService.getCurrentGameID(), userID))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                    loadBuildingImage(move.building(), player);
-                    foundingSettlement = null;
-                }, throwable -> {
-                    if(throwable instanceof HttpException ex){
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.setContentText("You have to place the road next to your settlement");
-                        alert.showAndWait();
-                    }});
-
-
-    }
-
-    public void buildFoundingSettlement(){
-        Building b = Building.readCoordinatesFromID(selectedField.getId());
-        pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), BUILDING_TYPE_SETTLEMENT,
-                        gameService.getCurrentGameID(), userID))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                    loadBuildingImage(move.building(), player);
-                    foundingSettlement = b;
-                }, throwable -> {
-                    if(throwable instanceof HttpException ex){
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.setContentText("You have to place the settlement somewhere else.");
-                        alert.showAndWait();
-                    }
-                });
-
-    }
-
-
-    public void buildRoad(){
-        if(currentAction.startsWith("founding-road")){
-            buildFoundingRoad();
-            return;
-        }else{
-            Building b = Building.readCoordinatesFromID(selectedField.getId());
-            pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), BUILDING_TYPE_ROAD,
-                            gameService.getCurrentGameID(), userID))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(move -> {
-                        loadBuildingImage(move.building(), player);
-                    });
-        }
-    }
-
-
-    public void buildSettlement() {
-        if(currentAction.startsWith("founding-settlement")){
-            buildFoundingSettlement();
-            return;
-        }else{
-            Building b = Building.readCoordinatesFromID(selectedField.getId());
-            pioneerService.createMove(MOVE_BUILD, new Building(b.x(), b.y(), b.z(), b.side(), BUILDING_TYPE_SETTLEMENT,
-                            gameService.getCurrentGameID(), userID))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(move -> {
-                        loadBuildingImage(move.building(), player);
-                    });
-        }
-        // build a settlement (if possible), then gain 1 VP
-        //gainVP(1);
-    }
 
 
     public void build(){
         if(selectedField == null){
             return;
         }
-        switch (buildingType){
-            case BUILDING_TYPE_SETTLEMENT -> buildSettlement();
-            case BUILDING_TYPE_ROAD -> buildRoad();
-            case BUILDING_TYPE_CITY -> buildCity();
-        }
+        Building b = Building.readCoordinatesFromID(selectedField.getId());
+        pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), buildingType,
+                        gameService.getCurrentGameID(), userID))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(move -> {
+                    loadBuildingImage(move.building(), player);
+                }, throwable -> {
+                    if (throwable instanceof HttpException ex) {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        String content = bundle.getString(buildingType.equals(BUILDING_TYPE_ROAD) ? "road.location.mismatch" : "settlement.location.mismatch");
+                        alert.setContentText(content);
+                        alert.showAndWait();
+                    }
+                });
 
     }
 
-    private void buildCity() {
-    }
 
     private void loadBuildingImage(String buildingID, Player player) {
         String color = colorService.getColor(player.color());
@@ -145,8 +81,6 @@ public class BuildService {
         selectedField.setFitHeight(25.5);
         selectedField.setId(buildingID);
 
-        //should be closed after a building is placed
-        //closeBuildMenu(true);
     }
 
     public void setCurrentAction(String action){
@@ -188,8 +122,4 @@ public class BuildService {
         selectedFieldCoordinates = coordinates;
     }
 
-    public void buildTown() {
-        // upgrade a settlement to a town (if possible), then
-        //gainVP(1);
-    }
 }

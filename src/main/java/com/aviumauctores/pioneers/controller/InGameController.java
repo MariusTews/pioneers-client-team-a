@@ -306,11 +306,9 @@ public class InGameController extends LoggedInController {
         }
         resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
         vpCircles = new Circle[]{vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
-        if (userID.equals(currentPlayerID)){
-            updateFields(true, crossingPane);
-        }
 
-            disposables.add(gameMemberService.getMember(userID)
+
+        disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
                     Color colour = member.color();
@@ -348,12 +346,11 @@ public class InGameController extends LoggedInController {
                             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
                             playerResourceListController.updateResourceList();
                             updateVisuals();
-                            buildMap();
                         }));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated" , Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
-        disposables.add(pioneerService.createMove("founding-roll", null)
+        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe());
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
@@ -368,7 +365,9 @@ public class InGameController extends LoggedInController {
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
         finishMoveButton.setDisable(true);
-
+        if (pioneerService.getMap() != null) {
+            buildMap();
+        }
         return parent;
     }
 
@@ -393,19 +392,19 @@ public class InGameController extends LoggedInController {
             }else {
                 switch (currentAction){
                     case MOVE_BUILD -> {
-                        finishMoveButton.setDisable(false);
                         rollButton.setDisable(true);
+                        finishMoveButton.setDisable(false);
                         updateFields(true, crossingPane, roadPane);
                     }case MOVE_ROLL -> {
                         rollButton.setDisable(false);
-                        updateFields(false, crossingPane, roadPane);
                         finishMoveButton.setDisable(true);
+                        updateFields(false, crossingPane, roadPane);
                     }
                 }
             }
         }else{
-            finishMoveButton.setDisable(true);
             rollButton.setDisable(true);
+            finishMoveButton.setDisable(true);
             updateFields(false, crossingPane, roadPane);
         }
     }

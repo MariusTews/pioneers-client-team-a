@@ -13,6 +13,8 @@ import javafx.scene.text.Font;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.aviumauctores.pioneers.Constants.*;
+
 public class PlayerResourceListItemController {
 
 
@@ -122,21 +124,21 @@ public class PlayerResourceListItemController {
 
     public void updateResources(Player player) {
         HashMap<String, Integer> resources = player.resources();
-        if (resources.containsKey("lumber")) {
-            woodDisplay.setText(Integer.toString(player.resources().get("lumber")));
+        if (resources.containsKey(RESOURCE_LUMBER)) {
+            woodDisplay.setText(Integer.toString(player.resources().get(RESOURCE_LUMBER)));
         }
-        if (resources.containsKey("ore")) {
-            oreDisplay.setText(Integer.toString(player.resources().get("ore")));
+        if (resources.containsKey(RESOURCE_ORE)) {
+            oreDisplay.setText(Integer.toString(player.resources().get(RESOURCE_ORE)));
         }
-        if (resources.containsKey("wool")){
-            sheepDisplay.setText(Integer.toString(player.resources().get("wool")));
+        if (resources.containsKey(RESOURCE_WOOL)){
+            sheepDisplay.setText(Integer.toString(player.resources().get(RESOURCE_WOOL)));
         }
-        if (resources.containsKey("grain")){
-            breadDisplay.setText(Integer.toString(player.resources().get("grain")));
+        if (resources.containsKey(RESOURCE_GRAIN)){
+            breadDisplay.setText(Integer.toString(player.resources().get(RESOURCE_GRAIN)));
 
         }
-        if (resources.containsKey("brick")) {
-            brickDisplay.setText(Integer.toString(player.resources().get("brick")));
+        if (resources.containsKey(RESOURCE_BRICK)) {
+            brickDisplay.setText(Integer.toString(player.resources().get(RESOURCE_BRICK)));
         }
     }
 

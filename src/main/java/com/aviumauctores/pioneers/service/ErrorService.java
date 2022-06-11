@@ -1,10 +1,8 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
-import com.aviumauctores.pioneers.dto.error.ValidationErrorResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
 import retrofit2.Response;

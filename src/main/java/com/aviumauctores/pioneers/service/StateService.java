@@ -1,18 +1,12 @@
 package com.aviumauctores.pioneers.service;
 
-import com.aviumauctores.pioneers.controller.PlayerResourceListController;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
 
 import javax.inject.Inject;
 
-import static com.aviumauctores.pioneers.Constants.*;
-import static com.aviumauctores.pioneers.Constants.MOVE_FOUNDING_ROAD;
-
 public class StateService {
-    private final GameMemberService gameMemberService;
-    private final UserService userService;
     private final BuildService buildService;
     private final PioneerService pioneerService;
     private State currentState;
@@ -25,10 +19,8 @@ public class StateService {
 
 
     @Inject
-    public StateService(GameMemberService gameMemberService, UserService userService, BuildService buildService,
+    public StateService(UserService userService, BuildService buildService,
                         PioneerService pioneerService){
-        this.gameMemberService = gameMemberService;
-        this.userService = userService;
         this.buildService = buildService;
         this.pioneerService = pioneerService;
         this.userID = userService.getCurrentUserID();
