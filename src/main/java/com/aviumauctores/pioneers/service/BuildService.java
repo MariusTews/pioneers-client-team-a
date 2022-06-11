@@ -65,7 +65,6 @@ public class BuildService {
     }
 
     public void buildFoundingSettlement(){
-        char num = currentAction.charAt(currentAction.length() - 1);
         Building b = Building.readCoordinatesFromID(selectedField.getId());
         pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), BUILDING_TYPE_SETTLEMENT,
                         gameService.getCurrentGameID(), userID))
@@ -81,13 +80,8 @@ public class BuildService {
                     }
                 });
 
-        if(num == 2) {
-            collectResources();
-        }
     }
 
-    private void collectResources() {
-    }
 
     public void buildRoad(){
         if(currentAction.startsWith("founding-road")){
@@ -141,20 +135,16 @@ public class BuildService {
     private void loadBuildingImage(String buildingID, Player player) {
         String color = colorService.getColor(player.color());
         switch (buildingType) {
-            case BUILDING_TYPE_SETTLEMENT:
-                selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                        ("views/House/House_" + color.toUpperCase() + ".png")).toString()));
-                break;
-            case BUILDING_TYPE_ROAD:
-                selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                        ("views/Street/Street_" + color.toUpperCase() + ".png")).toString()));
-                break;
+            case BUILDING_TYPE_SETTLEMENT ->
+                    selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                            ("views/House/House_" + color.toUpperCase() + ".png")).toString()));
+            case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                    ("views/Street/Street_" + color.toUpperCase() + ".png")).toString()));
         }
         selectedField.setFitWidth(25.5);
         selectedField.setFitHeight(25.5);
         selectedField.setId(buildingID);
-        selectedField = null;
-        selectedFieldCoordinates = null;
+
         //should be closed after a building is placed
         //closeBuildMenu(true);
     }

@@ -38,12 +38,13 @@ public class PlayerResourceListController {
     private Player player;
 
     @Inject
-    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService)
+    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService,
+                                        ColorService colorService)
     {
        this.userService = userService;
        this. gameService = gameService;
        this.pioneerService = pioneerService;
-       this.colorService = new ColorService();
+       this.colorService = colorService;
     }
 
     public void init(VBox node, String startingPlayer){

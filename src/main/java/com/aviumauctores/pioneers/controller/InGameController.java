@@ -109,7 +109,7 @@ public class InGameController extends LoggedInController {
     public Button buildButton;
 
 
-    public Circle[] vpCircles = {vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
+    public Circle[] vpCircles;
 
     public int memberVP;
 
@@ -305,6 +305,7 @@ public class InGameController extends LoggedInController {
             return null;
         }
         resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
+        vpCircles = new Circle[]{vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
         if (userID.equals(currentPlayerID)){
             updateFields(true, crossingPane);
         }
@@ -320,6 +321,16 @@ public class InGameController extends LoggedInController {
                     buildButton.setStyle(colourString);
                     diceImage1.setStyle(colourString);
                     diceImage2.setStyle(colourString);
+                }));
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(building-> {
+                    Building b = building.data();
+                    if (b.owner().equals(userID)){
+                        switch (b.type()){
+                            case BUILDING_TYPE_SETTLEMENT, BUILDING_TYPE_CITY -> gainVP(1);
+                        }
+                    }
                 }));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
@@ -367,25 +378,29 @@ public class InGameController extends LoggedInController {
             playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
         }
         if(currentPlayerID.equals(userID)){
-            if(currentAction.endsWith(MOVE_ROLL)){
-                rollButton.setDisable(false);
-                updateFields(false, crossingPane, roadPane);
-                finishMoveButton.setDisable(true);
-            } else if(currentAction.equals(MOVE_BUILD)){
-                finishMoveButton.setDisable(false);
-                rollButton.setDisable(true);
-                updateFields(true, crossingPane, roadPane);
-            } else{
+            if(currentAction.startsWith("founding")){
                 rollButton.setDisable(true);
                 finishMoveButton.setDisable(true);
-                if(currentAction.startsWith(MOVE_FOUNDING_SETTLEMENT)){
-                    updateFields(true, crossingPane);
-                    updateFields(false, roadPane);
-                }else if (currentAction.startsWith(MOVE_FOUNDING_ROAD)){
-                    updateFields(true, roadPane);
-                    updateFields(false, crossingPane);
-                }else{
-                    updateFields(true, crossingPane, roadPane);
+                switch (currentAction){
+                    case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
+                        updateFields(true, roadPane);
+                        updateFields(false, crossingPane);
+                    }case MOVE_FOUNDING_SETTLEMENT  + "1", MOVE_FOUNDING_SETTLEMENT + "2" -> {
+                        updateFields(true, crossingPane);
+                        updateFields(false, roadPane);
+                    }
+                }
+            }else {
+                switch (currentAction){
+                    case MOVE_BUILD -> {
+                        finishMoveButton.setDisable(false);
+                        rollButton.setDisable(true);
+                        updateFields(true, crossingPane, roadPane);
+                    }case MOVE_ROLL -> {
+                        rollButton.setDisable(false);
+                        updateFields(false, crossingPane, roadPane);
+                        finishMoveButton.setDisable(true);
+                    }
                 }
             }
         }else{
@@ -556,7 +571,6 @@ public class InGameController extends LoggedInController {
     }
 
 
-
     public void gainVP(int vpGain) {
         memberVP += vpGain;
         for (int i = 0; i < 10; i++) {
@@ -598,10 +612,9 @@ public class InGameController extends LoggedInController {
             pane.setVisible(val);
             pane.setDisable(!val);
             for(Node node : pane.getChildren()){
-                if (node.getId().startsWith("building")){
                     node.setVisible(val);
                     node.setDisable(!val);
-                }
+
             }
         }
     }
