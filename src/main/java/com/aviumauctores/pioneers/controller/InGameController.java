@@ -366,9 +366,8 @@ public class InGameController extends LoggedInController {
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
         finishMoveButton.setDisable(true);
-        if (pioneerService.getMap() != null) {
-            buildMap();
-        }
+        buildMap();
+
         return parent;
     }
 
