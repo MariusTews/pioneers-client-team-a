@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.aviumauctores.pioneers.Constants.*;
 
+
 public class InGameController extends LoggedInController {
     private final App app;
     private final ResourceBundle bundle;
