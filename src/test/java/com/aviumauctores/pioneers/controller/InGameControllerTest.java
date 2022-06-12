@@ -173,6 +173,7 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void showYourTurn() {
+        //TODO: gescheit anpassen
         State state = new State("", "12", List.of(new ExpectedMove("build", List.of("1"))));
 
         ImageView arrow = lookup("#arrowOnDice").query();
