@@ -114,7 +114,6 @@ class GameReadyControllerTest extends ApplicationTest {
         clickOn("#leaveGameButton");
         clickOn("OK");
         verify(gameMemberService).updateID();
-        verify(gameMemberService).listCurrentGameMembers();
         verify(gameMemberService).deleteMember("42");
         verify(gameService).setCurrentGameID(null);
     }
