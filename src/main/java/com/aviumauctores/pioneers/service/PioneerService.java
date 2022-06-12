@@ -11,18 +11,12 @@ import java.util.List;
 public class PioneerService {
 
     private final GameService gameService;
-    private final GameMemberService gameMemberService;
-    private final ColorService colorService;
     private final PioneersApiService pioneersApiService;
-    private String gameID;
 
     @Inject
-    public PioneerService(GameService gameService, GameMemberService gameMemberService, ColorService colorService,
-                          PioneersApiService pioneersApiService) {
+    public PioneerService(GameService gameService, PioneersApiService pioneersApiService) {
 
         this.gameService = gameService;
-        this.gameMemberService = gameMemberService;
-        this.colorService = colorService;
         this.pioneersApiService = pioneersApiService;
     }
 
@@ -42,11 +36,12 @@ public class PioneerService {
         return pioneersApiService.listMembers(gameService.getCurrentGameID());
     }
 
+    public Observable<List<Building>> listBuildings(){
+        return pioneersApiService.listBuildings(gameService.getCurrentGameID());
+    }
+
     public Observable<Map> getMap() {
         return pioneersApiService.getMap(gameService.getCurrentGameID());
     }
 
-    public void setGameID(String id) {
-        this.gameID = id;
-    }
 }
