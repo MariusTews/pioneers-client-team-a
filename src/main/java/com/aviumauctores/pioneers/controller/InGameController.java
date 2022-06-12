@@ -144,7 +144,6 @@ public class InGameController extends LoggedInController {
 
     Image muteImage;
     Image unmuteImage;
-    private ErrorService errorService;
     private final BuildService buildService;
 
 
@@ -166,7 +165,6 @@ public class InGameController extends LoggedInController {
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.eventListener = eventListener;
-        this.errorService = errorService;
         this.buildService = buildService;
     }
 
@@ -212,7 +210,7 @@ public class InGameController extends LoggedInController {
 
     }
 
-    protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
+    protected void onMoveEvent(EventDto<Move> eventDto) {
         Move move = eventDto.data();
         if (move.action().equals("roll")) {
             int rolled = move.roll();
@@ -505,7 +503,7 @@ public class InGameController extends LoggedInController {
             sideType = BUILDING_TYPE_ROAD;
         }
         buildService.setBuildingType(sideType);
-        buildMenuController = new BuildMenuController(bundle, sideType);
+        buildMenuController = new BuildMenuController(buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
