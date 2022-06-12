@@ -232,7 +232,6 @@ public class GameReadyController extends PlayerListController {
             colourIsTaken.replace(memberColor, memberID);
             // and update the combobox
             updateComboBox();
-            pickColourMenu.setValue(memberColor);
         }
         if (event.endsWith("created")) {
             addMemberToList(member);
