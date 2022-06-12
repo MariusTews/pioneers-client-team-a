@@ -66,8 +66,10 @@ public class InGameController extends LoggedInController {
     public Label yourTurnLabel;
     @FXML
     public Pane mainPane;
-    @FXML public Pane crossingPane;
-    @FXML public Pane roadPane;
+    @FXML
+    public Pane crossingPane;
+    @FXML
+    public Pane roadPane;
     @FXML
     private ImageView soundImage;
     @FXML
@@ -188,7 +190,6 @@ public class InGameController extends LoggedInController {
         resourceNames = new String[]{RESOURCE_BRICK, RESOURCE_GRAIN, RESOURCE_LUMBER, RESOURCE_ORE, RESOURCE_WOOL};
 
 
-
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
         player = pioneerService.getPlayer(userID).blockingFirst();
@@ -217,7 +218,6 @@ public class InGameController extends LoggedInController {
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
-
 
 
     }
@@ -336,16 +336,16 @@ public class InGameController extends LoggedInController {
                     try {
                         Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
                         arrowOnDice.setImage(arrowIcon);
-                    } catch(NullPointerException e) {
+                    } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
                 }));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(building-> {
+                .subscribe(building -> {
                     Building b = building.data();
-                    if (b.owner().equals(userID)){
-                        switch (b.type()){
+                    if (b.owner().equals(userID)) {
+                        switch (b.type()) {
                             case BUILDING_TYPE_SETTLEMENT, BUILDING_TYPE_CITY -> gainVP(1);
                         }
                     }
@@ -355,19 +355,19 @@ public class InGameController extends LoggedInController {
         this.soundImage.setImage(muteImage);
 
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe(state -> {
-                            stateService.updateState(state);
-                            currentPlayerID = stateService.getCurrentPlayerID();
-                            currentAction = stateService.getCurrentAction();
-                            buildService.setCurrentAction(currentAction);
-                            player = stateService.getUpdatedPlayer();
-                            playerResourceListController.setPlayer(player);
-                            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-                            playerResourceListController.updateResourceList();
-                            updateVisuals();
-                        }));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated" , Player.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(state -> {
+                    stateService.updateState(state);
+                    currentPlayerID = stateService.getCurrentPlayerID();
+                    currentAction = stateService.getCurrentAction();
+                    buildService.setCurrentAction(currentAction);
+                    player = stateService.getUpdatedPlayer();
+                    playerResourceListController.setPlayer(player);
+                    playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+                    playerResourceListController.updateResourceList();
+                    updateVisuals();
+                }));
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
@@ -377,12 +377,12 @@ public class InGameController extends LoggedInController {
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
         yourTurnLabel.setVisible(false);
-        if (currentPlayerID.equals(userID)){
+        if (currentPlayerID.equals(userID)) {
             arrowOnDice.setVisible(true);
             yourTurnLabel.setVisible(true);
             updateFields(false, roadPane);
             updateFields(true, crossingPane);
-        }else{
+        } else {
             arrowOnDice.setVisible(false);
             yourTurnLabel.setVisible(false);
             updateFields(false, crossingPane, roadPane);
@@ -397,33 +397,35 @@ public class InGameController extends LoggedInController {
     }
 
     private void updateVisuals() {
-        if (stateService.getNewPlayer()){
+        if (stateService.getNewPlayer()) {
             playerResourceListController.hideArrow(pioneerService.getPlayer(stateService.getOldPlayerID()).blockingFirst());
             playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
         }
-        if(currentPlayerID.equals(userID)){
+        if (currentPlayerID.equals(userID)) {
             yourTurnLabel.setVisible(true);
-            if(currentAction.startsWith("founding")){
+            if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
                 arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
-                switch (currentAction){
+                switch (currentAction) {
                     case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
                         updateFields(true, roadPane);
                         updateFields(false, crossingPane);
-                    }case MOVE_FOUNDING_SETTLEMENT  + "1", MOVE_FOUNDING_SETTLEMENT + "2" -> {
+                    }
+                    case MOVE_FOUNDING_SETTLEMENT + "1", MOVE_FOUNDING_SETTLEMENT + "2" -> {
                         updateFields(true, crossingPane);
                         updateFields(false, roadPane);
                     }
                 }
-            }else {
-                switch (currentAction){
+            } else {
+                switch (currentAction) {
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
                         updateFields(true, crossingPane, roadPane);
-                    }case MOVE_ROLL -> {
+                    }
+                    case MOVE_ROLL -> {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
@@ -431,7 +433,7 @@ public class InGameController extends LoggedInController {
                     }
                 }
             }
-        }else{
+        } else {
             arrowOnDice.setVisible(false);
             yourTurnLabel.setVisible(false);
             rollButton.setDisable(true);
@@ -442,24 +444,21 @@ public class InGameController extends LoggedInController {
 
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
-        if (updatedPlayer.userId().equals(userID)){
+        if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(player);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-        }else {
+        } else {
             playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
     }
 
 
-
-
-
     public void buildMap() {
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(map ->{
+                .subscribe(map -> {
                     List<Tile> tiles = map.tiles();
-                    for (Tile tile: tiles) {
+                    for (Tile tile : tiles) {
                         String hexID = "" + tile.x() + tile.y() + tile.z();
                         hexID = hexID.replace('-', '_');
                         ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
@@ -490,7 +489,7 @@ public class InGameController extends LoggedInController {
                 .subscribe();
     }
 
-    public void build(ActionEvent event){
+    public void build(ActionEvent event) {
         buildService.build();
     }
 
@@ -550,7 +549,7 @@ public class InGameController extends LoggedInController {
 
     private String coordsToPath(String source) {
         String res = null;
-        if(source.startsWith("building")){
+        if (source.startsWith("building")) {
             return res;
         }
         res = "building " + source.replace("-", "_");
@@ -567,7 +566,7 @@ public class InGameController extends LoggedInController {
             mainPane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
-        if(buildButton != null) {
+        if (buildButton != null) {
             buildButton.setDisable(appClosed);
             buildButton.setVisible(!appClosed);
         }
@@ -637,13 +636,13 @@ public class InGameController extends LoggedInController {
         gameSound.soundCenter(soundSlider.getValue());
     }
 
-    public void updateFields(boolean val, Pane... panes){
-        for(Pane pane : panes) {
+    public void updateFields(boolean val, Pane... panes) {
+        for (Pane pane : panes) {
             pane.setVisible(val);
             pane.setDisable(!val);
-            for(Node node : pane.getChildren()){
-                    node.setVisible(val);
-                    node.setDisable(!val);
+            for (Node node : pane.getChildren()) {
+                node.setVisible(val);
+                node.setDisable(!val);
 
             }
         }

@@ -90,8 +90,8 @@ public class InGameControllerTest extends ApplicationTest {
         }
     };
 
-   @Mock
-   PlayerResourceListController playerResourceListController;
+    @Mock
+    PlayerResourceListController playerResourceListController;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
@@ -100,7 +100,6 @@ public class InGameControllerTest extends ApplicationTest {
     InGameController inGameController;
 
     private PublishSubject<EventDto<State>> stateUpdates;
-
 
 
     @Override
