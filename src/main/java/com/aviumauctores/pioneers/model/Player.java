@@ -3,19 +3,14 @@ package com.aviumauctores.pioneers.model;
 import javafx.scene.paint.Color;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.List;
 
 public record Player(String gameID,
                      String userId,
                      String color,
                      int foundingRoll,
-                     int unknown,
-                     int grain,
-                     int brick,
-                     int ore,
-                     int lumber,
-                     int wool,
-                     int settlement,
-                     int city,
-                     int road
+                     HashMap<String, Integer> resources,
+                     HashMap<String, Integer> remainingBuildings
 ) {
 }

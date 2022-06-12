@@ -174,7 +174,7 @@ public class GameReadyController extends PlayerListController {
                 .subscribe(event -> {
                     if(!userService.getCurrentUserID().equals(gameService.getOwnerID())) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Game deleted");
+                        alert.setTitle(bundle.getString("warning"));
                         alert.setHeaderText(bundle.getString("game.deleted"));
                         alert.showAndWait();
                         gameService.setCurrentGameID(null);
