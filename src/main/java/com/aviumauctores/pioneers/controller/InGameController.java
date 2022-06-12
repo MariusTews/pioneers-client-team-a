@@ -402,8 +402,10 @@ public class InGameController extends LoggedInController {
             playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
         }
         if(currentPlayerID.equals(userID)){
+            yourTurnLabel.setVisible(true);
             if(currentAction.startsWith("founding")){
                 rollButton.setDisable(true);
+                arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
                 switch (currentAction){
                     case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
@@ -418,16 +420,20 @@ public class InGameController extends LoggedInController {
                 switch (currentAction){
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
+                        arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
                         updateFields(true, crossingPane, roadPane);
                     }case MOVE_ROLL -> {
                         rollButton.setDisable(false);
+                        arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
                         updateFields(false, crossingPane, roadPane);
                     }
                 }
             }
         }else{
+            arrowOnDice.setVisible(false);
+            yourTurnLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
             updateFields(false, crossingPane, roadPane);
