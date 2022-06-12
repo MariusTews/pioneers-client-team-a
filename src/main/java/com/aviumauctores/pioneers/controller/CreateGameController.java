@@ -57,8 +57,8 @@ public class CreateGameController extends LoggedInController {
 
     private CompositeDisposable disposables = new CompositeDisposable();
 
-    Image show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
-    Image hide = new Image(Objects.requireNonNull(Main.class.getResource("views/notShowPassword.png")).toString());
+    Image show;
+    Image hide;
 
 
     @Inject
@@ -75,6 +75,8 @@ public class CreateGameController extends LoggedInController {
 
     public void init(){
         disposables = new CompositeDisposable();
+        show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
+        hide = new Image(Objects.requireNonNull(Main.class.getResource("views/notShowPassword.png")).toString());
     }
 
 
