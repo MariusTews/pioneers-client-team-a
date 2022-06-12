@@ -472,7 +472,7 @@ public class InGameController extends LoggedInController {
                             case "pasture" -> tileImage.setImage(pasture);
                         }
                         Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
-                        tileLabel.setText("  " + tile.numberToken());
+                        tileLabel.setText("" + tile.numberToken());
                     }
                 })
         );
