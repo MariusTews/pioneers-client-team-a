@@ -5,5 +5,5 @@ public record Tile(
         int y,
         int z ,
         String type,
-        int numerToken) {
+        int numberToken) {
 }
