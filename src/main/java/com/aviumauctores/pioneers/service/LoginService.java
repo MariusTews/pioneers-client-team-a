@@ -9,12 +9,18 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Timer;
+import java.util.TimerTask;
 
+@Singleton
 public class LoginService {
 
     private final AuthenticationApiService authenticationApiService;
     private final TokenStorage tokenStorage;
     private final UserService userService;
+
+    private Timer refreshTimer;
 
     @Inject
     public LoginService(AuthenticationApiService authenticationApiService, TokenStorage tokenStorage, UserService userService){
@@ -25,18 +31,27 @@ public class LoginService {
 
     public Observable<LoginResult> login(String username, String password){
         return authenticationApiService.login(new LoginDto(username, password))
-                .doOnNext(result -> {
-                    tokenStorage.setToken(result.accessToken());
-                    userService.setCurrentUserID(result._id());
-                });
+                .doOnNext(this::onSuccessfulLogin);
     }
 
     public Observable<LoginResult> login(String token){
         return authenticationApiService.refresh(new RefreshDto(token))
-                .doOnNext(result -> {
-                    tokenStorage.setToken(result.accessToken());
-                    userService.setCurrentUserID(result._id());
-                });
+                .doOnNext(this::onSuccessfulLogin);
+    }
+
+    private void onSuccessfulLogin(LoginResult result) {
+        tokenStorage.setToken(result.accessToken());
+        tokenStorage.setRefreshToken(result.refreshToken());
+        userService.setCurrentUserID(result._id());
+        // Send every 45 minutes a refresh request
+        final long delay = 45 * 60 * 1000;
+        refreshTimer = new Timer();
+        refreshTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                login(tokenStorage.getRefreshToken()).subscribe();
+            }
+        }, delay);
     }
 
     public @NonNull Completable logout() {
@@ -44,10 +59,18 @@ public class LoginService {
                 userService.changeCurrentUserStatus("offline"),
                 authenticationApiService.logout()
                         .doOnComplete(() -> {
+                            cancelRefreshTimer();
                             tokenStorage.setToken(null);
+                            tokenStorage.setRefreshToken(null);
                             userService.setCurrentUserID(null);
                         })
                         .ignoreElements());
+    }
+
+    public void cancelRefreshTimer() {
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+        }
     }
 
     public Observable<LoginResult> checkPasswordLogin(String username, String password){
