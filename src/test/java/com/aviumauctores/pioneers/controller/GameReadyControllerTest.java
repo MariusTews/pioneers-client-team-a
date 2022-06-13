@@ -72,7 +72,8 @@ class GameReadyControllerTest extends ApplicationTest {
 
         when(userService.getUserByID("1")).thenReturn(
                 Observable.just(new User("1", "Player1", "online", null,null)));
-
+        when(userService.getUserName(anyString())).thenReturn(Observable.just("Player1"));
+        when(userService.getCurrentUserID()).thenReturn("1");
         when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1 )));
         when(gameService.getCurrentGameID()).thenReturn("12");
         existingMembers = Observable.just(List.of(existingMember));

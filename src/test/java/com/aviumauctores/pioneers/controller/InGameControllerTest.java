@@ -1,10 +1,13 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.sounds.GameMusic;
+import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -63,6 +66,17 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     EventListener eventListener;
 
+    @Mock
+    GameMusic gameSound;
+
+    @Mock
+    Provider<SettingsController> settingsController;
+
+    @Mock
+    StateService stateService;
+
+    @Mock
+    Provider<GameReadyController> gameReadyController;
 
     // For some reason Mockito doesn't want a lambda expression
     @SuppressWarnings("Convert2Lambda")
@@ -108,11 +122,12 @@ public class InGameControllerTest extends ApplicationTest {
         when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN)));
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000",
-                2, new HashMap<String, Integer>(), new HashMap<String, Integer>());
+                2, new HashMap<>(), new HashMap<>());
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))))));
-        when(soundService.createGameMusic(any())).thenReturn(null);
+
+        when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
         //
         stateUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
@@ -168,6 +183,14 @@ public class InGameControllerTest extends ApplicationTest {
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
         verify(pioneerService).createMove("roll", null);
+    }
+
+    @Test
+    void soundtest(){
+        when(gameSound.isRunning()).thenReturn(true);
+        clickOn("#soundImage");
+        assertThat(gameSound.isRunning()).isEqualTo(true);
+
     }
 
     @Test

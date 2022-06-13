@@ -356,8 +356,7 @@ public class InGameController extends LoggedInController {
                     buildService.setBuildingType(b.type());
                     ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                     buildService.setSelectedField(position);
-                    buildService.loadBuildingImage(b._id());
-                    if (b.owner().equals(userID)) {
+                    buildService.loadBuildingImage(b._id());if (b.owner().equals(userID)) {
                         if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                             gainVP(1);
                         }
@@ -510,6 +509,10 @@ public class InGameController extends LoggedInController {
         }
     }
 
+
+
+
+
     public void buildMap() {
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
@@ -553,9 +556,11 @@ public class InGameController extends LoggedInController {
 
     public void loadChat() {
         InGameChatController controller = inGameChatController.get();
-        controller.init();
-        controller.setInGameController(this);
-        insertChat.getChildren().add(controller.render());
+        if (controller != null) {
+            controller.init();
+            controller.setInGameController(this);
+            insertChat.getChildren().add(controller.render());
+        }
 
     }
 

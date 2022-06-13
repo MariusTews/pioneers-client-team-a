@@ -103,10 +103,11 @@ class AppTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Longer password so CI has more time for screen change
+        clickOn("#passwordTextField");
         write("12345678");
         screenAsserts.assertJoinGameScreen();
         // Join game
-        type(KeyCode.ENTER);
+        clickOn("#joinGameButton");
 
         screenAsserts.assertGameReadyScreen();
         // Go back to lobby

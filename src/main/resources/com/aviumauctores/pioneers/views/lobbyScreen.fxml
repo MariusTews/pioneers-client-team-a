@@ -11,6 +11,26 @@
 <?import javafx.scene.text.Font?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LobbyController">
+   <HBox prefHeight="32.0" prefWidth="600.0">
+      <children>
+         <ImageView id="britishFlag" fitHeight="28.0" fitWidth="38.0" onMouseClicked="#setEnglish" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../en.png" />
+            </image>
+            <HBox.margin>
+               <Insets left="500.0" top="5.0" />
+            </HBox.margin>
+         </ImageView>
+         <ImageView id="germanFlag" fitHeight="30.0" fitWidth="40.0" onMouseClicked="#setGerman" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../de.png" />
+            </image>
+            <HBox.margin>
+               <Insets left="10.0" top="5.0" />
+            </HBox.margin>
+         </ImageView>
+      </children>
+   </HBox>
    <HBox alignment="CENTER_LEFT" prefHeight="350.0" prefWidth="600.0" spacing="70.0">
       <VBox.margin>
          <Insets left="20.0" right="20.0" top="10.0" />
