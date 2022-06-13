@@ -61,7 +61,6 @@ class SettingsControllerTest extends ApplicationTest {
     @Test
     void changeUserName() {
         User user = new User("123", "Peter", "online", "xyz", null);
-        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", null, null, null, null)));
         when(userService.updateUser(any(), new UpdateUserDto(any(), null, null, null, null)))
                 .thenReturn(Observable.just(user));
 
@@ -80,7 +79,6 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Test
     void changeAvatar() {
-        when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", null, null, null, null)));
         when(userService.updateUser(any(), new UpdateUserDto(null, null, any(), null, null)))
                 .thenReturn(Observable.empty());
 

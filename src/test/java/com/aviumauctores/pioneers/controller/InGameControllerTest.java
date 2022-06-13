@@ -172,18 +172,9 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void showYourTurn() {
-        //TODO: gescheit anpassen
-        State state = new State("", "12", List.of(new ExpectedMove("build", List.of("1"))));
-
         ImageView arrow = lookup("#arrowOnDice").query();
         Label yourTurn = lookup("#yourTurnLabel").query();
         assertThat(arrow.isVisible()).isTrue();
         assertThat(yourTurn.isVisible()).isTrue();
-
-        stateUpdates.onNext(new EventDto<>("build", state));
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        assertThat(arrow.isVisible()).isFalse();
     }
 }
