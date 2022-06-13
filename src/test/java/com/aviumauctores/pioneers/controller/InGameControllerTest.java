@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
+import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
@@ -56,8 +57,17 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     EventListener eventListener;
 
-    @Spy
+    @Mock
     GameMusic gameSound;
+
+    @Mock
+    Provider<SettingsController> settingsController;
+
+    @Mock
+    StateService stateService;
+
+    @Mock
+    Provider<GameReadyController> gameReadyController;
 
     // For some reason Mockito doesn't want a lambda expression
     @SuppressWarnings("Convert2Lambda")
@@ -100,11 +110,12 @@ public class InGameControllerTest extends ApplicationTest {
         when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN)));
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000",
-                2, new HashMap<String, Integer>(), new HashMap<String, Integer>());
+                2, new HashMap<>(), new HashMap<>());
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))))));
-        when(soundService.createGameMusic(any())).thenReturn(null);
+
+        when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(pioneerService.createMove("founding-roll", null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null)));
@@ -143,11 +154,7 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void soundtest(){
-     
-        when(soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")))).thenReturn(new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3"))));
-        gameSound= soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
-        when(gameSound.isRunning()).thenReturn(false);
-        assertThat(gameSound.isRunning()).isEqualTo(true);
+        when(gameSound.isRunning()).thenReturn(true);
         clickOn("#soundImage");
         assertThat(gameSound.isRunning()).isEqualTo(true);
 

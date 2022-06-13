@@ -4,10 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.PreferenceService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
@@ -54,12 +51,26 @@ class LobbyControllerTest extends ApplicationTest {
     @Mock
     PreferenceService preferenceService;
 
-
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @InjectMocks
     LobbyController lobbyController;
+
+    @Mock
+    ErrorService errorService;
+
+    @Mock
+    Provider<LoginController> loginController;
+
+    @Mock
+    Provider<ChatController> chatController;
+
+    @Mock
+    Provider<CreateGameController> createGameController;
+
+    @Mock
+    Provider<JoinGameController> joinGameController;
 
 
     private Observable<EventDto<User>> userUpdates;
