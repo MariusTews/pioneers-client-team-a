@@ -78,7 +78,7 @@
          <ImageView id="hexagon_202" fitHeight="89.375" fitWidth="103.75" layoutX="424.625" layoutY="345.125" pickOnBounds="true" preserveRatio="true">
             <Image url="@tiles/wheat.png" />
          </ImageView>
-         <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="679.0" prefWidth="579.0" visible="false" />
+         <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="679.0" prefWidth="579.0"/>
          <Pane fx:id="crossingPane" prefHeight="580.0" prefWidth="583.0">
             <ImageView id="building2_200" fitHeight="16.0" fitWidth="16.0" layoutX="261.0" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />

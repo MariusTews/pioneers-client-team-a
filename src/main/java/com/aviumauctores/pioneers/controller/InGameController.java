@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.model.*;
@@ -25,6 +26,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -162,6 +164,8 @@ public class InGameController extends LoggedInController {
     private ErrorService errorService;
     private final BuildService buildService;
 
+    private final HashMap<String, String> errorCodes = new HashMap<>();
+
 
     @Inject
     public InGameController(App app,
@@ -225,7 +229,7 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
 
-
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
@@ -361,6 +365,9 @@ public class InGameController extends LoggedInController {
                             gainVP(1);
                         }
                     }
+                    if (!roadAndCrossingPane.getChildren().contains(position)) {
+                        roadAndCrossingPane.getChildren().add(position);
+                    }
                 }));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
@@ -379,7 +386,7 @@ public class InGameController extends LoggedInController {
                     playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
                     playerResourceListController.updateResourceList();
                     updateVisuals();
-                }));
+                }, this::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
@@ -478,15 +485,14 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
-                        //updateFields(true, crossingPane, roadPane);
                         updateFields(true, roadAndCrossingPane);
                     }
                     case MOVE_ROLL -> {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
-                        //updateFields(false, crossingPane, roadPane);
-                        updateFields(false, roadAndCrossingPane);
+                        roadAndCrossingPane.setDisable(true);
+                        freeFieldVisibility(false);
                     }
                 }
             }
@@ -495,7 +501,9 @@ public class InGameController extends LoggedInController {
             yourTurnLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
-            updateFields(false, crossingPane, roadPane, roadAndCrossingPane);
+            updateFields(false, crossingPane, roadPane);
+            roadAndCrossingPane.setDisable(true);
+            freeFieldVisibility(false);
         }
     }
 
@@ -675,11 +683,11 @@ public class InGameController extends LoggedInController {
                 vpCircles[i].setFill(Color.GOLD);
                 int finalI = i;
                 new Thread(() -> {
-                    /*try {
+                    try {
                         vpAnimation(finalI);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
-                    }*/
+                    }
                 }).start();
             } else {
                 vpCircles[i].setFill(Color.GRAY);
@@ -717,10 +725,31 @@ public class InGameController extends LoggedInController {
     }
 
     public void fieldsIntoOnePane() {
-        roadAndCrossingPane.getChildren().setAll(roadPane.getChildren());
+        roadAndCrossingPane.getChildren().addAll(roadPane.getChildren());
         roadAndCrossingPane.getChildren().addAll(crossingPane.getChildren());
+        updateFields(true, roadAndCrossingPane);
         roadPane.getChildren().removeAll();
+        updateFields(false, roadPane);
         crossingPane.getChildren().removeAll();
+        updateFields(false, crossingPane);
+    }
+
+    public void freeFieldVisibility(boolean var) {
+        for (Node n : roadAndCrossingPane.getChildren()) {
+            ImageView field = (ImageView) n;
+            if (field.getImage().getUrl().endsWith("empty.png") || field.getImage().getUrl().endsWith("emptyRoad.png")) {
+                System.out.println(field.getImage().getUrl());
+                field.setVisible(var);
+            }
+        }
+    }
+
+    public void handleError(Throwable throwable) {
+        if (throwable instanceof HttpException ex) {
+            ErrorResponse response = errorService.readErrorMessage(ex);
+            String message = errorCodes.get(Integer.toString(response.statusCode()));
+            app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+        }
     }
 
 }
