@@ -346,7 +346,8 @@ public class InGameController extends LoggedInController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(state -> {
-                    //update class variablesstateService.updateState(state);
+                    //update class variables
+                    stateService.updateState(state);
                     currentPlayerID = stateService.getCurrentPlayerID();
                     currentAction = stateService.getCurrentAction();
                     buildService.setCurrentAction(currentAction);
