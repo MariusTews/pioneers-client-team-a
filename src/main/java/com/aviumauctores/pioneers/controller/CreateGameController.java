@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.beans.binding.Bindings;
@@ -58,8 +59,8 @@ public class CreateGameController extends LoggedInController {
     @Inject
     public CreateGameController(App app,
                                 Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
-                                GameService gameService, UserService userService, ResourceBundle bundle){
-        super(userService);
+                                LoginService loginService, GameService gameService, UserService userService, ResourceBundle bundle){
+        super(loginService, userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;

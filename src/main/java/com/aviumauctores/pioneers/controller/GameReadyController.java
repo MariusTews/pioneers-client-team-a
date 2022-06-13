@@ -88,11 +88,13 @@ public class GameReadyController extends PlayerListController {
     private Color chosenColour;
 
     @Inject
-    public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
+    public GameReadyController(App app,
+                               LoginService loginService, UserService userService,
+                               GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
                                ResourceBundle bundle, MessageService messageService,
                                Provider<LobbyController> lobbyController, Provider<InGameController> inGameController){
-        super(userService);
+        super(loginService, userService);
         this.app = app;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
