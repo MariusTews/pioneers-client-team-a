@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 @Singleton
 public class TokenStorage {
     private String token;
+    private String refreshToken;
 
     @Inject
     public TokenStorage() {}
@@ -16,5 +17,13 @@ public class TokenStorage {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
