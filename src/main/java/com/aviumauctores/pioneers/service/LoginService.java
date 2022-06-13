@@ -68,7 +68,9 @@ public class LoginService {
     }
 
     public void cancelRefreshTimer() {
-        refreshTimer.cancel();
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+        }
     }
 
     public Observable<LoginResult> checkPasswordLogin(String username, String password){
