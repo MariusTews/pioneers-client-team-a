@@ -7,6 +7,7 @@ public record Building(
         int y ,
         int z,
         int side,
+        String _id,
         String type,
         String gameId,
         String owner
@@ -28,6 +29,6 @@ public record Building(
         // which would be else split in two single array elements.
         int[] coordinates = Arrays.stream(coordinateString.split("(?<=(-?\\d))", 4))
                 .mapToInt(Integer::parseInt).toArray();
-        return new Building(coordinates[0], coordinates[1], coordinates[2], coordinates[3],null, null, null);
+        return new Building(coordinates[0], coordinates[1], coordinates[2], coordinates[3],null, null, null, null);
     }
 }
