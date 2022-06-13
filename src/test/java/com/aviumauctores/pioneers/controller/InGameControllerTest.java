@@ -1,9 +1,11 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
 import javafx.scene.Node;
@@ -53,6 +55,9 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
+
+    @Spy
+    GameMusic gameSound;
 
     // For some reason Mockito doesn't want a lambda expression
     @SuppressWarnings("Convert2Lambda")
@@ -134,5 +139,17 @@ public class InGameControllerTest extends ApplicationTest {
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
         verify(pioneerService).createMove("roll", null);
+    }
+
+    @Test
+    void soundtest(){
+     
+        when(soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")))).thenReturn(new GameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3"))));
+        gameSound= soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
+        when(gameSound.isRunning()).thenReturn(false);
+        assertThat(gameSound.isRunning()).isEqualTo(true);
+        clickOn("#soundImage");
+        assertThat(gameSound.isRunning()).isEqualTo(true);
+
     }
 }

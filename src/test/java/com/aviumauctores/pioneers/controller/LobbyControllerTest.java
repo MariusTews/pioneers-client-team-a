@@ -22,6 +22,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -53,11 +54,13 @@ class LobbyControllerTest extends ApplicationTest {
     @Mock
     PreferenceService preferenceService;
 
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @InjectMocks
     LobbyController lobbyController;
+
 
     private Observable<EventDto<User>> userUpdates;
     private Observable<EventDto<Game>> gameUpdates;
@@ -115,5 +118,15 @@ class LobbyControllerTest extends ApplicationTest {
         clickOn("#quitButton");
         // Ensure a dialog is shown
         verify(app).showErrorDialog(anyString(),anyString());
+    }
+
+    @Test
+    void changeLanguage(){
+
+        clickOn("#britishFlag");
+        verify(preferenceService).setLocale(Locale.ENGLISH);
+
+        clickOn("#germanFlag");
+        verify(preferenceService).setLocale(Locale.GERMAN);
     }
 }

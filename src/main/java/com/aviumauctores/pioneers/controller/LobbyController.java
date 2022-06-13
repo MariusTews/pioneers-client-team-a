@@ -17,12 +17,14 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -45,6 +47,9 @@ public class LobbyController extends PlayerListController {
     private final Provider<JoinGameController> joinGameController;
 
     private final Provider<SettingsController> settingsController;
+
+    private final Provider<LobbyController> lobbyController;
+
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
@@ -86,7 +91,10 @@ public class LobbyController extends PlayerListController {
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
                            Provider<JoinGameController> joinGameController,
-                           Provider<SettingsController> settingsController) {
+                           Provider<SettingsController> settingsController,
+                           Provider<LobbyController> lobbyController)
+
+    {
         super(userService);
         this.app = app;
         this.loginService = loginService;
@@ -100,6 +108,7 @@ public class LobbyController extends PlayerListController {
         this.createGameController = createGameController;
         this.joinGameController = joinGameController;
         this.settingsController = settingsController;
+        this.lobbyController=lobbyController;
 
     }
 
@@ -251,5 +260,15 @@ public class LobbyController extends PlayerListController {
     public void toSettings(ActionEvent event) {
         final SettingsController controller = settingsController.get();
         app.show(controller);
+    }
+
+    public void setGerman(MouseEvent event) {
+        preferenceService.setLocale(Locale.GERMAN);
+        app.show(this.lobbyController.get());
+    }
+
+    public void setEnglish(MouseEvent event) {
+        preferenceService.setLocale(Locale.ENGLISH);
+        app.show(this.lobbyController.get());
     }
 }
