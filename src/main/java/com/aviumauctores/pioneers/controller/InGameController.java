@@ -355,8 +355,8 @@ public class InGameController extends LoggedInController {
                     ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                     buildService.setSelectedField(position);
                     buildService.loadBuildingImage(b._id());
-                    if (b.owner().equals(userID)){
-                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)){
+                    if (b.owner().equals(userID)) {
+                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                             gainVP(1);
                         }
                     }
@@ -369,17 +369,17 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(state -> {
                     //update class variables
-                            stateService.updateState(state);
-                            currentPlayerID = stateService.getCurrentPlayerID();
-                            currentAction = stateService.getCurrentAction();
-                            buildService.setCurrentAction(currentAction);
-                            player = stateService.getUpdatedPlayer();
-                            playerResourceListController.setPlayer(player);
-                            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-                            playerResourceListController.updateResourceList();
-                            updateVisuals();
-                        }));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated" , Player.class)
+                    stateService.updateState(state);
+                    currentPlayerID = stateService.getCurrentPlayerID();
+                    currentAction = stateService.getCurrentAction();
+                    buildService.setCurrentAction(currentAction);
+                    player = stateService.getUpdatedPlayer();
+                    playerResourceListController.setPlayer(player);
+                    playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+                    playerResourceListController.updateResourceList();
+                    updateVisuals();
+                }));
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
@@ -410,24 +410,32 @@ public class InGameController extends LoggedInController {
 
     private ImageView getView(int x, int y, int z, int side) {
         //create building id
-        String location = "building" +  x + y + z + side;
+        String location = "building" + x + y + z + side;
         location = location.replace("-", "_");
         return getNodeByID(location);
 
     }
 
-    private ImageView getNodeByID(String id){
+    private ImageView getNodeByID(String id) {
         //search for Node in road and crossingpane
         ImageView view = null;
-        for (Node n : crossingPane.getChildren()){
-            if (n.getId().equals(id)){
-                view = (ImageView) n;
+        if (currentAction.startsWith("founding")) {
+            for (Node n : crossingPane.getChildren()) {
+                if (n.getId().equals(id)) {
+                    view = (ImageView) n;
+                }
             }
-        }
-        if (view == null){
-            for (Node n : roadPane.getChildrenUnmodifiable()){
-                if (n.getId().equals(id)){
-                    view =  (ImageView) n;
+            if (view == null) {
+                for (Node n : roadPane.getChildrenUnmodifiable()) {
+                    if (n.getId().equals(id)) {
+                        view = (ImageView) n;
+                    }
+                }
+            }
+        } else {
+            for (Node n : roadAndCrossingPane.getChildren()) {
+                if (n.getId().equals(id)) {
+                    view = (ImageView) n;
                 }
             }
         }
@@ -458,7 +466,13 @@ public class InGameController extends LoggedInController {
                     }
                 }
             } else {
-                fieldsIntoOnePane();
+                updateFields(false, crossingPane, roadPane);
+                if (stateService.getOldAction() != null) {
+                    if (stateService.getOldAction().startsWith("founding") && !currentAction.startsWith("founding")) {
+                        fieldsIntoOnePane();
+                        System.out.println(stateService.getOldAction());
+                    }
+                }
                 switch (currentAction) {
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
@@ -697,12 +711,10 @@ public class InGameController extends LoggedInController {
     }
 
     public void fieldsIntoOnePane() {
-        for (Node r: roadPane.getChildren()) {
-            roadAndCrossingPane.getChildren().add(r);
-        }
-        for (Node c: crossingPane.getChildren()) {
-            crossingPane.getChildren().add(c);
-        }
+        roadAndCrossingPane.getChildren().setAll(roadPane.getChildren());
+        roadAndCrossingPane.getChildren().addAll(crossingPane.getChildren());
+        roadPane.getChildren().removeAll();
+        crossingPane.getChildren().removeAll();
     }
 
 }

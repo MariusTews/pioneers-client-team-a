@@ -113,7 +113,7 @@ public class PlayerResourceListItemController {
             num += resources.get(RESOURCE_BRICK);
         }
         if (resources.containsKey("unknown")){
-            System.out.println(resources.get("unknown"));
+            //System.out.println(resources.get("unknown"));
         }
         resourceLabel.setText(Integer.toString(num) + " " + bundle.getString("resources"));
     }
