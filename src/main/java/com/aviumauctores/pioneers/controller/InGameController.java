@@ -46,6 +46,7 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
+
     private Player player;
     private final EventListener eventListener;
     private final SoundService soundService;
@@ -70,6 +71,9 @@ public class InGameController extends LoggedInController {
     public Pane crossingPane;
     @FXML
     public Pane roadPane;
+
+    @FXML
+    public Pane roadAndCrossingPane;
     @FXML
     private ImageView soundImage;
     @FXML
@@ -418,18 +422,21 @@ public class InGameController extends LoggedInController {
                     }
                 }
             } else {
+                fieldsIntoOnePane();
                 switch (currentAction) {
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
-                        updateFields(true, crossingPane, roadPane);
+                        //updateFields(true, crossingPane, roadPane);
+                        updateFields(true, roadAndCrossingPane);
                     }
                     case MOVE_ROLL -> {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
-                        updateFields(false, crossingPane, roadPane);
+                        //updateFields(false, crossingPane, roadPane);
+                        updateFields(false, roadAndCrossingPane);
                     }
                 }
             }
@@ -438,7 +445,7 @@ public class InGameController extends LoggedInController {
             yourTurnLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
-            updateFields(false, crossingPane, roadPane);
+            updateFields(false, crossingPane, roadPane, roadAndCrossingPane);
         }
     }
 
@@ -607,11 +614,11 @@ public class InGameController extends LoggedInController {
                 vpCircles[i].setFill(Color.GOLD);
                 int finalI = i;
                 new Thread(() -> {
-                    try {
+                    /*try {
                         vpAnimation(finalI);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
-                    }
+                    }*/
                 }).start();
             } else {
                 vpCircles[i].setFill(Color.GRAY);
@@ -645,6 +652,15 @@ public class InGameController extends LoggedInController {
                 node.setDisable(!val);
 
             }
+        }
+    }
+
+    public void fieldsIntoOnePane() {
+        for (Node r: roadPane.getChildren()) {
+            roadAndCrossingPane.getChildren().add(r);
+        }
+        for (Node c: crossingPane.getChildren()) {
+            crossingPane.getChildren().add(c);
         }
     }
 
