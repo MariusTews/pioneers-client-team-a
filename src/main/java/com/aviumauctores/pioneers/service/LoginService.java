@@ -59,12 +59,16 @@ public class LoginService {
                 userService.changeCurrentUserStatus("offline"),
                 authenticationApiService.logout()
                         .doOnComplete(() -> {
-                            refreshTimer.cancel();
+                            cancelRefreshTimer();
                             tokenStorage.setToken(null);
                             tokenStorage.setRefreshToken(null);
                             userService.setCurrentUserID(null);
                         })
                         .ignoreElements());
+    }
+
+    public void cancelRefreshTimer() {
+        refreshTimer.cancel();
     }
 
     public Observable<LoginResult> checkPasswordLogin(String username, String password){

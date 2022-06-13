@@ -149,12 +149,14 @@ public class InGameController extends LoggedInController {
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
+    public InGameController(App app,
+                            LoginService loginService, UserService userService,
+                            ResourceBundle bundle, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
                             ErrorService errorService, BuildService buildService) {
-        super(userService);
+        super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
         this.playerResourceListController = playerResourceListController;
