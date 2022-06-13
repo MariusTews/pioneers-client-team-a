@@ -59,7 +59,6 @@ public class PlayerResourceListController {
         playerListVBox.setPadding(new Insets(10,0,2,20));
         playerListVBox.setSpacing(10.0);
         this.listElements = playerListVBox.getChildren();
-
     }
 
     public void createPlayerBox(Player player){
@@ -91,8 +90,6 @@ public class PlayerResourceListController {
         for(int i = 0 ; i < resources.length; i++){
             updateLabel(labels[i], resources[i]);
         }
-
-
     }
 
     public void updateLabel(Label label, String resource){
@@ -102,28 +99,10 @@ public class PlayerResourceListController {
         }else{
             label.setText("0");
         }
-
-
     }
 
     public void setPlayer(Player player){
         this.player = player;
-    }
-
-    public void onPlayerTurn(String currentPlayerID){
-        //swap the playerBox at the top of the vbox with the current playerBox.
-        String oldPlayerId = playerListVBox.getChildren().get(1).getId();
-        swap(oldPlayerId, currentPlayerID);
-
-
-    }
-
-    private void swap(String oldPlayerId, String currentPlayerID) {
-        Label oldLabel = listItems.get(oldPlayerId).getResourceLabel();
-        Label pufferLabel = oldLabel;
-        Label currentPlayerLabel = listItems.get(currentPlayerID).getResourceLabel();
-        oldLabel = currentPlayerLabel;
-        currentPlayerLabel = pufferLabel;
     }
 
 

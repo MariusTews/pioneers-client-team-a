@@ -398,7 +398,6 @@ public class InGameController extends LoggedInController {
         if (view == null){
             for (Node n : roadPane.getChildrenUnmodifiable()){
                 if (n.getId().equals(id)){
-
                     view =  (ImageView) n;
                 }
             }
@@ -411,7 +410,6 @@ public class InGameController extends LoggedInController {
         if (stateService.getNewPlayer()){
             playerResourceListController.hideArrow(pioneerService.getPlayer(stateService.getOldPlayerID()).blockingFirst());
             playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
-            playerResourceListController.onPlayerTurn(stateService.getCurrentPlayerID());
         }
         //enable and disable road and crossingpane, depending on current action and current player
         if(currentPlayerID.equals(userID)){

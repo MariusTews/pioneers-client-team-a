@@ -112,6 +112,9 @@ public class PlayerResourceListItemController {
         if (resources.containsKey(RESOURCE_BRICK)) {
             num += resources.get(RESOURCE_BRICK);
         }
+        if (resources.containsKey("unknown")){
+            System.out.println(resources.get("unknown"));
+        }
         resourceLabel.setText(Integer.toString(num) + " " + bundle.getString("resources"));
     }
 
@@ -119,9 +122,6 @@ public class PlayerResourceListItemController {
         this.player = player;
     }
 
-    public Label getResourceLabel(){
-        return resourceLabel;
-    }
 
 
 }
