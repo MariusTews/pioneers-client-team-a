@@ -47,6 +47,15 @@ class GameListItemControllerTest extends ApplicationTest {
         new App(gameListItemController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.bundle = null;
+        this.game = null;
+        this.gameListItemController = null;
+        this.items = null;
+        this.parentController = null;
+        this.preferenceService = null;
+    }
     @Test
     void onJoinButtonPressed() {
         clickOn("Join");

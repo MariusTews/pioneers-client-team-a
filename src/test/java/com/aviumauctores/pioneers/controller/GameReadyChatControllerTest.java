@@ -79,6 +79,18 @@ class GameReadyChatControllerTest extends ApplicationTest {
         new App(gameReadyController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.bundle = null;
+        this.eventListener = null;
+        this.gameMemberService = null;
+        this.gameReadyController = null;
+        this.gameService = null;
+        this.messageCreateUpdates = null;
+        this.userService = null;
+        this.messageService = null;
+    }
+
 
     @Test
     void sendMessage() {
