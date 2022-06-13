@@ -24,6 +24,7 @@ public class PlayerResourceListController {
     private final UserService userService;
     private final PioneerService pioneerService;
     private final ColorService colorService;
+    private final ResourceBundle bundle;
 
     public VBox playerListVBox;
 
@@ -39,12 +40,13 @@ public class PlayerResourceListController {
 
     @Inject
     public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService,
-                                        ColorService colorService)
+                                        ColorService colorService, ResourceBundle bundle)
     {
        this.userService = userService;
        this. gameService = gameService;
        this.pioneerService = pioneerService;
        this.colorService = colorService;
+        this.bundle = bundle;
     }
 
     public void init(VBox node, String startingPlayer){
@@ -65,7 +67,7 @@ public class PlayerResourceListController {
         String playerID = player.userId();
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
-        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService);
+        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
         listItems.put(playerID, controller);
         playerListVBox.getChildren().add(controller.createBox());
         if(playerID.equals(this.currentPlayerID)){
@@ -82,7 +84,7 @@ public class PlayerResourceListController {
 
     public void updatePlayerLabel(Player player){
         listItems.get(player.userId()).setPlayer(player);
-        listItems.get(player.userId()).updateResources(player);
+        listItems.get(player.userId()).updateResources();
     }
 
     public void updateOwnResources(Label[] labels, String[] resources){
@@ -108,6 +110,21 @@ public class PlayerResourceListController {
         this.player = player;
     }
 
+    public void onPlayerTurn(String currentPlayerID){
+        //swap the playerBox at the top of the vbox with the current playerBox.
+        String oldPlayerId = playerListVBox.getChildren().get(1).getId();
+        swap(oldPlayerId, currentPlayerID);
+
+
+    }
+
+    private void swap(String oldPlayerId, String currentPlayerID) {
+        Label oldLabel = listItems.get(oldPlayerId).getResourceLabel();
+        Label pufferLabel = oldLabel;
+        Label currentPlayerLabel = listItems.get(currentPlayerID).getResourceLabel();
+        oldLabel = currentPlayerLabel;
+        currentPlayerLabel = pufferLabel;
+    }
 
 
     public void hideArrow(Player player){
