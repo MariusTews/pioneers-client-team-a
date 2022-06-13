@@ -470,7 +470,6 @@ public class InGameController extends LoggedInController {
                 if (stateService.getOldAction() != null) {
                     if (stateService.getOldAction().startsWith("founding") && !currentAction.startsWith("founding")) {
                         fieldsIntoOnePane();
-                        System.out.println(stateService.getOldAction());
                     }
                 }
                 switch (currentAction) {
