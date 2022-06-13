@@ -24,6 +24,7 @@ public class PlayerResourceListController {
     private final UserService userService;
     private final PioneerService pioneerService;
     private final ColorService colorService;
+    private final ResourceBundle bundle;
 
     public VBox playerListVBox;
 
@@ -39,12 +40,13 @@ public class PlayerResourceListController {
 
     @Inject
     public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService,
-                                        ColorService colorService)
+                                        ColorService colorService, ResourceBundle bundle)
     {
        this.userService = userService;
        this. gameService = gameService;
        this.pioneerService = pioneerService;
        this.colorService = colorService;
+        this.bundle = bundle;
     }
 
     public void init(VBox node, String startingPlayer){
@@ -57,7 +59,6 @@ public class PlayerResourceListController {
         playerListVBox.setPadding(new Insets(10,0,2,20));
         playerListVBox.setSpacing(10.0);
         this.listElements = playerListVBox.getChildren();
-
     }
 
     public void createPlayerBox(Player player){
@@ -65,7 +66,7 @@ public class PlayerResourceListController {
         String playerID = player.userId();
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
-        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService);
+        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
         listItems.put(playerID, controller);
         playerListVBox.getChildren().add(controller.createBox());
         if(playerID.equals(this.currentPlayerID)){
@@ -82,15 +83,13 @@ public class PlayerResourceListController {
 
     public void updatePlayerLabel(Player player){
         listItems.get(player.userId()).setPlayer(player);
-        listItems.get(player.userId()).updateResources(player);
+        listItems.get(player.userId()).updateResources();
     }
 
     public void updateOwnResources(Label[] labels, String[] resources){
         for(int i = 0 ; i < resources.length; i++){
             updateLabel(labels[i], resources[i]);
         }
-
-
     }
 
     public void updateLabel(Label label, String resource){
@@ -100,14 +99,11 @@ public class PlayerResourceListController {
         }else{
             label.setText("0");
         }
-
-
     }
 
     public void setPlayer(Player player){
         this.player = player;
     }
-
 
 
     public void hideArrow(Player player){

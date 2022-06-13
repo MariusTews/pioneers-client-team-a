@@ -88,11 +88,13 @@ public class GameReadyController extends PlayerListController {
     private Color chosenColour;
 
     @Inject
-    public GameReadyController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
+    public GameReadyController(App app,
+                               LoginService loginService, UserService userService,
+                               GameService gameService, GameMemberService gameMemberService,
                                EventListener eventListener, ErrorService errorService,
                                ResourceBundle bundle, MessageService messageService,
                                Provider<LobbyController> lobbyController, Provider<InGameController> inGameController){
-        super(userService);
+        super(loginService, userService);
         this.app = app;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
@@ -199,6 +201,18 @@ public class GameReadyController extends PlayerListController {
         colourIsTaken.put(Color.LIMEGREEN, "");
         colourIsTaken.put(Color.MAGENTA, "");
         colourIsTaken.put(Color.CHOCOLATE, "");
+
+        disposables.add(gameMemberService.listCurrentGameMembers()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(members -> {
+                    for (Member member: members) {
+                        if (member.color() != null) {
+                            if (colourIsTaken.get(member.color()) != null) {
+                                colourIsTaken.replace(member.color(), member.userId());
+                            }
+                        }
+                    }
+                }));
     }
 
     protected void onMemberEvent(EventDto<Member> eventDto) {
@@ -220,7 +234,6 @@ public class GameReadyController extends PlayerListController {
             colourIsTaken.replace(memberColor, memberID);
             // and update the combobox
             updateComboBox();
-            pickColourMenu.setValue(memberColor);
         }
         if (event.endsWith("created")) {
             addMemberToList(member);

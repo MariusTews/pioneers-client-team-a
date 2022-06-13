@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.service;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Player;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -51,14 +52,13 @@ public class BuildService {
             return;
         }
         Building b = Building.readCoordinatesFromID(selectedField.getId());
-        pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), buildingType,
+        pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), null, buildingType,
                         gameService.getCurrentGameID(), userID))
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                    loadBuildingImage(move.building(), player);
-                }, throwable -> {
+                .subscribe(move -> {}
+                        ,throwable -> {
                     if (throwable instanceof HttpException ex) {
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         String content = bundle.getString(buildingType.equals(BUILDING_TYPE_ROAD) ? "road.location.mismatch" : "settlement.location.mismatch");
                         alert.setContentText(content);
                         alert.showAndWait();
@@ -68,7 +68,7 @@ public class BuildService {
     }
 
 
-    private void loadBuildingImage(String buildingID, Player player) {
+    public void loadBuildingImage(String buildingID) {
         String color = colorService.getColor(player.color());
         switch (buildingType) {
             case BUILDING_TYPE_SETTLEMENT ->
@@ -79,6 +79,9 @@ public class BuildService {
         }
         selectedField.setFitWidth(25.5);
         selectedField.setFitHeight(25.5);
+        if (selectedField.getId().startsWith("building")){
+            return;
+        }
         selectedField.setId(buildingID);
 
     }
