@@ -5,6 +5,7 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GroupService;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -48,7 +49,7 @@ public class ChatController extends PlayerListController {
 
     private List<User> allUsers = new ArrayList<>();
 
-    private List<String> usersIdList  = new ArrayList<>();
+    private List<String> usersIdList = new ArrayList<>();
 
     private Label deleteLabel;
 
@@ -57,26 +58,37 @@ public class ChatController extends PlayerListController {
     private Tab selectedTab;
 
 
-    @FXML public TextField chatTextField;
-    @FXML public Button sendButton;
-    @FXML public ListView<Parent> onlinePlayerList;
-    @FXML public Button leaveButton;
-    @FXML public Label hintLabel;
-    @FXML public Label onlinePlayerLabel;
-    @FXML public Tab allTab;
-    @FXML public TabPane chatTabPane;
+    @FXML
+    public TextField chatTextField;
+    @FXML
+    public Button sendButton;
+    @FXML
+    public ListView<Parent> onlinePlayerList;
+    @FXML
+    public Button leaveButton;
+    @FXML
+    public Label hintLabel;
+    @FXML
+    public Label onlinePlayerLabel;
+    @FXML
+    public Tab allTab;
+    @FXML
+    public TabPane chatTabPane;
 
-    @FXML public VBox allChatVBox;
+    @FXML
+    public VBox allChatVBox;
 
-    @FXML public ScrollPane scrollPane;
+    @FXML
+    public ScrollPane scrollPane;
 
     private final Map<String, Tab> chatTabsByUserID = new HashMap<>();
 
     @Inject
-    public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
+    public ChatController(App app, LoginService loginService,
+                          Provider<LobbyController> lobbyController, MessageService messageService,
                           EventListener eventListener, UserService userService, GroupService groupService,
                           ResourceBundle bundle) {
-        super(userService);
+        super(loginService, userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
@@ -86,29 +98,20 @@ public class ChatController extends PlayerListController {
     }
 
 
-
-
-
-    public void init(){
+    public void init() {
         disposables = new CompositeDisposable();
         //get all users for the usernames of the old messages
         userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
             allUsers = res;
-            showOldMessages("groups", ALLCHAT_ID, LocalDateTime.now().toString() , 100);
+            showOldMessages("global", ALLCHAT_ID, LocalDateTime.now().toString(), 100);
         });
 
-        // get all online users, their ids and update the All-Group
-        userService.listOnlineUsers().observeOn(FX_SCHEDULER).subscribe(result -> { onlineUsers = result;
-            usersIdList = getAllUserIDs(onlineUsers);
-            usersIdList.add(userService.getCurrentUserID());
-            groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
-        });
+
         disposables.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     this.users.setAll(result);
                     usersIdList = getAllUserIDs(users);
                     usersIdList.add(userService.getCurrentUserID());
-                    groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     result.forEach(this::addPlayerToList);
                     if (onlinePlayerLabel != null) {
                         updatePlayerLabel();
@@ -119,41 +122,35 @@ public class ChatController extends PlayerListController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.data().status().equals("online")) {
-                        //update AllGroup
                         usersIdList.add(event.data()._id());
-                        groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                     if (event.data().status().equals("offline")) {
                         usersIdList.remove(event.data()._id());
-                        groupService.updateGroup(ALLCHAT_ID, usersIdList).subscribe();
                     }
                     // Update user list
                     onUserEvent(event);
                 }));
         // listen for incoming messages and show them as a Label
-        disposables.add(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)
+        disposables.add(eventListener.listen("*." + ALLCHAT_ID + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     if (event.event().endsWith(".created")) {
                         Label msgLabel = createMessageLabel(event.data());
-                        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
+                        ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()
                                 .add(msgLabel);
-                    }
-                    else if (event.event().endsWith(".deleted")) {
+                    } else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
-                        for (Node l : ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()) {
+                        for (Node l : ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()) {
                             if (event.data()._id().equals(l.getId())) {
                                 this.deleteLabel = (Label) l;
                             }
                         }
-                        ((VBox)((ScrollPane)this.allTab.getContent()).getContent()).getChildren()
+                        ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()
                                 .remove(this.deleteLabel);
 
                     }
                 }));
     }
-
-
 
 
     @Override
@@ -162,18 +159,10 @@ public class ChatController extends PlayerListController {
     }
 
 
-
-
-
-
-    public void destroy(boolean closed){
+    public void destroy(boolean closed) {
         super.destroy(closed);
         chatTabsByUserID.clear();
     }
-
-
-
-
 
 
     public Parent render() {
@@ -182,14 +171,14 @@ public class ChatController extends PlayerListController {
         final Parent parent;
         try {
             parent = loader.load();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
         //press esc to leave
         leaveButton.setCancelButton(true);
         onlinePlayerList.setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ESCAPE) {
                 leave();
             }
         });
@@ -208,7 +197,7 @@ public class ChatController extends PlayerListController {
 
         //send Message with Enter
         chatTextField.setOnKeyPressed(event -> {
-            if( event.getCode() == KeyCode.ENTER ) {
+            if (event.getCode() == KeyCode.ENTER) {
                 sendMessage(selectedTab.getId());
             }
         });
@@ -218,10 +207,6 @@ public class ChatController extends PlayerListController {
     }
 
 
-
-
-
-
     public void sendMessage(String groupId) {
         // clear the field
         String message = chatTextField.getText();
@@ -229,26 +214,27 @@ public class ChatController extends PlayerListController {
         if (message.isBlank()) {
             return;
         }
+        String namespace = "groups";
+        if (groupId.equals(ALLCHAT_ID)) {
+            namespace = "global";
+        }
         // send the message
-        messageService.sendGroupMessage(message, groupId)
+        messageService.sendGroupMessage(namespace, message, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
-
-
-
 
 
     // delete the message
     public void delete(String messageId, String groupId) {
-        messageService.deleteMessage(messageId, groupId)
+        String namespace = "groups";
+        if (groupId.equals(ALLCHAT_ID)) {
+            namespace = "global";
+        }
+        messageService.deleteMessage(namespace, messageId, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
     }
-
-
-
-
 
 
     public void leave() {
@@ -256,10 +242,6 @@ public class ChatController extends PlayerListController {
         final LobbyController controller = lobbyController.get();
         app.show(controller);
     }
-
-
-
-
 
 
     @Override
@@ -281,7 +263,7 @@ public class ChatController extends PlayerListController {
                                 //check if the Group/Tab, were is the event happened is open
                                 Tab tab = this.selectedTab;
                                 boolean notOpen = true;
-                                for (Tab t: chatTabPane.getTabs()) {
+                                for (Tab t : chatTabPane.getTabs()) {
                                     //search the right tab
                                     if (t.getId().equals(group._id())) {
                                         tab = t;
@@ -294,17 +276,16 @@ public class ChatController extends PlayerListController {
                                 //add or remove the Message
                                 if (event.event().endsWith(".created")) {
                                     Label msgLabel = createMessageLabel(event.data());
-                                    ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()
+                                    ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()
                                             .add(msgLabel);
-                                }
-                                else if (event.event().endsWith(".deleted")) {
+                                } else if (event.event().endsWith(".deleted")) {
                                     //search for the Label of the which will be deleted
-                                    for (Node l : ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()) {
+                                    for (Node l : ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()) {
                                         if (event.data()._id().equals(l.getId())) {
                                             this.deleteLabel = (Label) l;
                                         }
                                     }
-                                    ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren()
+                                    ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()
                                             .remove(this.deleteLabel);
                                 }
                             }));
@@ -317,14 +298,10 @@ public class ChatController extends PlayerListController {
     }
 
 
-
-
-
-
     public Label createMessageLabel(Message message) {
         // get the username of the sender
         Label msgLabel = new Label();
-        for (User u : allUsers ) {
+        for (User u : allUsers) {
             if (u._id().equals(message.sender())) {
                 msgLabel.setText(u.name() + ": " + message.body());
             }
@@ -335,11 +312,6 @@ public class ChatController extends PlayerListController {
     }
 
 
-
-
-
-
-
     public List<String> getAllUserIDs(List<User> users) {
         List<String> ids = new ArrayList<>();
         for (User u : users) {
@@ -347,11 +319,6 @@ public class ChatController extends PlayerListController {
         }
         return ids;
     }
-
-
-
-
-
 
 
     public void showOldMessages(String namespace, String pathId, String createdBefore, int limit) {
@@ -370,15 +337,15 @@ public class ChatController extends PlayerListController {
     }
 
 
-
-
-
-
     public void onMessageClicked(MouseEvent event) {
         if (event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete, only if you click on your message
             Label msg = (Label) event.getSource();
-            messageService.getMessage("groups",selectedTab.getId(), msg.getId()).observeOn(FX_SCHEDULER).subscribe(res ->  {
+            String namespace = "groups";
+            if (selectedTab.getId().equals(ALLCHAT_ID)) {
+                namespace = "global";
+            }
+            messageService.getMessage(namespace, selectedTab.getId(), msg.getId()).observeOn(FX_SCHEDULER).subscribe(res -> {
                 deleteMessage = res;
                 if (!userService.getCurrentUserID().equals(deleteMessage.sender())) {
                     return;
@@ -390,7 +357,7 @@ public class ChatController extends PlayerListController {
                 alert.setHeaderText(null);
                 Optional<ButtonType> result = alert.showAndWait();
                 // delete if "Ok" is clicked
-                if (result.get() == proceedButton){
+                if (result.get() == proceedButton) {
                     this.deleteLabel = (Label) event.getSource();
                     delete(this.deleteLabel.getId(), this.selectedTab.getId());
                     alert.close();
@@ -403,11 +370,6 @@ public class ChatController extends PlayerListController {
     }
 
 
-
-
-
-
-
     public Tab createTab(String groupId, User user) {
         Tab tab = new Tab(user.name());
         ScrollPane sp = new ScrollPane();
@@ -417,7 +379,7 @@ public class ChatController extends PlayerListController {
         tab.setClosable(true);
         tab.setOnCloseRequest(event -> {
             chatTabPane.getTabs().remove(tab);
-            ((VBox)((ScrollPane)tab.getContent()).getContent()).getChildren().clear();
+            ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren().clear();
         });
         tab.setOnSelectionChanged(event -> {
             if (event.getTarget().equals(tab)) {
@@ -430,7 +392,7 @@ public class ChatController extends PlayerListController {
 
     public void reopenTab(Tab userTab) {
         boolean notOpen = true;
-        for (Tab t: chatTabPane.getTabs()) {
+        for (Tab t : chatTabPane.getTabs()) {
             if (t.equals(userTab)) {
                 notOpen = false;
                 break;

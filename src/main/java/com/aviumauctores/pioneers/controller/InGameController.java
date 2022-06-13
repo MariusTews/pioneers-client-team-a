@@ -151,12 +151,14 @@ public class InGameController extends LoggedInController {
 
 
     @Inject
-    public InGameController(App app, UserService userService, ResourceBundle bundle, PlayerResourceListController playerResourceListController,
+    public InGameController(App app,
+                            LoginService loginService, UserService userService,
+                            ResourceBundle bundle, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
                             ErrorService errorService, BuildService buildService) {
-        super(userService);
+        super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
         this.playerResourceListController = playerResourceListController;
@@ -324,10 +326,16 @@ public class InGameController extends LoggedInController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(building -> {
+                    //listen to new buildings, and load the image
                     Building b = building.data();
-                    if (b.owner().equals(userID)) {
-                        switch (b.type()) {
-                            case BUILDING_TYPE_SETTLEMENT, BUILDING_TYPE_CITY -> gainVP(1);
+                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                    buildService.setPlayer(builder);
+                    buildService.setBuildingType(b.type());
+                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                    buildService.setSelectedField(position);
+                    buildService.loadBuildingImage(b._id());if (b.owner().equals(userID)) {
+                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)){
+                            gainVP(1);
                         }
                     }
                 }));
@@ -338,7 +346,7 @@ public class InGameController extends LoggedInController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(state -> {
-                    stateService.updateState(state);
+                    //update class variablesstateService.updateState(state);
                     currentPlayerID = stateService.getCurrentPlayerID();
                     currentAction = stateService.getCurrentAction();
                     buildService.setCurrentAction(currentAction);
@@ -371,11 +379,39 @@ public class InGameController extends LoggedInController {
         return parent;
     }
 
+    private ImageView getView(int x, int y, int z, int side) {
+        //create building id
+        String location = "building" +  x + y + z + side;
+        location = location.replace("-", "_");
+        return getNodeByID(location);
+
+    }
+
+    private ImageView getNodeByID(String id){
+        //search for Node in road and crossingpane
+        ImageView view = null;
+        for (Node n : crossingPane.getChildren()){
+            if (n.getId().equals(id)){
+                view = (ImageView) n;
+            }
+        }
+        if (view == null){
+            for (Node n : roadPane.getChildrenUnmodifiable()){
+                if (n.getId().equals(id)){
+                    view =  (ImageView) n;
+                }
+            }
+        }
+        return view;
+    }
+
     private void updateVisuals() {
+        //check if current player has changed
         if (stateService.getNewPlayer()) {
             playerResourceListController.hideArrow(pioneerService.getPlayer(stateService.getOldPlayerID()).blockingFirst());
             playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
         }
+        //enable and disable road and crossingpane, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
             if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
@@ -420,6 +456,9 @@ public class InGameController extends LoggedInController {
             playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
     }
+
+
+
 
 
     public void buildMap() {
@@ -506,6 +545,12 @@ public class InGameController extends LoggedInController {
             sideType = BUILDING_TYPE_ROAD;
         }
         buildService.setBuildingType(sideType);
+        if (currentAction != null) {
+            if (currentAction.startsWith("founding")) {
+                buildService.build();
+                return;
+            }
+        }
         buildMenuController = new BuildMenuController(bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {

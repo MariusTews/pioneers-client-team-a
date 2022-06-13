@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -69,12 +70,14 @@ public class JoinGameController extends LoggedInController {
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
-    public JoinGameController(App app, UserService userService, GameService gameService, ErrorService errorService,
+    public JoinGameController(App app,
+                              LoginService loginService, UserService userService,
+                              GameService gameService, ErrorService errorService,
                               EventListener eventListener,
                               ResourceBundle bundle,
                               Provider<LobbyController> lobbyController,
                               Provider<GameReadyController> gameReadyController) {
-        super(userService);
+        super(loginService, userService);
         this.app = app;
         this.gameService = gameService;
         this.errorService = errorService;

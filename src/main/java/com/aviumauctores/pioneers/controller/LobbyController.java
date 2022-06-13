@@ -35,7 +35,6 @@ public class LobbyController extends PlayerListController {
     private final App app;
 
     private User user = null;
-    private final LoginService loginService;
     private final GameService gameService;
     private final ErrorService errorService;
     private final PreferenceService preferenceService;
@@ -95,9 +94,8 @@ public class LobbyController extends PlayerListController {
                            Provider<LobbyController> lobbyController)
 
     {
-        super(userService);
+        super(loginService, userService);
         this.app = app;
-        this.loginService = loginService;
         this.gameService = gameService;
         this.errorService = errorService;
         this.preferenceService = preferenceService;

@@ -68,23 +68,23 @@ class ChatControllerTest extends ApplicationTest {
         Message message1 = new Message("1", "2", "3", "1", "hello");
         when(userService.findAll()).thenReturn(Observable.just(List.of(user1)));
         when(userService.listOnlineUsers()).thenReturn(Observable.just(List.of(user1)));
-        when(groupService.updateGroup(any(), any())).thenReturn(Observable.empty());
+        //when(groupService.updateGroup(any(), any())).thenReturn(Observable.empty());
         when(messageService.listMessages(any(), any(), any(), eq(100) )).thenReturn(Observable.just(List.of(message1)));
         userUpdates = Observable.just(new EventDto<>(".created", user1));
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message1));
         when(eventListener.listen("users.*.updated", User.class)).thenReturn(userUpdates);
-        when(eventListener.listen("groups." + ALLCHAT_ID + ".messages.*.*", Message.class)).thenReturn(messageCreateUpdates);
+        when(eventListener.listen("*." + ALLCHAT_ID + ".messages.*.*", Message.class)).thenReturn(messageCreateUpdates);
         new App(chatController).start(stage);
     }
 
     @Test
     void sendMessage() {
-        when(messageService.sendGroupMessage(any(), any())).thenReturn(Observable.just("hello"));
+        when(messageService.sendGroupMessage(any(), any(), any())).thenReturn(Observable.just("hello"));
         clickOn("#chatTextField");
         write("hello");
         type(KeyCode.ENTER);
 
-        verify(messageService).sendGroupMessage("hello", ALLCHAT_ID);
+        verify(messageService).sendGroupMessage("global", "hello", ALLCHAT_ID);
 
     }
 
@@ -93,7 +93,7 @@ class ChatControllerTest extends ApplicationTest {
         Message message1 = new Message("1", "2", "3", "1", "hello");
         when(userService.getCurrentUserID()).thenReturn("1");
         when(messageService.getMessage(any(), any(), any())).thenReturn(Observable.just(message1));
-        when(messageService.deleteMessage(any(), any())).thenReturn(Observable.empty());
+        when(messageService.deleteMessage(any(), any(), any())).thenReturn(Observable.empty());
 
         //create a Message
         EventDto<Message> createdMessageEventDto = messageCreateUpdates.blockingFirst();
@@ -103,14 +103,14 @@ class ChatControllerTest extends ApplicationTest {
         clickOn("OK");
 
 
-        verify(messageService).deleteMessage("3", "627cf3c93496bc00158f3859");
+        verify(messageService).deleteMessage("global", "3", ALLCHAT_ID);
 
     }
 
     @Test
     void privateChats() {
         User user1 = new User("1", "user1", "online", null,null);
-        when(messageService.sendGroupMessage(any(), any())).thenReturn(Observable.just("hello"));
+        when(messageService.sendGroupMessage(any(), any(), any())).thenReturn(Observable.just("hello"));
 
         // create ChatTab
         TabPane tabPane = lookup("#chatTabPane").query();
@@ -129,7 +129,7 @@ class ChatControllerTest extends ApplicationTest {
         type(KeyCode.ENTER);
 
 
-        verify(messageService).sendGroupMessage("hello", "17");
+        verify(messageService).sendGroupMessage("groups", "hello", "17");
     }
 
 }
