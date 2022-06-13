@@ -12,6 +12,7 @@ import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,12 +21,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -52,6 +56,17 @@ public class JoinGameController extends LoggedInController {
     @FXML
     public Button leaveButton;
 
+    @FXML
+    public ImageView viewPassword;
+
+    private boolean hidePassword = true;
+
+    public final SimpleStringProperty password = new SimpleStringProperty();
+
+    Image show;
+    Image hide;
+
+
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
@@ -74,6 +89,8 @@ public class JoinGameController extends LoggedInController {
 
     public void init() {
         disposables = new CompositeDisposable();
+        show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
+        hide = new Image(Objects.requireNonNull(Main.class.getResource("views/notShowPassword.png")).toString());
         disposables.add(gameService.getCurrentGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> gameNameLabel.setText(game.name()), throwable -> toLobbyScreen()));
@@ -116,19 +133,41 @@ public class JoinGameController extends LoggedInController {
         //press esc to leave
         leaveButton.setCancelButton(true);
 
-        passwordTextField.textProperty().bindBidirectional(showPasswordTextField.textProperty());
-        showPasswordTextField.setManaged(false);
-        joinGameButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> passwordTextField.getText().isEmpty(), passwordTextField.textProperty()));
+        passwordTextField.textProperty().bindBidirectional(password);
+
+        if (passwordTextField.getText() == null) {
+            passwordTextField.setText("");
+        }
+
+        joinGameButton.disableProperty().bind(
+                Bindings.createBooleanBinding(() ->
+                        passwordTextField.getText().trim().isEmpty(), passwordTextField.textProperty())
+        );
+
+
         return parent;
     }
 
     public void showPassword(ActionEvent actionEvent) {
-        boolean passwordShowed = showPasswordTextField.isVisible();
-        passwordTextField.setVisible(passwordShowed);
-        passwordTextField.setManaged(passwordShowed);
-        showPasswordTextField.setVisible(!passwordShowed);
-        showPasswordTextField.setManaged(!passwordShowed);
+
+        //check button status
+        if (passwordTextField.getText().isEmpty()) {
+            return;
+        }
+
+        //set source for Image and show/hide password depending on hidePassword
+        if (hidePassword) {
+            viewPassword.setImage(hide);
+            String password = passwordTextField.getText();
+            showPasswordTextField.setText(password);
+        } else {
+            viewPassword.setImage(show);
+            showPasswordTextField.setText("");
+        }
+        showPasswordTextField.setVisible(hidePassword);
+        passwordTextField.setVisible(!hidePassword);
+        hidePassword = !hidePassword;
+
     }
 
     public void joinGame(ActionEvent actionEvent) {

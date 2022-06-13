@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.sounds;
 
+import com.aviumauctores.pioneers.service.GameMemberService;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -10,6 +11,7 @@ public class GameMusic {
     MediaPlayer mediaPlayer;
     URL filePath;
 
+    public GameMusic(){}
     public GameMusic(URL url) {
         this.filePath = url;
         Media media = new Media(filePath.toString());
@@ -19,6 +21,9 @@ public class GameMusic {
     }
 
     public void play(){
+        if(mediaPlayer==null){
+            return;
+        }
         this.mediaPlayer.play();
     }
 

@@ -25,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -58,6 +59,8 @@ public class GameReadyController extends PlayerListController {
     @FXML public Button leaveGameButton;
 
     @FXML public Label gameNameLabel;
+
+    @FXML public Label nameLabel;
 
     @FXML public Button sendMessageButton;
 
@@ -110,6 +113,7 @@ public class GameReadyController extends PlayerListController {
 
     public void init() {
         disposables = new CompositeDisposable();
+
         // Get game via REST
         disposables.add(gameService.getCurrentGame()
                 .subscribe(game -> allMembers = game.members()));
@@ -130,6 +134,8 @@ public class GameReadyController extends PlayerListController {
                 .subscribe(eventDto -> {
                     String event = eventDto.event();
                     Game game = eventDto.data();
+                    gameNameLabel.setText(game.name());
+
                     if (event.endsWith("created") || event.endsWith("updated")) {
                         allMembers = game.members();
                         if (game.started()) {
@@ -137,6 +143,7 @@ public class GameReadyController extends PlayerListController {
                         }
                     }
                 }));
+
         // Listen to game member events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".members.*.*",
@@ -294,12 +301,21 @@ public class GameReadyController extends PlayerListController {
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
+
             parent = loader.load();
             chatPane.setId("chatpane");
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+
+        disposables.add(gameService.getCurrentGame()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(game -> gameNameLabel.setText(game.name())));
+
+        disposables.add(userService.getUserName(userService.getCurrentUserID())
+                .observeOn(FX_SCHEDULER)
+                .subscribe(name -> nameLabel.setText(bundle.getString("welcome")+" "+name)));
 
         //press esc to leave
         leaveGameButton.setCancelButton(true);
