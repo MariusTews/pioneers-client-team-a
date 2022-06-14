@@ -738,7 +738,6 @@ public class InGameController extends LoggedInController {
         for (Node n : roadAndCrossingPane.getChildren()) {
             ImageView field = (ImageView) n;
             if (field.getImage().getUrl().endsWith("empty.png") || field.getImage().getUrl().endsWith("emptyRoad.png")) {
-                System.out.println(field.getImage().getUrl());
                 field.setVisible(var);
             }
         }
