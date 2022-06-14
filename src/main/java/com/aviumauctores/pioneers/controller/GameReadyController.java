@@ -25,7 +25,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -81,8 +80,6 @@ public class GameReadyController extends PlayerListController {
 
     //list for storing message IDs of own messages to check whether a message can be deleted or not
     private final ArrayList<String> ownMessageIds = new ArrayList<>();
-
-    private CompositeDisposable disposables;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
