@@ -22,10 +22,7 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -54,6 +51,7 @@ public class InGameChatController implements Controller {
     @FXML
     public Button sendMessageButton;
 
+
     private final ArrayList<String> ownMessageIds = new ArrayList<>();
 
     private Label deleteLabel;
@@ -61,6 +59,8 @@ public class InGameChatController implements Controller {
     private InGameController inGameController;
 
     private CompositeDisposable disposables;
+
+
 
 
     @Inject
@@ -193,6 +193,9 @@ public class InGameChatController implements Controller {
             }
         }
     }
+
+
+
 
     public void delete(String messageId) {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
