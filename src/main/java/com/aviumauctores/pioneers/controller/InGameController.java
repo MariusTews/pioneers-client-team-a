@@ -218,7 +218,6 @@ public class InGameController extends LoggedInController {
         Move move = eventDto.data();
         if (move.action().equals("roll")) {
             int rolled = move.roll();
-            rollSum.setText(" " + rolled + " ");
             new Thread(() -> {
                 try {
                     rollAllDice(rolled);
@@ -234,7 +233,7 @@ public class InGameController extends LoggedInController {
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(200);
             i--;
         }
         switch (rolled) {
@@ -283,6 +282,7 @@ public class InGameController extends LoggedInController {
                 diceImage2.setImage(dice6);
             }
         }
+        rollSum.setText(" " + rolled + " ");
     }
 
     public void rollOneDice(int randomInteger, ImageView imageView) {
