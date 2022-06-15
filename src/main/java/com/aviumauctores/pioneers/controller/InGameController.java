@@ -162,6 +162,7 @@ public class InGameController extends LoggedInController {
 
     Image muteImage;
     Image unmuteImage;
+    private final ErrorService errorService;
     private final BuildService buildService;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
@@ -188,6 +189,7 @@ public class InGameController extends LoggedInController {
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.eventListener = eventListener;
+        this.errorService = errorService;
         this.buildService = buildService;
     }
 
@@ -551,7 +553,7 @@ public class InGameController extends LoggedInController {
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
         if (updatedPlayer.userId().equals(userID)) {
-            playerResourceListController.setPlayer(player);
+            playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
         } else {
             playerResourceListController.updatePlayerLabel(updatedPlayer);
