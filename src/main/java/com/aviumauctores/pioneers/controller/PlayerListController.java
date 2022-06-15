@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,8 +16,8 @@ public abstract class PlayerListController extends LoggedInController {
     protected final ObservableList<Parent> playerItems = FXCollections.observableArrayList();
     protected final Map<String, PlayerListItemController> playerListItemControllers = new HashMap<>();
 
-    protected PlayerListController(UserService userService) {
-        super(userService);
+    protected PlayerListController(LoginService loginService, UserService userService) {
+        super(loginService, userService);
     }
 
     protected void onUserEvent(EventDto<User> eventDto) {

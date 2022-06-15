@@ -68,13 +68,25 @@ class ChatControllerTest extends ApplicationTest {
         Message message1 = new Message("1", "2", "3", "1", "hello");
         when(userService.findAll()).thenReturn(Observable.just(List.of(user1)));
         when(userService.listOnlineUsers()).thenReturn(Observable.just(List.of(user1)));
-        //when(groupService.updateGroup(any(), any())).thenReturn(Observable.empty());
         when(messageService.listMessages(any(), any(), any(), eq(100) )).thenReturn(Observable.just(List.of(message1)));
         userUpdates = Observable.just(new EventDto<>(".created", user1));
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message1));
         when(eventListener.listen("users.*.updated", User.class)).thenReturn(userUpdates);
         when(eventListener.listen("*." + ALLCHAT_ID + ".messages.*.*", Message.class)).thenReturn(messageCreateUpdates);
         new App(chatController).start(stage);
+    }
+
+    @Override
+    public void stop() {
+        this.chatController = null;
+        this.app = null;
+        this.messageService = null;
+        this.eventListener = null;
+        this.groupService = null;
+        this.bundle = null;
+        this.userUpdates = null;
+        this.userService = null;
+        this.messageCreateUpdates = null;
     }
 
     @Test

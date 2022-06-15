@@ -4,10 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.PreferenceService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
@@ -22,6 +19,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -58,6 +56,22 @@ class LobbyControllerTest extends ApplicationTest {
 
     @InjectMocks
     LobbyController lobbyController;
+
+    @Mock
+    ErrorService errorService;
+
+    @Mock
+    Provider<LoginController> loginController;
+
+    @Mock
+    Provider<ChatController> chatController;
+
+    @Mock
+    Provider<CreateGameController> createGameController;
+
+    @Mock
+    Provider<JoinGameController> joinGameController;
+
 
     private Observable<EventDto<User>> userUpdates;
     private Observable<EventDto<Game>> gameUpdates;
@@ -115,5 +129,15 @@ class LobbyControllerTest extends ApplicationTest {
         clickOn("#quitButton");
         // Ensure a dialog is shown
         verify(app).showErrorDialog(anyString(),anyString());
+    }
+
+    @Test
+    void changeLanguage(){
+
+        clickOn("#britishFlag");
+        verify(preferenceService).setLocale(Locale.ENGLISH);
+
+        clickOn("#germanFlag");
+        verify(preferenceService).setLocale(Locale.GERMAN);
     }
 }

@@ -20,7 +20,6 @@ import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
-
 public class PlayerResourceListController {
 
 
@@ -131,6 +130,7 @@ public class PlayerResourceListController {
     public void showArrow(String playerID) {
         listItems.get(playerID).showArrow();
     }
+
 }
 
 

@@ -25,6 +25,11 @@ class AppTest extends ApplicationTest {
         app.show(testComponent.loginController());
     }
 
+    @Override
+    public void stop() {
+        this.stage = null;
+    }
+
     @Test
     void criticalPath() {
         assertThat(stage.getTitle()).isEqualTo("Pioneers");
@@ -98,10 +103,11 @@ class AppTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Longer password so CI has more time for screen change
+        clickOn("#passwordTextField");
         write("12345678");
         screenAsserts.assertJoinGameScreen();
         // Join game
-        type(KeyCode.ENTER);
+        clickOn("#joinGameButton");
 
         screenAsserts.assertGameReadyScreen();
         // Go back to lobby

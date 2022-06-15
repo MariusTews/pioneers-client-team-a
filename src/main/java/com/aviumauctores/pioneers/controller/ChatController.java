@@ -5,6 +5,7 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.GroupService;
+import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -83,10 +84,11 @@ public class ChatController extends PlayerListController {
     private final Map<String, Tab> chatTabsByUserID = new HashMap<>();
 
     @Inject
-    public ChatController(App app, Provider<LobbyController> lobbyController, MessageService messageService,
+    public ChatController(App app, LoginService loginService,
+                          Provider<LobbyController> lobbyController, MessageService messageService,
                           EventListener eventListener, UserService userService, GroupService groupService,
                           ResourceBundle bundle) {
-        super(userService);
+        super(loginService, userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
