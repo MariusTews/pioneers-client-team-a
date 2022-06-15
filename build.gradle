@@ -91,7 +91,7 @@ test {
     ]
 
     jvmArgs += [
-            '-Xmx1g',
+            '-Xmx2g',
             '--add-opens', 'javafx.graphics/com.sun.glass.ui=ALL-UNNAMED',
             '--add-opens', 'javafx.graphics/com.sun.javafx.application=ALL-UNNAMED',
     ]

@@ -78,6 +78,7 @@
          <ImageView id="hexagon_202" fitHeight="89.375" fitWidth="103.75" layoutX="424.625" layoutY="345.125" pickOnBounds="true" preserveRatio="true">
             <Image url="@tiles/wheat.png" />
          </ImageView>
+         <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="679.0" prefWidth="579.0"/>
          <Pane fx:id="crossingPane" prefHeight="580.0" prefWidth="583.0">
             <ImageView id="building2_200" fitHeight="16.0" fitWidth="16.0" layoutX="261.0" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
@@ -980,13 +981,18 @@
       <BorderPane onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="236.0" BorderPane.alignment="CENTER">
          <bottom>
             <VBox alignment="BOTTOM_LEFT" spacing="20.0" BorderPane.alignment="CENTER">
-               <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDice">
-                  <graphic>
-                     <ImageView disable="true" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@rollIcon.png" />
-                     </ImageView>
-                  </graphic>
-               </Button>
+               <HBox prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                     <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDice">
+                        <graphic>
+                           <ImageView disable="true" pickOnBounds="true" preserveRatio="true">
+                              <Image url="@rollIcon.png" />
+                           </ImageView>
+                        </graphic>
+                     </Button>
+                     <ImageView fx:id="arrowOnDice" fitHeight="48.0" fitWidth="159.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
+                  </children>
+               </HBox>
                <VBox prefHeight="55.0" prefWidth="142.0">
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
                      <font>
@@ -1020,6 +1026,9 @@
          <top>
             <VBox fx:id="insertChat" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
          </top>
+         <left>
+            <Label fx:id="yourTurnLabel" prefHeight="24.0" prefWidth="163.0" text="%your.turn" BorderPane.alignment="BOTTOM_LEFT" />
+         </left>
       </BorderPane>
    </left>
 </BorderPane>

@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.model.*;
@@ -16,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -26,6 +28,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -41,21 +44,31 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class InGameController extends LoggedInController {
     private final App app;
     private final ResourceBundle bundle;
+
+    private final ColorService colorService;
     private final PlayerResourceListController playerResourceListController;
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
+
     private Player player;
     private final EventListener eventListener;
     private final SoundService soundService;
 
     private String sideType;
     private String[] resourceNames;
-    private Label[] resourceLabels;
 
+    private Label[] resourceLabels;
 
     @FXML
     public Label numSheepLabel;
+
+
+    @FXML
+    public ImageView arrowOnDice;
+
+    @FXML
+    public Label yourTurnLabel;
 
     @FXML Label timeLabel;
     @FXML
@@ -64,6 +77,9 @@ public class InGameController extends LoggedInController {
     public Pane crossingPane;
     @FXML
     public Pane roadPane;
+
+    @FXML
+    public Pane roadAndCrossingPane;
     @FXML
     private ImageView soundImage;
     @FXML
@@ -154,11 +170,13 @@ public class InGameController extends LoggedInController {
 
     private Timer timer = new Timer();
 
+    private final HashMap<String, String> errorCodes = new HashMap<>();
+
 
     @Inject
     public InGameController(App app,
                             LoginService loginService, UserService userService,
-                            ResourceBundle bundle, PlayerResourceListController playerResourceListController,
+                            ResourceBundle bundle, ColorService colorService, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
@@ -166,6 +184,7 @@ public class InGameController extends LoggedInController {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
+        this.colorService = colorService;
         this.playerResourceListController = playerResourceListController;
         this.gameMemberService = gameMemberService;
         this.soundService = soundService;
@@ -218,14 +237,13 @@ public class InGameController extends LoggedInController {
 
 
 
-
+errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
         Move move = eventDto.data();
         if (move.action().equals("roll")) {
             int rolled = move.roll();
-            rollSum.setText(" " + rolled + " ");
             new Thread(() -> {
                 try {
                     rollAllDice(rolled);
@@ -241,13 +259,13 @@ public class InGameController extends LoggedInController {
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(200);
             i--;
         }
         switch (rolled) {
             case 2 -> {
                 diceImage1.setImage(dice1);
-                diceImage1.setImage(dice1);
+                diceImage2.setImage(dice1);
             }
             case 3 -> {
                 diceImage1.setImage(dice1);
@@ -290,6 +308,7 @@ public class InGameController extends LoggedInController {
                 diceImage2.setImage(dice6);
             }
         }
+        rollSum.setText(" " + rolled + " ");
     }
 
     public void rollOneDice(int randomInteger, ImageView imageView) {
@@ -320,19 +339,40 @@ public class InGameController extends LoggedInController {
         vpCircles = new Circle[]{vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
 
 
-
+        arrowOnDice.setFitHeight(40.0);
+        arrowOnDice.setFitWidth(40.0);
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                    Color colour = member.color();
-                    String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                    rollButton.setStyle(colourString);
-                    leaveGameButton.setStyle(colourString);
-                    finishMoveButton.setStyle(colourString);
-                    buildButton.setStyle(colourString);
-                    diceImage1.setStyle(colourString);
-                    diceImage2.setStyle(colourString);
-                }));
+                            Color colour = member.color();
+                            String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                            String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
+                            rollButton.setStyle(colourString);
+                            leaveGameButton.setStyle(colourString);
+                            finishMoveButton.setStyle(colourString);
+                            buildButton.setStyle(colourString);
+                            diceImage1.setStyle(colourString);
+                            diceImage2.setStyle(colourString);
+                            try {
+                                Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                                arrowOnDice.setImage(arrowIcon);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        }));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(building -> {
@@ -346,10 +386,25 @@ public class InGameController extends LoggedInController {
                     buildService.loadBuildingImage(b._id());
                     if (b.owner().equals(userID)) {
                         if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                            gainVP(1);
+                            gainVP(1);}
+                            }
+                            if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                roadAndCrossingPane.getChildren().add(position);
+                            }
                         }
-                    }
-                }));
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        }));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -367,19 +422,39 @@ public class InGameController extends LoggedInController {
                     playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
                     playerResourceListController.updateResourceList();
                     updateVisuals();
-                }));
+                }, this::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe());
+                .subscribe(move -> {
+                        }
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        }));
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
-
+        arrowOnDice.setFitHeight(40.0);
+        arrowOnDice.setFitWidth(40.0);
+        yourTurnLabel.setVisible(false);
         if (currentPlayerID.equals(userID)) {
+            arrowOnDice.setVisible(true);
+            yourTurnLabel.setVisible(true);
             updateFields(false, roadPane);
             updateFields(true, crossingPane);
         } else {
+            arrowOnDice.setVisible(false);
+            yourTurnLabel.setVisible(false);
             updateFields(false, crossingPane, roadPane);
         }
         soundImage.setImage(muteImage);
@@ -402,13 +477,21 @@ public class InGameController extends LoggedInController {
     private ImageView getNodeByID(String id) {
         //search for Node in road and crossingpane
         ImageView view = null;
-        for (Node n : crossingPane.getChildren()) {
-            if (n.getId().equals(id)) {
-                view = (ImageView) n;
+        if (currentAction.startsWith("founding")) {
+            for (Node n : crossingPane.getChildren()) {
+                if (n.getId().equals(id)) {
+                    view = (ImageView) n;
+                }
             }
-        }
-        if (view == null) {
-            for (Node n : roadPane.getChildrenUnmodifiable()) {
+            if (view == null) {
+                for (Node n : roadPane.getChildrenUnmodifiable()) {
+                    if (n.getId().equals(id)) {
+                        view = (ImageView) n;
+                    }
+                }
+            }
+        } else {
+            for (Node n : roadAndCrossingPane.getChildren()) {
                 if (n.getId().equals(id)) {
                     view = (ImageView) n;
                 }
@@ -420,13 +503,15 @@ public class InGameController extends LoggedInController {
     private void updateVisuals() {
         //check if current player has changed
         if (stateService.getNewPlayer()) {
-            playerResourceListController.hideArrow(pioneerService.getPlayer(stateService.getOldPlayerID()).blockingFirst());
-            playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
+            playerResourceListController.hideArrow(stateService.getOldPlayerID());
+            playerResourceListController.showArrow(currentPlayerID);
         }
         //enable and disable road and crossingpane, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
+            yourTurnLabel.setVisible(true);
             if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
+                arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
                 switch (currentAction) {
                     case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
@@ -439,23 +524,37 @@ public class InGameController extends LoggedInController {
                     }
                 }
             } else {
+                updateFields(false, crossingPane, roadPane);
+                if (stateService.getOldAction() != null) {
+                    if (stateService.getOldAction().startsWith("founding") && !currentAction.startsWith("founding")) {
+                        fieldsIntoOnePane();
+                    }
+                }
                 switch (currentAction) {
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
+                        arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
-                        updateFields(true, crossingPane, roadPane);
+                        updateFields(true, roadAndCrossingPane);
                     }
+
                     case MOVE_ROLL -> {
                         rollButton.setDisable(false);
+                        arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
-                        updateFields(false, crossingPane, roadPane);
+                        roadAndCrossingPane.setDisable(true);
+                        freeFieldVisibility(false);
                     }
                 }
             }
         } else {
+            arrowOnDice.setVisible(false);
+            yourTurnLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
             updateFields(false, crossingPane, roadPane);
+            roadAndCrossingPane.setDisable(true);
+            freeFieldVisibility(false);
         }
     }
 
@@ -474,23 +573,36 @@ public class InGameController extends LoggedInController {
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
-                    List<Tile> tiles = map.tiles();
-                    for (Tile tile : tiles) {
-                        String hexID = "" + tile.x() + tile.y() + tile.z();
-                        hexID = hexID.replace('-', '_');
-                        ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
-                        switch (tile.type()) {
-                            case "desert" -> tileImage.setImage(desert);
-                            case "fields" -> tileImage.setImage(fields);
-                            case "hills" -> tileImage.setImage(hills);
-                            case "mountains" -> tileImage.setImage(mountains);
-                            case "forest" -> tileImage.setImage(forest);
-                            case "pasture" -> tileImage.setImage(pasture);
+                            List<Tile> tiles = map.tiles();
+                            for (Tile tile : tiles) {
+                                String hexID = "" + tile.x() + tile.y() + tile.z();
+                                hexID = hexID.replace('-', '_');
+                                ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
+                                switch (tile.type()) {
+                                    case "desert" -> tileImage.setImage(desert);
+                                    case "fields" -> tileImage.setImage(fields);
+                                    case "hills" -> tileImage.setImage(hills);
+                                    case "mountains" -> tileImage.setImage(mountains);
+                                    case "forest" -> tileImage.setImage(forest);
+                                    case "pasture" -> tileImage.setImage(pasture);
+                                }
+                                Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
+                                tileLabel.setText("" + tile.numberToken());
+                            }
                         }
-                        Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
-                        tileLabel.setText("" + tile.numberToken());
-                    }
-                })
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        })
         );
     }
 
@@ -529,10 +641,22 @@ public class InGameController extends LoggedInController {
                 diceSound.play();
             }
         }
-        //For test purpose: First move needs to be "founding-roll"
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe());
+                .subscribe(move -> {
+                }, throwable -> {
+                    if (throwable instanceof HttpException ex) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        String content;
+                        if (ex.code() == 429) {
+                            content = "HTTP 429-Error";
+                        } else {
+                            content = "Unknown error";
+                        }
+                        alert.setContentText(content);
+                        alert.showAndWait();
+                    }
+                }));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -540,17 +664,28 @@ public class InGameController extends LoggedInController {
             return;
         }
         buildService.setSelectedField(source);
-        buildService.setSelectedFieldCoordinates(coordsToPath(source.getId()));
+        String buildingID;
+        String buildingType;
+        if (source.getId().contains("#")) {
+            buildingID = source.getId().split("#")[0];
+            buildingType = source.getId().split("#")[1];
+        } else {
+            buildingID = source.getId();
+            buildingType = "";
+        }
+        buildService.setSelectedFieldCoordinates(coordsToPath(buildingID));
         closeBuildMenu(false);
-        Building coordinateHolder = Building.readCoordinatesFromID(source.getId());
+        Building coordinateHolder = Building.readCoordinatesFromID(buildingID);
         if (coordinateHolder == null) {
             return;
         }
         int side = coordinateHolder.side();
         if (side == 0 || side == 6) {
-            sideType = BUILDING_TYPE_SETTLEMENT;
+            if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
+                sideType = BUILDING_TYPE_CITY;
+            } else {sideType = BUILDING_TYPE_SETTLEMENT;
 
-
+}
         } else {
             sideType = BUILDING_TYPE_ROAD;
         }
@@ -578,7 +713,6 @@ public class InGameController extends LoggedInController {
         mainPane.getChildren().add(buildMenu);
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
-
     }
 
     private String coordsToPath(String source) {
@@ -638,15 +772,17 @@ public class InGameController extends LoggedInController {
         memberVP += vpGain;
         for (int i = 0; i < 10; i++) {
             if (memberVP > i) {
-                vpCircles[i].setFill(Color.GOLD);
-                int finalI = i;
-                new Thread(() -> {
-                    try {
-                        vpAnimation(finalI);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).start();
+                if (vpCircles[i].getFill() != Color.GOLD) {
+                    vpCircles[i].setFill(Color.GOLD);
+                    int finalI = i;
+                    new Thread(() -> {
+                        try {
+                            vpAnimation(finalI);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).start();
+                }
             } else {
                 vpCircles[i].setFill(Color.GRAY);
             }
@@ -657,8 +793,8 @@ public class InGameController extends LoggedInController {
         double radius = 100.0;
         while (radius >= 10.0) {
             vpCircles[index].setRadius(radius);
-            radius -= 1.0;
-            TimeUnit.MILLISECONDS.sleep(10);
+            radius -= 10.0;
+            TimeUnit.MILLISECONDS.sleep(100);
         }
     }
 
@@ -745,6 +881,33 @@ public class InGameController extends LoggedInController {
             strHours = Integer.toString(hours);
 
         return strHours + ":" + strMins + ":" + strSecs;
+    }
+
+    public void fieldsIntoOnePane() {
+        roadAndCrossingPane.getChildren().addAll(roadPane.getChildren());
+        roadAndCrossingPane.getChildren().addAll(crossingPane.getChildren());
+        updateFields(true, roadAndCrossingPane);
+        roadPane.getChildren().removeAll();
+        updateFields(false, roadPane);
+        crossingPane.getChildren().removeAll();
+        updateFields(false, crossingPane);
+    }
+
+    public void freeFieldVisibility(boolean var) {
+        for (Node n : roadAndCrossingPane.getChildren()) {
+            ImageView field = (ImageView) n;
+            if (field.getImage().getUrl().endsWith("empty.png") || field.getImage().getUrl().endsWith("emptyRoad.png")) {
+                field.setVisible(var);
+            }
+        }
+    }
+
+    public void handleError(Throwable throwable) {
+        if (throwable instanceof HttpException ex) {
+            ErrorResponse response = errorService.readErrorMessage(ex);
+            String message = errorCodes.get(Integer.toString(response.statusCode()));
+            app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+        }
     }
 
 }
