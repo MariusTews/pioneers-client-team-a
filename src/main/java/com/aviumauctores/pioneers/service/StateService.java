@@ -11,6 +11,8 @@ public class StateService {
     private final BuildService buildService;
     private final PioneerService pioneerService;
     private State currentState;
+
+    private String oldAction;
     private String currentAction;
     private String currentPlayerID;
     private Player player;
@@ -30,6 +32,7 @@ public class StateService {
     }
 
     public void updateState(EventDto<State> state){
+        oldAction = currentAction;
         oldPlayerID = currentPlayerID;
         currentState = state.data();
         currentPlayerID = currentState.expectedMoves().get(0).players().get(0);
@@ -64,4 +67,6 @@ public class StateService {
     public String getOldPlayerID(){
         return oldPlayerID;
     }
+
+    public String getOldAction(){ return oldAction;}
 }

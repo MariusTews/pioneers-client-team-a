@@ -84,6 +84,21 @@ class GameReadyControllerTest extends ApplicationTest {
         new App(gameReadyController).start(stage);
     }
 
+    @Override
+    public void stop() {
+        this.app = null;
+        this.bundle = null;
+        this.eventListener = null;
+        this.existingMembers = null;
+        this.gameMemberService = null;
+        this.gameReadyController = null;
+        this.gameService = null;
+        this.inGameController = null;
+        this.lobbyController = null;
+        this.memberUpdates = null;
+        this.userService = null;
+    }
+
     @Test
     void gameMemberListUpdates() {
         when(userService.getUserByID("42")).thenReturn(

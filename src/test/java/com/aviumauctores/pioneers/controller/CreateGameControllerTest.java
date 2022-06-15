@@ -76,6 +76,19 @@ public class CreateGameControllerTest extends ApplicationTest{
 
     }
 
+    @Override
+    public void stop() {
+        this.app = null;
+        this.bundle = null;
+        this.createGameController = null;
+        this.event = null;
+        this.gameMemberService = null;
+        this.gameReadyController = null;
+        this.lobbyController = null;
+        this.userService = null;
+        this.gameService = null;
+    }
+
     @Test
     void createGame(){
         TextField gameName = lookup("#gameNameInput").query();
