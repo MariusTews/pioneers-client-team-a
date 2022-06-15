@@ -124,8 +124,6 @@ public class InGameController extends LoggedInController {
     public Circle vp09;
     @FXML
     public Circle vp10;
-    @FXML
-    public Button buildButton;
 
 
     public Circle[] vpCircles;
@@ -341,7 +339,6 @@ public class InGameController extends LoggedInController {
                             rollButton.setStyle(colourString);
                             leaveGameButton.setStyle(colourString);
                             finishMoveButton.setStyle(colourString);
-                            buildButton.setStyle(colourString);
                             diceImage1.setStyle(colourString);
                             diceImage2.setStyle(colourString);
                             try {
@@ -718,16 +715,10 @@ public class InGameController extends LoggedInController {
             mainPane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
-        if (buildButton != null) {
-            buildButton.setDisable(appClosed);
-            buildButton.setVisible(!appClosed);
-        }
     }
 
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         closeBuildMenu(false);
-        buildButton.setDisable(true);
-        buildButton.setVisible(false);
         buildService.setSelectedField(null);
         buildService.setSelectedFieldCoordinates(null);
     }
