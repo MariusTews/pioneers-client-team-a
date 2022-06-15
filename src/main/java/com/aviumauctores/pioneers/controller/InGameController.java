@@ -230,7 +230,7 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
 
-errorCodes.put("429", bundle.getString("limit.reached"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
@@ -337,18 +337,20 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                 .subscribe(member -> {
                             Color colour = member.color();
                             String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                            String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));rollButton.setStyle(colourString);
+                            String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
+                            rollButton.setStyle(colourString);
                             leaveGameButton.setStyle(colourString);
                             finishMoveButton.setStyle(colourString);
                             buildButton.setStyle(colourString);
                             diceImage1.setStyle(colourString);
                             diceImage2.setStyle(colourString);
-                        try {
-                        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                        arrowOnDice.setImage(arrowIcon);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }}
+                            try {
+                                Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                                arrowOnDice.setImage(arrowIcon);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         , throwable -> {
                             if (throwable instanceof HttpException ex) {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -378,6 +380,9 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                                     gainVP(1);
                                 }
                             }
+                            if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                roadAndCrossingPane.getChildren().add(position);
+                            }
                         }
                         , throwable -> {
                             if (throwable instanceof HttpException ex) {
@@ -391,10 +396,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                                 alert.setContentText(content);
                                 alert.showAndWait();
                             }
-                        if (!roadAndCrossingPane.getChildren().contains(position)) {
-                        roadAndCrossingPane.getChildren().add(position);
-                    }
-                }));
+                        }));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -557,9 +559,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
     }
-
-
-
 
 
     public void buildMap() {
