@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -236,7 +237,6 @@ public class InGameController extends LoggedInController {
         Move move = eventDto.data();
         if (move.action().equals("roll")) {
             int rolled = move.roll();
-            rollSum.setText(" " + rolled + " ");
             new Thread(() -> {
                 try {
                     rollAllDice(rolled);
@@ -252,13 +252,13 @@ public class InGameController extends LoggedInController {
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(200);
             i--;
         }
         switch (rolled) {
             case 2 -> {
                 diceImage1.setImage(dice1);
-                diceImage1.setImage(dice1);
+                diceImage2.setImage(dice1);
             }
             case 3 -> {
                 diceImage1.setImage(dice1);
@@ -301,6 +301,7 @@ public class InGameController extends LoggedInController {
                 diceImage2.setImage(dice6);
             }
         }
+        rollSum.setText(" " + rolled + " ");
     }
 
     public void rollOneDice(int randomInteger, ImageView imageView) {
@@ -334,41 +335,68 @@ public class InGameController extends LoggedInController {
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                    Color colour = member.color();
-                    String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                    String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
-                    rollButton.setStyle(colourString);
-                    leaveGameButton.setStyle(colourString);
-                    finishMoveButton.setStyle(colourString);
-                    buildButton.setStyle(colourString);
-                    diceImage1.setStyle(colourString);
-                    diceImage2.setStyle(colourString);
-                    try {
-                        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                        arrowOnDice.setImage(arrowIcon);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-                }));
+                            Color colour = member.color();
+                            String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                            String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
+                            rollButton.setStyle(colourString);
+                            leaveGameButton.setStyle(colourString);
+                            finishMoveButton.setStyle(colourString);
+                            buildButton.setStyle(colourString);
+                            diceImage1.setStyle(colourString);
+                            diceImage2.setStyle(colourString);
+                            try {
+                                Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                                arrowOnDice.setImage(arrowIcon);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        }));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(building -> {
-                    //listen to new buildings, and load the image
-                    Building b = building.data();
-                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                    buildService.setPlayer(builder);
-                    buildService.setBuildingType(b.type());
-                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                    buildService.setSelectedField(position);
-                    buildService.loadBuildingImage(b._id());if (b.owner().equals(userID)) {
-                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                            gainVP(1);
+                            //listen to new buildings, and load the image
+                            Building b = building.data();
+                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                            buildService.setPlayer(builder);
+                            buildService.setBuildingType(b.type());
+                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                            buildService.setSelectedField(position);
+                            buildService.loadBuildingImage(b._id());
+                            if (b.owner().equals(userID)) {
+                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                    gainVP(1);
+                                }
+                            }
+                            if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                roadAndCrossingPane.getChildren().add(position);
+                            }
                         }
-                    }
-                    if (!roadAndCrossingPane.getChildren().contains(position)) {
-                        roadAndCrossingPane.getChildren().add(position);
-                    }
-                }));
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        }));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -392,7 +420,21 @@ public class InGameController extends LoggedInController {
                 .subscribe(this::onPlayerUpdated));
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe());
+                .subscribe(move -> {
+                        }
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        }));
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -453,8 +495,8 @@ public class InGameController extends LoggedInController {
     private void updateVisuals() {
         //check if current player has changed
         if (stateService.getNewPlayer()) {
-            playerResourceListController.hideArrow(pioneerService.getPlayer(stateService.getOldPlayerID()).blockingFirst());
-            playerResourceListController.showArrow(pioneerService.getPlayer(currentPlayerID).blockingFirst());
+            playerResourceListController.hideArrow(stateService.getOldPlayerID());
+            playerResourceListController.showArrow(currentPlayerID);
         }
         //enable and disable road and crossingpane, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
@@ -487,6 +529,7 @@ public class InGameController extends LoggedInController {
                         finishMoveButton.setDisable(false);
                         updateFields(true, roadAndCrossingPane);
                     }
+
                     case MOVE_ROLL -> {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
@@ -518,30 +561,40 @@ public class InGameController extends LoggedInController {
     }
 
 
-
-
-
     public void buildMap() {
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
-                    List<Tile> tiles = map.tiles();
-                    for (Tile tile : tiles) {
-                        String hexID = "" + tile.x() + tile.y() + tile.z();
-                        hexID = hexID.replace('-', '_');
-                        ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
-                        switch (tile.type()) {
-                            case "desert" -> tileImage.setImage(desert);
-                            case "fields" -> tileImage.setImage(fields);
-                            case "hills" -> tileImage.setImage(hills);
-                            case "mountains" -> tileImage.setImage(mountains);
-                            case "forest" -> tileImage.setImage(forest);
-                            case "pasture" -> tileImage.setImage(pasture);
+                            List<Tile> tiles = map.tiles();
+                            for (Tile tile : tiles) {
+                                String hexID = "" + tile.x() + tile.y() + tile.z();
+                                hexID = hexID.replace('-', '_');
+                                ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
+                                switch (tile.type()) {
+                                    case "desert" -> tileImage.setImage(desert);
+                                    case "fields" -> tileImage.setImage(fields);
+                                    case "hills" -> tileImage.setImage(hills);
+                                    case "mountains" -> tileImage.setImage(mountains);
+                                    case "forest" -> tileImage.setImage(forest);
+                                    case "pasture" -> tileImage.setImage(pasture);
+                                }
+                                Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
+                                tileLabel.setText("" + tile.numberToken());
+                            }
                         }
-                        Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
-                        tileLabel.setText("" + tile.numberToken());
-                    }
-                })
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        })
         );
     }
 
@@ -580,10 +633,22 @@ public class InGameController extends LoggedInController {
                 diceSound.play();
             }
         }
-        //For test purpose: First move needs to be "founding-roll"
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe());
+                .subscribe(move -> {
+                }, throwable -> {
+                    if (throwable instanceof HttpException ex) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        String content;
+                        if (ex.code() == 429) {
+                            content = "HTTP 429-Error";
+                        } else {
+                            content = "Unknown error";
+                        }
+                        alert.setContentText(content);
+                        alert.showAndWait();
+                    }
+                }));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -591,16 +656,28 @@ public class InGameController extends LoggedInController {
             return;
         }
         buildService.setSelectedField(source);
-        buildService.setSelectedFieldCoordinates(coordsToPath(source.getId()));
+        String buildingID;
+        String buildingType;
+        if (source.getId().contains("#")) {
+            buildingID = source.getId().split("#")[0];
+            buildingType = source.getId().split("#")[1];
+        } else {
+            buildingID = source.getId();
+            buildingType = "";
+        }
+        buildService.setSelectedFieldCoordinates(coordsToPath(buildingID));
         closeBuildMenu(false);
-        Building coordinateHolder = Building.readCoordinatesFromID(source.getId());
+        Building coordinateHolder = Building.readCoordinatesFromID(buildingID);
         if (coordinateHolder == null) {
             return;
         }
         int side = coordinateHolder.side();
         if (side == 0 || side == 6) {
-            sideType = BUILDING_TYPE_SETTLEMENT;
-
+            if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
+                sideType = BUILDING_TYPE_CITY;
+            } else {
+                sideType = BUILDING_TYPE_SETTLEMENT;
+            }
         } else {
             sideType = BUILDING_TYPE_ROAD;
         }
@@ -620,7 +697,6 @@ public class InGameController extends LoggedInController {
         mainPane.getChildren().add(buildMenu);
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
-
     }
 
     private String coordsToPath(String source) {
@@ -680,15 +756,17 @@ public class InGameController extends LoggedInController {
         memberVP += vpGain;
         for (int i = 0; i < 10; i++) {
             if (memberVP > i) {
-                vpCircles[i].setFill(Color.GOLD);
-                int finalI = i;
-                new Thread(() -> {
-                    try {
-                        vpAnimation(finalI);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).start();
+                if (vpCircles[i].getFill() != Color.GOLD) {
+                    vpCircles[i].setFill(Color.GOLD);
+                    int finalI = i;
+                    new Thread(() -> {
+                        try {
+                            vpAnimation(finalI);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).start();
+                }
             } else {
                 vpCircles[i].setFill(Color.GRAY);
             }
@@ -699,8 +777,8 @@ public class InGameController extends LoggedInController {
         double radius = 100.0;
         while (radius >= 10.0) {
             vpCircles[index].setRadius(radius);
-            radius -= 1.0;
-            TimeUnit.MILLISECONDS.sleep(10);
+            radius -= 10.0;
+            TimeUnit.MILLISECONDS.sleep(100);
         }
     }
 

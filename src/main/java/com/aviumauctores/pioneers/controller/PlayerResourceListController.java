@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
 import com.aviumauctores.pioneers.service.*;
@@ -9,12 +10,15 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class PlayerResourceListController {
 
@@ -38,8 +42,7 @@ public class PlayerResourceListController {
     private Player player;
 
     @Inject
-    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService,
-                                        ColorService colorService, ResourceBundle bundle) {
+    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle) {
         this.userService = userService;
         this.gameService = gameService;
         this.pioneerService = pioneerService;
@@ -73,10 +76,26 @@ public class PlayerResourceListController {
     }
 
     public void updateResourceList() {
-        for (String playerID : listItems.keySet()) {
-            Player player = pioneerService.getPlayer(playerID).blockingFirst();
-            updatePlayerLabel(player);
-        }
+        disposables.add(pioneerService.listPlayers()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(players -> {
+                            for (Player player : players) {
+                                updatePlayerLabel(player);
+                            }
+                        }
+                        , throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                String content;
+                                if (ex.code() == 429) {
+                                    content = "HTTP 429-Error";
+                                } else {
+                                    content = "Unknown error";
+                                }
+                                alert.setContentText(content);
+                                alert.showAndWait();
+                            }
+                        }));
     }
 
     public void updatePlayerLabel(Player player) {
@@ -104,12 +123,12 @@ public class PlayerResourceListController {
     }
 
 
-    public void hideArrow(Player player) {
-        listItems.get(player.userId()).hideArrow();
+    public void hideArrow(String playerID) {
+        listItems.get(playerID).hideArrow();
     }
 
-    public void showArrow(Player player) {
-        listItems.get(player.userId()).showArrow();
+    public void showArrow(String playerID) {
+        listItems.get(playerID).showArrow();
     }
 
 }
