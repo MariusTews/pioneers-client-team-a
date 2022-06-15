@@ -40,12 +40,12 @@
         <ComboBox fx:id="pickColourMenu" layoutX="424.0" layoutY="27.0" onAction="#changeColour" prefWidth="150.0" promptText="%pick.colour">
         </ComboBox>
         <HBox layoutY="33.0" prefHeight="39.0" prefWidth="200.0">
-            <Label fx:id="nameLabel" prefHeight="45.0" prefWidth="85.0" text="Label">
+            <Label fx:id="nameLabel" prefHeight="45.0" prefWidth="165.0" text="Label">
                 <font>
-                    <Font size="30.0"/>
+                    <Font size="30.0" />
                 </font>
                 <HBox.margin>
-                    <Insets left="35.0"/>
+                    <Insets left="35.0" />
                 </HBox.margin>
             </Label>
         </HBox>

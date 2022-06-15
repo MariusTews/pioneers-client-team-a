@@ -11,6 +11,7 @@ import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -68,6 +69,8 @@ public class InGameController extends LoggedInController {
 
     @FXML
     public Label yourTurnLabel;
+
+    @FXML Label timeLabel;
     @FXML
     public Pane mainPane;
     @FXML
@@ -163,6 +166,8 @@ public class InGameController extends LoggedInController {
     private final ErrorService errorService;
     private final BuildService buildService;
 
+    private Timer timer = new Timer();
+
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
 
@@ -228,7 +233,9 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
 
-        errorCodes.put("429", bundle.getString("limit.reached"));
+
+
+errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) {
@@ -324,6 +331,8 @@ public class InGameController extends LoggedInController {
             e.printStackTrace();
             return null;
         }
+        runTimer();
+
         resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
         vpCircles = new Circle[]{vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
 
@@ -364,18 +373,17 @@ public class InGameController extends LoggedInController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(building -> {
-                            //listen to new buildings, and load the image
-                            Building b = building.data();
-                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                            buildService.setPlayer(builder);
-                            buildService.setBuildingType(b.type());
-                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                            buildService.setSelectedField(position);
-                            buildService.loadBuildingImage(b._id());
-                            if (b.owner().equals(userID)) {
-                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                    gainVP(1);
-                                }
+                    //listen to new buildings, and load the image
+                    Building b = building.data();
+                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                    buildService.setPlayer(builder);
+                    buildService.setBuildingType(b.type());
+                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                    buildService.setSelectedField(position);
+                    buildService.loadBuildingImage(b._id());
+                    if (b.owner().equals(userID)) {
+                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                            gainVP(1);}
                             }
                             if (!roadAndCrossingPane.getChildren().contains(position)) {
                                 roadAndCrossingPane.getChildren().add(position);
@@ -672,18 +680,26 @@ public class InGameController extends LoggedInController {
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 sideType = BUILDING_TYPE_CITY;
-            } else {
-                sideType = BUILDING_TYPE_SETTLEMENT;
-            }
+            } else {sideType = BUILDING_TYPE_SETTLEMENT;
+
+}
         } else {
             sideType = BUILDING_TYPE_ROAD;
         }
         buildService.setBuildingType(sideType);
+        if (soundImage.getImage() == muteImage) {
+            GameSounds buildSound = soundService
+                    .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+            if (buildSound != null) {
+                buildSound.play();
+            }
+        }
         if (currentAction != null) {
             if (currentAction.startsWith("founding")) {
                 buildService.build();
                 return;
             }
+
         }
         buildMenuController = new BuildMenuController(buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
@@ -791,6 +807,71 @@ public class InGameController extends LoggedInController {
 
             }
         }
+    }
+    private int i = 0;
+
+
+    private void runTimer() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                Platform.runLater(()->timeLabel.setText(getTime(i)));
+                i++;
+            }
+        }, i, 1000);
+    }
+
+    static String getTime(int sec) {
+
+        int hours = 0;
+        int remainderOfHours = 0;
+        int minutes = 0;
+        int seconds = 0;
+
+        if (sec >= 3600)
+        {
+            hours = sec / 3600;
+            remainderOfHours = sec % 3600;
+
+            if (remainderOfHours >= 60)
+            {
+                minutes = remainderOfHours / 60;
+                seconds = remainderOfHours % 60;
+            } else {
+                seconds = remainderOfHours;
+            }
+        }
+
+        else if (sec >= 60) {
+            minutes = sec / 60;
+            seconds = sec % 60;
+        }
+
+        else {
+            seconds = sec;
+        }
+
+
+        String strHours;
+        String strMins;
+        String strSecs;
+
+        if (seconds < 10)
+            strSecs = "0" + Integer.toString(seconds);
+        else
+            strSecs = Integer.toString(seconds);
+
+        if (minutes < 10)
+            strMins = "0" + Integer.toString(minutes);
+        else
+            strMins = Integer.toString(minutes);
+
+        if (hours < 10)
+            strHours = "0" + Integer.toString(hours);
+        else
+            strHours = Integer.toString(hours);
+
+        return strHours + ":" + strMins + ":" + strSecs;
     }
 
     public void fieldsIntoOnePane() {

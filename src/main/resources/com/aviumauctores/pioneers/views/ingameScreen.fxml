@@ -929,6 +929,7 @@
             <font>
                <Font size="16.0" />
             </font></Label>
+         <Label fx:id="timeLabel" layoutX="238.0" layoutY="608.0" prefHeight="17.0" prefWidth="143.0" text="Label" />
       </Pane>
    </center>
    <right>
