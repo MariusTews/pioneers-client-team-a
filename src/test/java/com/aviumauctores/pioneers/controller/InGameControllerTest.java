@@ -67,7 +67,10 @@ public class InGameControllerTest extends ApplicationTest {
     EventListener eventListener;
 
     @Mock
-    GameMusic gameSound;
+    GameMusic gameMusic;
+
+    @Mock
+    GameSounds gameSound;
 
     @Mock
     Provider<SettingsController> settingsController;
@@ -187,6 +190,14 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void soundtest(){
+        when(gameMusic.isRunning()).thenReturn(true);
+        clickOn("#soundImage");
+        assertThat(gameMusic.isRunning()).isEqualTo(true);
+
+    }
+
+    @Test
+    void soundtest2(){
         when(gameSound.isRunning()).thenReturn(true);
         clickOn("#soundImage");
         assertThat(gameSound.isRunning()).isEqualTo(true);
