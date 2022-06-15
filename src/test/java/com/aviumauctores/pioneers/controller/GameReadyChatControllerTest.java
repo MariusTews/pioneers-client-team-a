@@ -68,6 +68,8 @@ class GameReadyChatControllerTest extends ApplicationTest {
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(Observable.just(List.of(member)));
         when(gameService.getCurrentGameID()).thenReturn("1");
+        when(userService.getUserName(anyString())).thenReturn(Observable.just("Player1"));
+        when(userService.getCurrentUserID()).thenReturn("1");
         when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1 )));
         when(messageService.sendGameMessage(anyString(), anyString())).thenReturn(Observable.just(message));
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
@@ -77,6 +79,18 @@ class GameReadyChatControllerTest extends ApplicationTest {
         when(userService.getUserByID(anyString())).thenReturn(Observable.just(user));
         when(userService.getUserName(anyString())).thenReturn(Observable.just("Struppi"));
         new App(gameReadyController).start(stage);
+    }
+
+    @Override
+    public void stop() {
+        this.bundle = null;
+        this.eventListener = null;
+        this.gameMemberService = null;
+        this.gameReadyController = null;
+        this.gameService = null;
+        this.messageCreateUpdates = null;
+        this.userService = null;
+        this.messageService = null;
     }
 
 

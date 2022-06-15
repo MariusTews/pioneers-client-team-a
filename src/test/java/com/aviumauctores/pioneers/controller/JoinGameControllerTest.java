@@ -6,8 +6,10 @@ import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
+
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -17,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
-
 import java.util.Locale;
+
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,8 +52,12 @@ class JoinGameControllerTest extends ApplicationTest {
     @InjectMocks
     JoinGameController joinGameController;
 
+
+
+
     @Override
     public void start(Stage stage) {
+
         when(gameService.getCurrentGameID()).thenReturn("1");
         when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", false,1)));
         when(eventListener.listen("games.1.*", Game.class)).thenReturn(Observable.empty());
@@ -83,6 +89,8 @@ class JoinGameControllerTest extends ApplicationTest {
         verifyThat(passwordTextField, isVisible());
         verifyThat(showPasswordTextField, isInvisible());
 
+        clickOn("#passwordTextField");
+
         write("1234567");
 
         clickOn("#showPasswordButton");
@@ -106,9 +114,12 @@ class JoinGameControllerTest extends ApplicationTest {
     void joinGameFailed() {
         when(gameService.joinGame(anyString())).thenReturn(Observable.error(new Throwable()));
 
+        clickOn("#passwordTextField");
         write("abcdef");
-        type(KeyCode.ENTER);
-        // Ensure the dialog is shown
+        clickOn("#joinGameButton");
         verify(app).showErrorDialog(anyString(),anyString());
+
+        // Ensure the dialog is shown
+
     }
 }

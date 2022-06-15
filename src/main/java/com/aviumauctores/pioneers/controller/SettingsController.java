@@ -8,6 +8,7 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -47,20 +48,34 @@ public class SettingsController implements Controller {
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
-    @FXML public ImageView avatarView;
-    @FXML public VBox changeWindowVBox;
-    @FXML public Label changeWindowLabel;
-    @FXML public PasswordField oldPasswordField;
-    @FXML public TextField newParameterField;
-    @FXML public PasswordField confirmField;
-    @FXML public Button acceptChangesButton;
-    @FXML public Button cancelChangesButton;
-    @FXML public Label currentNameLabel;
-    @FXML public Label currentPasswordLabel;
-    @FXML public Button changeNameButton;
-    @FXML public Button changePasswordButton;
-    @FXML public Button changeAvatarButton;
-    @FXML public Button leaveButton;
+    @FXML
+    public ImageView avatarView;
+    @FXML
+    public VBox changeWindowVBox;
+    @FXML
+    public Label changeWindowLabel;
+    @FXML
+    public PasswordField oldPasswordField;
+    @FXML
+    public TextField newParameterField;
+    @FXML
+    public PasswordField confirmField;
+    @FXML
+    public Button acceptChangesButton;
+    @FXML
+    public Button cancelChangesButton;
+    @FXML
+    public Label currentNameLabel;
+    @FXML
+    public Label currentPasswordLabel;
+    @FXML
+    public Button changeNameButton;
+    @FXML
+    public Button changePasswordButton;
+    @FXML
+    public Button changeAvatarButton;
+    @FXML
+    public Button leaveButton;
 
 
     @Inject
@@ -82,7 +97,7 @@ public class SettingsController implements Controller {
             try {
                 Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
                 avatarView.setImage(avatar);
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
         });
@@ -100,7 +115,7 @@ public class SettingsController implements Controller {
         final Parent parent;
         try {
             parent = loader.load();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -139,6 +154,8 @@ public class SettingsController implements Controller {
             newParameterField.setPromptText(bundle.getString("enter.new.username"));
             confirmField.setDisable(true);
             confirmField.setVisible(false);
+            oldPasswordField.setDisable(true);
+            oldPasswordField.setVisible(false);
         }
         if (typeOfChange.equals("password")) {
             changeToPasswordField();
@@ -146,6 +163,8 @@ public class SettingsController implements Controller {
             changeWindowLabel.setText(bundle.getString("change.password"));
             confirmField.setDisable(false);
             confirmField.setVisible(true);
+            oldPasswordField.setDisable(false);
+            oldPasswordField.setVisible(true);
             confirmField.setPromptText(bundle.getString("confirm.new.password"));
         }
         if (typeOfChange.equals("avatar")) {
@@ -155,6 +174,8 @@ public class SettingsController implements Controller {
             newParameterField.setPromptText(bundle.getString("enter.new.avatar"));
             confirmField.setDisable(true);
             confirmField.setVisible(false);
+            oldPasswordField.setDisable(true);
+            oldPasswordField.setVisible(false);
         }
         changeWindowVBox.setDisable(false);
         changeWindowVBox.setVisible(true);
@@ -165,22 +186,18 @@ public class SettingsController implements Controller {
     }
 
     public void changeName(ActionEvent event) {
-        //check the old password with a login
-        String oldPassword = oldPasswordField.getText();
-        loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
-            //this only happens, if the login was successful
-            //change the username to the new Parameter
-            String newName = newParameterField.getText();
-            if (newName.isBlank()) {
-                return;
-            }
-            userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(r -> {
-                        currentNameLabel.setText(r.name());
-                        closeWindow();
-                    }, this::handleError);
-        }, this::handleError);
+        //change the username to the new Parameter
+        String newName = newParameterField.getText();
+        if (newName.isBlank()) {
+            return;
+        }
+        userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(r -> {
+                    currentNameLabel.setText(r.name());
+                    currentUser = r;
+                    closeWindow();
+                }, this::handleError);
     }
 
     public void changePassword(ActionEvent event) {
@@ -200,29 +217,28 @@ public class SettingsController implements Controller {
             }
             userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null))
                     .observeOn(FX_SCHEDULER)
-                    .subscribe(r -> closeWindow(), this::handleError);
+                    .subscribe(r -> {
+                        closeWindow();
+                        currentUser = r;
+                    }, this::handleError);
         }, this::handleError);
     }
 
     public void changeAvatar(ActionEvent event) {
-        //check the old password with a login
-        String oldPassword = oldPasswordField.getText();
-        loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
-            //this only happens, if the login was successful
-            //change the avatar to the new Parameter
-            String avatarUrl = newParameterField.getText();
-            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(r -> {
-                        try {
-                            Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
-                            avatarView.setImage(avatar);
-                        } catch(IllegalArgumentException e) {
-                            e.printStackTrace();
-                        }
-                        closeWindow();
-                    }, this::handleError);
-        }, this::handleError);
+        //change the avatar to the new Parameter
+        String avatarUrl = newParameterField.getText();
+        userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(r -> {
+                    try {
+                        Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+                        avatarView.setImage(avatar);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                    currentUser = r;
+                    closeWindow();
+                }, this::handleError);
     }
 
     public void closeWindow() {

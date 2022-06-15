@@ -11,41 +11,43 @@ public class StateService {
     private final BuildService buildService;
     private final PioneerService pioneerService;
     private State currentState;
+
+    private String oldAction;
     private String currentAction;
     private String currentPlayerID;
     private Player player;
     private String userID;
     private String oldPlayerID;
     private boolean newPlayer;
-    private Player currentPlayer;
+    //private Player currentPlayer;
 
 
     @Inject
     public StateService(UserService userService, BuildService buildService,
-                        PioneerService pioneerService){
+                        PioneerService pioneerService) {
         this.buildService = buildService;
         this.pioneerService = pioneerService;
         this.userID = userService.getCurrentUserID();
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
     }
 
-    public void updateState(EventDto<State> state){
+    public void updateState(EventDto<State> state) {
+        oldAction = currentAction;
         oldPlayerID = currentPlayerID;
         currentState = state.data();
         currentPlayerID = currentState.expectedMoves().get(0).players().get(0);
-        currentPlayer = pioneerService.getPlayer(currentPlayerID).blockingFirst();
+        //currentPlayer = pioneerService.getPlayer(currentPlayerID).blockingFirst();
         currentAction = currentState.expectedMoves().get(0).action();
-        if (oldPlayerID == null){
+        if (oldPlayerID == null) {
             newPlayer = true;
-        }else{
+        } else {
             newPlayer = !currentPlayerID.equals(oldPlayerID);
         }
         player = pioneerService.getPlayer(userID).blockingFirst();
         buildService.setPlayer(player);
+    }
 
-        }
-
-    public String getCurrentAction(){
+    public String getCurrentAction() {
         return this.currentAction;
     }
 
@@ -57,11 +59,13 @@ public class StateService {
         return newPlayer;
     }
 
-    public Player getUpdatedPlayer(){
+    public Player getUpdatedPlayer() {
         return player;
     }
 
-    public String getOldPlayerID(){
+    public String getOldPlayerID() {
         return oldPlayerID;
     }
+
+    public String getOldAction(){ return oldAction;}
 }

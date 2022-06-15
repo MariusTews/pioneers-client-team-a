@@ -1,15 +1,22 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.sounds.GameMusic;
+import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -19,7 +26,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.inject.Provider;
 import java.util.*;
@@ -35,6 +44,9 @@ import static org.mockito.Mockito.when;
 public class InGameControllerTest extends ApplicationTest {
     @Mock
     UserService userService;
+
+    @Mock
+    ColorService colorService;
 
     @Mock
     GameMemberService gameMemberService;
@@ -53,6 +65,18 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Mock
     EventListener eventListener;
+
+    @Mock
+    GameMusic gameSound;
+
+    @Mock
+    Provider<SettingsController> settingsController;
+
+    @Mock
+    StateService stateService;
+
+    @Mock
+    Provider<GameReadyController> gameReadyController;
 
     // For some reason Mockito doesn't want a lambda expression
     @SuppressWarnings("Convert2Lambda")
@@ -80,8 +104,8 @@ public class InGameControllerTest extends ApplicationTest {
         }
     };
 
-   @Mock
-   PlayerResourceListController playerResourceListController;
+    @Mock
+    PlayerResourceListController playerResourceListController;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
@@ -89,22 +113,47 @@ public class InGameControllerTest extends ApplicationTest {
     @InjectMocks
     InGameController inGameController;
 
+    private PublishSubject<EventDto<State>> stateUpdates;
+
+
     @Override
     public void start(Stage stage) throws Exception {
         when(userService.getCurrentUserID()).thenReturn("1");
         when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN)));
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000",
-                2, new HashMap<String, Integer>(), new HashMap<String, Integer>());
+                2, new HashMap<>(), new HashMap<>());
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))))));
-        when(soundService.createGameMusic(any())).thenReturn(null);
+
+        when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
+        //
+        stateUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(pioneerService.createMove("founding-roll", null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null)));
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile[]{new Tile(0, 0, 0, "desert", 10)}))));
+        when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
+        //
+        //when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
+    }
+
+    @Override
+    public void stop() {
+        this.stateUpdates = null;
+        this.bundle = null;
+        this.colorService = null;
+        this.eventListener = null;
+        this.gameMemberService = null;
+        this.gameService = null;
+        this.inGameChatController = null;
+        this.inGameController = null;
+        this.playerResourceListController = null;
+        this.soundService = null;
+        this.userService = null;
+        this.pioneerService = null;
     }
 
     @Test
@@ -134,5 +183,21 @@ public class InGameControllerTest extends ApplicationTest {
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
         verify(pioneerService).createMove("roll", null);
+    }
+
+    @Test
+    void soundtest(){
+        when(gameSound.isRunning()).thenReturn(true);
+        clickOn("#soundImage");
+        assertThat(gameSound.isRunning()).isEqualTo(true);
+
+    }
+
+    @Test
+    void showYourTurn() {
+        ImageView arrow = lookup("#arrowOnDice").query();
+        Label yourTurn = lookup("#yourTurnLabel").query();
+        assertThat(arrow.isVisible()).isTrue();
+        assertThat(yourTurn.isVisible()).isTrue();
     }
 }

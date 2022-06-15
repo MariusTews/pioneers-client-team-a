@@ -5,6 +5,7 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.UserService;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -18,6 +19,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import retrofit2.HttpException;
@@ -45,6 +48,9 @@ public class RegisterController implements Controller {
     public Button leaveButton;
     @FXML
     public Button showPasswordButton;
+
+    @FXML
+    public ImageView viewPassword;
     @FXML
     public PasswordField textfieldPassword;
     private final ErrorService errorService;
@@ -55,6 +61,12 @@ public class RegisterController implements Controller {
     private Disposable disposable;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
+
+    private boolean hidePassword = true;
+
+
+    Image show;
+    Image hide;
 
     @Inject
     public RegisterController(App app, UserService userService, ErrorService errorService, Provider<LoginController> loginController, ResourceBundle bundle) {
@@ -70,6 +82,8 @@ public class RegisterController implements Controller {
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("409", bundle.getString("username.taken"));
         errorCodes.put("429", bundle.getString("limit.reached"));
+        show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
+        hide = new Image(Objects.requireNonNull(Main.class.getResource("views/notShowPassword.png")).toString());
     }
 
     @Override
@@ -119,15 +133,23 @@ public class RegisterController implements Controller {
     }
 
     public void showPassword(ActionEvent event) {
-        // toggle PasswordField and TextField with a button to show password
-        if (textfieldPassword.isVisible() && !Objects.equals(textfieldPassword.getText(), "")) {
-            textfieldPassword.setVisible(false);
-            textfieldPassword_show.setText(textfieldPassword.getText());
-            textfieldPassword_show.setVisible(true);
-        } else if (!textfieldPassword.isVisible()) {
-            textfieldPassword_show.setVisible(false);
-            textfieldPassword.setVisible(true);
+        //check button status
+        if (textfieldPassword.getText().isEmpty()) {
+            return;
         }
+
+        //set source for Image and show/hide password depending on hidePassword
+        if (hidePassword) {
+            viewPassword.setImage(hide);
+            String password = textfieldPassword.getText();
+            textfieldPassword_show.setText(password);
+        } else {
+            viewPassword.setImage(show);
+            textfieldPassword_show.setText("");
+        }
+        textfieldPassword_show.setVisible(hidePassword);
+        textfieldPassword.setVisible(!hidePassword);
+        hidePassword = !hidePassword;
     }
 
     public void leave(ActionEvent event) {

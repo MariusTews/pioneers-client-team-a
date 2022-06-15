@@ -72,7 +72,8 @@ class GameReadyControllerTest extends ApplicationTest {
 
         when(userService.getUserByID("1")).thenReturn(
                 Observable.just(new User("1", "Player1", "online", null,null)));
-
+        when(userService.getUserName(anyString())).thenReturn(Observable.just("Player1"));
+        when(userService.getCurrentUserID()).thenReturn("1");
         when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1 )));
         when(gameService.getCurrentGameID()).thenReturn("12");
         existingMembers = Observable.just(List.of(existingMember));
@@ -81,6 +82,21 @@ class GameReadyControllerTest extends ApplicationTest {
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(eventListener.listen("games.12.members.*.*", Member.class)).thenReturn(memberUpdates);
         new App(gameReadyController).start(stage);
+    }
+
+    @Override
+    public void stop() {
+        this.app = null;
+        this.bundle = null;
+        this.eventListener = null;
+        this.existingMembers = null;
+        this.gameMemberService = null;
+        this.gameReadyController = null;
+        this.gameService = null;
+        this.inGameController = null;
+        this.lobbyController = null;
+        this.memberUpdates = null;
+        this.userService = null;
     }
 
     @Test
