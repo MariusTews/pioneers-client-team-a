@@ -54,7 +54,7 @@ public class InGameChatController implements Controller {
 
     private final ArrayList<String> ownMessageIds = new ArrayList<>();
 
-    private Label deleteLabel;
+    private HBox deleteHBox;
 
     private InGameController inGameController;
 
@@ -104,10 +104,10 @@ public class InGameChatController implements Controller {
                         //search for the Label of the which will be deleted
                         for (Node l : chatBox.getChildren()) {
                             if (event.data()._id().equals(l.getId())) {
-                                this.deleteLabel = (Label) l;
+                                this.deleteHBox = (HBox) l;
                             }
                         }
-                        chatBox.getChildren().remove(this.deleteLabel);
+                        chatBox.getChildren().remove(this.deleteHBox);
                     }
                 }));
 
@@ -167,15 +167,16 @@ public class InGameChatController implements Controller {
                             avatarView.setImage(avatar);
                         }
                 );
-        msgLabel.setOnMouseClicked(this::onMessageClicked);
-        msgLabel.setId(message._id());
 
-        return new HBox(5, avatarView, msgLabel);
+        HBox playerBox = new HBox(5, avatarView, msgLabel);
+        playerBox.setOnMouseClicked(this::onMessageClicked);
+        playerBox.setId(message._id());
+        return playerBox;
     }
 
     public void onMessageClicked(MouseEvent event) {
-        Label label = (Label) event.getSource();
-        if (ownMessageIds.contains(label.getId()) && event.getButton() == MouseButton.SECONDARY) {
+        HBox messageHBox = (HBox) event.getSource();
+        if (ownMessageIds.contains(messageHBox.getId()) && event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete
             ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -185,8 +186,8 @@ public class InGameChatController implements Controller {
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
             if (res.get() == proceedButton) {
-                this.deleteLabel = label;
-                delete(this.deleteLabel.getId());
+                this.deleteHBox = messageHBox;
+                delete(this.deleteHBox.getId());
                 alert.close();
             } else {
                 alert.close();
