@@ -3,7 +3,6 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.UserService;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -82,10 +81,6 @@ public class PlayerResourceListItemController {
         return playerBox;
     }
 
-
-
-
-
     public void showArrow(){
         arrowView.setVisible(true);
     }
@@ -112,16 +107,15 @@ public class PlayerResourceListItemController {
         if (resources.containsKey(RESOURCE_BRICK)) {
             num += resources.get(RESOURCE_BRICK);
         }
-        if (resources.containsKey("unknown")){
-            //System.out.println(resources.get("unknown"));
-        }
-        resourceLabel.setText(Integer.toString(num) + " " + bundle.getString("resources"));
+        resourceLabel.setText(num + " " + bundle.getString("resources"));
     }
 
     public void setPlayer(Player player) {
         this.player = player;
     }
 
-
+    public HBox getPlayerBox(){
+        return this.playerBox;
+    }
 
 }
