@@ -19,7 +19,6 @@ public class StateService {
     private String userID;
     private String oldPlayerID;
     private boolean newPlayer;
-    //private Player currentPlayer;
 
 
     @Inject
@@ -36,7 +35,6 @@ public class StateService {
         oldPlayerID = currentPlayerID;
         currentState = state.data();
         currentPlayerID = currentState.expectedMoves().get(0).players().get(0);
-        //currentPlayer = pioneerService.getPlayer(currentPlayerID).blockingFirst();
         currentAction = currentState.expectedMoves().get(0).action();
         if (oldPlayerID == null) {
             newPlayer = true;

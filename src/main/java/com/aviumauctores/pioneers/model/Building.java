@@ -18,6 +18,8 @@ public record Building(
     public static Building readCoordinatesFromID(String id) {
         if (!id.startsWith("building")) {
             return null;
+        } else if (id.contains("#")) {
+            id = id.split("#")[0];
         }
         // Cut the building string off and replace _ with -
         // so coordinateString contains only the concatenated coordinates

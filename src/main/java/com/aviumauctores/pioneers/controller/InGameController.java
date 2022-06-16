@@ -70,7 +70,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label yourTurnLabel;
 
-    @FXML Label timeLabel;
+    @FXML
+    Label timeLabel;
     @FXML
     public Pane mainPane;
     @FXML
@@ -234,8 +235,7 @@ public class InGameController extends LoggedInController {
                 .subscribe(this::onMoveEvent));
 
 
-
-errorCodes.put("429", bundle.getString("limit.reached"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) {
@@ -249,11 +249,12 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                     throw new RuntimeException(e);
                 }
             }).start();
+            rollSum.setText(" " + rolled + " ");
         }
     }
 
     public void rollAllDice(int rolled) throws InterruptedException {
-        int i = 6;
+        int i = 4;
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
@@ -306,7 +307,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                 diceImage2.setImage(dice6);
             }
         }
-        rollSum.setText(" " + rolled + " ");
     }
 
     public void rollOneDice(int randomInteger, ImageView imageView) {
@@ -370,38 +370,29 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                                 alert.showAndWait();
                             }
                         }));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(building -> {
-                    //listen to new buildings, and load the image
-                    Building b = building.data();
-                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                    buildService.setPlayer(builder);
-                    buildService.setBuildingType(b.type());
-                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                    buildService.setSelectedField(position);
-                    buildService.loadBuildingImage(b._id());
-                    if (b.owner().equals(userID)) {
-                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                            gainVP(1);}
-                            }
-                            if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                roadAndCrossingPane.getChildren().add(position);
+                .subscribe(buildingEventDto -> {
+                    if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                        //listen to new and updated buildings, and load the image
+                        Building b = buildingEventDto.data();
+                        Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                        buildService.setPlayer(builder);
+                        buildService.setBuildingType(b.type());
+                        ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                        buildService.setSelectedField(position);
+                        buildService.loadBuildingImage(b._id());
+                        if (b.owner().equals(userID)) {
+                            if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                gainVP(1);
                             }
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        if (!roadAndCrossingPane.getChildren().contains(position)) {
+                            roadAndCrossingPane.getChildren().add(position);
+                        }
+                    }
+                }));
+
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -468,7 +459,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         String location = "building" + x + y + z + side;
         location = location.replace("-", "_");
         return getNodeByID(location);
-
     }
 
     private ImageView getNodeByID(String id) {
@@ -489,7 +479,8 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             }
         } else {
             for (Node n : roadAndCrossingPane.getChildren()) {
-                if (n.getId().equals(id)) {
+                String nID = n.getId().split("#")[0];
+                if (nID.equals(id)) {
                     view = (ImageView) n;
                 }
             }
@@ -663,12 +654,15 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         buildService.setSelectedField(source);
         String buildingID;
         String buildingType;
+        String buildingOwner;
         if (source.getId().contains("#")) {
             buildingID = source.getId().split("#")[0];
             buildingType = source.getId().split("#")[1];
+            buildingOwner = source.getId().split("#")[2];
         } else {
             buildingID = source.getId();
             buildingType = "";
+            buildingOwner = "";
         }
         buildService.setSelectedFieldCoordinates(coordsToPath(buildingID));
         closeBuildMenu(false);
@@ -679,10 +673,12 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         int side = coordinateHolder.side();
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
-                sideType = BUILDING_TYPE_CITY;
-            } else {sideType = BUILDING_TYPE_SETTLEMENT;
-
-}
+                if (userID.equals(buildingOwner)) {
+                    sideType = BUILDING_TYPE_CITY;
+                }
+            } else {
+                sideType = BUILDING_TYPE_SETTLEMENT;
+            }
         } else {
             sideType = BUILDING_TYPE_ROAD;
         }
@@ -808,6 +804,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             }
         }
     }
+
     private int i = 0;
 
 
@@ -815,7 +812,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                Platform.runLater(()->timeLabel.setText(getTime(i)));
+                Platform.runLater(() -> timeLabel.setText(getTime(i)));
                 i++;
             }
         }, i, 1000);
@@ -828,26 +825,20 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         int minutes = 0;
         int seconds = 0;
 
-        if (sec >= 3600)
-        {
+        if (sec >= 3600) {
             hours = sec / 3600;
             remainderOfHours = sec % 3600;
 
-            if (remainderOfHours >= 60)
-            {
+            if (remainderOfHours >= 60) {
                 minutes = remainderOfHours / 60;
                 seconds = remainderOfHours % 60;
             } else {
                 seconds = remainderOfHours;
             }
-        }
-
-        else if (sec >= 60) {
+        } else if (sec >= 60) {
             minutes = sec / 60;
             seconds = sec % 60;
-        }
-
-        else {
+        } else {
             seconds = sec;
         }
 
