@@ -546,6 +546,7 @@ public class InGameController extends LoggedInController {
         } else {
           playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
+    }
 
     public void buildMap() {
         disposables.add(pioneerService.getMap()
