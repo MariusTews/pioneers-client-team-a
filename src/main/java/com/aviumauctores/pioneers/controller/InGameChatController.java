@@ -84,7 +84,7 @@ public class InGameChatController implements Controller {
 
     public void init() {
         disposables = new CompositeDisposable();
-
+        errorService.setErrorCodesMessages();
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
@@ -147,7 +147,7 @@ public class InGameChatController implements Controller {
                     HBox msgLabel = createMessageLabel(result);
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
-                });
+                }, errorService::handleError);
     }
 
     public HBox createMessageLabel(Message message) {
@@ -156,7 +156,7 @@ public class InGameChatController implements Controller {
         avatarView.setFitWidth(20.0);
         avatarView.setFitHeight(20.0);
 
-
+        errorService.setErrorCodesUsers();
         userService.getUserByID(message.sender())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
@@ -165,7 +165,7 @@ public class InGameChatController implements Controller {
                             String avatarUrl = result.avatar();
                             Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
                             avatarView.setImage(avatar);
-                        }
+                        }, errorService::handleError
                 );
 
         HBox playerBox = new HBox(5, avatarView, msgLabel);
@@ -201,7 +201,7 @@ public class InGameChatController implements Controller {
     public void delete(String messageId) {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(r -> {}, errorService::handleError);
     }
 
     @Override
