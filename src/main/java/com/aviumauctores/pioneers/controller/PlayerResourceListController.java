@@ -73,6 +73,7 @@ public class PlayerResourceListController {
     }
 
     public void updateResourceList() {
+        errorService.setErrorCodesPioneersGet();
         disposables.add(pioneerService.listPlayers()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(players -> {

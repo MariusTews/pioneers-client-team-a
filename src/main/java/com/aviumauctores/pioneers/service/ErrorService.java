@@ -62,12 +62,6 @@ public class ErrorService {
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
-    public void setErrorCodesRefresh() {
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("invalid.expired.token"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
-    }
-
     public void setErrorCodesLogout() {
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
@@ -106,15 +100,6 @@ public class ErrorService {
         errorCodes.put("403", bundle.getString("incorrect.password"));
         errorCodes.put("404", bundle.getString("not.found"));
         errorCodes.put("409", bundle.getString("game.started.user.joined.error"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
-    }
-
-    public void setErrorCodesGameMembersUpdate() {
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("invalid.token"));
-        errorCodes.put("403", bundle.getString("change.other.membership.error"));
-        errorCodes.put("404", bundle.getString("not.found"));
-        errorCodes.put("409", bundle.getString("game.started.error"));
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 

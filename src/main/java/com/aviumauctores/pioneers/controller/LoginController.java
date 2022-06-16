@@ -139,7 +139,7 @@ public class LoginController implements Controller {
         } else {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
-
+            errorService.setErrorCodesLogin();
             loginDisposable = loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
