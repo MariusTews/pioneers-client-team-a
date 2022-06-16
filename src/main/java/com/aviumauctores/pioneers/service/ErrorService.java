@@ -45,7 +45,7 @@ public class ErrorService {
         }
     }
 
-    public void handleError(Throwable throwable, HashMap<String, String> errorCodes) {
+    public void handleError(Throwable throwable) {
         if (throwable instanceof HttpException ex) {
             ErrorResponse response = this.readErrorMessage(ex);
             String message = errorCodes.get(Integer.toString(response.statusCode()));
