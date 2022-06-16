@@ -2,16 +2,10 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.*;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
-
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-
 import javax.inject.Inject;
 import java.util.*;
 
@@ -26,9 +20,6 @@ public class PlayerResourceListController {
     private final ErrorService errorService;
 
     public ListView<HBox> playerList;
-
-
-    private ObservableList<Node> listElements;
 
     private String currentPlayerID;
     private final HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
@@ -62,17 +53,6 @@ public class PlayerResourceListController {
         if (playerID.equals(this.currentPlayerID)) {
             controller.showArrow();
         }
-    }
-
-    public void updateResourceList() {
-        errorService.setErrorCodesPioneersGet();
-        disposables.add(pioneerService.listPlayers()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(players -> {
-                            for (Player player : players) {
-                                updatePlayerLabel(player);
-                            }
-                        }, errorService::handleError));
     }
 
     public void updatePlayerLabel(Player player) {
@@ -123,7 +103,6 @@ public class PlayerResourceListController {
         this.currentPlayerID = currentPlayerID;
     }
 }
-
 
 
 
