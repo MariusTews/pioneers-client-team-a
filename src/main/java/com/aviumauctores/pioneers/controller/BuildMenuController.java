@@ -1,10 +1,13 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.BuildService;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -14,10 +17,18 @@ public class BuildMenuController implements Controller {
     private final ResourceBundle bundle;
     private final String buildingType;
 
-    public BuildMenuController(BuildService buildService, ResourceBundle bundle, String buildingType) {
+    private final Boolean enableButton;
+
+    @FXML
+    private Button buildButton;
+
+
+    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType) {
         this.buildService = buildService;
         this.bundle = bundle;
         this.buildingType = buildingType;
+        this.enableButton = enableButton;
+
     }
 
     @Override
@@ -44,6 +55,9 @@ public class BuildMenuController implements Controller {
             e.printStackTrace();
             return null;
         }
+
+        buildButton.setDisable(!enableButton);
+
         return parent;
     }
 
@@ -51,5 +65,6 @@ public class BuildMenuController implements Controller {
     public void build(ActionEvent actionEvent) {
         buildService.setCurrentAction("build");
         buildService.build();
+        buildButton.setDisable(true);
     }
 }
