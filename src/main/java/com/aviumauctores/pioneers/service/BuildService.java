@@ -69,7 +69,6 @@ public class BuildService {
 
     public void loadBuildingImage(String buildingID) {
         String color = colorService.getColor(player.color());
-        selectedField.setImage(null);
         switch (buildingType) {
             case BUILDING_TYPE_SETTLEMENT ->
                     selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource

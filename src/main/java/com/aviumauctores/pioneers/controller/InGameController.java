@@ -249,6 +249,7 @@ public class InGameController extends LoggedInController {
                     throw new RuntimeException(e);
                 }
             }).start();
+            rollSum.setText(" " + rolled + " ");
         }
     }
 
@@ -306,7 +307,6 @@ public class InGameController extends LoggedInController {
                 diceImage2.setImage(dice6);
             }
         }
-        rollSum.setText(" " + rolled + " ");
     }
 
     public void rollOneDice(int randomInteger, ImageView imageView) {
@@ -376,7 +376,6 @@ public class InGameController extends LoggedInController {
                     if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
                         //listen to new and updated buildings, and load the image
                         Building b = buildingEventDto.data();
-                        System.out.println(b);
                         Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
                         buildService.setPlayer(builder);
                         buildService.setBuildingType(b.type());
@@ -388,77 +387,12 @@ public class InGameController extends LoggedInController {
                                 gainVP(1);
                             }
                         }
-                        if (!roadAndCrossingPane.getChildren().contains(position) && b.type().equals(BUILDING_TYPE_CITY)) {
+                        if (!roadAndCrossingPane.getChildren().contains(position)) {
                             roadAndCrossingPane.getChildren().add(position);
                         }
                     }
                 }));
-        /*disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(building -> {
-                            //listen to new buildings, and load the image
-                            Building b = building.data();
-                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                            buildService.setPlayer(builder);
-                            buildService.setBuildingType(b.type());
-                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                            buildService.setSelectedField(position);
-                            buildService.loadBuildingImage(b._id());
-                            if (b.owner().equals(userID)) {
-                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
-                                    gainVP(1);
-                                }
-                            }
-                            if (!roadAndCrossingPane.getChildren().contains(position) && b.type().equals(BUILDING_TYPE_CITY)) {
-                                roadAndCrossingPane.getChildren().add(position);
-                            }
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.updated", Building.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(building -> {
-                            //listen to updated buildings, and load the image
-                            Building b = building.data();
-                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                            buildService.setPlayer(builder);
-                            buildService.setBuildingType(b.type());
-                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                            buildService.setSelectedField(position);
-                            buildService.loadBuildingImage(b._id());
-                            if (b.owner().equals(userID)) {
-                                if (b.type().equals(BUILDING_TYPE_CITY)) {
-                                    gainVP(1);
-                                }
-                            }
-                            if (!roadAndCrossingPane.getChildren().contains(position) && b.type().equals(BUILDING_TYPE_CITY)) {
-                                roadAndCrossingPane.getChildren().add(position);
-                            }
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));*/
+
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -525,7 +459,6 @@ public class InGameController extends LoggedInController {
         String location = "building" + x + y + z + side;
         location = location.replace("-", "_");
         return getNodeByID(location);
-
     }
 
     private ImageView getNodeByID(String id) {
@@ -546,7 +479,8 @@ public class InGameController extends LoggedInController {
             }
         } else {
             for (Node n : roadAndCrossingPane.getChildren()) {
-                if (n.getId().equals(id)) {
+                String nID = n.getId().split("#")[0];
+                if (nID.equals(id)) {
                     view = (ImageView) n;
                 }
             }
