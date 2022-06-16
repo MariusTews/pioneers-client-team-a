@@ -237,22 +237,14 @@ public class LobbyController extends PlayerListController {
     }
 
     public void quit(ActionEvent event) {
+        errorService.setErrorCodesLogout();
         disposables.add(loginService.logout()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(() -> {
                             preferenceService.setRememberMe(false);
                             preferenceService.setRefreshToken("");
                             app.show(loginController.get());
-                        },
-                        throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = errorService.readErrorMessage(ex);
-                                String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                app.showHttpErrorDialog(response.statusCode(), response.error(), message);
-                            } else {
-                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
-                            }
-                        }));
+                        }, errorService::handleError));
     }
 
     public void toSettings(ActionEvent event) {

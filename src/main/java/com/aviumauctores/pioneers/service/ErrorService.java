@@ -50,8 +50,11 @@ public class ErrorService {
             ErrorResponse response = this.readErrorMessage(ex);
             String message = errorCodes.get(Integer.toString(response.statusCode()));
             app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+        } else {
+            app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
         }
     }
+
 
     public void setErrorCodesLogin() {
         errorCodes.put("400", bundle.getString("validation.failed"));
