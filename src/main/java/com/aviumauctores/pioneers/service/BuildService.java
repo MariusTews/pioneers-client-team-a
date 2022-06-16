@@ -3,7 +3,6 @@ package com.aviumauctores.pioneers.service;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Player;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -80,8 +79,6 @@ public class BuildService {
                     "views/Town/Town_" + color.toUpperCase() + ".png"
             )).toString()));
         }
-        selectedField.setFitWidth(25.5);
-        selectedField.setFitHeight(25.5);
         if (selectedField.getId().startsWith("building")) {
             return;
         }

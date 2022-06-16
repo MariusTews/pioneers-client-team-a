@@ -127,8 +127,6 @@ public class InGameController extends LoggedInController {
     public Circle vp09;
     @FXML
     public Circle vp10;
-    @FXML
-    public Button buildButton;
 
 
     public Circle[] vpCircles;
@@ -165,7 +163,7 @@ public class InGameController extends LoggedInController {
 
     Image muteImage;
     Image unmuteImage;
-    private ErrorService errorService;
+    private final ErrorService errorService;
     private final BuildService buildService;
 
     private Timer timer = new Timer();
@@ -240,7 +238,7 @@ public class InGameController extends LoggedInController {
 errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
-    protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
+    protected void onMoveEvent(EventDto<Move> eventDto) {
         Move move = eventDto.data();
         if (move.action().equals("roll")) {
             int rolled = move.roll();
@@ -350,7 +348,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                             rollButton.setStyle(colourString);
                             leaveGameButton.setStyle(colourString);
                             finishMoveButton.setStyle(colourString);
-                            buildButton.setStyle(colourString);
                             diceImage1.setStyle(colourString);
                             diceImage2.setStyle(colourString);
                             try {
@@ -561,7 +558,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
         if (updatedPlayer.userId().equals(userID)) {
-            playerResourceListController.setPlayer(player);
+            playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
         } else {
             playerResourceListController.updatePlayerLabel(updatedPlayer);
@@ -704,7 +701,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             }
 
         }
-        buildMenuController = new BuildMenuController(bundle, sideType);
+        buildMenuController = new BuildMenuController(buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -734,16 +731,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             mainPane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
-        if (buildButton != null) {
-            buildButton.setDisable(appClosed);
-            buildButton.setVisible(!appClosed);
-        }
     }
 
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         closeBuildMenu(false);
-        buildButton.setDisable(true);
-        buildButton.setVisible(false);
         buildService.setSelectedField(null);
         buildService.setSelectedFieldCoordinates(null);
     }
