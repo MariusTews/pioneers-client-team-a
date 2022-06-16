@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.service;
 
+import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,13 +10,23 @@ import retrofit2.Response;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 public class ErrorService {
     private final ObjectMapper mapper;
 
+    private final App app;
+
+    private final ResourceBundle bundle;
+
+    private final HashMap<String, String> errorCodes = new HashMap<>();
+
     @Inject
-    public ErrorService(ObjectMapper mapper) {
+    public ErrorService(ObjectMapper mapper, App app, ResourceBundle bundle) {
         this.mapper = mapper;
+        this.app = app;
+        this.bundle = bundle;
     }
 
     public ErrorResponse readErrorMessage(HttpException httpException) {
@@ -33,4 +44,102 @@ public class ErrorService {
             return null;
         }
     }
+
+    public void handleError(Throwable throwable, HashMap<String, String> errorCodes) {
+        if (throwable instanceof HttpException ex) {
+            ErrorResponse response = this.readErrorMessage(ex);
+            String message = errorCodes.get(Integer.toString(response.statusCode()));
+            app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+        }
+    }
+
+    public void setErrorCodesLogin() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.username.password"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesRefresh() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.expired.token"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesLogout() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesUsers() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("other.user.error"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("username.taken"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesGroups() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("change.group.error"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("username.taken"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesMessages() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("inaccessible.parent"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesGameMembersPost() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("incorrect.password"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("game.started.user.joined.error"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesGameMembersUpdate() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("change.other.membership.error"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("game.started.error"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesGame() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("change.game.not.owner.error"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("game.started.error"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesPioneersGet() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("not.member.of.game"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("game.started.error"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
+    public void setErrorCodesPioneersPost() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.token"));
+        errorCodes.put("403", bundle.getString("not.member.of.game.or.state"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("409", bundle.getString("game.started.error"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
 }
