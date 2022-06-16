@@ -1,19 +1,14 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.model.State;
 import com.aviumauctores.pioneers.service.*;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -29,6 +24,8 @@ public class PlayerResourceListController {
     private final ColorService colorService;
     private final ResourceBundle bundle;
 
+    private final ErrorService errorService;
+
     public VBox playerListVBox;
 
     private CompositeDisposable disposables;
@@ -36,18 +33,18 @@ public class PlayerResourceListController {
 
     private ObservableList<Node> listElements;
 
-    private Observable<State> state;
     private String currentPlayerID;
     private HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
     private Player player;
 
     @Inject
-    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle) {
+    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService) {
         this.userService = userService;
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.bundle = bundle;
+        this.errorService = errorService;
     }
 
     public void init(VBox node, String startingPlayer) {
@@ -82,20 +79,7 @@ public class PlayerResourceListController {
                             for (Player player : players) {
                                 updatePlayerLabel(player);
                             }
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        }, errorService::handleError));
     }
 
     public void updatePlayerLabel(Player player) {
