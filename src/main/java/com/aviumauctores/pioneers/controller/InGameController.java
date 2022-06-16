@@ -531,6 +531,13 @@ public class InGameController extends LoggedInController {
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+            
+            HashMap<String, Integer> resources = updatedPlayer.resources();
+            int amountBrick = getResource(resources, RESOURCE_BRICK);
+            int amountLumber = getResource(resources, RESOURCE_LUMBER);
+            int amountWool = getResource(resources, RESOURCE_WOOL);
+            int amountGrain = getResource(resources, RESOURCE_GRAIN);
+            int amountOre = getResource(resources, RESOURCE_ORE);
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
