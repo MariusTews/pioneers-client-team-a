@@ -57,7 +57,6 @@ public class InGameController extends LoggedInController {
     private final EventListener eventListener;
     private final SoundService soundService;
 
-    private String sideType;
     private String[] resourceNames;
 
     private Label[] resourceLabels;
@@ -94,7 +93,6 @@ public class InGameController extends LoggedInController {
     public Button rollButton;
     public Button leaveGameButton;
     public Label lastRollPlayerLabel;
-    public Label lastRollLabel;
     @FXML
     public ListView<HBox> playerList;
     private String currentPlayerID;
@@ -168,8 +166,6 @@ public class InGameController extends LoggedInController {
     private final ErrorService errorService;
     private final BuildService buildService;
 
-    private Timer timer = new Timer();
-
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
 
@@ -196,7 +192,7 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
-        }
+    }
 
 
     @Override
@@ -237,7 +233,7 @@ public class InGameController extends LoggedInController {
 
 
 
-errorCodes.put("429", bundle.getString("limit.reached"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) {
@@ -359,51 +355,29 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                                 e.printStackTrace();
                             }
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        , this::handleThrowable
+                ));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(building -> {
-                    //listen to new buildings, and load the image
-                    Building b = building.data();
-                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                    buildService.setPlayer(builder);
-                    buildService.setBuildingType(b.type());
-                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                    buildService.setSelectedField(position);
-                    buildService.loadBuildingImage(b._id());
-                    if (b.owner().equals(userID)) {
-                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                            gainVP(1);}
+                            //listen to new buildings, and load the image
+                            Building b = building.data();
+                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                            buildService.setPlayer(builder);
+                            buildService.setBuildingType(b.type());
+                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                            buildService.setSelectedField(position);
+                            buildService.loadBuildingImage(b._id());
+                            if (b.owner().equals(userID)) {
+                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                    gainVP(1);}
                             }
                             if (!roadAndCrossingPane.getChildren().contains(position)) {
                                 roadAndCrossingPane.getChildren().add(position);
                             }
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        , this::handleThrowable
+                ));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -428,19 +402,8 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        , this::handleThrowable
+                ));
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -586,19 +549,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                                 tileLabel.setText("" + tile.numberToken());
                             }
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        })
+                        ,this::handleThrowable)
         );
     }
 
@@ -640,19 +591,8 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
-                }, throwable -> {
-                    if (throwable instanceof HttpException ex) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        String content;
-                        if (ex.code() == 429) {
-                            content = "HTTP 429-Error";
-                        } else {
-                            content = "Unknown error";
-                        }
-                        alert.setContentText(content);
-                        alert.showAndWait();
-                    }
-                }));
+                },this::handleThrowable
+                ));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -676,12 +616,14 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             return;
         }
         int side = coordinateHolder.side();
+        String sideType;
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 sideType = BUILDING_TYPE_CITY;
-            } else {sideType = BUILDING_TYPE_SETTLEMENT;
+            } else {
+                sideType = BUILDING_TYPE_SETTLEMENT;
 
-}
+            }
         } else {
             sideType = BUILDING_TYPE_ROAD;
         }
@@ -712,12 +654,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     private String coordsToPath(String source) {
-        String res = null;
         if (source.startsWith("building")) {
-            return res;
+            return source;
         }
-        res = "building " + source.replace("-", "_");
-        return res;
+        return "building " + source.replace("-", "_");
 
     }
 
@@ -810,7 +750,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
 
 
     private void runTimer() {
-        timer = new Timer();
+        Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 Platform.runLater(()->timeLabel.setText(getTime(i)));
@@ -821,10 +761,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
 
     static String getTime(int sec) {
 
-        int hours = 0;
-        int remainderOfHours = 0;
-        int minutes = 0;
-        int seconds = 0;
+        int hours = 0, minutes = 0, remainderOfHours, seconds;
 
         if (sec >= 3600)
         {
@@ -855,17 +792,17 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         String strSecs;
 
         if (seconds < 10)
-            strSecs = "0" + Integer.toString(seconds);
+            strSecs = "0" + seconds;
         else
             strSecs = Integer.toString(seconds);
 
         if (minutes < 10)
-            strMins = "0" + Integer.toString(minutes);
+            strMins = "0" + minutes;
         else
             strMins = Integer.toString(minutes);
 
         if (hours < 10)
-            strHours = "0" + Integer.toString(hours);
+            strHours = "0" + hours;
         else
             strHours = Integer.toString(hours);
 
@@ -896,6 +833,20 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             ErrorResponse response = errorService.readErrorMessage(ex);
             String message = errorCodes.get(Integer.toString(response.statusCode()));
             app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+        }
+    }
+
+    private void handleThrowable(Throwable throwable) {
+        if (throwable instanceof HttpException ex) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            String content;
+            if (ex.code() == 429) {
+                content = "HTTP 429-Error";
+            } else {
+                content = "Unknown error";
+            }
+            alert.setContentText(content);
+            alert.showAndWait();
         }
     }
 

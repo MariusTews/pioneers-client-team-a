@@ -56,7 +56,7 @@ public class BuildService {
                 .subscribe(move -> {
                         }
                         , throwable -> {
-                            if (throwable instanceof HttpException ex) {
+                            if (throwable instanceof HttpException) {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 String content = bundle.getString(buildingType.equals(BUILDING_TYPE_ROAD) ? "road.location.mismatch" : "settlement.location.mismatch");
                                 alert.setContentText(content);
@@ -76,8 +76,7 @@ public class BuildService {
             case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
                     ("views/Street/Street_" + color.toUpperCase() + ".png")).toString()));
             case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
-                    "views/Town/Town_" + color.toUpperCase() + ".png"
-            )).toString()));
+                    "views/Town/Town_" + color.toUpperCase() + ".png")).toString()));
         }
         if (selectedField.getId().startsWith("building")) {
             return;
@@ -103,23 +102,6 @@ public class BuildService {
         player = updatedPlayer;
     }
 
-    private String coordsToPath(String source) {
-        String res = null;
-        if (source.startsWith("building")) {
-            return res;
-        }
-        res = "building " + source.replace("-", "_");
-        return res;
-
-    }
-
-    private String pathToCoords(String source) {
-        String res = null;
-        if (source.startsWith("building")) {
-            res = source.substring(8).replace("_", "-");
-        }
-        return res;
-    }
 
     public void setSelectedFieldCoordinates(String coordinates) {
         selectedFieldCoordinates = coordinates;
