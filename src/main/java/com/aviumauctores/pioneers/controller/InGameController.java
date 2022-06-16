@@ -33,6 +33,7 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.*;
 import java.util.ResourceBundle;
@@ -70,7 +71,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label yourTurnLabel;
 
-    @FXML Label timeLabel;
+    @FXML
+    Label timeLabel;
     @FXML
     public Pane mainPane;
     @FXML
@@ -158,6 +160,8 @@ public class InGameController extends LoggedInController {
     private BuildMenuController buildMenuController;
     private Parent buildMenu;
 
+    private final Map<String, Boolean> enableButtons = new HashMap<>();
+
 
     // These are the Sound-Icons
 
@@ -202,6 +206,9 @@ public class InGameController extends LoggedInController {
         disposables = new CompositeDisposable();
         memberVP = 0;
         resourceNames = new String[]{RESOURCE_BRICK, RESOURCE_GRAIN, RESOURCE_LUMBER, RESOURCE_ORE, RESOURCE_WOOL};
+        enableButtons.put(BUILDING_TYPE_CITY, false);
+        enableButtons.put(BUILDING_TYPE_SETTLEMENT, false);
+        enableButtons.put(BUILDING_TYPE_ROAD, false);
 
 
         // Initialize these objects here because else the tests would fail
@@ -234,8 +241,7 @@ public class InGameController extends LoggedInController {
                 .subscribe(this::onMoveEvent));
 
 
-
-errorCodes.put("429", bundle.getString("limit.reached"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) {
@@ -373,17 +379,18 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(building -> {
-                    //listen to new buildings, and load the image
-                    Building b = building.data();
-                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                    buildService.setPlayer(builder);
-                    buildService.setBuildingType(b.type());
-                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                    buildService.setSelectedField(position);
-                    buildService.loadBuildingImage(b._id());
-                    if (b.owner().equals(userID)) {
-                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                            gainVP(1);}
+                            //listen to new buildings, and load the image
+                            Building b = building.data();
+                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                            buildService.setPlayer(builder);
+                            buildService.setBuildingType(b.type());
+                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                            buildService.setSelectedField(position);
+                            buildService.loadBuildingImage(b._id());
+                            if (b.owner().equals(userID)) {
+                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                    gainVP(1);
+                                }
                             }
                             if (!roadAndCrossingPane.getChildren().contains(position)) {
                                 roadAndCrossingPane.getChildren().add(position);
@@ -560,9 +567,33 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+            HashMap<String, Integer> resources = updatedPlayer.resources();
+            int amountBrick = getResource(resources, RESOURCE_BRICK);
+            int amountLumber = getResource(resources, RESOURCE_LUMBER);
+            int amountWool = getResource(resources, RESOURCE_WOOL);
+            int amountGrain = getResource(resources, RESOURCE_GRAIN);
+            int amountOre = getResource(resources, RESOURCE_ORE);
+
+            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
+
+
+            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
+
+
+            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
+
+
         } else {
             playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
+    }
+
+    private int getResource(HashMap<String, Integer> resources, String resourcesTyp) {
+        Integer resourceAmount = resources.get(resourcesTyp);
+        if (resourceAmount == null) {
+            return 0;
+        }
+        return resourceAmount;
     }
 
 
@@ -607,6 +638,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
     public void destroy(boolean closed) {
         super.destroy(closed);
         closeBuildMenu(closed);
+        timer.cancel();
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -680,9 +712,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 sideType = BUILDING_TYPE_CITY;
-            } else {sideType = BUILDING_TYPE_SETTLEMENT;
+            } else {
+                sideType = BUILDING_TYPE_SETTLEMENT;
 
-}
+            }
         } else {
             sideType = BUILDING_TYPE_ROAD;
         }
@@ -701,7 +734,9 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             }
 
         }
-        buildMenuController = new BuildMenuController(buildService, bundle, sideType);
+
+
+        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -808,6 +843,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             }
         }
     }
+
     private int i = 0;
 
 
@@ -815,7 +851,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                Platform.runLater(()->timeLabel.setText(getTime(i)));
+                Platform.runLater(() -> timeLabel.setText(getTime(i)));
                 i++;
             }
         }, i, 1000);
@@ -824,30 +860,24 @@ errorCodes.put("429", bundle.getString("limit.reached"));
     static String getTime(int sec) {
 
         int hours = 0;
-        int remainderOfHours = 0;
+        int remainderOfHours;
         int minutes = 0;
-        int seconds = 0;
+        int seconds;
 
-        if (sec >= 3600)
-        {
+        if (sec >= 3600) {
             hours = sec / 3600;
             remainderOfHours = sec % 3600;
 
-            if (remainderOfHours >= 60)
-            {
+            if (remainderOfHours >= 60) {
                 minutes = remainderOfHours / 60;
                 seconds = remainderOfHours % 60;
             } else {
                 seconds = remainderOfHours;
             }
-        }
-
-        else if (sec >= 60) {
+        } else if (sec >= 60) {
             minutes = sec / 60;
             seconds = sec % 60;
-        }
-
-        else {
+        } else {
             seconds = sec;
         }
 
@@ -857,17 +887,17 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         String strSecs;
 
         if (seconds < 10)
-            strSecs = "0" + Integer.toString(seconds);
+            strSecs = "0" + seconds;
         else
             strSecs = Integer.toString(seconds);
 
         if (minutes < 10)
-            strMins = "0" + Integer.toString(minutes);
+            strMins = "0" + minutes;
         else
             strMins = Integer.toString(minutes);
 
         if (hours < 10)
-            strHours = "0" + Integer.toString(hours);
+            strHours = "0" + hours;
         else
             strHours = Integer.toString(hours);
 
