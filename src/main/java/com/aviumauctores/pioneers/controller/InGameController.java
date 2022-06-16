@@ -341,6 +341,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
 
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
+        errorService.setErrorCodesGameMembersPost();
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
@@ -359,20 +360,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             }
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        }, errorService::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(building -> {
@@ -392,19 +380,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                                 roadAndCrossingPane.getChildren().add(position);
                             }
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        , errorService::handleError));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -426,23 +402,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
+        errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                .subscribe(move -> {}, errorService::handleError));
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -570,6 +533,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
 
 
     public void buildMap() {
+        errorService.setErrorCodesPioneersGet();
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
@@ -589,20 +553,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                                 Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
                                 tileLabel.setText("" + tile.numberToken());
                             }
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        })
+                        }, errorService::handleError)
         );
     }
 
@@ -613,9 +564,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     public void finishMove(ActionEvent actionEvent) {
-        pioneerService.createMove(MOVE_BUILD, null)
+        errorService.setErrorCodesPioneersPost();
+        disposables.add(pioneerService.createMove(MOVE_BUILD, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(r -> {}, errorService::handleError));
     }
 
     public void build(ActionEvent event) {
@@ -641,22 +593,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                 diceSound.play();
             }
         }
+        errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                }, throwable -> {
-                    if (throwable instanceof HttpException ex) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        String content;
-                        if (ex.code() == 429) {
-                            content = "HTTP 429-Error";
-                        } else {
-                            content = "Unknown error";
-                        }
-                        alert.setContentText(content);
-                        alert.showAndWait();
-                    }
-                }));
+                .subscribe(move -> {}, errorService::handleError));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
