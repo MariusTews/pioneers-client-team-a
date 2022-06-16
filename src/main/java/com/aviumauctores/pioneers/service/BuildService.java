@@ -69,6 +69,7 @@ public class BuildService {
 
     public void loadBuildingImage(String buildingID) {
         String color = colorService.getColor(player.color());
+        selectedField.setImage(null);
         switch (buildingType) {
             case BUILDING_TYPE_SETTLEMENT ->
                     selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
@@ -80,9 +81,9 @@ public class BuildService {
             )).toString()));
         }
         if (selectedField.getId().startsWith("building")) {
+            selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
             return;
         }
-        selectedField.setId(buildingID + "#" + buildingType);
 
     }
 
