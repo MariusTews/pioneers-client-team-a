@@ -59,6 +59,8 @@ public class InGameController extends LoggedInController {
     private final SoundService soundService;
 
     private String[] resourceNames;
+    
+    private Timer timer;
 
     private Label[] resourceLabels;
 
@@ -533,11 +535,11 @@ public class InGameController extends LoggedInController {
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
             
             HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = getResource(resources, RESOURCE_BRICK);
-            int amountLumber = getResource(resources, RESOURCE_LUMBER);
-            int amountWool = getResource(resources, RESOURCE_WOOL);
-            int amountGrain = getResource(resources, RESOURCE_GRAIN);
-            int amountOre = getResource(resources, RESOURCE_ORE);
+            int amountBrick = resources.get(RESOURCE_BRICK);
+            int amountLumber = resources.get(RESOURCE_LUMBER);
+            int amountWool = resources.get(RESOURCE_WOOL);
+            int amountGrain = resources.get(RESOURCE_GRAIN);
+            int amountOre = resources.get(RESOURCE_ORE);
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
@@ -778,7 +780,7 @@ public class InGameController extends LoggedInController {
 
 
     private void runTimer() {
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 Platform.runLater(() -> timeLabel.setText(getTime(i)));
