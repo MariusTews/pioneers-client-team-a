@@ -629,7 +629,6 @@ public class InGameController extends LoggedInController {
                 }
             } else {
                 sideType = BUILDING_TYPE_SETTLEMENT;
-
             }
         } else {
             sideType = BUILDING_TYPE_ROAD;
