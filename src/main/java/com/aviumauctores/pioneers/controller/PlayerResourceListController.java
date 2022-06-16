@@ -12,6 +12,8 @@ import javafx.scene.Node;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import retrofit2.HttpException;
 
@@ -28,13 +30,14 @@ public class PlayerResourceListController {
     private final PioneerService pioneerService;
     private final ColorService colorService;
     private final ResourceBundle bundle;
+    private final StateService stateService;
 
-    public VBox playerListVBox;
+    public ListView<HBox> playerList;
 
     private CompositeDisposable disposables;
 
 
-    private ObservableList<Node> listElements;
+    private ObservableList<HBox> listElements;
 
     private Observable<State> state;
     private String currentPlayerID;
@@ -42,24 +45,24 @@ public class PlayerResourceListController {
     private Player player;
 
     @Inject
-    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle) {
+    public PlayerResourceListController(UserService userService, GameService gameService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, StateService stateService) {
         this.userService = userService;
         this.gameService = gameService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
-        this.bundle = bundle;
+       this.bundle = bundle;
+       this.stateService = stateService;
     }
 
-    public void init(VBox node, String startingPlayer) {
+    public void init(ListView<HBox> node, String startingPlayer) {
         disposables = new CompositeDisposable();
-        this.playerListVBox = node;
+        this.playerList = node;
         this.currentPlayerID = startingPlayer;
         for (Player p : pioneerService.listPlayers().blockingFirst()) {
             createPlayerBox(p);
         }
-        playerListVBox.setPadding(new Insets(10, 0, 2, 20));
-        playerListVBox.setSpacing(10.0);
-        this.listElements = playerListVBox.getChildren();
+        playerList.setPadding(new Insets(20, 10, 2, 0));
+        this.listElements = playerList.getItems();
     }
 
     public void createPlayerBox(Player player) {
@@ -69,7 +72,7 @@ public class PlayerResourceListController {
         String colorName = colorService.getColor(player.color());
         PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
         listItems.put(playerID, controller);
-        playerListVBox.getChildren().add(controller.createBox());
+        playerList.getItems().add(playerList.getItems().size(), controller.createBox());
         if (playerID.equals(this.currentPlayerID)) {
             controller.showArrow();
         }
@@ -99,8 +102,9 @@ public class PlayerResourceListController {
     }
 
     public void updatePlayerLabel(Player player) {
-        listItems.get(player.userId()).setPlayer(player);
-        listItems.get(player.userId()).updateResources();
+        PlayerResourceListItemController controller = listItems.get(player.userId());
+        controller.setPlayer(player);
+        controller.updateResources();
     }
 
     public void updateOwnResources(Label[] labels, String[] resources) {
@@ -118,6 +122,16 @@ public class PlayerResourceListController {
         }
     }
 
+    public void onPlayerTurn(){
+        //Sets current player at the top of the list. List is sorted in move order
+        int size = playerList.getItems().size();
+        HBox currentPlayerBox = listItems.get(currentPlayerID).getPlayerBox();
+        HBox puffer = playerList.getItems().set(0, currentPlayerBox);
+        for (int i = size - 1; i > 0; i--){
+            puffer = playerList.getItems().set(i, puffer);
+        }
+    }
+
     public void setPlayer(Player player) {
         this.player = player;
     }
@@ -131,6 +145,9 @@ public class PlayerResourceListController {
         listItems.get(playerID).showArrow();
     }
 
+    public void setCurrentPlayerID(String currentPlayerID) {
+        this.currentPlayerID = currentPlayerID;
+    }
 }
 
 

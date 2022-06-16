@@ -20,10 +20,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -94,7 +96,7 @@ public class InGameController extends LoggedInController {
     public Label lastRollPlayerLabel;
     public Label lastRollLabel;
     @FXML
-    public VBox playerList;
+    public ListView<HBox> playerList;
     private String currentPlayerID;
     private String userID;
     private String currentAction;
@@ -194,7 +196,7 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
-    }
+        }
 
 
     @Override
@@ -414,10 +416,9 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                     currentPlayerID = stateService.getCurrentPlayerID();
                     currentAction = stateService.getCurrentAction();
                     buildService.setCurrentAction(currentAction);
+                    playerResourceListController.setCurrentPlayerID(currentPlayerID);
                     player = stateService.getUpdatedPlayer();
                     playerResourceListController.setPlayer(player);
-                    playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-                    playerResourceListController.updateResourceList();
                     updateVisuals();
                 }, this::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
@@ -502,6 +503,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         if (stateService.getNewPlayer()) {
             playerResourceListController.hideArrow(stateService.getOldPlayerID());
             playerResourceListController.showArrow(currentPlayerID);
+            playerResourceListController.onPlayerTurn();
         }
         //enable and disable road and crossingpane, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
@@ -560,12 +562,9 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-        } else {
-            playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
+        playerResourceListController.updatePlayerLabel(updatedPlayer);
     }
-
-
     public void buildMap() {
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
@@ -804,7 +803,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             for (Node node : pane.getChildren()) {
                 node.setVisible(val);
                 node.setDisable(!val);
-
             }
         }
     }
