@@ -82,7 +82,6 @@ public class BuildService {
             selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
             return;
         }
-
     }
 
     public void setCurrentAction(String action) {
