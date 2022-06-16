@@ -20,7 +20,7 @@ public class ErrorService {
 
     private final ResourceBundle bundle;
 
-    private final HashMap<String, String> errorCodes = new HashMap<>();
+    public HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
     public ErrorService(ObjectMapper mapper, App app, ResourceBundle bundle) {

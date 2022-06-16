@@ -165,7 +165,7 @@ public class InGameController extends LoggedInController {
 
     Image muteImage;
     Image unmuteImage;
-    private ErrorService errorService;
+    private final ErrorService errorService;
     private final BuildService buildService;
 
     private Timer timer = new Timer();
