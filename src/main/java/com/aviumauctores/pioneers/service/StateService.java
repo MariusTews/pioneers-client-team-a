@@ -3,23 +3,20 @@ package com.aviumauctores.pioneers.service;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
-import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
 
 public class StateService {
     private final BuildService buildService;
     private final PioneerService pioneerService;
-    private State currentState;
 
     private String oldAction;
     private String currentAction;
     private String currentPlayerID;
     private Player player;
-    private String userID;
+    private final String userID;
     private String oldPlayerID;
     private boolean newPlayer;
-    //private Player currentPlayer;
 
 
     @Inject
@@ -34,9 +31,8 @@ public class StateService {
     public void updateState(EventDto<State> state) {
         oldAction = currentAction;
         oldPlayerID = currentPlayerID;
-        currentState = state.data();
+        State currentState = state.data();
         currentPlayerID = currentState.expectedMoves().get(0).players().get(0);
-        //currentPlayer = pioneerService.getPlayer(currentPlayerID).blockingFirst();
         currentAction = currentState.expectedMoves().get(0).action();
         if (oldPlayerID == null) {
             newPlayer = true;

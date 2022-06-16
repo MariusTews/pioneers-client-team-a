@@ -1,6 +1,8 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.service.BuildService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -8,10 +10,12 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 public class BuildMenuController implements Controller {
+    private final BuildService buildService;
     private final ResourceBundle bundle;
     private final String buildingType;
 
-    public BuildMenuController(ResourceBundle bundle, String buildingType) {
+    public BuildMenuController(BuildService buildService, ResourceBundle bundle, String buildingType) {
+        this.buildService = buildService;
         this.bundle = bundle;
         this.buildingType = buildingType;
     }
@@ -44,4 +48,8 @@ public class BuildMenuController implements Controller {
     }
 
 
+    public void build(ActionEvent actionEvent) {
+        buildService.setCurrentAction("build");
+        buildService.build();
+    }
 }

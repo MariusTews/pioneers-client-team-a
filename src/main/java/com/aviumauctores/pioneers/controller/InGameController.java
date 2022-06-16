@@ -20,10 +20,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -55,7 +57,6 @@ public class InGameController extends LoggedInController {
     private final EventListener eventListener;
     private final SoundService soundService;
 
-    private String sideType;
     private String[] resourceNames;
 
     private Label[] resourceLabels;
@@ -70,7 +71,8 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label yourTurnLabel;
 
-    @FXML Label timeLabel;
+    @FXML
+    Label timeLabel;
     @FXML
     public Pane mainPane;
     @FXML
@@ -92,9 +94,8 @@ public class InGameController extends LoggedInController {
     public Button rollButton;
     public Button leaveGameButton;
     public Label lastRollPlayerLabel;
-    public Label lastRollLabel;
     @FXML
-    public VBox playerList;
+    public ListView<HBox> playerList;
     private String currentPlayerID;
     private String userID;
     private String currentAction;
@@ -127,8 +128,6 @@ public class InGameController extends LoggedInController {
     public Circle vp09;
     @FXML
     public Circle vp10;
-    @FXML
-    public Button buildButton;
 
 
     public Circle[] vpCircles;
@@ -167,8 +166,6 @@ public class InGameController extends LoggedInController {
     Image unmuteImage;
     private final ErrorService errorService;
     private final BuildService buildService;
-
-    private Timer timer = new Timer();
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
@@ -237,10 +234,10 @@ public class InGameController extends LoggedInController {
 
 
 
-errorCodes.put("429", bundle.getString("limit.reached"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
-    protected void onMoveEvent(EventDto<Move> eventDto) throws InterruptedException {
+    protected void onMoveEvent(EventDto<Move> eventDto) {
         Move move = eventDto.data();
         if (move.action().equals("roll")) {
             int rolled = move.roll();
@@ -251,11 +248,12 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                     throw new RuntimeException(e);
                 }
             }).start();
+            rollSum.setText(" " + rolled + " ");
         }
     }
 
     public void rollAllDice(int rolled) throws InterruptedException {
-        int i = 6;
+        int i = 4;
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
@@ -308,7 +306,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                 diceImage2.setImage(dice6);
             }
         }
-        rollSum.setText(" " + rolled + " ");
     }
 
     public void rollOneDice(int randomInteger, ImageView imageView) {
@@ -351,7 +348,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                             rollButton.setStyle(colourString);
                             leaveGameButton.setStyle(colourString);
                             finishMoveButton.setStyle(colourString);
-                            buildButton.setStyle(colourString);
                             diceImage1.setStyle(colourString);
                             diceImage2.setStyle(colourString);
                             try {
@@ -363,24 +359,27 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                         }, errorService::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(building -> {
-                    //listen to new buildings, and load the image
-                    Building b = building.data();
-                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                    buildService.setPlayer(builder);
-                    buildService.setBuildingType(b.type());
-                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                    buildService.setSelectedField(position);
-                    buildService.loadBuildingImage(b._id());
-                    if (b.owner().equals(userID)) {
-                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                            gainVP(1);}
+                .subscribe(buildingEventDto -> {
+                            if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                //listen to new and updatedbuildings, and load the image
+                                Building b = buildingEventDto.data();
+                                Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                                buildService.setPlayer(builder);
+                                buildService.setBuildingType(b.type());
+                                ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                buildService.setSelectedField(position);
+                                buildService.loadBuildingImage(b._id());
+                                if (b.owner().equals(userID)) {
+                                    if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                        gainVP(1);
+                                    }
+                                }
+                                if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                    roadAndCrossingPane.getChildren().add(position);
+                                }
                             }
-                            if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                roadAndCrossingPane.getChildren().add(position);
-                            }
-                        }
-                        , errorService::handleError));
+                        }, errorService::handleError
+                ));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -393,10 +392,9 @@ errorCodes.put("429", bundle.getString("limit.reached"));
                     currentPlayerID = stateService.getCurrentPlayerID();
                     currentAction = stateService.getCurrentAction();
                     buildService.setCurrentAction(currentAction);
+                    playerResourceListController.setCurrentPlayerID(currentPlayerID);
                     player = stateService.getUpdatedPlayer();
                     playerResourceListController.setPlayer(player);
-                    playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-                    playerResourceListController.updateResourceList();
                     updateVisuals();
                 }, this::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
@@ -434,7 +432,6 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         String location = "building" + x + y + z + side;
         location = location.replace("-", "_");
         return getNodeByID(location);
-
     }
 
     private ImageView getNodeByID(String id) {
@@ -455,7 +452,8 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             }
         } else {
             for (Node n : roadAndCrossingPane.getChildren()) {
-                if (n.getId().equals(id)) {
+                String nID = n.getId().split("#")[0];
+                if (nID.equals(id)) {
                     view = (ImageView) n;
                 }
             }
@@ -468,6 +466,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         if (stateService.getNewPlayer()) {
             playerResourceListController.hideArrow(stateService.getOldPlayerID());
             playerResourceListController.showArrow(currentPlayerID);
+            playerResourceListController.onPlayerTurn();
         }
         //enable and disable road and crossingpane, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
@@ -524,14 +523,11 @@ errorCodes.put("429", bundle.getString("limit.reached"));
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
         if (updatedPlayer.userId().equals(userID)) {
-            playerResourceListController.setPlayer(player);
+            playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-        } else {
-            playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
+        playerResourceListController.updatePlayerLabel(updatedPlayer);
     }
-
-
     public void buildMap() {
         errorService.setErrorCodesPioneersGet();
         disposables.add(pioneerService.getMap()
@@ -606,12 +602,15 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         buildService.setSelectedField(source);
         String buildingID;
         String buildingType;
+        String buildingOwner;
         if (source.getId().contains("#")) {
             buildingID = source.getId().split("#")[0];
             buildingType = source.getId().split("#")[1];
+            buildingOwner = source.getId().split("#")[2];
         } else {
             buildingID = source.getId();
             buildingType = "";
+            buildingOwner = "";
         }
         buildService.setSelectedFieldCoordinates(coordsToPath(buildingID));
         closeBuildMenu(false);
@@ -620,12 +619,15 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             return;
         }
         int side = coordinateHolder.side();
+        String sideType = "";
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
-                sideType = BUILDING_TYPE_CITY;
-            } else {sideType = BUILDING_TYPE_SETTLEMENT;
-
-}
+                if (userID.equals(buildingOwner)) {
+                    sideType = BUILDING_TYPE_CITY;
+                }
+            } else {
+                sideType = BUILDING_TYPE_SETTLEMENT;
+            }
         } else {
             sideType = BUILDING_TYPE_ROAD;
         }
@@ -644,7 +646,7 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             }
 
         }
-        buildMenuController = new BuildMenuController(bundle, sideType);
+        buildMenuController = new BuildMenuController(buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -656,12 +658,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     private String coordsToPath(String source) {
-        String res = null;
         if (source.startsWith("building")) {
-            return res;
+            return source;
         }
-        res = "building " + source.replace("-", "_");
-        return res;
+        return "building " + source.replace("-", "_");
 
     }
 
@@ -674,16 +674,10 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             mainPane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
-        if (buildButton != null) {
-            buildButton.setDisable(appClosed);
-            buildButton.setVisible(!appClosed);
-        }
     }
 
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         closeBuildMenu(false);
-        buildButton.setDisable(true);
-        buildButton.setVisible(false);
         buildService.setSelectedField(null);
         buildService.setSelectedFieldCoordinates(null);
     }
@@ -753,18 +747,18 @@ errorCodes.put("429", bundle.getString("limit.reached"));
             for (Node node : pane.getChildren()) {
                 node.setVisible(val);
                 node.setDisable(!val);
-
             }
         }
     }
+
     private int i = 0;
 
 
     private void runTimer() {
-        timer = new Timer();
+        Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                Platform.runLater(()->timeLabel.setText(getTime(i)));
+                Platform.runLater(() -> timeLabel.setText(getTime(i)));
                 i++;
             }
         }, i, 1000);
@@ -772,31 +766,22 @@ errorCodes.put("429", bundle.getString("limit.reached"));
 
     static String getTime(int sec) {
 
-        int hours = 0;
-        int remainderOfHours = 0;
-        int minutes = 0;
-        int seconds = 0;
+        int hours = 0, minutes = 0, remainderOfHours, seconds;
 
-        if (sec >= 3600)
-        {
+        if (sec >= 3600) {
             hours = sec / 3600;
             remainderOfHours = sec % 3600;
 
-            if (remainderOfHours >= 60)
-            {
+            if (remainderOfHours >= 60) {
                 minutes = remainderOfHours / 60;
                 seconds = remainderOfHours % 60;
             } else {
                 seconds = remainderOfHours;
             }
-        }
-
-        else if (sec >= 60) {
+        } else if (sec >= 60) {
             minutes = sec / 60;
             seconds = sec % 60;
-        }
-
-        else {
+        } else {
             seconds = sec;
         }
 
@@ -806,17 +791,17 @@ errorCodes.put("429", bundle.getString("limit.reached"));
         String strSecs;
 
         if (seconds < 10)
-            strSecs = "0" + Integer.toString(seconds);
+            strSecs = "0" + seconds;
         else
             strSecs = Integer.toString(seconds);
 
         if (minutes < 10)
-            strMins = "0" + Integer.toString(minutes);
+            strMins = "0" + minutes;
         else
             strMins = Integer.toString(minutes);
 
         if (hours < 10)
-            strHours = "0" + Integer.toString(hours);
+            strHours = "0" + hours;
         else
             strHours = Integer.toString(hours);
 
