@@ -579,7 +579,9 @@ public class InGameController extends LoggedInController {
     public void destroy(boolean closed) {
         super.destroy(closed);
         closeBuildMenu(closed);
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     public void finishMove(ActionEvent actionEvent) {
