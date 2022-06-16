@@ -20,10 +20,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -56,7 +58,6 @@ public class InGameController extends LoggedInController {
     private final EventListener eventListener;
     private final SoundService soundService;
 
-    private String sideType;
     private String[] resourceNames;
 
     private Label[] resourceLabels;
@@ -94,9 +95,8 @@ public class InGameController extends LoggedInController {
     public Button rollButton;
     public Button leaveGameButton;
     public Label lastRollPlayerLabel;
-    public Label lastRollLabel;
     @FXML
-    public VBox playerList;
+    public ListView<HBox> playerList;
     private String currentPlayerID;
     private String userID;
     private String currentAction;
@@ -170,8 +170,6 @@ public class InGameController extends LoggedInController {
     private final ErrorService errorService;
     private final BuildService buildService;
 
-    private Timer timer = new Timer();
-
     private final HashMap<String, String> errorCodes = new HashMap<>();
 
 
@@ -240,7 +238,6 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
 
-
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
@@ -255,11 +252,12 @@ public class InGameController extends LoggedInController {
                     throw new RuntimeException(e);
                 }
             }).start();
+            rollSum.setText(" " + rolled + " ");
         }
     }
 
     public void rollAllDice(int rolled) throws InterruptedException {
-        int i = 6;
+        int i = 4;
         while (i > 0) {
             rollOneDice(((int) (Math.random() * 6)), diceImage1);
             rollOneDice(((int) (Math.random() * 6)), diceImage2);
@@ -312,7 +310,6 @@ public class InGameController extends LoggedInController {
                 diceImage2.setImage(dice6);
             }
         }
-        rollSum.setText(" " + rolled + " ");
     }
 
     public void rollOneDice(int randomInteger, ImageView imageView) {
@@ -362,53 +359,31 @@ public class InGameController extends LoggedInController {
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             }
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
+                        }, this::handleThrowable
+                ));
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(building -> {
-                            //listen to new buildings, and load the image
-                            Building b = building.data();
-                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                            buildService.setPlayer(builder);
-                            buildService.setBuildingType(b.type());
-                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                            buildService.setSelectedField(position);
-                            buildService.loadBuildingImage(b._id());
-                            if (b.owner().equals(userID)) {
-                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                    gainVP(1);
+                .subscribe(buildingEventDto -> {
+                            if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                //listen to new and updatedbuildings, and load the image
+                                Building b = buildingEventDto.data();
+                                Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                                buildService.setPlayer(builder);
+                                buildService.setBuildingType(b.type());
+                                ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                buildService.setSelectedField(position);
+                                buildService.loadBuildingImage(b._id());
+                                if (b.owner().equals(userID)) {
+                                    if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                        gainVP(1);
+                                    }
+                                }
+                                if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                    roadAndCrossingPane.getChildren().add(position);
                                 }
                             }
-                            if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                roadAndCrossingPane.getChildren().add(position);
-                            }
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        }, this::handleThrowable
+                ));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -421,10 +396,9 @@ public class InGameController extends LoggedInController {
                     currentPlayerID = stateService.getCurrentPlayerID();
                     currentAction = stateService.getCurrentAction();
                     buildService.setCurrentAction(currentAction);
+                    playerResourceListController.setCurrentPlayerID(currentPlayerID);
                     player = stateService.getUpdatedPlayer();
                     playerResourceListController.setPlayer(player);
-                    playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-                    playerResourceListController.updateResourceList();
                     updateVisuals();
                 }, this::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
@@ -434,19 +408,8 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        }));
+                        , this::handleThrowable
+                ));
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -475,7 +438,6 @@ public class InGameController extends LoggedInController {
         String location = "building" + x + y + z + side;
         location = location.replace("-", "_");
         return getNodeByID(location);
-
     }
 
     private ImageView getNodeByID(String id) {
@@ -496,7 +458,8 @@ public class InGameController extends LoggedInController {
             }
         } else {
             for (Node n : roadAndCrossingPane.getChildren()) {
-                if (n.getId().equals(id)) {
+                String nID = n.getId().split("#")[0];
+                if (nID.equals(id)) {
                     view = (ImageView) n;
                 }
             }
@@ -509,6 +472,7 @@ public class InGameController extends LoggedInController {
         if (stateService.getNewPlayer()) {
             playerResourceListController.hideArrow(stateService.getOldPlayerID());
             playerResourceListController.showArrow(currentPlayerID);
+            playerResourceListController.onPlayerTurn();
         }
         //enable and disable road and crossingpane, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
@@ -567,35 +531,14 @@ public class InGameController extends LoggedInController {
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-            HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = getResource(resources, RESOURCE_BRICK);
-            int amountLumber = getResource(resources, RESOURCE_LUMBER);
-            int amountWool = getResource(resources, RESOURCE_WOOL);
-            int amountGrain = getResource(resources, RESOURCE_GRAIN);
-            int amountOre = getResource(resources, RESOURCE_ORE);
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
-
-
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
-
-
             enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
 
-
         } else {
-            playerResourceListController.updatePlayerLabel(updatedPlayer);
+          playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
-    }
-
-    private int getResource(HashMap<String, Integer> resources, String resourcesTyp) {
-        Integer resourceAmount = resources.get(resourcesTyp);
-        if (resourceAmount == null) {
-            return 0;
-        }
-        return resourceAmount;
-    }
-
 
     public void buildMap() {
         disposables.add(pioneerService.getMap()
@@ -618,19 +561,7 @@ public class InGameController extends LoggedInController {
                                 tileLabel.setText("" + tile.numberToken());
                             }
                         }
-                        , throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content;
-                                if (ex.code() == 429) {
-                                    content = "HTTP 429-Error";
-                                } else {
-                                    content = "Unknown error";
-                                }
-                                alert.setContentText(content);
-                                alert.showAndWait();
-                            }
-                        })
+                        ,this::handleThrowable)
         );
     }
 
@@ -673,19 +604,8 @@ public class InGameController extends LoggedInController {
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
-                }, throwable -> {
-                    if (throwable instanceof HttpException ex) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        String content;
-                        if (ex.code() == 429) {
-                            content = "HTTP 429-Error";
-                        } else {
-                            content = "Unknown error";
-                        }
-                        alert.setContentText(content);
-                        alert.showAndWait();
-                    }
-                }));
+                },this::handleThrowable
+                ));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -695,12 +615,15 @@ public class InGameController extends LoggedInController {
         buildService.setSelectedField(source);
         String buildingID;
         String buildingType;
+        String buildingOwner;
         if (source.getId().contains("#")) {
             buildingID = source.getId().split("#")[0];
             buildingType = source.getId().split("#")[1];
+            buildingOwner = source.getId().split("#")[2];
         } else {
             buildingID = source.getId();
             buildingType = "";
+            buildingOwner = "";
         }
         buildService.setSelectedFieldCoordinates(coordsToPath(buildingID));
         closeBuildMenu(false);
@@ -709,12 +632,14 @@ public class InGameController extends LoggedInController {
             return;
         }
         int side = coordinateHolder.side();
+        String sideType = "";
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
-                sideType = BUILDING_TYPE_CITY;
+                if (userID.equals(buildingOwner)) {
+                    sideType = BUILDING_TYPE_CITY;
+                }
             } else {
                 sideType = BUILDING_TYPE_SETTLEMENT;
-
             }
         } else {
             sideType = BUILDING_TYPE_ROAD;
@@ -748,12 +673,10 @@ public class InGameController extends LoggedInController {
     }
 
     private String coordsToPath(String source) {
-        String res = null;
         if (source.startsWith("building")) {
-            return res;
+            return source;
         }
-        res = "building " + source.replace("-", "_");
-        return res;
+        return "building " + source.replace("-", "_");
 
     }
 
@@ -839,7 +762,6 @@ public class InGameController extends LoggedInController {
             for (Node node : pane.getChildren()) {
                 node.setVisible(val);
                 node.setDisable(!val);
-
             }
         }
     }
@@ -848,7 +770,7 @@ public class InGameController extends LoggedInController {
 
 
     private void runTimer() {
-        timer = new Timer();
+        Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 Platform.runLater(() -> timeLabel.setText(getTime(i)));
@@ -858,11 +780,7 @@ public class InGameController extends LoggedInController {
     }
 
     static String getTime(int sec) {
-
-        int hours = 0;
-        int remainderOfHours;
-        int minutes = 0;
-        int seconds;
+        int hours = 0, minutes = 0, remainderOfHours, seconds;
 
         if (sec >= 3600) {
             hours = sec / 3600;
@@ -928,6 +846,20 @@ public class InGameController extends LoggedInController {
             ErrorResponse response = errorService.readErrorMessage(ex);
             String message = errorCodes.get(Integer.toString(response.statusCode()));
             app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+        }
+    }
+
+    private void handleThrowable(Throwable throwable) {
+        if (throwable instanceof HttpException ex) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            String content;
+            if (ex.code() == 429) {
+                content = "HTTP 429-Error";
+            } else {
+                content = "Unknown error";
+            }
+            alert.setContentText(content);
+            alert.showAndWait();
         }
     }
 
