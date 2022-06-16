@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
@@ -37,6 +38,8 @@ public class CreateGameController extends LoggedInController {
 
     private final Provider<GameReadyController> gameReadyController;
     private final GameService gameService;
+
+    private final ErrorService errorService;
     private final ResourceBundle bundle;
 
     private boolean hidePassword = true;
@@ -65,17 +68,19 @@ public class CreateGameController extends LoggedInController {
     @Inject
     public CreateGameController(App app,
                                 Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
-                                LoginService loginService, GameService gameService, UserService userService, ResourceBundle bundle){
+                                LoginService loginService, GameService gameService, UserService userService, ErrorService errorService, ResourceBundle bundle){
         super(loginService, userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
         this.gameService = gameService;
+        this.errorService = errorService;
         this.bundle = bundle;
     }
 
     public void init(){
         disposables = new CompositeDisposable();
+        errorService.setErrorCodesGame();
         show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
         hide = new Image(Objects.requireNonNull(Main.class.getResource("views/notShowPassword.png")).toString());
     }
@@ -140,6 +145,7 @@ public class CreateGameController extends LoggedInController {
             }
             return;
         }
+        errorService.setErrorCodesGame();
         disposables.add(gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(gameID -> {
@@ -150,7 +156,7 @@ public class CreateGameController extends LoggedInController {
                             .subscribe();
                     //show gameReady Screen
                     app.show(gameReadyController.get());
-                }));
+                }, errorService::handleError));
     }
 
 
