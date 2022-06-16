@@ -79,9 +79,9 @@ public class BuildService {
                     "views/Town/Town_" + color.toUpperCase() + ".png")).toString()));
         }
         if (selectedField.getId().startsWith("building")) {
+            selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
             return;
         }
-        selectedField.setId(buildingID + "#" + buildingType);
 
     }
 

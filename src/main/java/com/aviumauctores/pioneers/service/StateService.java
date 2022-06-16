@@ -18,6 +18,7 @@ public class StateService {
     private String oldPlayerID;
     private boolean newPlayer;
 
+
     @Inject
     public StateService(UserService userService, BuildService buildService,
                         PioneerService pioneerService) {
