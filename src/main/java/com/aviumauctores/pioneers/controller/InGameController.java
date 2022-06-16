@@ -355,30 +355,30 @@ public class InGameController extends LoggedInController {
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             }
-                        }
-                        , this::handleThrowable
+                        }, this::handleThrowable
                 ));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(buildingEventDto -> {
-                    if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-                            //listen to new and updatedbuildings, and load the image
-                            Building b = buildingEventDto.data();
-                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                            buildService.setPlayer(builder);
-                            buildService.setBuildingType(b.type());
-                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                            buildService.setSelectedField(position);
-                            buildService.loadBuildingImage(b._id());
-                            if (b.owner().equals(userID)) {
-                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                    gainVP(1);
+                            if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                //listen to new and updatedbuildings, and load the image
+                                Building b = buildingEventDto.data();
+                                Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                                buildService.setPlayer(builder);
+                                buildService.setBuildingType(b.type());
+                                ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                buildService.setSelectedField(position);
+                                buildService.loadBuildingImage(b._id());
+                                if (b.owner().equals(userID)) {
+                                    if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                        gainVP(1);
+                                    }
+                                }
+                                if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                    roadAndCrossingPane.getChildren().add(position);
+                                }
                             }
-                        }
-                        if (!roadAndCrossingPane.getChildren().contains(position)) {
-                            roadAndCrossingPane.getChildren().add(position);
-                        }
-                        , this::handleThrowable
+                        }, this::handleThrowable
                 ));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
@@ -621,7 +621,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         int side = coordinateHolder.side();
-        String sideType;
+        String sideType = "";
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
