@@ -79,7 +79,9 @@ public class RegisterController implements Controller {
 
     @Override
     public void init() {
-        errorService.setErrorCodesUsers();
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("409", bundle.getString("username.taken"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
         show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
         hide = new Image(Objects.requireNonNull(Main.class.getResource("views/notShowPassword.png")).toString());
     }
@@ -158,7 +160,6 @@ public class RegisterController implements Controller {
     }
 
     public void createAccount(ActionEvent event) {
-        errorService.setErrorCodesUsers();
         // send username and password to server
         disposable = userService.register(textfieldUsername.getText(), textfieldPassword.getText())
                 .observeOn(FX_SCHEDULER)
@@ -166,7 +167,16 @@ public class RegisterController implements Controller {
                         result -> {
                             final LoginController controller = loginController.get();
                             app.show(controller);
-                        }, errorService::handleError
+                        },
+                        throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                            }
+                        }
 
                 );
     }

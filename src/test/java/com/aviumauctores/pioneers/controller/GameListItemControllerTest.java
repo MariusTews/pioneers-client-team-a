@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -35,6 +36,9 @@ class GameListItemControllerTest extends ApplicationTest {
 
     @Mock
     PreferenceService preferenceService;
+
+    @Mock
+    ErrorService errorService;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);

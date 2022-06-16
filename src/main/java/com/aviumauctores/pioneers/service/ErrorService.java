@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
 import retrofit2.Response;
@@ -49,7 +50,7 @@ public class ErrorService {
         if (throwable instanceof HttpException ex) {
             ErrorResponse response = this.readErrorMessage(ex);
             String message = errorCodes.get(Integer.toString(response.statusCode()));
-            app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+            Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
         } else {
             app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
         }

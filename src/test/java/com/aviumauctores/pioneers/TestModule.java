@@ -17,6 +17,7 @@ import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
 import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.*;
+import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.rest.*;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PioneerService;
@@ -31,16 +32,14 @@ import okio.BufferedSource;
 import retrofit2.HttpException;
 
 import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 
 @Module
 public class TestModule {
     @Provides
     ErrorService errorService() {
-        return new ErrorService(null) {
+        ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
+        return new ErrorService(null, null, bundle) {
             @Override
             public ErrorResponse readErrorMessage(HttpException httpException) {
                 return new ErrorResponse(501, "");

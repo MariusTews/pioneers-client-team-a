@@ -110,6 +110,9 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     PlayerResourceListController playerResourceListController;
 
+    @Mock
+    ErrorService errorService;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 

@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.core.Observable;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +39,9 @@ public class RegisterControllerErrorTest extends ApplicationTest {
 
     @Mock
     PreferenceService preferenceService;
+
+    @Mock
+    ErrorService errorService;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);

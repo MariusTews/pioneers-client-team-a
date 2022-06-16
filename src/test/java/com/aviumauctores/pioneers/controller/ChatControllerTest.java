@@ -5,6 +5,7 @@ import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Group;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GroupService;
 import com.aviumauctores.pioneers.service.MessageService;
 import com.aviumauctores.pioneers.service.UserService;
@@ -52,6 +53,9 @@ class ChatControllerTest extends ApplicationTest {
     @Mock
     EventListener eventListener;
 
+    @Mock
+    ErrorService errorService;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
@@ -87,6 +91,7 @@ class ChatControllerTest extends ApplicationTest {
         this.userUpdates = null;
         this.userService = null;
         this.messageCreateUpdates = null;
+        this.errorService = null;
     }
 
     @Test

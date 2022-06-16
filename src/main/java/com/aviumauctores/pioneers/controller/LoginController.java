@@ -80,7 +80,9 @@ public class LoginController implements Controller {
 
     @Override
     public void init() {
-        errorService.setErrorCodesLogin();
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("invalid.username.password"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
 
@@ -139,7 +141,7 @@ public class LoginController implements Controller {
         } else {
             usernameErrorLabel.setText("");
             passwordErrorLabel.setText("");
-            errorService.setErrorCodesLogin();
+
             loginDisposable = loginService.login(username, password)
                     .subscribeOn(FX_SCHEDULER)
                     .subscribe(
@@ -154,7 +156,16 @@ public class LoginController implements Controller {
                                 }
 
                                 toLobby(result);
-                            }, errorService::handleError
+                            },
+                            throwable -> {
+                                if (throwable instanceof HttpException ex) {
+                                    ErrorResponse response = errorService.readErrorMessage(ex);
+                                    String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                    Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                                } else {
+                                    app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                                }
+                            }
                     );
         }
     }
@@ -183,7 +194,6 @@ public class LoginController implements Controller {
     }
 
     public void toLobby(LoginResult loginResult) {
-        errorService.setErrorCodesUsers();
         final LobbyController controller = lobbyController.get();
         User user = new User(loginResult._id(), loginResult.name(), "online", loginResult.avatar(),null);
         toLobbyDisposable = userService.updateUser(loginResult._id(), new UpdateUserDto(user.name(), user.status(), user.avatar(),null,null))
@@ -192,7 +202,16 @@ public class LoginController implements Controller {
                         result -> {
                             controller.setUser(user);
                             app.show(controller);
-                        }, errorService::handleError
+                        },
+                        throwable -> {
+                            if (throwable instanceof HttpException ex) {
+                                ErrorResponse response = errorService.readErrorMessage(ex);
+                                String message = errorCodes.get(Integer.toString(response.statusCode()));
+                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                            } else {
+                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                            }
+                        }
 
                 );
     }
