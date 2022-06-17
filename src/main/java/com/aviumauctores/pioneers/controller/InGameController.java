@@ -381,6 +381,7 @@ public class InGameController extends LoggedInController {
                                     }
                                 }
                                 if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                    position.setVisible(true);
                                     roadAndCrossingPane.getChildren().add(position);
                                 }
                             }
