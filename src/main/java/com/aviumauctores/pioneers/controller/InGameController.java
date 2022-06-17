@@ -356,6 +356,7 @@ public class InGameController extends LoggedInController {
 
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
+        errorService.setErrorCodesGameMembersPost();
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
@@ -373,8 +374,7 @@ public class InGameController extends LoggedInController {
                             } catch (NullPointerException e) {
                                 e.printStackTrace();
                             }
-                        }, this::handleThrowable
-                ));
+                        }, errorService::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(buildingEventDto -> {
@@ -397,7 +397,7 @@ public class InGameController extends LoggedInController {
                                     roadAndCrossingPane.getChildren().add(position);
                                 }
                             }
-                        }, this::handleThrowable
+                        }, errorService::handleError
                 ));
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
@@ -419,12 +419,10 @@ public class InGameController extends LoggedInController {
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
+        errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                        }
-                        , this::handleThrowable
-                ));
+                .subscribe(move -> {}, errorService::handleError));
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -563,6 +561,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void buildMap() {
+        errorService.setErrorCodesPioneersGet();
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
@@ -582,8 +581,7 @@ public class InGameController extends LoggedInController {
                                 Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
                                 tileLabel.setText("" + tile.numberToken());
                             }
-                        }
-                        ,this::handleThrowable)
+                        }, errorService::handleError)
         );
     }
 
@@ -597,9 +595,10 @@ public class InGameController extends LoggedInController {
     }
 
     public void finishMove(ActionEvent actionEvent) {
-        pioneerService.createMove(MOVE_BUILD, null)
+        errorService.setErrorCodesPioneersPost();
+        disposables.add(pioneerService.createMove(MOVE_BUILD, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(r -> {}, errorService::handleError));
     }
 
     public void build(ActionEvent event) {
@@ -625,11 +624,10 @@ public class InGameController extends LoggedInController {
                 diceSound.play();
             }
         }
+        errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                },this::handleThrowable
-                ));
+                .subscribe(move -> {}, errorService::handleError));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -870,20 +868,6 @@ public class InGameController extends LoggedInController {
             ErrorResponse response = errorService.readErrorMessage(ex);
             String message = errorCodes.get(Integer.toString(response.statusCode()));
             app.showHttpErrorDialog(response.statusCode(), response.error(), message);
-        }
-    }
-
-    private void handleThrowable(Throwable throwable) {
-        if (throwable instanceof HttpException ex) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            String content;
-            if (ex.code() == 429) {
-                content = "HTTP 429-Error";
-            } else {
-                content = "Unknown error";
-            }
-            alert.setContentText(content);
-            alert.showAndWait();
         }
     }
 

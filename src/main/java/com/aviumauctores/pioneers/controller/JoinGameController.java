@@ -108,11 +108,7 @@ public class JoinGameController extends LoggedInController {
                     }
                 }));
 
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("incorrect.password"));
-        errorCodes.put("404", bundle.getString("game.not.found"));
-        errorCodes.put("409", bundle.getString("user.already.joined"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
+        errorService.setErrorCodesJoinGameController();
     }
 
     @Override
@@ -175,16 +171,7 @@ public class JoinGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
                             app.show(gameReadyController.get());
-                        },
-                        throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = errorService.readErrorMessage(ex);
-                                String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                            } else {
-                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
-                            }
-                        }));
+                        }, errorService::handleError));
     }
 
     public void quit(ActionEvent actionEvent) {
