@@ -105,6 +105,7 @@ public class InGameController extends LoggedInController {
 
     private final Provider<InGameChatController> inGameChatController;
     private final StateService stateService;
+    private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
 
     @FXML
@@ -180,7 +181,7 @@ public class InGameController extends LoggedInController {
                             LoginService loginService, UserService userService,
                             ResourceBundle bundle, ColorService colorService, PlayerResourceListController playerResourceListController,
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
-                            SoundService soundService, StateService stateService,
+                            SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
                             ErrorService errorService, BuildService buildService) {
         super(loginService, userService);
@@ -191,6 +192,7 @@ public class InGameController extends LoggedInController {
         this.gameMemberService = gameMemberService;
         this.soundService = soundService;
         this.stateService = stateService;
+        this.lobbyController = lobbyController;
         this.gameReadyController = gameReadyController;
         this.inGameChatController = inGameChatController;
         this.gameService = gameService;
@@ -239,6 +241,16 @@ public class InGameController extends LoggedInController {
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".deleted", Game.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(game ->{
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(bundle.getString("warning"));
+                    alert.setHeaderText(bundle.getString("game.deleted"));
+                    alert.showAndWait();
+                    gameService.setCurrentGameID(null);
+                    app.show(lobbyController.get());
+                }));
 
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
