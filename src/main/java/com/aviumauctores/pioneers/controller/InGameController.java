@@ -535,27 +535,18 @@ public class InGameController extends LoggedInController {
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
             
             HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = getResource(resources, RESOURCE_BRICK);
-            int amountLumber = getResource(resources, RESOURCE_LUMBER);
-            int amountWool = getResource(resources, RESOURCE_WOOL);
-            int amountGrain = getResource(resources, RESOURCE_GRAIN);
-            int amountOre = getResource(resources, RESOURCE_ORE);
+            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
+            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
+            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
+            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
+            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
             enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
 
-        } else {
-          playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
-    }
-
-    private int getResource(HashMap<String, Integer> resources, String resourcesTyp) {
-        Integer resourceAmount = resources.get(resourcesTyp);
-        if (resourceAmount == null) {
-            return 0;
-        }
-        return resourceAmount;
+        playerResourceListController.updatePlayerLabel(updatedPlayer);
     }
 
     public void buildMap() {
