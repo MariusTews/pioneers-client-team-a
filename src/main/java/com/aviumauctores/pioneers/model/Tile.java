@@ -1,9 +1,9 @@
 package com.aviumauctores.pioneers.model;
 
 public record Tile(
-        int x ,
+        int x,
         int y,
-        int z ,
+        int z,
         String type,
         int numberToken) {
 }

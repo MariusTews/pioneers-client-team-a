@@ -18,7 +18,6 @@ import static com.aviumauctores.pioneers.Constants.*;
 
 public class PlayerResourceListItemController {
 
-
     private Player player;
 
     private ImageView arrowView;
@@ -36,12 +35,11 @@ public class PlayerResourceListItemController {
     private HBox playerBox;
 
 
-
     private Label resourceLabel;
     private HashMap<String, Integer> resources = new HashMap<>();
 
 
-    public PlayerResourceListItemController(Player player, String name, String color, UserService userService, ResourceBundle bundle){
+    public PlayerResourceListItemController(Player player, String name, String color, UserService userService, ResourceBundle bundle) {
         this.player = player;
         this.name = name;
         this.id = player.userId();
@@ -50,7 +48,7 @@ public class PlayerResourceListItemController {
         this.bundle = bundle;
     }
 
-    public HBox createBox(){
+    public HBox createBox() {
         playerBox = new HBox();
         playerBox.setId(id);
 
@@ -82,11 +80,11 @@ public class PlayerResourceListItemController {
         return playerBox;
     }
 
-    public void showArrow(){
+    public void showArrow() {
         arrowView.setVisible(true);
     }
 
-    public void hideArrow(){
+    public void hideArrow() {
         arrowView.setVisible(false);
     }
 
@@ -101,11 +99,11 @@ public class PlayerResourceListItemController {
         this.resources = player.resources();
     }
 
-    public int getResource(String resource){
+    public int getResource(String resource) {
         return resources.getOrDefault(resource, 0);
     }
 
-    public HBox getPlayerBox(){
+    public HBox getPlayerBox() {
         return this.playerBox;
     }
 

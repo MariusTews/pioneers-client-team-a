@@ -1,10 +1,9 @@
 package com.aviumauctores.pioneers.sounds;
 
-import java.net.URL;
-
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+import java.net.URL;
 
 public class GameSounds {
 

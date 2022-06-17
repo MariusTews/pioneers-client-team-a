@@ -18,17 +18,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SettingsControllerTest extends ApplicationTest {
-
 
     @Mock
     UserService userService;
@@ -113,5 +111,4 @@ class SettingsControllerTest extends ApplicationTest {
         verify(userService).updateUser(any(), new UpdateUserDto(null, null, null, any(), null));
 
     }
-
 }

@@ -51,7 +51,7 @@ class LoginControllerTest extends ApplicationTest {
     LoginController loginController;
 
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage) {
         new App(loginController).start(stage);
     }
 
@@ -68,7 +68,7 @@ class LoginControllerTest extends ApplicationTest {
 
     @Test
     void login() {
-        when(loginService.login(any(), any())).thenReturn(Observable.just(new LoginResult("1", "Struppi", "online", null, "a", "r",null)));
+        when(loginService.login(any(), any())).thenReturn(Observable.just(new LoginResult("1", "Struppi", "online", null, "a", "r", null)));
 
         write("Struppi\t");
         write("12345678\t");
@@ -94,10 +94,10 @@ class LoginControllerTest extends ApplicationTest {
 
     @Test
     void toLobby() {
-        User user1 = new User("1", "Mark", "online", "brr",null);
-        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null,null))).thenReturn(Observable.just(user1));
-        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref",null));
+        User user1 = new User("1", "Mark", "online", "brr", null);
+        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null, null))).thenReturn(Observable.just(user1));
+        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref", null));
 
-        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null,null));
+        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null, null));
     }
 }

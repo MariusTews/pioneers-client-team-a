@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 @Module
 public class MainModule {
     @Provides
-    ResourceBundle bundle(PreferenceService preferenceService){
+    ResourceBundle bundle(PreferenceService preferenceService) {
         return ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", preferenceService.getLocale());
     }
 }

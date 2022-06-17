@@ -76,19 +76,19 @@ public class Constants {
 
     // API Pioneers URL
 
-    public static final String GET_MAP_URL ="games/{gameId}/map";
+    public static final String GET_MAP_URL = "games/{gameId}/map";
 
-    public static final String LIST_PLAYERS_URL ="games/{gameId}/players";
+    public static final String LIST_PLAYERS_URL = "games/{gameId}/players";
 
-    public static final String GET_USERID_URL ="games/{gameId}/players/{userId}";
+    public static final String GET_USERID_URL = "games/{gameId}/players/{userId}";
 
-    public static final String GET_STATE_URL ="games/{gameId}/state";
+    public static final String GET_STATE_URL = "games/{gameId}/state";
 
-    public static final String LIST_BUILDINGS_URL ="games/{gameId}/buildings";
+    public static final String LIST_BUILDINGS_URL = "games/{gameId}/buildings";
 
-    public static final String GET_BUILDINGID_URL ="games/{gameId}/buildings/{buildingId}";
+    public static final String GET_BUILDINGID_URL = "games/{gameId}/buildings/{buildingId}";
 
-    public static final String CREATE_MOVE_URL ="games/{gameId}/moves";
+    public static final String CREATE_MOVE_URL = "games/{gameId}/moves";
 
 
     public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v2/events";
@@ -105,7 +105,7 @@ public class Constants {
 
     //Colors
 
-    public static  final int COLOR_AMOUNT = 11;
+    public static final int COLOR_AMOUNT = 11;
 
     public static final String COLOR_BLUE = "blue";
     public static final String COLOR_RED = "red";

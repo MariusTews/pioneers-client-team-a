@@ -8,7 +8,8 @@ import java.net.URL;
 
 public class SoundService {
     @Inject
-    public SoundService() {}
+    public SoundService() {
+    }
 
     public GameMusic createGameMusic(URL filePath) {
         return new GameMusic(filePath);

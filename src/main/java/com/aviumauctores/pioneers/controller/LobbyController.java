@@ -91,9 +91,7 @@ public class LobbyController extends PlayerListController {
                            Provider<CreateGameController> createGameController,
                            Provider<JoinGameController> joinGameController,
                            Provider<SettingsController> settingsController,
-                           Provider<LobbyController> lobbyController)
-
-    {
+                           Provider<LobbyController> lobbyController) {
         super(loginService, userService);
         this.app = app;
         this.gameService = gameService;
@@ -106,7 +104,7 @@ public class LobbyController extends PlayerListController {
         this.createGameController = createGameController;
         this.joinGameController = joinGameController;
         this.settingsController = settingsController;
-        this.lobbyController=lobbyController;
+        this.lobbyController = lobbyController;
 
     }
 

@@ -59,7 +59,7 @@ public class InGameController extends LoggedInController {
     private final SoundService soundService;
 
     private String[] resourceNames;
-    
+
     private Timer timer;
 
     private Label[] resourceLabels;
@@ -243,7 +243,7 @@ public class InGameController extends LoggedInController {
                 .subscribe(this::onMoveEvent));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".deleted", Game.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(game ->{
+                .subscribe(game -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(bundle.getString("warning"));
                     alert.setHeaderText(bundle.getString("game.deleted"));
@@ -545,7 +545,7 @@ public class InGameController extends LoggedInController {
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-            
+
             HashMap<String, Integer> resources = updatedPlayer.resources();
             int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
             int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
@@ -582,7 +582,7 @@ public class InGameController extends LoggedInController {
                                 tileLabel.setText("" + tile.numberToken());
                             }
                         }
-                        ,this::handleThrowable)
+                        , this::handleThrowable)
         );
     }
 
@@ -627,7 +627,7 @@ public class InGameController extends LoggedInController {
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
-                },this::handleThrowable
+                        }, this::handleThrowable
                 ));
     }
 
@@ -683,7 +683,6 @@ public class InGameController extends LoggedInController {
 
         }
 
-
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
@@ -738,7 +737,6 @@ public class InGameController extends LoggedInController {
             gameSound.play();
         }
     }
-
 
     public void gainVP(int vpGain) {
         memberVP += vpGain;

@@ -27,10 +27,10 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
     PlayerListController parentController;
 
     @Spy
-    User user = new User("42", "Player1", "online", null,null);
+    User user = new User("42", "Player1", "online", null, null);
 
     @Spy
-    Member gameMember = new Member("", "", "12", "42", false,null);
+    Member gameMember = new Member("", "", "12", "42", false, null);
 
     @Mock
     ObservableList<Parent> items;
@@ -64,7 +64,7 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
         // Ensure an image is shown
         assertNotNull(image1);
 
-        Member newGameMember = new Member("", "", "12", "42", true,null);
+        Member newGameMember = new Member("", "", "12", "42", true, null);
         Platform.runLater(() -> {
             int incr = playerListItemController.onGameMemberUpdated(newGameMember);
 
@@ -80,13 +80,13 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
     @Test
     void onGameMemberUpdatedNoReadyChange() {
         final ImageView readyView = lookup(typeSafeMatcher(ImageView.class, "Find readyView",
-            imageView -> imageView.getFitHeight() < 40.0)).query();
+                imageView -> imageView.getFitHeight() < 40.0)).query();
         final Image image1 = readyView.getImage();
         final Color sampleColor1 = image1.getPixelReader().getColor(16, 0);
         // Ensure an image is shown
         assertNotNull(image1);
 
-        Member newGameMember = new Member("", "", "12", "42", false,null);
+        Member newGameMember = new Member("", "", "12", "42", false, null);
         Platform.runLater(() -> {
             int incr = playerListItemController.onGameMemberUpdated(newGameMember);
 

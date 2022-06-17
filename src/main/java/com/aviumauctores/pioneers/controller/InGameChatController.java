@@ -61,8 +61,6 @@ public class InGameChatController implements Controller {
     private CompositeDisposable disposables;
 
 
-
-
     @Inject
     public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                 SoundService soundService,
@@ -194,9 +192,6 @@ public class InGameChatController implements Controller {
             }
         }
     }
-
-
-
 
     public void delete(String messageId) {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())

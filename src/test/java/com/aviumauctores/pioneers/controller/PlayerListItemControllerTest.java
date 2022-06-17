@@ -25,7 +25,7 @@ class PlayerListItemControllerTest extends ApplicationTest {
     PlayerListController parentController;
 
     @Spy
-    User user = new User("42", "Player1", "online", null,null);
+    User user = new User("42", "Player1", "online", null, null);
 
     @Mock
     ObservableList<Parent> items;
@@ -71,7 +71,7 @@ class PlayerListItemControllerTest extends ApplicationTest {
         // Check the label shows the username
         assertEquals(playerNameLabel.getText(), user.name());
 
-        User newUser = new User("42", "Player2", "online", null,null);
+        User newUser = new User("42", "Player2", "online", null, null);
         Platform.runLater(() -> {
             playerListItemController.onPlayerUpdated(newUser);
 

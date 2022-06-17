@@ -2,15 +2,11 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.service.GameMemberService;
+import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.core.Observable;
-import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -23,10 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
-import org.w3c.dom.Text;
 
 import javax.inject.Provider;
-import java.awt.event.MouseEvent;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -36,10 +30,9 @@ import static org.mockito.Mockito.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isInvisible;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import static org.testfx.util.NodeQueryUtils.hasText;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateGameControllerTest extends ApplicationTest{
+public class CreateGameControllerTest extends ApplicationTest {
 
     @Mock
     App app;
@@ -69,10 +62,9 @@ public class CreateGameControllerTest extends ApplicationTest{
     CreateGameController createGameController;
 
 
-
     @Override
     public void start(Stage stage) {
-       new App(createGameController).start(stage);
+        new App(createGameController).start(stage);
 
     }
 
@@ -90,7 +82,7 @@ public class CreateGameControllerTest extends ApplicationTest{
     }
 
     @Test
-    void createGame(){
+    void createGame() {
         TextField gameName = lookup("#gameNameInput").query();
         PasswordField password = lookup("#gamePasswordInput").query();
         TextField showPassword = lookup("#gamePasswordText").query();
@@ -105,14 +97,14 @@ public class CreateGameControllerTest extends ApplicationTest{
         write("password");
         FxAssert.verifyThat("#createGameButton", NodeMatchers.isEnabled());
         when(gameService.create(anyString(), anyString())).thenReturn(Observable.just(new Game("1", "1", "gameID", "game", "owner", false, 1).toString()));
-        when(gameService.updateGame(any ())).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", false, 1)));
+        when(gameService.updateGame(any())).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", false, 1)));
         clickOn("#createGameButton");
         verify(gameService).create("game", "password");
         verify(gameService).updateGame(any());
     }
 
     @Test
-    void showPassword(){
+    void showPassword() {
 
         final PasswordField passwordTextField = lookup("#gamePasswordInput").query();
         final TextField showPasswordTextField = lookup("#gamePasswordText").query();
