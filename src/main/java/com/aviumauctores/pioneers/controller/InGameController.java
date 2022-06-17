@@ -35,6 +35,7 @@ import retrofit2.HttpException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.*;
 import java.util.ResourceBundle;
@@ -58,6 +59,8 @@ public class InGameController extends LoggedInController {
     private final SoundService soundService;
 
     private String[] resourceNames;
+    
+    private Timer timer;
 
     private Label[] resourceLabels;
 
@@ -159,6 +162,8 @@ public class InGameController extends LoggedInController {
     private BuildMenuController buildMenuController;
     private Parent buildMenu;
 
+    private final Map<String, Boolean> enableButtons = new HashMap<>();
+
 
     // These are the Sound-Icons
 
@@ -201,6 +206,9 @@ public class InGameController extends LoggedInController {
         disposables = new CompositeDisposable();
         memberVP = 0;
         resourceNames = new String[]{RESOURCE_BRICK, RESOURCE_GRAIN, RESOURCE_LUMBER, RESOURCE_ORE, RESOURCE_WOOL};
+        enableButtons.put(BUILDING_TYPE_CITY, false);
+        enableButtons.put(BUILDING_TYPE_SETTLEMENT, false);
+        enableButtons.put(BUILDING_TYPE_ROAD, false);
 
 
         // Initialize these objects here because else the tests would fail
@@ -231,8 +239,6 @@ public class InGameController extends LoggedInController {
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
-
-
 
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
@@ -525,9 +531,22 @@ public class InGameController extends LoggedInController {
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+            
+            HashMap<String, Integer> resources = updatedPlayer.resources();
+            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
+            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
+            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
+            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
+            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
+
+            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
+            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
+            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
+
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
     }
+
     public void buildMap() {
         errorService.setErrorCodesPioneersGet();
         disposables.add(pioneerService.getMap()
@@ -557,6 +576,9 @@ public class InGameController extends LoggedInController {
     public void destroy(boolean closed) {
         super.destroy(closed);
         closeBuildMenu(closed);
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -646,7 +668,9 @@ public class InGameController extends LoggedInController {
             }
 
         }
-        buildMenuController = new BuildMenuController(buildService, bundle, sideType);
+
+
+        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -755,7 +779,7 @@ public class InGameController extends LoggedInController {
 
 
     private void runTimer() {
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 Platform.runLater(() -> timeLabel.setText(getTime(i)));
@@ -765,7 +789,6 @@ public class InGameController extends LoggedInController {
     }
 
     static String getTime(int sec) {
-
         int hours = 0, minutes = 0, remainderOfHours, seconds;
 
         if (sec >= 3600) {

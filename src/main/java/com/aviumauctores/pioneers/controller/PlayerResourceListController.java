@@ -40,7 +40,7 @@ public class PlayerResourceListController {
         for (Player p : pioneerService.listPlayers().blockingFirst()) {
             createPlayerBox(p);
         }
-        playerList.setPadding(new Insets(20, 10, 2, 0));
+        playerList.setPadding(new Insets(10, 0, 10, 0));
     }
 
     public void createPlayerBox(Player player) {
@@ -84,6 +84,7 @@ public class PlayerResourceListController {
         for (int i = size - 1; i > 0; i--){
             puffer = playerList.getItems().set(i, puffer);
         }
+
     }
 
     public void setPlayer(Player player) {
@@ -101,6 +102,10 @@ public class PlayerResourceListController {
 
     public void setCurrentPlayerID(String currentPlayerID) {
         this.currentPlayerID = currentPlayerID;
+    }
+
+    public int getResource(HashMap<String, Integer> resources, String resourceName) {
+        return resources.getOrDefault(resourceName, 0);
     }
 }
 

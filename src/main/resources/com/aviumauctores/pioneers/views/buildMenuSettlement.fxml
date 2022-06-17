@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" styleClass="build-menu" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.BuildMenuController">
+<VBox alignment="TOP_CENTER" styleClass="build-menu" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.BuildMenuController">
    <padding>
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
@@ -43,5 +43,5 @@
          </ImageView>
       </graphic>
    </Label>
-   <Button mnemonicParsing="false" onAction="#build" text="%build" />
+   <Button fx:id="buildButton" disable="true" mnemonicParsing="false" onAction="#build" text="%build" />
 </VBox>

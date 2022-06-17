@@ -67,12 +67,12 @@ class ChatControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        User user1 = new User("1", "user1", "online", null,null);
+        User user1 = new User("1", "user1", "online", null, null);
         Group group1 = new Group("1", "2", "3", null);
         Message message1 = new Message("1", "2", "3", "1", "hello");
         when(userService.findAll()).thenReturn(Observable.just(List.of(user1)));
         when(userService.listOnlineUsers()).thenReturn(Observable.just(List.of(user1)));
-        when(messageService.listMessages(any(), any(), any(), eq(100) )).thenReturn(Observable.just(List.of(message1)));
+        when(messageService.listMessages(any(), any(), any(), eq(100))).thenReturn(Observable.just(List.of(message1)));
         userUpdates = Observable.just(new EventDto<>(".created", user1));
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message1));
         when(eventListener.listen("users.*.updated", User.class)).thenReturn(userUpdates);
@@ -126,7 +126,7 @@ class ChatControllerTest extends ApplicationTest {
 
     @Test
     void privateChats() {
-        User user1 = new User("1", "user1", "online", null,null);
+        User user1 = new User("1", "user1", "online", null, null);
         when(messageService.sendGroupMessage(any(), any(), any())).thenReturn(Observable.just("hello"));
 
         // create ChatTab

@@ -1,6 +1,11 @@
 package com.aviumauctores.pioneers;
 
+import javafx.scene.Node;
 import org.testfx.framework.junit5.ApplicationTest;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ScreenAsserts {
     private final ApplicationTest test;
@@ -11,32 +16,49 @@ public class ScreenAsserts {
 
     void assertLoginScreen() {
         // The existence of the remember-me checkbox proves that we are in login screen
-        test.lookup("#rememberMeCheckBox").query();
+        Optional<Node> rememberMeCheckBox = test.lookup("#rememberMeCheckBox").tryQuery();
+        assertThat(rememberMeCheckBox).isPresent();
     }
 
     void assertLobbyScreen() {
         // Only the lobby screen has the game list so if it exists we must be in lobby screen
-        test.lookup("#gameListView").queryListView();
+        Optional<Node> gameListView = test.lookup("#gameListView").tryQuery();
+        assertThat(gameListView).isPresent();
+    }
+
+    void assertSettingsScreen() {
+        Optional<Node> changeNameButton = test.lookup("#changeNameButton").tryQuery();
+        assertThat(changeNameButton).isPresent();
     }
 
     void assertCreateGameScreen() {
         // Check that we are in create game screen
-        test.lookup("#gameNameInput").query();
+        Optional<Node> gameNameInput = test.lookup("#gameNameInput").tryQuery();
+        assertThat(gameNameInput).isPresent();
     }
 
     void assertJoinGameScreen() {
         // Check that we are in join game screen
-        test.lookup("#gameNameLabel").query();
-        test.lookup("Join").query();
+        Optional<Node> gameNameLabel = test.lookup("#gameNameLabel").tryQuery();
+        assertThat(gameNameLabel).isPresent();
+        Optional<Node> joinGameButton = test.lookup("Join").tryQuery();
+        assertThat(joinGameButton).isPresent();
     }
 
     void assertGameReadyScreen() {
         // Check that we are in game ready screen
-        test.lookup("#startGameButton").queryButton();
+        Optional<Node> startGameButton = test.lookup("#startGameButton").tryQuery();
+        assertThat(startGameButton).isPresent();
     }
 
     void assertChatScreen() {
         // The chat tab pane is an indicator that we are in chat screen
-        test.lookup("#chatTabPane").query();
+        Optional<Node> chatTabPane = test.lookup("#chatTabPane").tryQuery();
+        assertThat(chatTabPane).isPresent();
+    }
+
+    void assertIngameScreen() {
+        Optional<Node> mainPane = test.lookup("#mainPane").tryQuery();
+        assertThat(mainPane).isPresent();
     }
 }
