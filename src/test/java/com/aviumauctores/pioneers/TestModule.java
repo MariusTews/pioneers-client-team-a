@@ -21,7 +21,10 @@ import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.rest.*;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PreferenceService;
+import com.aviumauctores.pioneers.service.SoundService;
 import com.aviumauctores.pioneers.service.TokenStorage;
+import com.aviumauctores.pioneers.sounds.GameMusic;
+import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
@@ -35,6 +38,7 @@ import okio.BufferedSource;
 import retrofit2.HttpException;
 
 import javax.inject.Singleton;
+import java.net.URL;
 import java.util.*;
 
 @Module
@@ -45,6 +49,21 @@ public class TestModule {
             @Override
             public ErrorResponse readErrorMessage(HttpException httpException) {
                 return new ErrorResponse(501, "");
+            }
+        };
+    }
+
+    @Provides
+    SoundService soundService() {
+        return new SoundService() {
+            @Override
+            public GameMusic createGameMusic(URL filePath) {
+                return new GameMusic();
+            }
+
+            @Override
+            public GameSounds createGameSounds(URL filePath) {
+                return new GameSounds();
             }
         };
     }
