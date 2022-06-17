@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.testfx.assertions.api.Assertions.assertThat;
 
 class AppTest extends ApplicationTest {
-    private final ScreenAsserts screenAsserts = new ScreenAsserts(this);
+    private ScreenAsserts screenAsserts = new ScreenAsserts(this);
 
     private Stage stage;
 
@@ -28,6 +28,7 @@ class AppTest extends ApplicationTest {
     @Override
     public void stop() {
         this.stage = null;
+        this.screenAsserts = null;
     }
 
     @Test
@@ -87,6 +88,14 @@ class AppTest extends ApplicationTest {
         clickOn("#leaveButton");
 
         screenAsserts.assertLobbyScreen();
+        // Go to settings
+        clickOn("#settingsButton");
+
+        screenAsserts.assertSettingsScreen();
+        // Go back to lobby
+        clickOn("#leaveButton");
+
+        screenAsserts.assertLobbyScreen();
         // Join a game
         clickOn("Join");
         // Wait for CI
@@ -110,10 +119,19 @@ class AppTest extends ApplicationTest {
         clickOn("#joinGameButton");
 
         screenAsserts.assertGameReadyScreen();
+        clickOn("#gameReadyButton");
+        clickOn("#startGameButton");
+
+        screenAsserts.assertIngameScreen();
+        // Go back to game ready screen
+        clickOn("#leaveGameButton");
+
+        screenAsserts.assertGameReadyScreen();
         // Go back to lobby
         clickOn("#leaveGameButton");
         clickOn("OK");
 
+        screenAsserts.assertLobbyScreen();
         // Logout
         clickOn("#quitButton");
 
