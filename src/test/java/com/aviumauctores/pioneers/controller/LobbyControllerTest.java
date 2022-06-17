@@ -128,7 +128,7 @@ class LobbyControllerTest extends ApplicationTest {
 
         clickOn("#quitButton");
         // Ensure a dialog is shown
-        verify(app).showErrorDialog(anyString(),anyString());
+        verify(errorService).handleError(any());
     }
 
     @Test

@@ -110,7 +110,7 @@ public class GameReadyController extends PlayerListController {
 
     public void init() {
         disposables = new CompositeDisposable();
-
+        errorService.setErrorCodesGameMembersPost();
         // Get game via REST
         disposables.add(gameService.getCurrentGame()
                 .subscribe(game -> allMembers = game.members()));
@@ -124,7 +124,7 @@ public class GameReadyController extends PlayerListController {
                     if (playerListPane != null) {
                         updatePlayerLabel();
                     }
-                }));
+                }, errorService::handleError));
         // Listen to game updates
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".*", Game.class)
                 .observeOn(FX_SCHEDULER)

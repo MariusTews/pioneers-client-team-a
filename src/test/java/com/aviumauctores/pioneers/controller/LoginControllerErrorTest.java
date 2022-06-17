@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.UserService;
@@ -44,6 +45,9 @@ class LoginControllerErrorTest extends ApplicationTest {
 
     @Mock
     UserService userService;
+
+    @Mock
+    ErrorService errorService;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
