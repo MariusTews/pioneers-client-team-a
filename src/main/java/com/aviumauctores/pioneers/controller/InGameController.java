@@ -535,11 +535,11 @@ public class InGameController extends LoggedInController {
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
             
             HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = resources.get(RESOURCE_BRICK);
-            int amountLumber = resources.get(RESOURCE_LUMBER);
-            int amountWool = resources.get(RESOURCE_WOOL);
-            int amountGrain = resources.get(RESOURCE_GRAIN);
-            int amountOre = resources.get(RESOURCE_ORE);
+            int amountBrick = getResource(resources, RESOURCE_BRICK);
+            int amountLumber = getResource(resources, RESOURCE_LUMBER);
+            int amountWool = getResource(resources, RESOURCE_WOOL);
+            int amountGrain = getResource(resources, RESOURCE_GRAIN);
+            int amountOre = getResource(resources, RESOURCE_ORE);
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
@@ -548,6 +548,14 @@ public class InGameController extends LoggedInController {
         } else {
           playerResourceListController.updatePlayerLabel(updatedPlayer);
         }
+    }
+
+    private int getResource(HashMap<String, Integer> resources, String resourcesTyp) {
+        Integer resourceAmount = resources.get(resourcesTyp);
+        if (resourceAmount == null) {
+            return 0;
+        }
+        return resourceAmount;
     }
 
     public void buildMap() {
