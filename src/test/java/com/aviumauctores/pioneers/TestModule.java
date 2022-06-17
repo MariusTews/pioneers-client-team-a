@@ -16,25 +16,30 @@ import com.aviumauctores.pioneers.dto.messages.UpdateMessageDto;
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
 import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
+import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.rest.*;
 import com.aviumauctores.pioneers.service.ErrorService;
-import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.PreferenceService;
+import com.aviumauctores.pioneers.service.SoundService;
+import com.aviumauctores.pioneers.service.TokenStorage;
+import com.aviumauctores.pioneers.sounds.GameMusic;
+import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import javafx.scene.paint.Color;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import okio.BufferedSource;
 import retrofit2.HttpException;
 
 import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.net.URL;
+import java.util.*;
 
 @Module
 public class TestModule {
@@ -44,6 +49,21 @@ public class TestModule {
             @Override
             public ErrorResponse readErrorMessage(HttpException httpException) {
                 return new ErrorResponse(501, "");
+            }
+        };
+    }
+
+    @Provides
+    SoundService soundService() {
+        return new SoundService() {
+            @Override
+            public GameMusic createGameMusic(URL filePath) {
+                return new GameMusic();
+            }
+
+            @Override
+            public GameSounds createGameSounds(URL filePath) {
+                return new GameSounds();
             }
         };
     }
@@ -79,19 +99,34 @@ public class TestModule {
         };
     }
 
-    @Provides
-    EventListener eventListener() {
-        return new EventListener(null, null) {
-            @Override
-            public <T> Observable<EventDto<T>> listen(String pattern, Class<T> payloadType) {
-                return Observable.empty();
-            }
+    static class TestEventListener extends EventListener {
+        java.util.Map<String, ObservableEmitter<?>> emitterMap = new HashMap<>();
 
-            @Override
-            public void send(Object message) {
-                super.send(message);
+        public TestEventListener(TokenStorage tokenStorage, ObjectMapper mapper) {
+            super(tokenStorage, mapper);
+        }
+
+        @Override
+        public <T> Observable<EventDto<T>> listen(String pattern, Class<T> payloadType) {
+            return Observable.create(emitter -> {
+                emitterMap.put(pattern, emitter);
+                emitter.setCancellable(() -> emitterMap.remove(pattern));
+            });
+        }
+
+        public <T> void fireEvent(String pattern, EventDto<T> eventDto) {
+            @SuppressWarnings("unchecked")
+            ObservableEmitter<EventDto<T>> emitter = (ObservableEmitter<EventDto<T>>) emitterMap.get(pattern);
+            if (emitter != null) {
+                emitter.onNext(eventDto);
             }
-        };
+        }
+    }
+
+    @Provides
+    @Singleton
+    EventListener eventListener() {
+        return new TestEventListener(null, null);
     }
 
     @Provides
@@ -256,7 +291,9 @@ public class TestModule {
         return new GameMembersApiService() {
             @Override
             public Observable<List<Member>> listMembers(String gameId) {
-                return Observable.empty();
+                return Observable.just(List.of(
+                        new Member("", "", "101", "1", true, Color.GREEN)
+                ));
             }
 
             @Override
@@ -291,8 +328,10 @@ public class TestModule {
 
     @Provides
     @Singleton
-    GamesApiService gamesApiService() {
+    GamesApiService gamesApiService(EventListener eventListener) {
         return new GamesApiService() {
+            private final TestEventListener testEventListener = (TestEventListener) eventListener;
+
             @Override
             public Observable<List<Game>> listGames() {
                 return Observable.just(List.of(
@@ -318,9 +357,9 @@ public class TestModule {
             public Observable<Game> updateGame(String id, UpdateGameDto updateGameDto) {
                 String name = updateGameDto.name() != null ? updateGameDto.name() : "Game" + id;
                 String owner = updateGameDto.owner() != null ? updateGameDto.owner() : "1";
-                return Observable.just(new Game(
-                        "", "", id, name, owner, false,1
-                ));
+                Game game = new Game("", "", id, name, owner, updateGameDto.started(),1);
+                testEventListener.fireEvent("games.101.*", new EventDto<>("games.101.updated", game));
+                return Observable.just(game);
             }
 
             @Override
@@ -336,37 +375,49 @@ public class TestModule {
         return new PioneersApiService() {
             @Override
             public Observable<List<Building>> listBuildings(String gameId) {
-                return null;
+                return Observable.just(List.of());
             }
 
             @Override
             public Observable<Building> getBuilding(String gameId, String buildingId) {
-                return null;
+                return Observable.empty();
             }
 
             @Override
             public Observable<Map> getMap(String id) {
-                return null;
+                return Observable.empty();
             }
 
             @Override
             public Observable<List<Player>> listMembers(String gameId) {
-                return null;
+                return Observable.just(List.of(
+                        new Player(gameId, "1", "#008000", 3, new HashMap<>(), new HashMap<>())
+                ));
             }
 
             @Override
             public Observable<Player> getPlayer(String gameId, String userId) {
-                return null;
+                return Observable.just(
+                        new Player(gameId, userId, "#008000", 3, new HashMap<>(), new HashMap<>())
+                );
             }
 
             @Override
             public Observable<State> getState(String gameId) {
-                return null;
+                return Observable.just(
+                        new State("", gameId, List.of(
+                                new ExpectedMove("founding-settlement-1", List.of("1")),
+                                new ExpectedMove("founding-road-1", List.of("1")),
+                                new ExpectedMove("founding-settlement-2", List.of("1")),
+                                new ExpectedMove("founding-road-2", List.of("1")),
+                                new ExpectedMove("roll", List.of("1"))
+                        ))
+                );
             }
 
             @Override
             public Observable<Move> createMove(String gameId, CreateMoveDto createMoveDto) {
-                return null;
+                return Observable.empty();
             }
         };
     }
