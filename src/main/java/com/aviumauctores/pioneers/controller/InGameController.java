@@ -363,7 +363,7 @@ public class InGameController extends LoggedInController {
                                 e.printStackTrace();
                             }
                         }, errorService::handleError));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.created", Building.class)
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(buildingEventDto -> {
                             if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {

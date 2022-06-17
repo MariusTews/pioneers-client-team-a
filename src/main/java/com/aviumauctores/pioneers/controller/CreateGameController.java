@@ -145,7 +145,6 @@ public class CreateGameController extends LoggedInController {
             }
             return;
         }
-        errorService.setErrorCodesGame();
         disposables.add(gameService.create(name, password)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(gameID -> {

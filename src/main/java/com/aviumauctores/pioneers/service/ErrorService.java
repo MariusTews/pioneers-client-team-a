@@ -140,4 +140,12 @@ public class ErrorService {
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
+    public void setErrorCodesJoinGameController() {
+        errorCodes.put("400", bundle.getString("validation.failed"));
+        errorCodes.put("401", bundle.getString("incorrect.password"));
+        errorCodes.put("404", bundle.getString("game.not.found"));
+        errorCodes.put("409", bundle.getString("user.already.joined"));
+        errorCodes.put("429", bundle.getString("limit.reached"));
+    }
+
 }

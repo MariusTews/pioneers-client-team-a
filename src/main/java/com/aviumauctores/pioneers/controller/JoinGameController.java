@@ -108,11 +108,7 @@ public class JoinGameController extends LoggedInController {
                     }
                 }));
 
-        errorService.errorCodes.put("400", bundle.getString("validation.failed"));
-        errorService.errorCodes.put("401", bundle.getString("incorrect.password"));
-        errorService.errorCodes.put("404", bundle.getString("game.not.found"));
-        errorService.errorCodes.put("409", bundle.getString("user.already.joined"));
-        errorService.errorCodes.put("429", bundle.getString("limit.reached"));
+        errorService.setErrorCodesJoinGameController();
     }
 
     @Override

@@ -42,7 +42,6 @@ import retrofit2.HttpException;
 import javax.inject.Singleton;
 import java.util.*;
 import java.net.URL;
-import java.util.*;
 
 @Module
 public class TestModule {
@@ -54,6 +53,9 @@ public class TestModule {
             public ErrorResponse readErrorMessage(HttpException httpException) {
                 return new ErrorResponse(501, "");
             }
+
+            @Override
+            public void handleError(Throwable throwable) {}
         };
     }
 
