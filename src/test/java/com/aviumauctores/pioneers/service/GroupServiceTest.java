@@ -39,7 +39,7 @@ class GroupServiceTest {
         Group gr = groupService.createGroup(members).blockingFirst();
         assertEquals(gr, group);
 
-        verify(groupsApiService).createGroup(new CreateGroupDto("",members));
+        verify(groupsApiService).createGroup(new CreateGroupDto("1",members));
 
     }
 
