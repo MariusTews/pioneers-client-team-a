@@ -58,18 +58,21 @@ public class ErrorService {
 
 
     public void setErrorCodesLogin() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.username.password"));
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     public void setErrorCodesLogout() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     public void setErrorCodesUsers() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("other.user.error"));
@@ -79,6 +82,7 @@ public class ErrorService {
     }
 
     public void setErrorCodesGroups() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("change.group.error"));
@@ -88,6 +92,7 @@ public class ErrorService {
     }
 
     public void setErrorCodesMessages() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("inaccessible.parent"));
@@ -96,6 +101,7 @@ public class ErrorService {
     }
 
     public void setErrorCodesGameMembersPost() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("incorrect.password"));
@@ -105,6 +111,7 @@ public class ErrorService {
     }
 
     public void setErrorCodesGame() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("change.game.not.owner.error"));
@@ -114,6 +121,7 @@ public class ErrorService {
     }
 
     public void setErrorCodesPioneersGet() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("not.member.of.game"));
@@ -123,6 +131,7 @@ public class ErrorService {
     }
 
     public void setErrorCodesPioneersPost() {
+        errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));
         errorCodes.put("401", bundle.getString("invalid.token"));
         errorCodes.put("403", bundle.getString("not.member.of.game.or.state"));
