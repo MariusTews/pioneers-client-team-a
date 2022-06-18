@@ -675,11 +675,16 @@ public class InGameController extends LoggedInController {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
                     sideType = BUILDING_TYPE_CITY;
+                } else {
+                    return;
                 }
             } else {
                 sideType = BUILDING_TYPE_SETTLEMENT;
             }
         } else {
+            if (Objects.equals(buildingType, BUILDING_TYPE_ROAD)) {
+                return;
+            }
             sideType = BUILDING_TYPE_ROAD;
         }
         buildService.setBuildingType(sideType);
