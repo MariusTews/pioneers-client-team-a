@@ -59,7 +59,7 @@ public class InGameController extends LoggedInController {
     private final SoundService soundService;
 
     private String[] resourceNames;
-    
+
     private Timer timer;
 
     private Label[] resourceLabels;
@@ -174,6 +174,7 @@ public class InGameController extends LoggedInController {
     private final BuildService buildService;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
+    private boolean fieldsMovedAlready;
 
 
     @Inject
@@ -200,6 +201,7 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
+        fieldsMovedAlready = false;
     }
 
 
@@ -243,7 +245,7 @@ public class InGameController extends LoggedInController {
                 .subscribe(this::onMoveEvent));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".deleted", Game.class)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(game ->{
+                .subscribe(game -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(bundle.getString("warning"));
                     alert.setHeaderText(bundle.getString("game.deleted"));
@@ -360,21 +362,21 @@ public class InGameController extends LoggedInController {
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                            Color colour = member.color();
-                            String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                            String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
-                            rollButton.setStyle(colourString);
-                            leaveGameButton.setStyle(colourString);
-                            finishMoveButton.setStyle(colourString);
-                            diceImage1.setStyle(colourString);
-                            diceImage2.setStyle(colourString);
-                            try {
-                                Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                                arrowOnDice.setImage(arrowIcon);
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            }
-                        }, errorService::handleError));
+                    Color colour = member.color();
+                    String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                    String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
+                    rollButton.setStyle(colourString);
+                    leaveGameButton.setStyle(colourString);
+                    finishMoveButton.setStyle(colourString);
+                    diceImage1.setStyle(colourString);
+                    diceImage2.setStyle(colourString);
+                    try {
+                        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                        arrowOnDice.setImage(arrowIcon);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                }, errorService::handleError));
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(buildingEventDto -> {
@@ -395,6 +397,13 @@ public class InGameController extends LoggedInController {
                                 if (!roadAndCrossingPane.getChildren().contains(position)) {
                                     position.setVisible(true);
                                     roadAndCrossingPane.getChildren().add(position);
+                                }
+                                if (soundImage.getImage() == muteImage) {
+                                    GameSounds buildSound = soundService
+                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+                                    if (buildSound != null) {
+                                        buildSound.play();
+                                    }
                                 }
                             }
                         }, errorService::handleError
@@ -422,7 +431,8 @@ public class InGameController extends LoggedInController {
         errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {}, errorService::handleError));
+                .subscribe(move -> {
+                }, errorService::handleError));
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -507,8 +517,11 @@ public class InGameController extends LoggedInController {
             } else {
                 updateFields(false, crossingPane, roadPane);
                 if (stateService.getOldAction() != null) {
-                    if (stateService.getOldAction().startsWith("founding") && !currentAction.startsWith("founding")) {
-                        fieldsIntoOnePane();
+                    if (!fieldsMovedAlready) {
+                        if (!currentAction.startsWith("founding")) {
+                            fieldsIntoOnePane();
+                            fieldsMovedAlready = true;
+                        }
                     }
                 }
                 switch (currentAction) {
@@ -544,7 +557,7 @@ public class InGameController extends LoggedInController {
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-            
+
             HashMap<String, Integer> resources = updatedPlayer.resources();
             int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
             int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
@@ -565,23 +578,23 @@ public class InGameController extends LoggedInController {
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
-                            List<Tile> tiles = map.tiles();
-                            for (Tile tile : tiles) {
-                                String hexID = "" + tile.x() + tile.y() + tile.z();
-                                hexID = hexID.replace('-', '_');
-                                ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
-                                switch (tile.type()) {
-                                    case "desert" -> tileImage.setImage(desert);
-                                    case "fields" -> tileImage.setImage(fields);
-                                    case "hills" -> tileImage.setImage(hills);
-                                    case "mountains" -> tileImage.setImage(mountains);
-                                    case "forest" -> tileImage.setImage(forest);
-                                    case "pasture" -> tileImage.setImage(pasture);
-                                }
-                                Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
-                                tileLabel.setText("" + tile.numberToken());
-                            }
-                        }, errorService::handleError)
+                    List<Tile> tiles = map.tiles();
+                    for (Tile tile : tiles) {
+                        String hexID = "" + tile.x() + tile.y() + tile.z();
+                        hexID = hexID.replace('-', '_');
+                        ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
+                        switch (tile.type()) {
+                            case "desert" -> tileImage.setImage(desert);
+                            case "fields" -> tileImage.setImage(fields);
+                            case "hills" -> tileImage.setImage(hills);
+                            case "mountains" -> tileImage.setImage(mountains);
+                            case "forest" -> tileImage.setImage(forest);
+                            case "pasture" -> tileImage.setImage(pasture);
+                        }
+                        Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
+                        tileLabel.setText("" + tile.numberToken());
+                    }
+                }, errorService::handleError)
         );
     }
 
@@ -598,7 +611,8 @@ public class InGameController extends LoggedInController {
         errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove(MOVE_BUILD, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(r -> {}, errorService::handleError));
+                .subscribe(r -> {
+                }, errorService::handleError));
     }
 
     public void build(ActionEvent event) {
@@ -627,10 +641,12 @@ public class InGameController extends LoggedInController {
         errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {}, errorService::handleError));
+                .subscribe(move -> {
+                }, errorService::handleError));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
+
         if (!(mouseEvent.getSource() instanceof ImageView source)) {
             return;
         }
@@ -667,13 +683,6 @@ public class InGameController extends LoggedInController {
             sideType = BUILDING_TYPE_ROAD;
         }
         buildService.setBuildingType(sideType);
-        if (soundImage.getImage() == muteImage) {
-            GameSounds buildSound = soundService
-                    .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
-            if (buildSound != null) {
-                buildSound.play();
-            }
-        }
         if (currentAction != null) {
             if (currentAction.startsWith("founding")) {
                 buildService.build();

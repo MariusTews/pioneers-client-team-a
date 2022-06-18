@@ -89,17 +89,20 @@ public class InGameChatController implements Controller {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
-                    if (inGameController.getSoundImage() == inGameController.muteImage) {
-                        GameSounds soundMessage = soundService
-                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
-                        if (soundMessage != null) {
-                            soundMessage.play();
-                        }
-                    }
+
                     //if message is sent by myself then ignore it as it is already displayed in the sendMessage method
                     if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
                         HBox msgLabel = createMessageLabel(event.data());
                         chatBox.getChildren().add(msgLabel);
+
+                        if (inGameController.getSoundImage() == inGameController.muteImage) {
+                            GameSounds soundMessage = soundService
+                                    .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
+                            if (soundMessage != null) {
+                                soundMessage.play();
+
+                            }
+                        }
                     } else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
                         for (Node l : chatBox.getChildren()) {
