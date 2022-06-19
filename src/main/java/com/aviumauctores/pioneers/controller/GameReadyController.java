@@ -366,7 +366,9 @@ public class GameReadyController extends PlayerListController {
                     hBox.setId("item_" + colour);
                     hBox.getChildren().add(circle);
                     if(!Objects.equals(colourIsTaken.get(colour), "")){
-                        hBox.getChildren().add(new Label("X"));
+                        Label labelX = new Label("X");
+                        labelX.setStyle("-fx-text-fill: #000000");
+                        hBox.getChildren().add(labelX);
                     }
                     setGraphic(hBox);
                 }

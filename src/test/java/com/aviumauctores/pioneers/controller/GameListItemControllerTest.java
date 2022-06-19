@@ -69,10 +69,10 @@ class GameListItemControllerTest extends ApplicationTest {
     @Test
     void onGameUpdated() {
         Label gameNameLabel = lookup(game.name()).query();
-        Label numPlayersLabel = lookup(game.members() + "/4").query();
+        Label numPlayersLabel = lookup(game.members() + "").query();
         // Check that the Labels have the right text
         assertEquals(gameNameLabel.getText(), game.name());
-        assertEquals(numPlayersLabel.getText(), "1/4");
+        assertEquals(numPlayersLabel.getText(), "1");
 
         Game newGame = new Game("", "", "2", "game2", "42", false,2);
         Platform.runLater(() -> {
@@ -80,7 +80,7 @@ class GameListItemControllerTest extends ApplicationTest {
 
             // Check that the Labels has been updated correctly
             assertEquals(gameNameLabel.getText(), newGame.name());
-            assertEquals(numPlayersLabel.getText(), "2/4");
+            assertEquals(numPlayersLabel.getText(), "2");
         });
 
     }

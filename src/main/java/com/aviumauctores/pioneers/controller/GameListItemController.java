@@ -51,7 +51,7 @@ public class GameListItemController implements Controller {
         Label numMembersTextLabel = new Label(bundle.getString("amount.players") + ":");
         numMembersTextLabel.getStyleClass().add("game-list");
         int numMembers = game.members();
-        numMembersLabel = new Label(numMembers + "/4");
+        numMembersLabel = new Label(numMembers + "");
         joinButton = new Button(bundle.getString("join"));
         joinButton.getStyleClass().add("game-list");
         joinButton.setOnAction(this::onJoinButtonPressed);
@@ -75,8 +75,6 @@ public class GameListItemController implements Controller {
         game = newGame;
         gameName.setText(game.name());
         int numMembers = game.members();
-        numMembersLabel.setText(numMembers + "/4");
-        // Don't let more than four players join
-        joinButton.setDisable(numMembers >= 4);
+        numMembersLabel.setText(numMembers + "");
     }
 }

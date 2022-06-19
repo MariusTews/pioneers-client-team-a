@@ -88,7 +88,7 @@ public class InGameControllerTest extends ApplicationTest {
         @Override
         public InGameChatController get() {
             return new InGameChatController(null, null, null, null,
-                    null, null, null, null, null) {
+                    null, null, null, null, null, null) {
                 @Override
                 public void init() {
                     // Do nothing

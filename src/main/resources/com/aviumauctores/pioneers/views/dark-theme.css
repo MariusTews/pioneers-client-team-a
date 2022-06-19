@@ -157,6 +157,25 @@
     -fx-background-color: #333333;
 }
 
+#ingamePane {
+    -fx-background-color: #00233B;
+}
+
+#soundSliderLabelLeft {
+    -fx-fill: #ffffff;
+    -fx-text-fill: #ffffff;
+}
+
+#soundSliderLabelRight {
+    -fx-fill: #ffffff;
+    -fx-text-fill: #ffffff;
+}
+
+#soundSliderLabelTop {
+    -fx-fill: #ffffff;
+    -fx-text-fill: #ffffff;
+}
+
 #changeWindowVBox {
     -fx-background-color: #333333;
     -fx-background-radius: 8px;

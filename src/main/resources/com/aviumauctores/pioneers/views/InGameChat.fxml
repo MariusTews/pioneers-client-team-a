@@ -14,7 +14,7 @@
     <children>
         <VBox spacing="10.0">
          <children>
-            <TabPane prefHeight="194.0" prefWidth="252.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tabPane" prefHeight="194.0" prefWidth="252.0" tabClosingPolicy="UNAVAILABLE">
                <tabs>
                   <Tab fx:id="allChatTab" text="%all">
                      <content>

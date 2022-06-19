@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
+<BorderPane fx:id="ingamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
       <Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER">
          <ImageView id="hexagon20_2" fitHeight="89.375" fitWidth="103.75" layoutX="113.375" layoutY="166.375" pickOnBounds="true" preserveRatio="true">
@@ -81,325 +81,325 @@
          </ImageView>
          <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="679.0" prefWidth="579.0" />
          <Pane fx:id="crossingPane" prefHeight="580.0" prefWidth="583.0">
-            <ImageView id="building2_200" fitHeight="16.0" fitWidth="16.0" layoutX="261.0" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building2_200" fitHeight="20.0" fitWidth="20.0" layoutX="261.0" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building1_100" fitHeight="16.0" fitWidth="16.0" layoutX="261.0" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building1_100" fitHeight="20.0" fitWidth="20.0" layoutX="261.0" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building0000" fitHeight="16.0" fitWidth="16.0" layoutX="261.0" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building0000" fitHeight="20.0" fitWidth="20.0" layoutX="261.0" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_1100" fitHeight="16.0" fitWidth="16.0" layoutX="261.0" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_1100" fitHeight="20.0" fitWidth="20.0" layoutX="261.0" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_2200" fitHeight="16.0" fitWidth="16.0" layoutX="261.0" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_2200" fitHeight="20.0" fitWidth="20.0" layoutX="261.0" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building2_206" fitHeight="16.0" fitWidth="16.0" layoutX="364.75" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building2_206" fitHeight="20.0" fitWidth="20.0" layoutX="364.75" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building1_106" fitHeight="16.0" fitWidth="16.0" layoutX="364.75" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building1_106" fitHeight="20.0" fitWidth="20.0" layoutX="364.75" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building0006" fitHeight="16.0" fitWidth="16.0" layoutX="364.75" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building0006" fitHeight="20.0" fitWidth="20.0" layoutX="364.75" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_1106" fitHeight="16.0" fitWidth="16.0" layoutX="364.75" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_1106" fitHeight="20.0" fitWidth="20.0" layoutX="364.75" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_2206" fitHeight="16.0" fitWidth="16.0" layoutX="364.75" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_2206" fitHeight="20.0" fitWidth="20.0" layoutX="364.75" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building3_2_16" fitHeight="16.0" fitWidth="16.0" layoutX="286.9375" layoutY="69.0" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building3_2_16" fitHeight="20.0" fitWidth="20.0" layoutX="286.9375" layoutY="69.0" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building2_310" fitHeight="16.0" fitWidth="16.0" layoutX="338.8125" layoutY="69.0" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building2_310" fitHeight="20.0" fitWidth="20.0" layoutX="338.8125" layoutY="69.0" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building2_1_16" fitHeight="16.0" fitWidth="16.0" layoutX="286.9375" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building2_1_16" fitHeight="20.0" fitWidth="20.0" layoutX="286.9375" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building10_16" fitHeight="16.0" fitWidth="16.0" layoutX="286.9375" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building10_16" fitHeight="20.0" fitWidth="20.0" layoutX="286.9375" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building01_16" fitHeight="16.0" fitWidth="16.0" layoutX="286.9375" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building01_16" fitHeight="20.0" fitWidth="20.0" layoutX="286.9375" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_12_16" fitHeight="16.0" fitWidth="16.0" layoutX="286.9375" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_12_16" fitHeight="20.0" fitWidth="20.0" layoutX="286.9375" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_23_16" fitHeight="16.0" fitWidth="16.0" layoutX="286.9375" layoutY="515.875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_23_16" fitHeight="20.0" fitWidth="20.0" layoutX="286.9375" layoutY="515.875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building1_210" fitHeight="16.0" fitWidth="16.0" layoutX="338.8125" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building1_210" fitHeight="20.0" fitWidth="20.0" layoutX="338.8125" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building0_110" fitHeight="16.0" fitWidth="16.0" layoutX="338.8125" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building0_110" fitHeight="20.0" fitWidth="20.0" layoutX="338.8125" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_1010" fitHeight="16.0" fitWidth="16.0" layoutX="338.8125" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_1010" fitHeight="20.0" fitWidth="20.0" layoutX="338.8125" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_2110" fitHeight="16.0" fitWidth="16.0" layoutX="338.8125" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_2110" fitHeight="20.0" fitWidth="20.0" layoutX="338.8125" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_3210" fitHeight="16.0" fitWidth="16.0" layoutX="338.8125" layoutY="515.875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_3210" fitHeight="20.0" fitWidth="20.0" layoutX="338.8125" layoutY="515.875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building1_216" fitHeight="16.0" fitWidth="16.0" layoutX="442.5625" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building1_216" fitHeight="20.0" fitWidth="20.0" layoutX="442.5625" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building0_116" fitHeight="16.0" fitWidth="16.0" layoutX="442.5625" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building0_116" fitHeight="20.0" fitWidth="20.0" layoutX="442.5625" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_1016" fitHeight="16.0" fitWidth="16.0" layoutX="442.5625" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_1016" fitHeight="20.0" fitWidth="20.0" layoutX="442.5625" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_2116" fitHeight="16.0" fitWidth="16.0" layoutX="442.5625" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_2116" fitHeight="20.0" fitWidth="20.0" layoutX="442.5625" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building1_320" fitHeight="16.0" fitWidth="16.0" layoutX="416.625" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building1_320" fitHeight="20.0" fitWidth="20.0" layoutX="416.625" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building0_220" fitHeight="16.0" fitWidth="16.0" layoutX="416.625" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building0_220" fitHeight="20.0" fitWidth="20.0" layoutX="416.625" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_1_120" fitHeight="16.0" fitWidth="16.0" layoutX="416.625" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_1_120" fitHeight="20.0" fitWidth="20.0" layoutX="416.625" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_2020" fitHeight="16.0" fitWidth="16.0" layoutX="416.625" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_2020" fitHeight="20.0" fitWidth="20.0" layoutX="416.625" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_3120" fitHeight="16.0" fitWidth="16.0" layoutX="416.625" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_3120" fitHeight="20.0" fitWidth="20.0" layoutX="416.625" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building0_330" fitHeight="16.0" fitWidth="16.0" layoutX="494.4375" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building0_330" fitHeight="20.0" fitWidth="20.0" layoutX="494.4375" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_1_230" fitHeight="16.0" fitWidth="16.0" layoutX="494.4375" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_1_230" fitHeight="20.0" fitWidth="20.0" layoutX="494.4375" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_2_130" fitHeight="16.0" fitWidth="16.0" layoutX="494.4375" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_2_130" fitHeight="20.0" fitWidth="20.0" layoutX="494.4375" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_3_030" fitHeight="16.0" fitWidth="16.0" layoutX="494.4375" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_3_030" fitHeight="20.0" fitWidth="20.0" layoutX="494.4375" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building0_226" fitHeight="16.0" fitWidth="16.0" layoutX="520.375" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building0_226" fitHeight="20.0" fitWidth="20.0" layoutX="520.375" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_1_126" fitHeight="16.0" fitWidth="16.0" layoutX="520.375" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_1_126" fitHeight="20.0" fitWidth="20.0" layoutX="520.375" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_2026" fitHeight="16.0" fitWidth="16.0" layoutX="520.375" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_2026" fitHeight="20.0" fitWidth="20.0" layoutX="520.375" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building3_1_26" fitHeight="16.0" fitWidth="16.0" layoutX="209.125" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building3_1_26" fitHeight="20.0" fitWidth="20.0" layoutX="209.125" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building20_26" fitHeight="16.0" fitWidth="16.0" layoutX="209.125" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building20_26" fitHeight="20.0" fitWidth="20.0" layoutX="209.125" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building11_26" fitHeight="16.0" fitWidth="16.0" layoutX="209.125" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building11_26" fitHeight="20.0" fitWidth="20.0" layoutX="209.125" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building02_26" fitHeight="16.0" fitWidth="16.0" layoutX="209.125" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building02_26" fitHeight="20.0" fitWidth="20.0" layoutX="209.125" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_13_26" fitHeight="16.0" fitWidth="16.0" layoutX="209.125" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_13_26" fitHeight="20.0" fitWidth="20.0" layoutX="209.125" layoutY="471.1875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building20_20" fitHeight="16.0" fitWidth="16.0" layoutX="105.375" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building20_20" fitHeight="20.0" fitWidth="20.0" layoutX="105.375" layoutY="203.0625" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building11_20" fitHeight="16.0" fitWidth="16.0" layoutX="105.375" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building11_20" fitHeight="20.0" fitWidth="20.0" layoutX="105.375" layoutY="292.4375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building02_20" fitHeight="16.0" fitWidth="16.0" layoutX="105.375" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building02_20" fitHeight="20.0" fitWidth="20.0" layoutX="105.375" layoutY="381.8125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building2_1_10" fitHeight="16.0" fitWidth="16.0" layoutX="183.1875" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building2_1_10" fitHeight="20.0" fitWidth="20.0" layoutX="183.1875" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building10_10" fitHeight="16.0" fitWidth="16.0" layoutX="183.1875" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building10_10" fitHeight="20.0" fitWidth="20.0" layoutX="183.1875" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building01_10" fitHeight="16.0" fitWidth="16.0" layoutX="183.1875" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building01_10" fitHeight="20.0" fitWidth="20.0" layoutX="183.1875" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building_12_10" fitHeight="16.0" fitWidth="16.0" layoutX="183.1875" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building_12_10" fitHeight="20.0" fitWidth="20.0" layoutX="183.1875" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building30_36" fitHeight="16.0" fitWidth="16.0" layoutX="131.3125" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building30_36" fitHeight="20.0" fitWidth="20.0" layoutX="131.3125" layoutY="158.375" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building12_36" fitHeight="16.0" fitWidth="16.0" layoutX="131.3125" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building12_36" fitHeight="20.0" fitWidth="20.0" layoutX="131.3125" layoutY="337.125" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building03_36" fitHeight="16.0" fitWidth="16.0" layoutX="131.3125" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building03_36" fitHeight="20.0" fitWidth="20.0" layoutX="131.3125" layoutY="426.5" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView id="building21_36" fitHeight="16.0" fitWidth="16.0" layoutX="131.3125" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="building21_36" fitHeight="20.0" fitWidth="20.0" layoutX="131.3125" layoutY="247.75" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -854,79 +854,79 @@
                <Circle fx:id="vp10" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
             </children>
          </HBox>
-         <Label fx:id="label000" layoutX="306.0" layoutY="292.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label000" layoutX="306.0" layoutY="292.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label_101" layoutX="384.0" layoutY="337.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label_101" layoutX="384.0" layoutY="337.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label0_11" layoutX="384.0" layoutY="247.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label0_11" layoutX="384.0" layoutY="247.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label1_10" layoutX="306.0" layoutY="203.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label1_10" layoutX="306.0" layoutY="203.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label_110" layoutX="306.0" layoutY="381.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label_110" layoutX="306.0" layoutY="381.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label10_1" layoutX="228.0" layoutY="247.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label10_1" layoutX="228.0" layoutY="247.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label01_1" layoutX="228.0" layoutY="337.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label01_1" layoutX="228.0" layoutY="337.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label11_2" layoutX="150.0" layoutY="292.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label11_2" layoutX="150.0" layoutY="292.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label_1_12" layoutX="462.0" layoutY="292.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label_1_12" layoutX="462.0" layoutY="292.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label20_2" layoutX="150.0" layoutY="203.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label20_2" layoutX="150.0" layoutY="203.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label_202" layoutX="462.0" layoutY="381.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label_202" layoutX="462.0" layoutY="381.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label02_2" layoutX="150.0" layoutY="381.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label02_2" layoutX="150.0" layoutY="381.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label0_22" layoutX="462.0" layoutY="203.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label0_22" layoutX="462.0" layoutY="203.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label_12_1" layoutX="228.0" layoutY="426.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label_12_1" layoutX="228.0" layoutY="426.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label2_1_1" layoutX="228.0" layoutY="158.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label2_1_1" layoutX="228.0" layoutY="158.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label2_20" layoutX="306.0" layoutY="113.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label2_20" layoutX="306.0" layoutY="113.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label_220" layoutX="306.0" layoutY="471.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label_220" layoutX="306.0" layoutY="471.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label1_21" layoutX="384.0" layoutY="158.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label1_21" layoutX="384.0" layoutY="158.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
-         <Label fx:id="label_211" layoutX="384.0" layoutY="426.0" style="-fx-background-color: #ffffff;" text="Label">
+         <Label fx:id="label_211" layoutX="384.0" layoutY="426.0" style="-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f" text="Label">
             <font>
                <Font size="16.0" />
             </font></Label>
@@ -1003,7 +1003,7 @@
                         <Label fx:id="numBricksLabel" prefHeight="17.0" prefWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label fx:id="numOreLabel" prefHeight="17.0" prefWidth="0.0" text="3" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                         <Label fx:id="numWheatLabel" prefHeight="17.0" prefWidth="0.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                        <Label text="%your.resources" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
+                        <Label fx:id="resourceLabel" text="%your.resources" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
                      </children>
                   </GridPane>
                </children>
@@ -1024,8 +1024,8 @@
    <left>
       <BorderPane onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="236.0" BorderPane.alignment="CENTER">
          <bottom>
-            <VBox alignment="BOTTOM_LEFT" spacing="20.0" BorderPane.alignment="CENTER">
-               <HBox prefHeight="100.0" prefWidth="200.0">
+            <VBox alignment="BOTTOM_LEFT" prefHeight="194.0" prefWidth="249.0" spacing="20.0" BorderPane.alignment="CENTER">
+               <HBox prefHeight="39.0" prefWidth="249.0">
                   <children>
                      <Button fx:id="rollButton" mnemonicParsing="false" onAction="#rollDice">
                         <graphic>
@@ -1037,8 +1037,9 @@
                      <ImageView fx:id="arrowOnDice" fitHeight="48.0" fitWidth="159.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
                   </children>
                </HBox>
+               <Label fx:id="yourTurnLabel" prefHeight="24.0" prefWidth="163.0" text="%your.turn" />
                <VBox prefHeight="55.0" prefWidth="142.0">
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
+                  <Text fx:id="soundSliderLabelTop" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -1047,9 +1048,9 @@
                      </VBox.margin>
                   </Text>
                   <HBox prefHeight="36.0" prefWidth="131.0" spacing="10.0">
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Min" />
+                     <Text fx:id="soundSliderLabelLeft" strokeType="OUTSIDE" strokeWidth="0.0" text="Min" />
                      <Slider fx:id="soundSlider" blockIncrement="0.1" majorTickUnit="1.0" max="1.0" minorTickCount="0" onMouseReleased="#changeVolume" prefHeight="32.0" prefWidth="72.0" showTickMarks="true" />
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max" />
+                     <Text fx:id="soundSliderLabelRight" strokeType="OUTSIDE" strokeWidth="0.0" text="Max" />
                   </HBox>
                </VBox>
                <ImageView fx:id="soundImage" fitHeight="25.0" fitWidth="25.0" onMousePressed="#soundOnOff" pickOnBounds="true" preserveRatio="true" />
@@ -1057,22 +1058,19 @@
             </VBox>
          </bottom>
          <center>
-            <VBox alignment="CENTER" prefHeight="225.0" prefWidth="206.0" BorderPane.alignment="CENTER">
+            <VBox alignment="CENTER" prefHeight="195.0" prefWidth="249.0" BorderPane.alignment="CENTER">
                <Label fx:id="lastRollPlayerLabel" text="%rolled1" />
-               <HBox prefHeight="100.0" prefWidth="145.0">
+               <HBox prefHeight="52.0" prefWidth="249.0">
                   <ImageView fx:id="diceImage1" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
                   <ImageView fx:id="diceImage2" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
                </HBox>
                <Label fx:id="rollSum" />
-               <Label text="%rolled2" />
+               <Label fx:id="lastRollPlayerLabelPart2" text="%rolled2" />
             </VBox>
          </center>
          <top>
             <VBox fx:id="insertChat" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
          </top>
-         <left>
-            <Label fx:id="yourTurnLabel" prefHeight="24.0" prefWidth="163.0" text="%your.turn" BorderPane.alignment="BOTTOM_LEFT" />
-         </left>
       </BorderPane>
    </left>
 </BorderPane>
