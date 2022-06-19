@@ -7,6 +7,7 @@ import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import javafx.css.StyleClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -37,6 +40,7 @@ public class InGameChatController implements Controller {
     private final ErrorService errorService;
     private final ResourceBundle bundle;
     private final MessageService messageService;
+    private final ColorService colorService;
 
     @FXML
     public TabPane tabPane;
@@ -59,15 +63,15 @@ public class InGameChatController implements Controller {
     private InGameController inGameController;
 
     private CompositeDisposable disposables;
-
-
+    private String userID;
 
 
     @Inject
     public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
                                 SoundService soundService,
                                 EventListener eventListener, ErrorService errorService,
-                                ResourceBundle bundle, MessageService messageService
+                                ResourceBundle bundle, MessageService messageService,
+                                ColorService colorService
     ) {
 
         this.app = app;
@@ -80,27 +84,26 @@ public class InGameChatController implements Controller {
         this.bundle = bundle;
         this.messageService = messageService;
 
+        this.colorService = colorService;
     }
 
     public void init() {
         disposables = new CompositeDisposable();
+        userID = userService.getCurrentUserID();
         errorService.setErrorCodesMessages();
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".messages.*.*", Message.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(event -> {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
-
                     //if message is sent by myself then ignore it as it is already displayed in the sendMessage method
                     if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
                         HBox msgLabel = createMessageLabel(event.data());
                         chatBox.getChildren().add(msgLabel);
-
                         if (inGameController.getSoundImage() == inGameController.muteImage) {
                             GameSounds soundMessage = soundService
                                     .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
                             if (soundMessage != null) {
                                 soundMessage.play();
-
                             }
                         }
                     } else if (event.event().endsWith(".deleted")) {
@@ -127,12 +130,32 @@ public class InGameChatController implements Controller {
         final Parent parent;
         try {
             parent = loader.load();
+            disposables.add(gameMemberService.getMember(userID)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(member -> {
+                                Color colour = member.color();
+                                String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                                sendMessageButton.setStyle(colourString);
+                                tabPane.lookup(".tab-header-background").setStyle(colourString);
+                            }
+                            , throwable -> {
+                                if (throwable instanceof HttpException ex) {
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    String content;
+                                    if (ex.code() == 429) {
+                                        content = "HTTP 429-Error";
+                                    } else {
+                                        content = "Unknown error";
+                                    }
+                                    alert.setContentText(content);
+                                    alert.showAndWait();
+                                }
+                            }));
+
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-
-
         return parent;
     }
 
