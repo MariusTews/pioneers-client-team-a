@@ -72,11 +72,11 @@ public class BuildService {
         switch (buildingType) {
             case BUILDING_TYPE_SETTLEMENT ->
                     selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                            ("views/House/House_" + color.toUpperCase() + ".png")).toString()));
+                            ("views/House/house_" + color.toLowerCase() + ".png")).toString()));
             case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                    ("views/Street/Street_" + color.toUpperCase() + ".png")).toString()));
+                    ("views/Street/street_" + color.toLowerCase() + ".png")).toString()));
             case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
-                    "views/Town/Town_" + color.toUpperCase() + ".png")).toString()));
+                    "views/Town/town_" + color.toLowerCase() + ".png")).toString()));
         }
         if (selectedField.getId().startsWith("building")) {
             selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
