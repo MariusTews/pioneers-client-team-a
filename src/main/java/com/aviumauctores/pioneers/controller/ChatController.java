@@ -4,10 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.GroupService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.MessageService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.collections.FXCollections;
@@ -38,6 +35,7 @@ public class ChatController extends PlayerListController {
     private final Provider<LobbyController> lobbyController;
     private final MessageService messageService;
 
+    private final ErrorService errorService;
     private final GroupService groupService;
     private final ResourceBundle bundle;
 
@@ -86,12 +84,13 @@ public class ChatController extends PlayerListController {
     @Inject
     public ChatController(App app, LoginService loginService,
                           Provider<LobbyController> lobbyController, MessageService messageService,
-                          EventListener eventListener, UserService userService, GroupService groupService,
+                          ErrorService errorService, EventListener eventListener, UserService userService, GroupService groupService,
                           ResourceBundle bundle) {
         super(loginService, userService);
         this.app = app;
         this.lobbyController = lobbyController;
         this.messageService = messageService;
+        this.errorService = errorService;
         this.eventListener = eventListener;
         this.groupService = groupService;
         this.bundle = bundle;
@@ -99,6 +98,7 @@ public class ChatController extends PlayerListController {
 
 
     public void init() {
+        errorService.setErrorCodesMessages();
         disposables = new CompositeDisposable();
         //get all users for the usernames of the old messages
         userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
@@ -221,7 +221,7 @@ public class ChatController extends PlayerListController {
         // send the message
         messageService.sendGroupMessage(namespace, message, groupId)
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(r -> {}, errorService::handleError);
     }
 
 
@@ -233,7 +233,7 @@ public class ChatController extends PlayerListController {
         }
         messageService.deleteMessage(namespace, messageId, groupId)
                 .observeOn(FX_SCHEDULER)
-                .subscribe();
+                .subscribe(r -> {}, errorService::handleError);
     }
 
 
@@ -254,6 +254,7 @@ public class ChatController extends PlayerListController {
             chatTabPane.getSelectionModel().select(userTab);
             return;
         }
+        errorService.setErrorCodesGroups();
         disposables.add(groupService.getOrCreateGroup(List.of(userService.getCurrentUserID(), selectedUser._id()), disposables)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(group -> {
@@ -294,7 +295,7 @@ public class ChatController extends PlayerListController {
                     chatTabPane.getSelectionModel().select(tab);
                     chatTabsByUserID.put(selectedUser._id(), tab);
                     showOldMessages("groups", tab.getId(), LocalDateTime.now().toString(), 100);
-                }));
+                }, errorService::handleError));
     }
 
 
@@ -322,6 +323,7 @@ public class ChatController extends PlayerListController {
 
 
     public void showOldMessages(String namespace, String pathId, String createdBefore, int limit) {
+        errorService.setErrorCodesMessages();
         messageService.listMessages(namespace, pathId, createdBefore, limit)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
@@ -333,11 +335,12 @@ public class ChatController extends PlayerListController {
                                     .add(msgLabel);
                         }
                     }
-                });
+                }, errorService::handleError);
     }
 
 
     public void onMessageClicked(MouseEvent event) {
+        errorService.setErrorCodesMessages();
         if (event.getButton() == MouseButton.SECONDARY) {
             // Alert for the delete, only if you click on your message
             Label msg = (Label) event.getSource();
@@ -364,7 +367,7 @@ public class ChatController extends PlayerListController {
                 } else {
                     alert.close();
                 }
-            });
+            }, errorService::handleError);
         }
 
     }

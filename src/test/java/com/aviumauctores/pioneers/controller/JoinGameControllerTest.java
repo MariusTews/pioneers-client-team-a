@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -17,10 +18,12 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +46,9 @@ class JoinGameControllerTest extends ApplicationTest {
     @Mock
     PreferenceService preferenceService;
 
+    @Mock
+    ErrorService errorService;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
@@ -52,7 +58,7 @@ class JoinGameControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-
+        this.errorService.errorCodes = new HashMap<>();
         when(gameService.getCurrentGameID()).thenReturn("1");
         when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", false, 1)));
         when(eventListener.listen("games.1.*", Game.class)).thenReturn(Observable.empty());
@@ -112,7 +118,7 @@ class JoinGameControllerTest extends ApplicationTest {
         clickOn("#passwordTextField");
         write("abcdef");
         clickOn("#joinGameButton");
-        verify(app).showErrorDialog(anyString(), anyString());
+        verify(errorService).handleError(any());
 
         // Ensure the dialog is shown
 

@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.ErrorService;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
@@ -29,6 +30,9 @@ class PlayerListItemControllerTest extends ApplicationTest {
 
     @Mock
     ObservableList<Parent> items;
+
+    @Mock
+    ErrorService errorService;
 
     @InjectMocks
     PlayerListItemController playerListItemController;

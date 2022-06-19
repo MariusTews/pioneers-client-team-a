@@ -55,6 +55,9 @@ public class CreateGameControllerTest extends ApplicationTest {
     @Mock
     ActionEvent event;
 
+    @Mock
+    ErrorService errorService;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 

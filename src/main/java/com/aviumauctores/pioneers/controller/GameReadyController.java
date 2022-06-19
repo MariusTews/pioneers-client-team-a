@@ -120,7 +120,7 @@ public class GameReadyController extends PlayerListController {
 
     public void init() {
         disposables = new CompositeDisposable();
-
+        errorService.setErrorCodesGameMembersPost();
         // Get game via REST
         disposables.add(gameService.getCurrentGame()
                 .subscribe(game -> allMembers = game.members()));
@@ -134,7 +134,7 @@ public class GameReadyController extends PlayerListController {
                     if (playerListPane != null) {
                         updatePlayerLabel();
                     }
-                }));
+                }, errorService::handleError));
         // Listen to game updates
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".*", Game.class)
                 .observeOn(FX_SCHEDULER)
@@ -377,7 +377,9 @@ public class GameReadyController extends PlayerListController {
                     hBox.setId("item_" + colour);
                     hBox.getChildren().add(circle);
                     if (!Objects.equals(colourIsTaken.get(colour), "")) {
-                        hBox.getChildren().add(new Label("X"));
+                        Label labelX = new Label("X");
+                        labelX.setStyle("-fx-text-fill: #000000");
+                        hBox.getChildren().add(labelX);
                     }
                     setGraphic(hBox);
                 }

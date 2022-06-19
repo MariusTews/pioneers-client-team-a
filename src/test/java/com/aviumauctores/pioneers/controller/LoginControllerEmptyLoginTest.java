@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -23,6 +24,9 @@ class LoginControllerEmptyLoginTest extends ApplicationTest {
 
     @Mock
     PreferenceService preferenceService;
+
+    @Mock
+    ErrorService errorService;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);

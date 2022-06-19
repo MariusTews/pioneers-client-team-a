@@ -101,11 +101,7 @@ public class SettingsController implements Controller {
                 e.printStackTrace();
             }
         });
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("incorrect.password"));
-        errorCodes.put("403", bundle.getString("other.user.error"));
-        errorCodes.put("409", bundle.getString("username.taken"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
+        errorService.setErrorCodesUsers();
     }
 
 
@@ -191,13 +187,14 @@ public class SettingsController implements Controller {
         if (newName.isBlank()) {
             return;
         }
+        errorService.setErrorCodesUsers();
         userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
                     currentNameLabel.setText(r.name());
                     currentUser = r;
                     closeWindow();
-                }, this::handleError);
+                }, errorService::handleError);
     }
 
     public void changePassword(ActionEvent event) {
@@ -220,13 +217,20 @@ public class SettingsController implements Controller {
                     .subscribe(r -> {
                         closeWindow();
                         currentUser = r;
-                    }, this::handleError);
-        }, this::handleError);
+                    }, throwable -> {
+                        errorService.setErrorCodesUsers();
+                        errorService.handleError(throwable);
+                    });
+        }, throwable -> {
+            errorService.setErrorCodesLogin();
+            errorService.handleError(throwable);
+        });
     }
 
     public void changeAvatar(ActionEvent event) {
         //change the avatar to the new Parameter
         String avatarUrl = newParameterField.getText();
+        errorService.setErrorCodesUsers();
         userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
@@ -238,7 +242,7 @@ public class SettingsController implements Controller {
                     }
                     currentUser = r;
                     closeWindow();
-                }, this::handleError);
+                }, errorService::handleError);
     }
 
     public void closeWindow() {

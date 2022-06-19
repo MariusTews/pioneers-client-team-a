@@ -17,6 +17,8 @@ public class PlayerResourceListController {
     private final ColorService colorService;
     private final ResourceBundle bundle;
 
+    private final ErrorService errorService;
+
     public ListView<HBox> playerList;
 
     private String currentPlayerID;
@@ -24,11 +26,12 @@ public class PlayerResourceListController {
     private Player player;
 
     @Inject
-    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle) {
+    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService) {
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.bundle = bundle;
+        this.errorService = errorService;
     }
 
     public void init(ListView<HBox> node, String startingPlayer) {
@@ -105,7 +108,6 @@ public class PlayerResourceListController {
         return resources.getOrDefault(resourceName, 0);
     }
 }
-
 
 
 

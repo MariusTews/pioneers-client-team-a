@@ -18,8 +18,10 @@ import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.model.*;
+import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.rest.*;
 import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.SoundService;
 import com.aviumauctores.pioneers.service.TokenStorage;
@@ -38,18 +40,22 @@ import okio.BufferedSource;
 import retrofit2.HttpException;
 
 import javax.inject.Singleton;
-import java.net.URL;
 import java.util.*;
+import java.net.URL;
 
 @Module
 public class TestModule {
     @Provides
     ErrorService errorService() {
-        return new ErrorService(null) {
+        ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
+        return new ErrorService(null, null, bundle) {
             @Override
             public ErrorResponse readErrorMessage(HttpException httpException) {
                 return new ErrorResponse(501, "");
             }
+
+            @Override
+            public void handleError(Throwable throwable) {}
         };
     }
 

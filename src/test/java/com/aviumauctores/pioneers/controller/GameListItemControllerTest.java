@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -36,6 +37,9 @@ class GameListItemControllerTest extends ApplicationTest {
     @Mock
     PreferenceService preferenceService;
 
+    @Mock
+    ErrorService errorService;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
@@ -66,10 +70,10 @@ class GameListItemControllerTest extends ApplicationTest {
     @Test
     void onGameUpdated() {
         Label gameNameLabel = lookup(game.name()).query();
-        Label numPlayersLabel = lookup(game.members() + "/4").query();
+        Label numPlayersLabel = lookup(game.members() + "").query();
         // Check that the Labels have the right text
         assertEquals(gameNameLabel.getText(), game.name());
-        assertEquals(numPlayersLabel.getText(), "1/4");
+        assertEquals(numPlayersLabel.getText(), "1");
 
         Game newGame = new Game("", "", "2", "game2", "42", false, 2);
         Platform.runLater(() -> {
@@ -77,7 +81,7 @@ class GameListItemControllerTest extends ApplicationTest {
 
             // Check that the Labels has been updated correctly
             assertEquals(gameNameLabel.getText(), newGame.name());
-            assertEquals(numPlayersLabel.getText(), "2/4");
+            assertEquals(numPlayersLabel.getText(), "2");
         });
 
     }
