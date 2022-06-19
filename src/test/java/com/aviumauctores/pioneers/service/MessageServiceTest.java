@@ -10,12 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.naming.ldap.ManageReferralControl;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.aviumauctores.pioneers.Constants.SEND_MESSAGE_GAME_NAMESPACE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,18 +39,18 @@ class MessageServiceTest {
         verify(messagesApiService).sendMessage("groups", "627cf3c93496bc00158f3859", new CreateMessageDto("hello"));
     }
 
-   @Test
-   void delete() {
-       Message msg = new Message("1", "2", "42", "43", "hello");
-       when(messagesApiService.deleteMessage(any(), any(), any())).thenReturn(Observable.just(msg));
+    @Test
+    void delete() {
+        Message msg = new Message("1", "2", "42", "43", "hello");
+        when(messagesApiService.deleteMessage(any(), any(), any())).thenReturn(Observable.just(msg));
 
-       // check if the group will be deleted correctly
-       Message dltmsg = messageService.deleteMessage("groups", "42","627cf3c93496bc00158f3859").blockingFirst();
-       assertEquals(dltmsg, msg);
+        // check if the group will be deleted correctly
+        Message dltmsg = messageService.deleteMessage("groups", "42", "627cf3c93496bc00158f3859").blockingFirst();
+        assertEquals(dltmsg, msg);
 
-       verify(messagesApiService).deleteMessage("groups", "627cf3c93496bc00158f3859", "42");
+        verify(messagesApiService).deleteMessage("groups", "627cf3c93496bc00158f3859", "42");
 
-   }
+    }
 
     @Test
     void deleteGameMessage() {
@@ -60,7 +58,7 @@ class MessageServiceTest {
         when(messagesApiService.deleteMessage(any(), any(), any())).thenReturn(Observable.just(msg));
 
         // check if the game message will be deleted correctly
-        Message dltmsg = messageService.deleteGameMessage("42","627cf3c93496bc00158f3859").blockingFirst();
+        Message dltmsg = messageService.deleteGameMessage("42", "627cf3c93496bc00158f3859").blockingFirst();
         assertEquals(dltmsg, msg);
 
         verify(messagesApiService).deleteMessage("games", "627cf3c93496bc00158f3859", "42");
@@ -80,7 +78,6 @@ class MessageServiceTest {
         assertEquals(back, msgList);
 
         verify(messagesApiService).listMessages("groups", "12", "13", 12);
-
 
 
     }

@@ -4,7 +4,6 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
-import com.aviumauctores.pioneers.dto.error.ValidationErrorResponse;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
@@ -195,8 +194,8 @@ public class LoginController implements Controller {
 
     public void toLobby(LoginResult loginResult) {
         final LobbyController controller = lobbyController.get();
-        User user = new User(loginResult._id(), loginResult.name(), "online", loginResult.avatar(),null);
-        toLobbyDisposable = userService.updateUser(loginResult._id(), new UpdateUserDto(user.name(), user.status(), user.avatar(),null,null))
+        User user = new User(loginResult._id(), loginResult.name(), "online", loginResult.avatar(), null);
+        toLobbyDisposable = userService.updateUser(loginResult._id(), new UpdateUserDto(user.name(), user.status(), user.avatar(), null, null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> {

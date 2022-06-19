@@ -21,7 +21,7 @@ public abstract class LoggedInController implements Controller {
             loginService.cancelRefreshTimer();
             disposables.add(userService.changeCurrentUserStatus("offline")
                     .subscribe(() -> {
-                        if(disposables != null){
+                        if (disposables != null) {
                             disposables.dispose();
                             disposables = null;
                         }

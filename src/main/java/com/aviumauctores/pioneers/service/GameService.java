@@ -3,17 +3,12 @@ package com.aviumauctores.pioneers.service;
 import com.aviumauctores.pioneers.dto.gamemembers.CreateMemberDto;
 import com.aviumauctores.pioneers.dto.games.CreateGameDto;
 import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
-import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
-import com.aviumauctores.pioneers.model.Building;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.Member;
-import com.aviumauctores.pioneers.model.Move;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import com.aviumauctores.pioneers.rest.GamesApiService;
 import com.aviumauctores.pioneers.rest.PioneersApiService;
-import static com.aviumauctores.pioneers.Constants.*;
 import io.reactivex.rxjava3.core.Observable;
-import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,10 +44,10 @@ public class GameService {
 
     }
 
-    public Observable<String> create(String name, String password){
+    public Observable<String> create(String name, String password) {
         this.name = name;
         this.password = password;
-        return gamesApiService.createGame(new CreateGameDto(name,false, password))
+        return gamesApiService.createGame(new CreateGameDto(name, false, password))
                 .map(Game::_id);
     }
 
@@ -69,11 +64,11 @@ public class GameService {
     }
 
 
-    public Observable<Game> deleteGame(){
+    public Observable<Game> deleteGame() {
         return gamesApiService.deleteGame(currentGameID);
     }
 
-    public Observable<Game> updateGame(Boolean started ){
+    public Observable<Game> updateGame(Boolean started) {
 
         return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, started, password));
     }
@@ -82,11 +77,11 @@ public class GameService {
         return gamesApiService.updateGame(currentGameID, new UpdateGameDto(null, null, true, null));
     }
 
-    public String getOwnerID(){
+    public String getOwnerID() {
         return this.ownerID;
     }
 
-    public void setOwnerID(String ID){
+    public void setOwnerID(String ID) {
         this.ownerID = ID;
     }
 

@@ -35,7 +35,7 @@ class LoginControllerEmptyLoginTest extends ApplicationTest {
     LoginController loginController;
 
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage) {
         new App(loginController).start(stage);
     }
 
@@ -47,7 +47,7 @@ class LoginControllerEmptyLoginTest extends ApplicationTest {
     }
 
     @Test
-    void emptyLogin(){
+    void emptyLogin() {
         type(KeyCode.TAB);
         type(KeyCode.TAB);
         type(KeyCode.SPACE);

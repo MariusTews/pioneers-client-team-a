@@ -32,14 +32,14 @@ class GroupServiceTest {
     void createGroup() {
         List<String> members = new ArrayList<>();
         members.add("4");
-        Group group = new Group("1","2","3", members);
+        Group group = new Group("1", "2", "3", members);
         when(groupsApiService.createGroup(any())).thenReturn(Observable.just(group));
 
         // check if the group will be created correctly
         Group gr = groupService.createGroup(members).blockingFirst();
         assertEquals(gr, group);
 
-        verify(groupsApiService).createGroup(new CreateGroupDto("1",members));
+        verify(groupsApiService).createGroup(new CreateGroupDto("1", members));
 
     }
 
@@ -48,20 +48,18 @@ class GroupServiceTest {
         // create a Group
         List<String> members = new ArrayList<>();
         members.add("4");
-        Group group = new Group("1","2","3", members);
+        Group group = new Group("1", "2", "3", members);
         // create an updateGroup
         List<String> updateMembers = new ArrayList<>();
         updateMembers.add("4");
         updateMembers.add("5");
-        Group updateGroup = new Group("1","2","3", updateMembers);
+        Group updateGroup = new Group("1", "2", "3", updateMembers);
         when(groupsApiService.updateGroup(any(), any())).thenReturn(Observable.just(updateGroup));
 
         //check if group will be updated correctly
         Group gr = groupService.updateGroup(group._id(), members).blockingFirst();
         assertEquals(gr, updateGroup);
 
-        verify(groupsApiService).updateGroup("3", new UpdateGroupDto("",members));
-
+        verify(groupsApiService).updateGroup("3", new UpdateGroupDto("", members));
     }
-
 }

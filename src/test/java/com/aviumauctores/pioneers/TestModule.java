@@ -76,11 +76,12 @@ public class TestModule {
 
     @Provides
     PreferenceService preferences() {
-        return new PreferenceService(null){
+        return new PreferenceService(null) {
             @Override
             public Locale getLocale() {
                 return Locale.ROOT;
             }
+
             @Override
             public void setLocale(Locale locale) {
             }
@@ -142,14 +143,14 @@ public class TestModule {
             @Override
             public Observable<LoginResult> login(LoginDto loginDto) {
                 return Observable.just(new LoginResult(
-                        "1", "User1", "online", null, "", "",null
+                        "1", "User1", "online", null, "", "", null
                 ));
             }
 
             @Override
             public Observable<LoginResult> refresh(RefreshDto refreshDto) {
                 return Observable.just(new LoginResult(
-                        "1", "User1", "online", null, "", "",null
+                        "1", "User1", "online", null, "", "", null
                 ));
             }
 
@@ -187,30 +188,30 @@ public class TestModule {
                     return Observable.just(List.of());
                 }
                 return Observable.just(
-                        List.of(new User("1", "User1", "online", null,null))
+                        List.of(new User("1", "User1", "online", null, null))
                 );
             }
 
             @Override
             public Observable<User> createUser(CreateUserDto createUserDto) {
-                return Observable.just(new User("1", "User1", "online", null,null));
+                return Observable.just(new User("1", "User1", "online", null, null));
             }
 
             @Override
             public Observable<User> getUser(String id) {
-                return Observable.just(new User("1", "User1", "online", null,null));
+                return Observable.just(new User("1", "User1", "online", null, null));
             }
 
             @Override
             public Observable<User> updateUser(String id, UpdateUserDto updateUserDto) {
                 String name = updateUserDto.name() != null ? updateUserDto.name() : "User" + id;
                 String status = updateUserDto.status() != null ? updateUserDto.status() : "online";
-                return Observable.just(new User(id, name, status, updateUserDto.avatar(),null));
+                return Observable.just(new User(id, name, status, updateUserDto.avatar(), null));
             }
 
             @Override
             public Observable<User> deleteUser(String id) {
-                return Observable.just(new User(id, "User" + id, "online", null,null));
+                return Observable.just(new User(id, "User" + id, "online", null, null));
             }
 
             @Override
@@ -305,28 +306,28 @@ public class TestModule {
             @Override
             public Observable<Member> createMember(String gameId, CreateMemberDto createMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, "1", createMemberDto.ready(),null
+                        "", "", gameId, "1", createMemberDto.ready(), null
                 ));
             }
 
             @Override
             public Observable<Member> getMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false,null
+                        "", "", gameId, userId, false, null
                 ));
             }
 
             @Override
             public Observable<Member> updateMember(String gameId, String userId, UpdateMemberDto updateMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, updateMemberDto.ready(),null
+                        "", "", gameId, userId, updateMemberDto.ready(), null
                 ));
             }
 
             @Override
             public Observable<Member> deleteMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false,null
+                        "", "", gameId, userId, false, null
                 ));
             }
         };
@@ -341,21 +342,21 @@ public class TestModule {
             @Override
             public Observable<List<Game>> listGames() {
                 return Observable.just(List.of(
-                        new Game("", "", "101", "Game101", "1", false,1)
+                        new Game("", "", "101", "Game101", "1", false, 1)
                 ));
             }
 
             @Override
             public Observable<Game> createGame(CreateGameDto createGameDto) {
                 return Observable.just(new Game(
-                        "", "", "101", "Game101", "1", false,1
+                        "", "", "101", "Game101", "1", false, 1
                 ));
             }
 
             @Override
             public Observable<Game> getGame(String id) {
                 return Observable.just(new Game(
-                        "", "", id, "Game" + id, "1", false,1
+                        "", "", id, "Game" + id, "1", false, 1
                 ));
             }
 
@@ -363,7 +364,7 @@ public class TestModule {
             public Observable<Game> updateGame(String id, UpdateGameDto updateGameDto) {
                 String name = updateGameDto.name() != null ? updateGameDto.name() : "Game" + id;
                 String owner = updateGameDto.owner() != null ? updateGameDto.owner() : "1";
-                Game game = new Game("", "", id, name, owner, updateGameDto.started(),1);
+                Game game = new Game("", "", id, name, owner, updateGameDto.started(), 1);
                 testEventListener.fireEvent("games.101.*", new EventDto<>("games.101.updated", game));
                 return Observable.just(game);
             }
@@ -377,7 +378,7 @@ public class TestModule {
 
     @Provides
     @Singleton
-    PioneersApiService pioneersApiService(){
+    PioneersApiService pioneersApiService() {
         return new PioneersApiService() {
             @Override
             public Observable<List<Building>> listBuildings(String gameId) {

@@ -10,6 +10,6 @@ public record LoginResult(
         String accessToken,
         String refreshToken,
 
-        List<String>  friends
+        List<String> friends
 ) {
 }

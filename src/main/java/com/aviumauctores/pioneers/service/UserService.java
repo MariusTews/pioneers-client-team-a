@@ -24,12 +24,11 @@ public class UserService {
     }
 
     public Observable<User> register(String username, String password) {
-        return usersApiService.createUser(new CreateUserDto(username, password,null));
-
+        return usersApiService.createUser(new CreateUserDto(username, password, null));
     }
 
     public Observable<List<User>> findAll() {
-       return this.usersApiService.findAll();
+        return this.usersApiService.findAll();
     }
 
     public Observable<List<User>> listOnlineUsers() {
@@ -49,7 +48,7 @@ public class UserService {
     }
 
     public Completable changeCurrentUserStatus(String status) {
-        return updateUser(currentUserID, new UpdateUserDto(null, status, null, null,null))
+        return updateUser(currentUserID, new UpdateUserDto(null, status, null, null, null))
                 .ignoreElements();
     }
 

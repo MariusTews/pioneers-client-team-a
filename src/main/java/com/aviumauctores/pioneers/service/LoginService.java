@@ -23,18 +23,18 @@ public class LoginService {
     private Timer refreshTimer;
 
     @Inject
-    public LoginService(AuthenticationApiService authenticationApiService, TokenStorage tokenStorage, UserService userService){
+    public LoginService(AuthenticationApiService authenticationApiService, TokenStorage tokenStorage, UserService userService) {
         this.authenticationApiService = authenticationApiService;
         this.tokenStorage = tokenStorage;
         this.userService = userService;
     }
 
-    public Observable<LoginResult> login(String username, String password){
+    public Observable<LoginResult> login(String username, String password) {
         return authenticationApiService.login(new LoginDto(username, password))
                 .doOnNext(this::onSuccessfulLogin);
     }
 
-    public Observable<LoginResult> login(String token){
+    public Observable<LoginResult> login(String token) {
         return authenticationApiService.refresh(new RefreshDto(token))
                 .doOnNext(this::onSuccessfulLogin);
     }
@@ -73,7 +73,7 @@ public class LoginService {
         }
     }
 
-    public Observable<LoginResult> checkPasswordLogin(String username, String password){
+    public Observable<LoginResult> checkPasswordLogin(String username, String password) {
         return authenticationApiService.login(new LoginDto(username, password));
     }
 }

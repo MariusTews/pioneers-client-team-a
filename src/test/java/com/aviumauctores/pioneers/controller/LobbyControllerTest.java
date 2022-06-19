@@ -81,9 +81,9 @@ class LobbyControllerTest extends ApplicationTest {
         when(gameService.listGames()).thenReturn(Observable.empty());
         when(userService.listOnlineUsers()).thenReturn(Observable.empty());
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
-        User createdUser = new User("1", "Player1", "online", null,null);
+        User createdUser = new User("1", "Player1", "online", null, null);
         userUpdates = Observable.just(new EventDto<>("created", createdUser));
-        Game createdGame = new Game("", "", "1", "Game1", "2", false,1);
+        Game createdGame = new Game("", "", "1", "Game1", "2", false, 1);
         gameUpdates = Observable.just(new EventDto<>("created", createdGame));
         when(eventListener.listen("users.*.*", User.class)).thenReturn(userUpdates);
         when(eventListener.listen("games.*.*", Game.class)).thenReturn(gameUpdates);
@@ -132,7 +132,7 @@ class LobbyControllerTest extends ApplicationTest {
     }
 
     @Test
-    void changeLanguage(){
+    void changeLanguage() {
 
         clickOn("#britishFlag");
         verify(preferenceService).setLocale(Locale.ENGLISH);

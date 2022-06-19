@@ -4,9 +4,10 @@ import dagger.Component;
 
 import javax.inject.Singleton;
 
-@Component(modules = { MainModule.class, TestModule.class })
+@Component(modules = {MainModule.class, TestModule.class})
 @Singleton
-public interface TestComponent extends MainComponent{
+public interface TestComponent extends MainComponent {
     @Component.Builder
-    interface Builder extends MainComponent.Builder{}
+    interface Builder extends MainComponent.Builder {
+    }
 }

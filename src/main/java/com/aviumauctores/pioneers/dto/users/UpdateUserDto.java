@@ -7,6 +7,6 @@ public record UpdateUserDto(
         String status,
         String avatar,
         String password,
-        List<String>friends
+        List<String> friends
 ) {
 }

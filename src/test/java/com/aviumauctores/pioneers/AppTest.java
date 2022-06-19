@@ -17,7 +17,7 @@ class AppTest extends ApplicationTest {
     private Stage stage;
 
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage) {
         this.stage = stage;
         final App app = new App(null);
         MainComponent testComponent = DaggerTestComponent.builder().mainApp(app).build();

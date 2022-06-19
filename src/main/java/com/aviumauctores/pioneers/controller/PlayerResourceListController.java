@@ -6,11 +6,11 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+
 import javax.inject.Inject;
 import java.util.*;
 
 public class PlayerResourceListController {
-
 
     private final UserService userService;
     private final PioneerService pioneerService;
@@ -76,12 +76,12 @@ public class PlayerResourceListController {
         }
     }
 
-    public void onPlayerTurn(){
+    public void onPlayerTurn() {
         //Sets current player at the top of the list. List is sorted in move order
         int size = playerList.getItems().size();
         HBox currentPlayerBox = listItems.get(currentPlayerID).getPlayerBox();
         HBox puffer = playerList.getItems().set(0, currentPlayerBox);
-        for (int i = size - 1; i > 0; i--){
+        for (int i = size - 1; i > 0; i--) {
             puffer = playerList.getItems().set(i, puffer);
         }
 
