@@ -1,7 +1,9 @@
 package com.aviumauctores.pioneers.rest;
 
+import com.aviumauctores.pioneers.dto.gamemembers.UpdateMemberDto;
 import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
+import com.aviumauctores.pioneers.dto.players.UpdatePlayerDto;
 import com.aviumauctores.pioneers.model.*;
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.*;
@@ -36,6 +38,18 @@ public interface PioneersApiService {
 
     @POST(CREATE_MOVE_URL)
     Observable<Move> createMove(@Path(PATH_GAME_ID) String gameId, @Body CreateMoveDto createMoveDto);
+
+    @GET(GET_MOVES_URL)
+    Observable<List<Move>> getMoves(@Path(PATH_GAME_ID) String gameId, @Query(QUERY_USERID) String userId);
+
+    @GET(GET_MOVEID_URL)
+    Observable<Move> getMoveId(@Path(PATH_GAME_ID) String gameId, @Path(PATH_MOVEID) String moveId);
+
+    @PATCH(GET_USERID_URL)
+    Observable<Player> updatePlayer(
+            @Path(PATH_GAME_ID) String gameId, @Path(PATH_USER_ID) String userId,
+            @Body UpdatePlayerDto updatePlayerDto
+    );
 
 
 

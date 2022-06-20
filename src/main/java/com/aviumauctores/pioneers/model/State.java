@@ -4,6 +4,8 @@ import java.util.List;
 
 public record State(String updatedAt,
                     String gameId,
-                    List<ExpectedMove> expectedMoves
+                    List<ExpectedMove> expectedMoves,
+
+                    List<Point3D> robber
 ) {
 }

@@ -22,6 +22,8 @@ public class Constants {
     public static final String PATH_NAMESPACE = "namespace";
     public static final String PATH_PARENT = "parent";
 
+    public static final String PATH_MOVEID = "moveId";
+
     public static final String PATH_BUILDING_ID = "parent";
 
 
@@ -31,6 +33,8 @@ public class Constants {
 
     public static final String QUERY_CREATED_BEFORE = "createdBefore";
     public static final String QUERY_LIMIT = "limit";
+
+    public static final String QUERY_USERID = "userId";
 
     // Authentication API URLs
     public static final String LOGIN_URL = "auth/login";
@@ -89,6 +93,16 @@ public class Constants {
     public static final String GET_BUILDINGID_URL = "games/{gameId}/buildings/{buildingId}";
 
     public static final String CREATE_MOVE_URL = "games/{gameId}/moves";
+
+
+    public static final String GET_MOVES_URL = "games/{gameId}/moves";
+
+    public static final String GET_MOVEID_URL="games/{gameId}/moves/{moveId}";
+
+
+
+
+
 
 
     public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v2/events";

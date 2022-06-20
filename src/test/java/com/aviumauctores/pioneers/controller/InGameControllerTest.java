@@ -121,20 +121,20 @@ public class InGameControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         when(userService.getCurrentUserID()).thenReturn("1");
-        when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN)));
+        when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN,false)));
         when(gameService.getCurrentGameID()).thenReturn("12");
-        Player player = new Player("12", "1", "#008000",
-                2, new HashMap<>(), new HashMap<>());
+        Player player = new Player("12", "1", "#008000", true,
+                2, new HashMap<>(), new HashMap<>(),0,0);
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
-                List.of(new ExpectedMove("roll", List.of("1"))))));
+                List.of(new ExpectedMove("roll", List.of("1"))), List.of(new Point3D(1,3,4)))));
 
         when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
         stateUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
-        when(pioneerService.createMove("founding-roll", null)).thenReturn(Observable.just(new Move("69",
-                "420", "12", "1", "founding-roll", 2, null)));
-        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile[]{new Tile(0, 0, 0, "desert", 10)}))));
+        when(pioneerService.createMove("founding-roll", null,null,null)).thenReturn(Observable.just(new Move("69",
+                "420", "12", "1", "founding-roll", 2, null,null,null,null )));
+        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile(0,0,0,"desert",10)),List.of(new Harbor(1,1,1,"dessert",0)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
         new App(inGameController).start(stage);
     }
@@ -178,10 +178,10 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onRollClicked() {
-        when(pioneerService.createMove("roll", null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null)));
+        when(pioneerService.createMove("roll", null,null,null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null,null,null,null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
-        verify(pioneerService).createMove("roll", null);
+        verify(pioneerService).createMove("roll", null,null,null);
     }
 
     @Test
