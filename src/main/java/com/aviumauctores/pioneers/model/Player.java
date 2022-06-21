@@ -9,7 +9,7 @@ import java.util.List;
 public record Player(String gameID,
                      String userId,
                      String color,
-                     boolean aktive,
+                     boolean active,
                      int foundingRoll,
                      HashMap<String, Integer> resources,
                      HashMap<String, Integer> remainingBuildings,
@@ -17,9 +17,6 @@ public record Player(String gameID,
                      int victoryPoints,
 
                      int longestRoad
-
-
-
 
 ) {
 }

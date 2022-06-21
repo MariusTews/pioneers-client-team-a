@@ -19,9 +19,9 @@ class DtoTest {
         Assertions.assertEquals(loginDto.password(), "12345678");
 
         UpdatePlayerDto updatePlayerDto=new UpdatePlayerDto(true);
-        Assertions.assertEquals(updatePlayerDto.active(),true);
+        Assertions.assertTrue(updatePlayerDto.active());
         UpdatePlayerDto updatePlayerDto1=new UpdatePlayerDto(false);
-        Assertions.assertEquals(updatePlayerDto1.active(),false);
+        Assertions.assertFalse(updatePlayerDto1.active());
 
         RobDto robDto= new RobDto(1,2,3,"target");
         Assertions.assertEquals(robDto.x(),1);

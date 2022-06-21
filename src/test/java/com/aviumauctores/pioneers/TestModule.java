@@ -57,7 +57,8 @@ public class TestModule {
             }
 
             @Override
-            public void handleError(Throwable throwable) {}
+            public void handleError(Throwable throwable) {
+            }
         };
     }
 
@@ -301,35 +302,35 @@ public class TestModule {
             @Override
             public Observable<List<Member>> listMembers(String gameId) {
                 return Observable.just(List.of(
-                        new Member("", "", "101", "1", true, Color.GREEN,true)
+                        new Member("", "", "101", "1", true, Color.GREEN, true)
                 ));
             }
 
             @Override
             public Observable<Member> createMember(String gameId, CreateMemberDto createMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, "1", createMemberDto.ready(), null,true
+                        "", "", gameId, "1", createMemberDto.ready(), null, true
                 ));
             }
 
             @Override
             public Observable<Member> getMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false, null,true
+                        "", "", gameId, userId, false, null, true
                 ));
             }
 
             @Override
             public Observable<Member> updateMember(String gameId, String userId, UpdateMemberDto updateMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, updateMemberDto.ready(), null,true
+                        "", "", gameId, userId, updateMemberDto.ready(), null, true
                 ));
             }
 
             @Override
             public Observable<Member> deleteMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false, null,true
+                        "", "", gameId, userId, false, null, true
                 ));
             }
         };
@@ -400,14 +401,14 @@ public class TestModule {
             @Override
             public Observable<List<Player>> listMembers(String gameId) {
                 return Observable.just(List.of(
-                        new Player(gameId, "1", "#008000", true,3, new HashMap<>(), new HashMap<>(),0,0)
+                        new Player(gameId, "1", "#008000", true, 3, new HashMap<>(), new HashMap<>(), 0, 0)
                 ));
             }
 
             @Override
             public Observable<Player> getPlayer(String gameId, String userId) {
                 return Observable.just(
-                        new Player(gameId, userId, "#008000",true, 3, new HashMap<>(), new HashMap<>(),0,0)
+                        new Player(gameId, userId, "#008000", true, 3, new HashMap<>(), new HashMap<>(), 0, 0)
                 );
             }
 
@@ -420,7 +421,7 @@ public class TestModule {
                                 new ExpectedMove("founding-settlement-2", List.of("1")),
                                 new ExpectedMove("founding-road-2", List.of("1")),
                                 new ExpectedMove("roll", List.of("1"))
-                        ),List.of(new Point3D(1,1,1)))
+                        ),      new Point3D(1, 1, 1))
                 );
             }
 
@@ -432,20 +433,16 @@ public class TestModule {
             @Override
             public Observable<Move> getMoveId(String gameId, String userId) {
                 return Observable.just(
-                        new Move("","",gameId,userId,"action",1,"",new RobDto(1,2,3,""),new HashMap<>(),"")
+                        new Move("", "", gameId, userId, "action", 1, "", new RobDto(1, 2, 3, ""), new HashMap<>(), "")
                 );
             }
 
             @Override
             public Observable<Player> updatePlayer(String gameId, String userId, UpdatePlayerDto updatePlayerDto) {
-                boolean active = updatePlayerDto.active() ? updatePlayerDto.active() : true;
                 return Observable.just(new Player(
-                        "", "",null,active,1,new HashMap<>(),new HashMap<>(),0,0
+                        "", "", null, true, 1, new HashMap<>(), new HashMap<>(), 0, 0
                 ));
             }
-
-
-
 
 
             @Override

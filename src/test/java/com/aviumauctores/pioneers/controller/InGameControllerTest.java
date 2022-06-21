@@ -127,7 +127,7 @@ public class InGameControllerTest extends ApplicationTest {
                 2, new HashMap<>(), new HashMap<>(), 0, 0);
         when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
-                List.of(new ExpectedMove("roll", List.of("1"))), List.of(new Point3D(1, 3, 4)))));
+                List.of(new ExpectedMove("roll", List.of("1"))), new Point3D(1, 3, 4))));
 
         when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
         stateUpdates = PublishSubject.create();
