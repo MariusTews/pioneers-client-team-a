@@ -30,7 +30,6 @@ public class MessageService {
     }
 
 
-
     public Observable<Message> deleteMessage(String namespace, String id, String groupId) {
 
         return messagesApiService.deleteMessage(namespace, groupId, id);
@@ -49,7 +48,7 @@ public class MessageService {
         return messagesApiService.sendMessage(SEND_MESSAGE_GAME_NAMESPACE, gameId, new CreateMessageDto(message));
     }
 
-    public Observable<Message> getMessage(String namespace, String groupId,String id) {
+    public Observable<Message> getMessage(String namespace, String groupId, String id) {
         return messagesApiService.getMessage(namespace, groupId, id);
     }
 }

@@ -1,10 +1,9 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
-import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.model.Map;
+import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
@@ -13,10 +12,9 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -26,9 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
-import org.testfx.util.WaitForAsyncUtils;
 
 import javax.inject.Provider;
 import java.util.*;
@@ -193,7 +189,7 @@ public class InGameControllerTest extends ApplicationTest {
     }
 
     @Test
-    void soundtest(){
+    void soundtest() {
         when(gameMusic.isRunning()).thenReturn(true);
         clickOn("#soundImage");
         assertThat(gameMusic.isRunning()).isEqualTo(true);
@@ -201,7 +197,7 @@ public class InGameControllerTest extends ApplicationTest {
     }
 
     @Test
-    void soundtest2(){
+    void soundtest2() {
         when(gameSound.isRunning()).thenReturn(true);
         clickOn("#soundImage");
         assertThat(gameSound.isRunning()).isEqualTo(true);

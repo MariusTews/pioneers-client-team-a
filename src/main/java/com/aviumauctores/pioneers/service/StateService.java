@@ -63,5 +63,7 @@ public class StateService {
         return oldPlayerID;
     }
 
-    public String getOldAction(){ return oldAction;}
+    public String getOldAction() {
+        return oldAction;
+    }
 }

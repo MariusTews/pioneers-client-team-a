@@ -19,12 +19,10 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
-import retrofit2.HttpException;
 
 import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeoutException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -59,7 +57,7 @@ class LoginControllerErrorTest extends ApplicationTest {
     LoginController loginController;
 
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage) {
         app = new App(loginController);
         app.start(stage);
     }
@@ -76,7 +74,7 @@ class LoginControllerErrorTest extends ApplicationTest {
     }
 
     @Test
-    void login(){
+    void login() {
         when(loginService.login(any(), any())).thenReturn(Observable.error(new Throwable()));
 
         write("Struppi\t");
@@ -90,9 +88,9 @@ class LoginControllerErrorTest extends ApplicationTest {
 
     @Test
     void toLobby() {
-        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null,null)))
+        when(userService.updateUser("1", new UpdateUserDto("Mark", "online", "brr", null, null)))
                 .thenReturn(Observable.error(new Throwable()));
-        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref",null));
+        loginController.toLobby(new LoginResult("1", "Mark", "offline", "brr", "acc", "ref", null));
 
         //to show the error popup
         write("Struppi\t");
@@ -102,6 +100,6 @@ class LoginControllerErrorTest extends ApplicationTest {
         verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
 
-        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null,null));
+        verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null, null));
     }
 }

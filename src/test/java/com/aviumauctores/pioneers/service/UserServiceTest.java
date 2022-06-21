@@ -2,9 +2,7 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
-import com.aviumauctores.pioneers.model.Group;
 import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.rest.GroupsApiService;
 import com.aviumauctores.pioneers.rest.UsersApiService;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
@@ -16,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,8 +30,8 @@ class UserServiceTest {
     @Test
     void findAll() {
         List<User> users = new ArrayList<>();
-        User user1 = new User("1", "Mark", "online", "brr",null);
-        User user2 = new User("2", "Marcel", "online", "brr",null);
+        User user1 = new User("1", "Mark", "online", "brr", null);
+        User user2 = new User("2", "Marcel", "online", "brr", null);
         users.add(user1);
         users.add(user2);
         when(usersApiService.findAll()).thenReturn(Observable.just(users));
@@ -49,8 +46,8 @@ class UserServiceTest {
 
     @Test
     void listOnlineUsers() {
-        User user1 = new User("1", "Mark", "online", "brr",null);
-        User user2 = new User("2", "Marcel", "online", "brr",null);
+        User user1 = new User("1", "Mark", "online", "brr", null);
+        User user2 = new User("2", "Marcel", "online", "brr", null);
 
         List<User> usersOnline = new ArrayList<>();
         usersOnline.add(user1);
@@ -65,17 +62,17 @@ class UserServiceTest {
 
     @Test
     void register() {
-        User user1 = new User("1", "Mark", "online", "brr",null);
+        User user1 = new User("1", "Mark", "online", "brr", null);
         when(userService.register("Mark", "password")).thenReturn(Observable.just(user1));
 
         User user2 = userService.register("Mark", "password").blockingFirst();
         assertEquals(user2, user1);
-        verify(usersApiService).createUser(new CreateUserDto("Mark", "password",null));
+        verify(usersApiService).createUser(new CreateUserDto("Mark", "password", null));
     }
 
     @Test
     void getUserByID() {
-        User user1 = new User("1", "Mark", "online", "brr",null);
+        User user1 = new User("1", "Mark", "online", "brr", null);
         when(userService.getUserByID("1")).thenReturn(Observable.just(user1));
 
         User user = userService.getUserByID("1").blockingFirst();
@@ -85,7 +82,7 @@ class UserServiceTest {
 
     @Test
     void getUserName() {
-        User user1 = new User("1", "Mark", "online", "brr",null);
+        User user1 = new User("1", "Mark", "online", "brr", null);
         when(userService.getUserByID("1")).thenReturn((Observable.just(user1)));
 
         String username = userService.getUserName("1").blockingFirst();
@@ -96,12 +93,12 @@ class UserServiceTest {
 
     @Test
     void updateUser() {
-        User user1 = new User("1", "Mark", "offline", "brr",null);
+        User user1 = new User("1", "Mark", "offline", "brr", null);
 
-        when(userService.updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test",null))).thenReturn(Observable.just(user1));
-        User user = userService.updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test",null)).blockingFirst();
+        when(userService.updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test", null))).thenReturn(Observable.just(user1));
+        User user = userService.updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test", null)).blockingFirst();
 
         assertEquals(user, user1);
-        verify(usersApiService).updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test",null));
+        verify(usersApiService).updateUser("1", new UpdateUserDto("Mark", "offline", "brr", "test", null));
     }
 }

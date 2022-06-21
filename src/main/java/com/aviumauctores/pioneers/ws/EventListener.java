@@ -43,7 +43,7 @@ public class EventListener {
         }
     }
 
-    public <T>Observable<EventDto<T>> listen(String pattern, Class<T> payloadType) {
+    public <T> Observable<EventDto<T>> listen(String pattern, Class<T> payloadType) {
         return Observable.create(emitter -> {
             ensureOpen();
 

@@ -642,7 +642,7 @@ public class InGameController extends LoggedInController {
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
-                }, errorService::handleError));
+                        }, errorService::handleError));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -695,7 +695,6 @@ public class InGameController extends LoggedInController {
             }
 
         }
-
 
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
@@ -751,7 +750,6 @@ public class InGameController extends LoggedInController {
             gameSound.play();
         }
     }
-
 
     public void gainVP(int vpGain) {
         memberVP += vpGain;
@@ -884,5 +882,4 @@ public class InGameController extends LoggedInController {
             app.showHttpErrorDialog(response.statusCode(), response.error(), message);
         }
     }
-
 }

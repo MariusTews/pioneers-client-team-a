@@ -63,8 +63,7 @@ public class InGameChatController implements Controller {
     private InGameController inGameController;
 
     private CompositeDisposable disposables;
-    private String userID;
-
+private String userID;
 
     @Inject
     public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -151,7 +150,6 @@ public class InGameChatController implements Controller {
                                     alert.showAndWait();
                                 }
                             }));
-
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -220,9 +218,6 @@ public class InGameChatController implements Controller {
             }
         }
     }
-
-
-
 
     public void delete(String messageId) {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())

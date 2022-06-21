@@ -11,7 +11,7 @@ public class CryptoService {
     private final Key secretKey;
 
     @Inject
-    public CryptoService(){
+    public CryptoService() {
         try {
             cipher = Cipher.getInstance("AES");
             String key = "fgd5j0kkBar1A4j5"; // 128 bit key
@@ -30,7 +30,7 @@ public class CryptoService {
         return encoder.encodeToString(encodedByte);
     }
 
-    public String decode(String data) throws Exception{
+    public String decode(String data) throws Exception {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] dataByte = decoder.decode(data);
         cipher.init(Cipher.DECRYPT_MODE, secretKey);

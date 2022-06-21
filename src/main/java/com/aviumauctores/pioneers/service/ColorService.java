@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.service;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+
 import static com.aviumauctores.pioneers.Constants.*;
 
 public class ColorService {
@@ -9,8 +10,8 @@ public class ColorService {
     public final HashMap<String, String> colors = new HashMap<>();
 
     @Inject
-    public ColorService(){
-        colors.put(COLOR_CODE_BLUE,COLOR_BLUE);
+    public ColorService() {
+        colors.put(COLOR_CODE_BLUE, COLOR_BLUE);
         colors.put(COLOR_CODE_RED, COLOR_RED);
         colors.put(COLOR_CODE_GREEN, COLOR_GREEN);
         colors.put(COLOR_CODE_YELLOW, COLOR_YELLOW);
@@ -28,10 +29,10 @@ public class ColorService {
         return colors.get((color));
     }
 
-    public String getColorCode(String color){
+    public String getColorCode(String color) {
         String[] keys = colors.keySet().toArray(new String[COLOR_AMOUNT]);
-        for(String s : keys){
-            if(colors.get(s).equals(color)){
+        for (String s : keys) {
+            if (colors.get(s).equals(color)) {
                 return color;
             }
         }

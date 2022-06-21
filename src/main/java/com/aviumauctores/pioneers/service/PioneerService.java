@@ -1,14 +1,11 @@
 package com.aviumauctores.pioneers.service;
 
-import com.aviumauctores.pioneers.dto.pioneers.CreateBuildingDto;
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.rest.PioneersApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PioneerService {
@@ -32,7 +29,6 @@ public class PioneerService {
     }
 
 
-
     public Observable<Player> getPlayer(String playerID) {
         return pioneersApiService.getPlayer(gameService.getCurrentGameID(), playerID);
     }
@@ -41,7 +37,7 @@ public class PioneerService {
         return pioneersApiService.listMembers(gameService.getCurrentGameID());
     }
 
-    public Observable<List<Building>> listBuildings(){
+    public Observable<List<Building>> listBuildings() {
         return pioneersApiService.listBuildings(gameService.getCurrentGameID());
     }
 
@@ -49,7 +45,7 @@ public class PioneerService {
         return pioneersApiService.getMap(gameService.getCurrentGameID());
     }
 
-    public Observable<Building> getBuilding(String buildingID){
+    public Observable<Building> getBuilding(String buildingID) {
         return pioneersApiService.getBuilding(gameService.getCurrentGameID(), buildingID);
     }
 

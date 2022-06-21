@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
@@ -30,31 +31,36 @@ public class CreateGameController extends LoggedInController {
 
     private final App app;
 
-
     public final SimpleStringProperty gameName = new SimpleStringProperty();
     public final SimpleStringProperty password = new SimpleStringProperty();
 
     private final Provider<LobbyController> lobbyController;
 
     private final Provider<GameReadyController> gameReadyController;
-    private final GameService gameService;
 
+    private final GameService gameService;
     private final ErrorService errorService;
     private final ResourceBundle bundle;
 
     private boolean hidePassword = true;
 
-    @FXML public Button showPasswordButton;
+    @FXML
+    public Button showPasswordButton;
 
-    @FXML public TextField gamePasswordText;
+    @FXML
+    public TextField gamePasswordText;
 
-    @FXML public Button cancelButton;
+    @FXML
+    public Button cancelButton;
 
-    @FXML public Button createGameButton;
+    @FXML
+    public Button createGameButton;
 
-    @FXML public PasswordField gamePasswordInput;
+    @FXML
+    public PasswordField gamePasswordInput;
 
-    @FXML public TextField gameNameInput;
+    @FXML
+    public TextField gameNameInput;
 
     @FXML
     public ImageView viewPassword;
@@ -68,7 +74,7 @@ public class CreateGameController extends LoggedInController {
     @Inject
     public CreateGameController(App app,
                                 Provider<LobbyController> lobbyController, Provider<GameReadyController> gameReadyController,
-                                LoginService loginService, GameService gameService, UserService userService, ErrorService errorService, ResourceBundle bundle){
+                                LoginService loginService, GameService gameService, UserService userService, ErrorService errorService, ResourceBundle bundle) {
         super(loginService, userService);
         this.app = app;
         this.lobbyController = lobbyController;
@@ -78,7 +84,7 @@ public class CreateGameController extends LoggedInController {
         this.bundle = bundle;
     }
 
-    public void init(){
+    public void init() {
         disposables = new CompositeDisposable();
         errorService.setErrorCodesGame();
         show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
@@ -87,12 +93,12 @@ public class CreateGameController extends LoggedInController {
 
 
     @Override
-    public void destroy(boolean closed){
+    public void destroy(boolean closed) {
         super.destroy(closed);
     }
 
     @Override
-    public Parent render(){
+    public Parent render() {
         disposables = new CompositeDisposable();
         //load createGame FXML
         final FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/createGameScreen.fxml"), bundle);
@@ -100,7 +106,7 @@ public class CreateGameController extends LoggedInController {
         final Parent parent;
         try {
             parent = loader.load();
-        }catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -129,18 +135,18 @@ public class CreateGameController extends LoggedInController {
         return parent;
     }
 
-    public void createGame(ActionEvent actionEvent){
+    public void createGame(ActionEvent actionEvent) {
         //create a new Game
         String name = gameNameInput.getText();
         String password = gamePasswordInput.getText();
         //check if name length is valid
-        if(!(name.length() > 0 && name.length() <= 32)){
+        if (!(name.length() > 0 && name.length() <= 32)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("invalid.format"));
             alert.setHeaderText(null);
             alert.setContentText(bundle.getString("invalid.game.length"));
             Optional<ButtonType> res = alert.showAndWait();
-            if(res.get() == ButtonType.OK){
+            if (res.get() == ButtonType.OK) {
                 alert.close();
             }
             return;
@@ -158,8 +164,6 @@ public class CreateGameController extends LoggedInController {
                 }, errorService::handleError));
     }
 
-
-
     public void cancel(ActionEvent actionEvent) {
         //change view to LobbyScreen
         final LobbyController controller = lobbyController.get();
@@ -168,25 +172,21 @@ public class CreateGameController extends LoggedInController {
 
     public void showPassword(ActionEvent actionEvent) {
         //check button status
-        if(gamePasswordInput.getText().isEmpty()){
+        if (gamePasswordInput.getText().isEmpty()) {
             return;
         }
 
         //set source for Image and show/hide password depending on hidePassword
-        if(hidePassword){
+        if (hidePassword) {
             viewPassword.setImage(hide);
             String password = gamePasswordInput.getText();
             gamePasswordText.setText(password);
-        }else{
+        } else {
             viewPassword.setImage(show);
             gamePasswordText.setText("");
         }
         gamePasswordText.setVisible(hidePassword);
         gamePasswordInput.setVisible(!hidePassword);
         hidePassword = !hidePassword;
-
-
     }
-
-
 }
