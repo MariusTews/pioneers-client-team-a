@@ -105,7 +105,7 @@ public class Constants {
 
 
 
-    public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v2/events";
+    public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v3/events";
     public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
 
     public static final String JSON_EVENT = "event";
