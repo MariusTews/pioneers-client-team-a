@@ -121,6 +121,8 @@ public class InGameControllerTest extends ApplicationTest {
 
     private PublishSubject<EventDto<State>> stateUpdates;
 
+    private PublishSubject<EventDto<Player>> playerUpdates;
+
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -135,11 +137,13 @@ public class InGameControllerTest extends ApplicationTest {
 
         when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
         stateUpdates = PublishSubject.create();
+        playerUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(pioneerService.createMove("founding-roll", null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null)));
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile[]{new Tile(0, 0, 0, "desert", 10)}))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
+        when(eventListener.listen("games." + gameService.getCurrentGameID() + ".players." + userService.getCurrentUserID() + ".updated", Player.class)).thenReturn(playerUpdates);
         new App(inGameController).start(stage);
     }
 
@@ -210,5 +214,24 @@ public class InGameControllerTest extends ApplicationTest {
         Label yourTurn = lookup("#yourTurnLabel").query();
         assertThat(arrow.isVisible()).isTrue();
         assertThat(yourTurn.isVisible()).isTrue();
+    }
+
+    @Test
+    void openDropWindow() {
+        stateUpdates.onNext(new EventDto<>("created",
+                new State("", gameService.getCurrentGameID(), List.of(new ExpectedMove("drop", List.of(userService.getCurrentUserID()))))));
+
+        Optional<Node> dropButton = lookup("#dropButton").tryQuery();
+        assertThat(dropButton).isNotPresent();
+
+        HashMap<String, Integer> resources = new HashMap<>();
+        resources.put("ore", 8);
+
+        playerUpdates.onNext(new EventDto<>("updated",
+                new Player(gameService.getCurrentGameID(), userService.getCurrentUserID(), "#008000", 2, resources, null)));
+        stateUpdates.onNext(new EventDto<>("created",
+                new State("", gameService.getCurrentGameID(), List.of(new ExpectedMove("drop", List.of(userService.getCurrentUserID()))))));
+
+        assertThat(dropButton).isPresent();
     }
 }
