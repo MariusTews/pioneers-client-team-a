@@ -26,7 +26,6 @@ public class Constants {
 
     public static final String PATH_BUILDING_ID = "parent";
 
-
     public static final String QUERY_IDS = "ids";
     public static final String QUERY_STATUS = "status";
     public static final String QUERY_MEMBERS = "members";
@@ -97,12 +96,7 @@ public class Constants {
 
     public static final String GET_MOVES_URL = "games/{gameId}/moves";
 
-    public static final String GET_MOVEID_URL="games/{gameId}/moves/{moveId}";
-
-
-
-
-
+    public static final String GET_MOVEID_URL = "games/{gameId}/moves/{moveId}";
 
 
     public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v3/events";

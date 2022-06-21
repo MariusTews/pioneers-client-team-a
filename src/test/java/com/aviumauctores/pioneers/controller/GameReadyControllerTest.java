@@ -72,7 +72,7 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Member existingMember = new Member("", "", "12", "1", true, null,false);
+        Member existingMember = new Member("", "", "12", "1", true, null, false);
 
         when(userService.getUserByID("1")).thenReturn(
                 Observable.just(new User("1", "Player1", "online", null, null)));
@@ -112,7 +112,7 @@ class GameReadyControllerTest extends ApplicationTest {
         // Get existing members
         List<Member> exMembersList = existingMembers.blockingFirst();
         // create a member
-        Member createdMember = new Member("", "", "12", "42", true, null,false);
+        Member createdMember = new Member("", "", "12", "42", true, null, false);
         memberUpdates.onNext(new EventDto<>("created", createdMember));
         // The list should now have 2 items: one existing member from REST and one new member
         verifyThat(playerList, hasItems(2));
@@ -120,7 +120,7 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Test
     void gameReady() {
-        when(gameMemberService.updateMember(anyString())).thenReturn(Observable.just(new Member("", "", "12", "1", false, null,false)));
+        when(gameMemberService.updateMember(anyString())).thenReturn(Observable.just(new Member("", "", "12", "1", false, null, false)));
         when(userService.getCurrentUserID()).thenReturn("1");
         clickOn("#gameReadyButton");
 
@@ -130,7 +130,7 @@ class GameReadyControllerTest extends ApplicationTest {
     @Test
     void leaveGame() {
         when(userService.getCurrentUserID()).thenReturn("42");
-        when(gameMemberService.deleteMember(anyString())).thenReturn(Observable.just(new Member("", "", null, "1", false, null,false)));
+        when(gameMemberService.deleteMember(anyString())).thenReturn(Observable.just(new Member("", "", null, "1", false, null, false)));
         clickOn("#leaveGameButton");
         clickOn("OK");
         verify(gameMemberService).updateID();
@@ -162,7 +162,7 @@ class GameReadyControllerTest extends ApplicationTest {
     @Test
     void startGameFailedMembersNotReady() {
         memberUpdates.onNext(new EventDto<>("updated",
-                new Member("", "", "12", "1", false, null,false)));
+                new Member("", "", "12", "1", false, null, false)));
 
         clickOn("#startGameButton");
 
@@ -175,7 +175,7 @@ class GameReadyControllerTest extends ApplicationTest {
     void testColour() {
         when(userService.getCurrentUserID()).thenReturn("1");
         String colourHexBlue = "#" + Color.BLUE.toString().substring(2, 8);
-        when(gameMemberService.updateColour("1", colourHexBlue)).thenReturn(Observable.just(new Member("", "", "12", "1", false, Color.BLUE,false)));
+        when(gameMemberService.updateColour("1", colourHexBlue)).thenReturn(Observable.just(new Member("", "", "12", "1", false, Color.BLUE, false)));
         clickOn("#pickColourMenu");
         clickOn("#item_" + Color.BLUE);
         verify(gameMemberService).updateColour("1", colourHexBlue);
