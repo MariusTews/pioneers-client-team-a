@@ -11,7 +11,7 @@ public class Constants {
 
     public static final String GAME_TITLE = "Pioneers";
 
-    public static final String BASE_URL = "https://pioneers.uniks.de/api/v2/";
+    public static final String BASE_URL = "https://pioneers.uniks.de/api/v3/";
 
     // URL params
     public static final String HEADER_AUTH = "Authorization";
