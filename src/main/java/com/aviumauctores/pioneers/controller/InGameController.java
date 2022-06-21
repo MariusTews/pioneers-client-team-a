@@ -76,14 +76,10 @@ public class InGameController extends LoggedInController {
 
     @FXML
     Label timeLabel;
-    @FXML
-    public Pane mainPane;
-    @FXML
-    public Pane crossingPane;
-    @FXML
-    public Pane roadPane;
 
-    @FXML
+    public Pane mainPane;
+    public Pane crossingPane;
+    public Pane roadPane;
     public Pane roadAndCrossingPane;
     @FXML
     private ImageView soundImage;
@@ -112,28 +108,6 @@ public class InGameController extends LoggedInController {
     private Slider soundSlider;
 
 
-    @FXML
-    public Circle vp01;
-    @FXML
-    public Circle vp02;
-    @FXML
-    public Circle vp03;
-    @FXML
-    public Circle vp04;
-    @FXML
-    public Circle vp05;
-    @FXML
-    public Circle vp06;
-    @FXML
-    public Circle vp07;
-    @FXML
-    public Circle vp08;
-    @FXML
-    public Circle vp09;
-    @FXML
-    public Circle vp10;
-
-
     public Circle[] vpCircles;
 
     public int memberVP;
@@ -152,13 +126,6 @@ public class InGameController extends LoggedInController {
     Image dice5;
     Image dice6;
 
-    Image desert;
-    Image fields;
-    Image hills;
-    Image mountains;
-    Image forest;
-    Image pasture;
-
     GameMusic gameSound;
     private BuildMenuController buildMenuController;
     private Parent buildMenu;
@@ -172,6 +139,7 @@ public class InGameController extends LoggedInController {
     Image unmuteImage;
     private final ErrorService errorService;
     private final BuildService buildService;
+    private final Provider<MapController> mapController;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
@@ -184,7 +152,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService) {
+                            ErrorService errorService, BuildService buildService, Provider<MapController> mapController) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -201,6 +169,7 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
+        this.mapController = mapController;
         fieldsMovedAlready = false;
     }
 
@@ -230,12 +199,6 @@ public class InGameController extends LoggedInController {
         dice4 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_4.png")).toString());
         dice5 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_5.png")).toString());
         dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
-        desert = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/desert.png")).toString());
-        fields = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/wheat.png")).toString());
-        hills = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/brick.png")).toString());
-        mountains = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/ore.png")).toString());
-        forest = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/forest.png")).toString());
-        pasture = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/pasture.png")).toString());
         // Listen to game-move events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".moves.*.*",
@@ -350,11 +313,18 @@ public class InGameController extends LoggedInController {
             e.printStackTrace();
             return null;
         }
+
+        MapController controller = mapController.get();
+        controller.setInGameController(this);
+        controller.render();
+        mainPane = controller.getMainPane();
+        roadAndCrossingPane = controller.getRoadAndCrossingPane();
+        roadPane = controller.getRoadPane();
+        crossingPane = controller.getCrossingPane();
+        vpCircles = new Circle[]{};
         runTimer();
 
         resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
-        vpCircles = new Circle[]{vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
-
 
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -451,7 +421,6 @@ public class InGameController extends LoggedInController {
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
         finishMoveButton.setDisable(true);
-        buildMap();
 
         return parent;
     }
@@ -573,31 +542,6 @@ public class InGameController extends LoggedInController {
         playerResourceListController.updatePlayerLabel(updatedPlayer);
     }
 
-    public void buildMap() {
-        errorService.setErrorCodesPioneersGet();
-        disposables.add(pioneerService.getMap()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(map -> {
-                    List<Tile> tiles = map.tiles();
-                    for (Tile tile : tiles) {
-                        String hexID = "" + tile.x() + tile.y() + tile.z();
-                        hexID = hexID.replace('-', '_');
-                        ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
-                        switch (tile.type()) {
-                            case "desert" -> tileImage.setImage(desert);
-                            case "fields" -> tileImage.setImage(fields);
-                            case "hills" -> tileImage.setImage(hills);
-                            case "mountains" -> tileImage.setImage(mountains);
-                            case "forest" -> tileImage.setImage(forest);
-                            case "pasture" -> tileImage.setImage(pasture);
-                        }
-                        Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
-                        tileLabel.setText("" + tile.numberToken());
-                    }
-                }, errorService::handleError)
-        );
-    }
-
     @Override
     public void destroy(boolean closed) {
         super.destroy(closed);
@@ -642,7 +586,7 @@ public class InGameController extends LoggedInController {
         disposables.add(pioneerService.createMove("roll", null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
-                        }, errorService::handleError));
+                }, errorService::handleError));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -753,7 +697,7 @@ public class InGameController extends LoggedInController {
 
     public void gainVP(int vpGain) {
         memberVP += vpGain;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < memberVP; i++) {
             if (memberVP > i) {
                 if (vpCircles[i].getFill() != Color.GOLD) {
                     vpCircles[i].setFill(Color.GOLD);
