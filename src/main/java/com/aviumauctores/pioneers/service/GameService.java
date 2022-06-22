@@ -52,7 +52,7 @@ public class GameService {
     }
 
     public Observable<Member> joinGame(String password) {
-        return gameMembersApiService.createMember(currentGameID, new CreateMemberDto(false, null, password));
+        return gameMembersApiService.createMember(currentGameID, new CreateMemberDto(false, null, password,false));
     }
 
     public Observable<List<Game>> listGames() {
