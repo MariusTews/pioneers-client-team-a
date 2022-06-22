@@ -436,7 +436,7 @@ public class InGameController extends LoggedInController {
 
         errorService.setErrorCodesPioneersPost();
 
-        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
+        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                 }, errorService::handleError));
@@ -624,7 +624,7 @@ public class InGameController extends LoggedInController {
 
     public void finishMove(ActionEvent actionEvent) {
         errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove(MOVE_BUILD, null)
+        disposables.add(pioneerService.createMove(MOVE_BUILD, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
                 }, errorService::handleError));
@@ -654,10 +654,10 @@ public class InGameController extends LoggedInController {
             }
         }
         errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove("roll", null)
+        disposables.add(pioneerService.createMove("roll", null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
-                        }, errorService::handleError));
+                }, errorService::handleError));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {

@@ -63,8 +63,7 @@ class SettingsControllerTest extends ApplicationTest {
     @Test
     void changeUserName() {
         User user = new User("123", "Peter", "online", "xyz", null);
-        when(userService.updateUser(any(), new UpdateUserDto(any(), null, null, null, null)))
-                .thenReturn(Observable.just(user));
+        when(userService.updateUser(any(), new UpdateUserDto(any(), null, null, null, null))).thenReturn(Observable.just(user));
 
         //click through the screen and change Name from Hans to Peter
         clickOn("#changeNameButton");
@@ -81,8 +80,7 @@ class SettingsControllerTest extends ApplicationTest {
 
     @Test
     void changeAvatar() {
-        when(userService.updateUser(any(), new UpdateUserDto(null, null, any(), null, null)))
-                .thenReturn(Observable.empty());
+        when(userService.updateUser(any(), new UpdateUserDto(null, null, any(), null, null))).thenReturn(Observable.empty());
 
         //click through the screen and change Avatar from xyz to abc
         clickOn("#changeAvatarButton");
@@ -97,8 +95,7 @@ class SettingsControllerTest extends ApplicationTest {
     @Test
     void changePassword() {
         when(loginService.checkPasswordLogin(any(), any())).thenReturn(Observable.just(new LoginResult("123", "Hans", "online", null, null, null, null)));
-        when(userService.updateUser(any(), new UpdateUserDto(null, null, null, any(), null)))
-                .thenReturn(Observable.empty());
+        when(userService.updateUser(any(), new UpdateUserDto(null, null, null, any(), null))).thenReturn(Observable.empty());
 
         //check that it does not work, if you don`t confirm the password
         clickOn("#changePasswordButton");
