@@ -1,0 +1,80 @@
+package com.aviumauctores.pioneers.controller;
+
+import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Player;
+import com.aviumauctores.pioneers.service.UserService;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+
+import java.util.Objects;
+import java.util.ResourceBundle;
+
+public class PlayerRequestsItemController implements Controller{
+
+    private Player player;
+    private final String name;
+    private final UserService userService;
+    private final ResourceBundle bundle;
+    private final String id;
+    private final String color;
+
+    public PlayerRequestsItemController(Player player, String name, String color, UserService userService, ResourceBundle bundle) {
+        this.player = player;
+        this.id = player.userId();
+        this.name = name;
+        this.color = color;
+        this.userService = userService;
+        this.bundle = bundle;
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void destroy(boolean closed) {
+
+    }
+
+    @Override
+    public Parent render() {
+        return null;
+    }
+
+    public HBox createBox() {
+        HBox playerBox = new HBox();
+        playerBox.setId(id);
+
+        String avatarUrl = userService.getUserByID(player.userId()).blockingFirst().avatar();
+        Image playerIcon = avatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + color + ".png")).toString()) : new Image(avatarUrl);
+
+        ImageView playerView = new ImageView(playerIcon);
+        playerView.setFitHeight(40.0);
+        playerView.setFitWidth(40.0);
+
+        Label playerName = new Label(name.length() > 12 ? name.substring(0, 9) + ".." : name);
+        playerName.setFont(new Font(18));
+        playerName.setStyle("-fx-font-weight: bold");
+        playerName.setStyle("-fx-text-fill: " + color);
+
+        //Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + color + ".png")).toString());
+        //arrowView = new ImageView(arrowIcon);
+        //arrowView.setFitHeight(40.0);
+        //arrowView.setFitWidth(40.0);
+        //arrowView.setVisible(false);
+        System.out.println(playerName);
+
+        VBox playerInfo = new VBox(playerName);
+
+
+        playerBox.getChildren().addAll(playerView, playerInfo);
+        playerBox.setSpacing(5.0);
+        return playerBox;
+    }
+}

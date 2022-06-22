@@ -53,6 +53,7 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
+    public Button tradeButton;
 
     private Player player;
     private final EventListener eventListener;
@@ -107,6 +108,8 @@ public class InGameController extends LoggedInController {
     private final StateService stateService;
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
+
+    private final Provider<TradingController> tradingController;
 
     @FXML
     private Slider soundSlider;
@@ -184,7 +187,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService) {
+                            ErrorService errorService, BuildService buildService, Provider<TradingController> tradingController) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -201,6 +204,7 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
+        this.tradingController = tradingController;
         fieldsMovedAlready = false;
     }
 
@@ -881,5 +885,17 @@ public class InGameController extends LoggedInController {
             String message = errorCodes.get(Integer.toString(response.statusCode()));
             app.showHttpErrorDialog(response.statusCode(), response.error(), message);
         }
+    }
+
+    public void trade(ActionEvent actionEvent) {
+        TradingController controller = tradingController.get();
+        Parent tradingScreen = controller.render();
+        tradingScreen.setStyle("-fx-background-color: #ffffff;");
+        tradingScreen.setLayoutX(0);
+        tradingScreen.setLayoutY(0);
+
+        mainPane.getChildren().add(tradingScreen);
+        // Prevent the event handler from main pane to close the build menu immediately after this
+        actionEvent.consume();
     }
 }
