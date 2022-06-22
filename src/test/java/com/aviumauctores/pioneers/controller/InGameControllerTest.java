@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.inject.Provider;
 import java.util.*;
@@ -43,7 +44,7 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     UserService userService;
 
-    @Mock
+    @Spy
     ColorService colorService;
 
     @Mock
@@ -215,8 +216,6 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void openDropWindow() {
-        when(eventListener.listen("games." + gameService.getCurrentGameID() + ".players." + userService.getCurrentUserID() + ".updated", Player.class)).thenReturn(playerUpdates);
-
         HashMap<String, Integer> resources = new HashMap<>();
         resources.put(RESOURCE_UNKNOWN, 8);
         String userID = userService.getCurrentUserID();
@@ -232,6 +231,8 @@ public class InGameControllerTest extends ApplicationTest {
         stateUpdates.onNext(new EventDto<>("created",
                 new State("", gameService.getCurrentGameID(),
                         List.of(new ExpectedMove(MOVE_DROP, List.of(userService.getCurrentUserID()))), null)));
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         //check that the drop menu opens
         Optional<Node> dropButton = lookup("#dropButton").tryQuery();
