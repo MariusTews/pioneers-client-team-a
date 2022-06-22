@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
+import com.aviumauctores.pioneers.dto.rob.RobDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.rest.PioneersApiService;
 import io.reactivex.rxjava3.core.Observable;
@@ -24,8 +25,9 @@ public class PioneerService {
         return pioneersApiService.getState(gameService.getCurrentGameID());
     }
 
-    public Observable<Move> createMove(String action, Building building) {
-        return pioneersApiService.createMove(gameService.getCurrentGameID(), new CreateMoveDto(action, building));
+    public Observable<Move> createMove(String action, Building building, String partner,
+                                       RobDto rob) {
+        return pioneersApiService.createMove(gameService.getCurrentGameID(), new CreateMoveDto(action, building, partner, rob));
     }
 
 

@@ -9,6 +9,8 @@ public record Member(
         String gameId,
         String userId,
         boolean ready,
-        Color color
+        Color color,
+
+        boolean spectator
 ) {
 }
