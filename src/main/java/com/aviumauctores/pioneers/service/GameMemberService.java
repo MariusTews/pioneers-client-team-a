@@ -29,7 +29,7 @@ public class GameMemberService {
     }
 
     public Observable<Member> createMember() {
-        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, null, gameService.password));
+        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, null, gameService.password,false));
     }
 
     public Observable<List<Member>> listCurrentGameMembers() {
@@ -45,12 +45,12 @@ public class GameMemberService {
     public Observable<Member> updateMember(String memberID) {
         Observable<Member> member = getMember(memberID);
         boolean status = !(member.blockingFirst().ready());
-        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status, null));
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status, null,false));
     }
 
     public Observable<Member> updateColour(String memberID, String colour) {
         Observable<Member> member = getMember(memberID);
-        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(member.blockingFirst().ready(), colour));
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(member.blockingFirst().ready(), colour,false));
     }
 
     public Observable<Member> getMember(String memberID) {
