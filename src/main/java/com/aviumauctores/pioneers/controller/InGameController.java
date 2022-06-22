@@ -363,6 +363,7 @@ public class InGameController extends LoggedInController {
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
         errorService.setErrorCodesGameMembersPost();
+
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
@@ -381,6 +382,7 @@ public class InGameController extends LoggedInController {
                         e.printStackTrace();
                     }
                 }, errorService::handleError));
+
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(buildingEventDto -> {
@@ -412,6 +414,7 @@ public class InGameController extends LoggedInController {
                             }
                         }, errorService::handleError
                 ));
+
         diceImage1.setImage(dice1);
         diceImage2.setImage(dice1);
         this.soundImage.setImage(muteImage);
@@ -890,9 +893,8 @@ public class InGameController extends LoggedInController {
         }
     }
 
-
     private void showDropWindow() {
-        dropMenuController = new DropMenuController(this.pioneerService);
+        dropMenuController = new DropMenuController(this.pioneerService, this.bundle);
         dropMenu = dropMenuController.render();
         mainPane.getChildren().add(dropMenu);
     }

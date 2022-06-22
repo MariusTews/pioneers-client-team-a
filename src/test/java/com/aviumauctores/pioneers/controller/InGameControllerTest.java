@@ -29,6 +29,8 @@ import org.testfx.framework.junit5.ApplicationTest;
 import javax.inject.Provider;
 import java.util.*;
 
+import static com.aviumauctores.pioneers.Constants.MOVE_DROP;
+import static com.aviumauctores.pioneers.Constants.RESOURCE_UNKNOWN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -137,9 +139,8 @@ public class InGameControllerTest extends ApplicationTest {
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(pioneerService.createMove("founding-roll", null, null, null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
-        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(1, 1, 1, "dessert", 0)))));
+        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(1, 1, 1, "desert", 0)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
-        when(eventListener.listen("games." + gameService.getCurrentGameID() + ".players." + userService.getCurrentUserID() + ".updated", Player.class)).thenReturn(playerUpdates);
         new App(inGameController).start(stage);
     }
 
@@ -214,20 +215,26 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void openDropWindow() {
+        when(eventListener.listen("games." + gameService.getCurrentGameID() + ".players." + userService.getCurrentUserID() + ".updated", Player.class)).thenReturn(playerUpdates);
+
         HashMap<String, Integer> resources = new HashMap<>();
-        when(stateService.getUpdatedPlayer()).thenReturn(new Player(gameService.getCurrentGameID(), userService.getCurrentUserID(), "#008000", 2, resources, null));
+        resources.put(RESOURCE_UNKNOWN, 8);
+        String userID = userService.getCurrentUserID();
 
+        Player player = new Player(gameService.getCurrentGameID(), userID, "#008000",
+                true, 2, resources, null, 0, 0);
+
+        when(stateService.getUpdatedPlayer()).thenReturn(player);
+        when(stateService.getCurrentPlayerID()).thenReturn(userID);
+        when(stateService.getCurrentAction()).thenReturn(MOVE_DROP);
+
+        //create a state in which the current player has to drop some resources
         stateUpdates.onNext(new EventDto<>("created",
-                new State("", gameService.getCurrentGameID(), List.of(new ExpectedMove("drop", List.of(userService.getCurrentUserID()))))));
+                new State("", gameService.getCurrentGameID(),
+                        List.of(new ExpectedMove(MOVE_DROP, List.of(userService.getCurrentUserID()))), null)));
 
+        //check that the drop menu opens
         Optional<Node> dropButton = lookup("#dropButton").tryQuery();
-        assertThat(dropButton).isNotPresent();
-
-        resources.put("ore", 8);
-
-        stateUpdates.onNext(new EventDto<>("created",
-                new State("", gameService.getCurrentGameID(), List.of(new ExpectedMove("drop", List.of(userService.getCurrentUserID()))))));
-
         assertThat(dropButton).isPresent();
     }
 }
