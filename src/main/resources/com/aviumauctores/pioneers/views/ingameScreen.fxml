@@ -1054,6 +1054,7 @@
                   </HBox>
                </VBox>
                <ImageView fx:id="soundImage" fitHeight="25.0" fitWidth="25.0" onMousePressed="#soundOnOff" pickOnBounds="true" preserveRatio="true" />
+               <Button fx:id="tradeButton" mnemonicParsing="false" onAction="#trade" text="%trading" />
                <Button fx:id="leaveGameButton" mnemonicParsing="false" onAction="#leaveGame" text="%leave" />
             </VBox>
          </bottom>
