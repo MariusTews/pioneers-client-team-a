@@ -1,10 +1,12 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.model.ExpectedMove;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.model.State;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class StateService {
     private final BuildService buildService;
@@ -29,17 +31,34 @@ public class StateService {
     }
 
     public void updateState(EventDto<State> state) {
+        player = pioneerService.getPlayer(userID).blockingFirst();
         oldAction = currentAction;
         oldPlayerID = currentPlayerID;
         State currentState = state.data();
-        currentPlayerID = currentState.expectedMoves().get(0).players().get(0);
-        currentAction = currentState.expectedMoves().get(0).action();
+        List<ExpectedMove> moves = currentState.expectedMoves();
+        boolean myTurn = false;
+
+        //check whether my own player is allowed to take his turn now
+        for (ExpectedMove move : moves) {
+            if (move.players().contains(userID)) {
+                currentPlayerID = userID;
+                currentAction = move.action();
+                myTurn = true;
+                break;
+            }
+        }
+
+        if (!myTurn) {
+            currentPlayerID = currentState.expectedMoves().get(0).players().get(0);
+            currentAction = currentState.expectedMoves().get(0).action();
+        }
+
         if (oldPlayerID == null) {
             newPlayer = true;
         } else {
             newPlayer = !currentPlayerID.equals(oldPlayerID);
         }
-        player = pioneerService.getPlayer(userID).blockingFirst();
+
         buildService.setPlayer(player);
     }
 

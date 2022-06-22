@@ -214,17 +214,17 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void openDropWindow() {
+        HashMap<String, Integer> resources = new HashMap<>();
+        when(stateService.getUpdatedPlayer()).thenReturn(new Player(gameService.getCurrentGameID(), userService.getCurrentUserID(), "#008000", 2, resources, null));
+
         stateUpdates.onNext(new EventDto<>("created",
                 new State("", gameService.getCurrentGameID(), List.of(new ExpectedMove("drop", List.of(userService.getCurrentUserID()))))));
 
         Optional<Node> dropButton = lookup("#dropButton").tryQuery();
         assertThat(dropButton).isNotPresent();
 
-        HashMap<String, Integer> resources = new HashMap<>();
         resources.put("ore", 8);
 
-        playerUpdates.onNext(new EventDto<>("updated",
-                new Player(gameService.getCurrentGameID(), userService.getCurrentUserID(), "#008000", 2, resources, null)));
         stateUpdates.onNext(new EventDto<>("created",
                 new State("", gameService.getCurrentGameID(), List.of(new ExpectedMove("drop", List.of(userService.getCurrentUserID()))))));
 

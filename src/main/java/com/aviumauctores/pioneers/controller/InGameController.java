@@ -161,7 +161,11 @@ public class InGameController extends LoggedInController {
 
     GameMusic gameSound;
     private BuildMenuController buildMenuController;
+
+    private DropMenuController dropMenuController;
     private Parent buildMenu;
+
+    private Parent dropMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
@@ -425,18 +429,23 @@ public class InGameController extends LoggedInController {
                     playerResourceListController.setPlayer(player);
                     updateVisuals();
                 }, this::handleError));
+
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
+
         errorService.setErrorCodesPioneersPost();
+
         disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                 }, errorService::handleError));
+
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
         yourTurnLabel.setVisible(false);
+
         if (currentPlayerID.equals(userID)) {
             arrowOnDice.setVisible(true);
             yourTurnLabel.setVisible(true);
@@ -447,6 +456,7 @@ public class InGameController extends LoggedInController {
             yourTurnLabel.setVisible(false);
             updateFields(false, crossingPane, roadPane);
         }
+
         soundImage.setImage(muteImage);
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
@@ -497,7 +507,7 @@ public class InGameController extends LoggedInController {
             playerResourceListController.showArrow(currentPlayerID);
             playerResourceListController.onPlayerTurn();
         }
-        //enable and disable road and crossingpane, depending on current action and current player
+        //update visuals, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
             yourTurnLabel.setVisible(true);
             if (currentAction.startsWith("founding")) {
@@ -538,6 +548,11 @@ public class InGameController extends LoggedInController {
                         finishMoveButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
                         freeFieldVisibility(false);
+                    }
+                    case MOVE_DROP -> {
+                        if (stateService.getUpdatedPlayer().resources().get(RESOURCE_UNKNOWN) > DROP_WHEN_OVER){
+                            showDropWindow();
+                        }
                     }
                 }
             }
@@ -670,7 +685,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         int side = coordinateHolder.side();
-        String sideType = "";
+        String sideType;
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
@@ -873,6 +888,13 @@ public class InGameController extends LoggedInController {
                 field.setVisible(var);
             }
         }
+    }
+
+
+    private void showDropWindow() {
+        dropMenuController = new DropMenuController(this.pioneerService);
+        dropMenu = dropMenuController.render();
+        mainPane.getChildren().add(dropMenu);
     }
 
     public void handleError(Throwable throwable) {
