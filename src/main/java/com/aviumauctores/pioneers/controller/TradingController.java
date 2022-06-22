@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.rest.PioneersApiService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.UserService;
 import javafx.event.ActionEvent;
@@ -16,6 +15,7 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class TradingController implements Controller {
@@ -136,10 +136,95 @@ public class TradingController implements Controller {
     }
 
     public void tradeWithBank(ActionEvent actionEvent) {
+        if (tradeWood.getValue() != 0){
+            int toTrade = tradeWood.getValue();
+            if(requestWool.getValue() != 0){
+                //TODO trade
+            } else if (requestWood.getValue() != 0) {
+                //TODO trade
+            } else if (requestStone.getValue() != 0) {
+                //TODO trade
+            } else if (requestClay.getValue() != 0) {
+                //TODO trade
+            } else if (requestBread.getValue() != 0) {
+                //TODO trade
+            }
+        }
+
+        if (tradeBread.getValue() != 0){
+            int toTrade = tradeBread.getValue();
+            if(requestWool.getValue() != 0){
+                //TODO trade
+            } else if (requestWood.getValue() != 0) {
+                //TODO trade
+            } else if (requestStone.getValue() != 0) {
+                //TODO trade
+            } else if (requestClay.getValue() != 0) {
+                //TODO trade
+            } else if (requestBread.getValue() != 0) {
+                //TODO trade
+            }
+        }
+
+        if (tradeWool.getValue() != 0){
+            int toTrade = tradeWool.getValue();
+            if(requestWool.getValue() != 0){
+                //TODO trade
+            } else if (requestWood.getValue() != 0) {
+                //TODO trade
+            } else if (requestStone.getValue() != 0) {
+                //TODO trade
+            } else if (requestClay.getValue() != 0) {
+                //TODO trade
+            } else if (requestBread.getValue() != 0) {
+                //TODO trade
+            }
+        }
+
+        if (tradeClay.getValue() != 0){
+            int toTrade = tradeClay.getValue();
+            if(requestWool.getValue() != 0){
+                //TODO trade
+            } else if (requestWood.getValue() != 0) {
+                //TODO trade
+            } else if (requestStone.getValue() != 0) {
+                //TODO trade
+            } else if (requestClay.getValue() != 0) {
+                //TODO trade
+            } else if (requestBread.getValue() != 0) {
+                //TODO trade
+            }
+        }
+
+        if (tradeStone.getValue() != 0){
+            int toTrade = tradeStone.getValue();
+            if(requestWool.getValue() != 0){
+                //TODO trade
+            } else if (requestWood.getValue() != 0) {
+                //TODO trade
+            } else if (requestStone.getValue() != 0) {
+                //TODO trade
+            } else if (requestClay.getValue() != 0) {
+                //TODO trade
+            } else if (requestBread.getValue() != 0) {
+                //TODO trade
+            }
+        }
 
     }
 
     public void tradeWithPlayer(ActionEvent actionEvent) {
+        String playerName = playerRequestsController.getSelectedPlayer();
+        if (playerName != null){
+            Player selectedPlayer = null;
+            for (Player p : pioneerService.listPlayers().blockingFirst()) {
+                String getPlayer = userService.getUserName(p.userId()).blockingFirst();
+                if (Objects.equals(playerName, getPlayer)){
+                    selectedPlayer = p;
+                }
+            }
+            //TODO trade with player
+        }
 
     }
 
@@ -217,9 +302,10 @@ public class TradingController implements Controller {
 
     public void enterWoolVariables(MouseEvent mouseEvent) {
         String totrade = woodLabel.getText();
+        System.out.println(totrade.charAt(0));
         if (totrade.charAt(0) == '3') {
             tradeWood.getValueFactory().setValue(0);
-            tradeWool.getValueFactory().setValue(2);
+            tradeWool.getValueFactory().setValue(3);
             tradeStone.getValueFactory().setValue(0);
             tradeClay.getValueFactory().setValue(0);
             tradeBread.getValueFactory().setValue(0);

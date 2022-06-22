@@ -889,6 +889,7 @@ public class InGameController extends LoggedInController {
 
     public void trade(ActionEvent actionEvent) {
         TradingController controller = tradingController.get();
+        controller.init();
         Parent tradingScreen = controller.render();
         tradingScreen.setStyle("-fx-background-color: #ffffff;");
         tradingScreen.setLayoutX(0);
