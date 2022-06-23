@@ -154,9 +154,9 @@ public class Constants {
     public static final String MOVE_ROLL = "roll";
     public static final String MOVE_BUILD = "build";
     public static final String MOVE_DROP = "drop";
+    public static final String MOVE_ROB = "rob";
 
     //Resources
-
     public static final String RESOURCE_BRICK = "brick";
     public static final String RESOURCE_GRAIN = "grain";
     public static final String RESOURCE_LUMBER = "lumber";

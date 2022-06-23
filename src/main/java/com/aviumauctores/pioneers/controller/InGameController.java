@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.dto.rob.RobDto;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.GameService;
@@ -160,11 +161,10 @@ public class InGameController extends LoggedInController {
     Image pasture;
 
     GameMusic gameSound;
-    private BuildMenuController buildMenuController;
 
+    private BuildMenuController buildMenuController;
     private DropMenuController dropMenuController;
     private Parent buildMenu;
-
     private Parent dropMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
@@ -179,6 +179,9 @@ public class InGameController extends LoggedInController {
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
+
+    //TODO remove later
+    private boolean flag;
 
 
     @Inject
@@ -206,6 +209,8 @@ public class InGameController extends LoggedInController {
         this.errorService = errorService;
         this.buildService = buildService;
         fieldsMovedAlready = false;
+        //TODO remove later
+        flag = false;
     }
 
 
@@ -240,6 +245,7 @@ public class InGameController extends LoggedInController {
         mountains = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/ore.png")).toString());
         forest = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/forest.png")).toString());
         pasture = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/pasture.png")).toString());
+
         // Listen to game-move events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".moves.*.*",
@@ -247,6 +253,7 @@ public class InGameController extends LoggedInController {
                 )
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onMoveEvent));
+
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".deleted", Game.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> {
@@ -265,6 +272,9 @@ public class InGameController extends LoggedInController {
         Move move = eventDto.data();
         if (move.action().equals("roll")) {
             int rolled = move.roll();
+            if (rolled == 7) {
+                System.out.println(7);
+            }
             new Thread(() -> {
                 try {
                     rollAllDice(rolled);
@@ -439,7 +449,7 @@ public class InGameController extends LoggedInController {
 
         errorService.setErrorCodesPioneersPost();
 
-        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null)
+        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                 }, errorService::handleError));
@@ -552,11 +562,8 @@ public class InGameController extends LoggedInController {
                         roadAndCrossingPane.setDisable(true);
                         freeFieldVisibility(false);
                     }
-                    case MOVE_DROP -> {
-                        if (stateService.getUpdatedPlayer().resources().get(RESOURCE_UNKNOWN) > DROP_WHEN_OVER){
-                            showDropWindow();
-                        }
-                    }
+                    case MOVE_DROP -> showDropWindow();
+                    case MOVE_ROB -> onRobberViewClicked();
                 }
             }
         } else {
@@ -627,7 +634,7 @@ public class InGameController extends LoggedInController {
 
     public void finishMove(ActionEvent actionEvent) {
         errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove(MOVE_BUILD, null, null, null)
+        disposables.add(pioneerService.createMove(MOVE_BUILD, null, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
                 }, errorService::handleError));
@@ -656,22 +663,25 @@ public class InGameController extends LoggedInController {
                 diceSound.play();
             }
         }
+
         errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove("roll", null, null, null)
+        disposables.add(pioneerService.createMove("roll", null, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                 }, errorService::handleError));
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
-
         if (!(mouseEvent.getSource() instanceof ImageView source)) {
             return;
         }
+
         buildService.setSelectedField(source);
+
         String buildingID;
         String buildingType;
         String buildingOwner;
+
         if (source.getId().contains("#")) {
             buildingID = source.getId().split("#")[0];
             buildingType = source.getId().split("#")[1];
@@ -681,14 +691,18 @@ public class InGameController extends LoggedInController {
             buildingType = "";
             buildingOwner = "";
         }
+
         buildService.setSelectedFieldCoordinates(coordsToPath(buildingID));
         closeBuildMenu(false);
         Building coordinateHolder = Building.readCoordinatesFromID(buildingID);
+
         if (coordinateHolder == null) {
             return;
         }
+
         int side = coordinateHolder.side();
         String sideType;
+
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
@@ -720,9 +734,27 @@ public class InGameController extends LoggedInController {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
             buildMenu.setLayoutY(Math.min(source.getLayoutY(), mainPane.getHeight() - newValue.getHeight()));
         });
+
         mainPane.getChildren().add(buildMenu);
+
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
+    }
+
+    private void onRobberViewClicked() {
+        flag = !flag;
+        int x = 0;
+        int y = 0;
+        int z = flag ? 0 : 2;
+        String target = userID;
+
+        errorService.setErrorCodesPioneersPost();
+        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, target))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(move -> {
+                        },
+                        errorService::handleError
+                ));
     }
 
     private String coordsToPath(String source) {
@@ -894,8 +926,14 @@ public class InGameController extends LoggedInController {
     }
 
     private void showDropWindow() {
-        dropMenuController = new DropMenuController(this.pioneerService, this.bundle);
+        HashMap<String, Integer> resources = stateService.getUpdatedPlayer().resources();
+        dropMenuController = new DropMenuController(this.pioneerService, this.bundle, resources);
         dropMenu = dropMenuController.render();
+
+        //TODO remove later
+        dropMenu.setLayoutX(450);
+        dropMenu.setLayoutY(250);
+
         mainPane.getChildren().add(dropMenu);
     }
 

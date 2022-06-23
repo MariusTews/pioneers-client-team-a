@@ -30,8 +30,7 @@ import org.testfx.util.WaitForAsyncUtils;
 import javax.inject.Provider;
 import java.util.*;
 
-import static com.aviumauctores.pioneers.Constants.MOVE_DROP;
-import static com.aviumauctores.pioneers.Constants.RESOURCE_UNKNOWN;
+import static com.aviumauctores.pioneers.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -138,7 +137,7 @@ public class InGameControllerTest extends ApplicationTest {
         stateUpdates = PublishSubject.create();
         playerUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
-        when(pioneerService.createMove("founding-roll", null, null, null)).thenReturn(Observable.just(new Move("69",
+        when(pioneerService.createMove("founding-roll", null, null, null, null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(1, 1, 1, "desert", 0)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
@@ -184,10 +183,10 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onRollClicked() {
-        when(pioneerService.createMove("roll", null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
+        when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
-        verify(pioneerService).createMove("roll", null, null, null);
+        verify(pioneerService).createMove("roll", null, null,  null, null);
     }
 
     @Test
@@ -217,7 +216,11 @@ public class InGameControllerTest extends ApplicationTest {
     @Test
     void openDropWindow() {
         HashMap<String, Integer> resources = new HashMap<>();
-        resources.put(RESOURCE_UNKNOWN, 8);
+        resources.put(RESOURCE_ORE, 8);
+        resources.put(RESOURCE_GRAIN, 8);
+        resources.put(RESOURCE_LUMBER, 8);
+        resources.put(RESOURCE_BRICK, 8);
+        resources.put(RESOURCE_WOOL, 8);
         String userID = userService.getCurrentUserID();
 
         Player player = new Player(gameService.getCurrentGameID(), userID, "#008000",

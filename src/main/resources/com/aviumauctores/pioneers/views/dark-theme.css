@@ -157,6 +157,10 @@
     -fx-background-color: #333333;
 }
 
+.drop-menu {
+    -fx-background-color: #333333;
+}
+
 #ingamePane {
     -fx-background-color: #00233B;
 }
