@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.GameService;
@@ -100,8 +101,8 @@ public class CreateGameControllerTest extends ApplicationTest {
         clickOn(password);
         write("password");
         FxAssert.verifyThat("#createGameButton", NodeMatchers.isEnabled());
-        when(gameService.create(anyString(), anyString())).thenReturn(Observable.just(new Game("1", "1", "gameID", "game", "owner", false, 1).toString()));
-        when(gameService.updateGame(any())).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", false, 1)));
+        when(gameService.create(anyString(), anyString())).thenReturn(Observable.just(new Game("1", "1", "gameID", "game", "owner", false, 1, new GameSettings(2, 10)).toString()));
+        when(gameService.updateGame(any())).thenReturn(Observable.just(new Game("1", "2", "gameID", "game", "owner", false, 1, new GameSettings(2, 10))));
         clickOn("#createGameButton");
         verify(gameService).create("game", "password");
         verify(gameService).updateGame(any());
