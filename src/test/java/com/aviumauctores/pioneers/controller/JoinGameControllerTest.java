@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.PreferenceService;
@@ -60,7 +61,7 @@ class JoinGameControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         this.errorService.errorCodes = new HashMap<>();
         when(gameService.getCurrentGameID()).thenReturn("1");
-        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", false, 1)));
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", false, 1, new GameSettings(2, 10))));
         when(eventListener.listen("games.1.*", Game.class)).thenReturn(Observable.empty());
         new App(joinGameController).start(stage);
     }
