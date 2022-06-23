@@ -77,6 +77,7 @@ public class GameService {
         return gamesApiService.updateGame(currentGameID, new UpdateGameDto(null, null, true, null));
     }
 
+
     public String getOwnerID() {
         return this.ownerID;
     }
@@ -84,6 +85,8 @@ public class GameService {
     public void setOwnerID(String ID) {
         this.ownerID = ID;
     }
+
+
 
 
 }

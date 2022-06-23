@@ -10,6 +10,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
@@ -37,7 +38,7 @@
         <Button fx:id="leaveGameButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#leaveGame" prefHeight="39.0" prefWidth="100.0" text="%leave" />
         <Button fx:id="gameReadyButton" layoutX="262.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameReady" prefHeight="39.0" prefWidth="100.0" text="%ready" />
         <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame" prefHeight="39.0" prefWidth="100.0" text="%start.game" />
-        <ComboBox fx:id="pickColourMenu" layoutX="424.0" layoutY="27.0" onAction="#changeColour" prefWidth="150.0" promptText="%pick.colour">
+        <ComboBox fx:id="pickColourMenu" layoutX="458.0" layoutY="27.0" onAction="#changeColour" prefHeight="25.0" prefWidth="116.0" promptText="%pick.colour">
         </ComboBox>
         <HBox layoutY="33.0" prefHeight="39.0" prefWidth="200.0">
             <Label fx:id="nameLabel" prefHeight="45.0" prefWidth="165.0" text="Label">
@@ -49,5 +50,9 @@
                 </HBox.margin>
             </Label>
         </HBox>
+      <Button fx:id="gameOptionButton" layoutX="146.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameOption" prefHeight="39.0" prefWidth="100.0" text="%option" />
+      <ToggleButton fx:id="onButton" layoutX="372.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeOnOff" prefHeight="25.0" prefWidth="41.0" text="%on" />
+      <ToggleButton fx:id="offButton" layoutX="413.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeOnOff" prefHeight="25.0" prefWidth="41.0" selected="true" snapToPixel="false" text="%off" />
+      <Label fx:id="spectatorText" layoutX="372.0" layoutY="-1.0" prefHeight="31.0" prefWidth="106.0" text="%spectator" />
     </Pane>
 </VBox>
