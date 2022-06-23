@@ -2,8 +2,10 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
+import com.aviumauctores.pioneers.service.ColorService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.UserService;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,10 +17,14 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static com.aviumauctores.pioneers.Constants.*;
+
 public class TradingController implements Controller {
+    private InGameController inGameController;
     private final ResourceBundle bundle;
     @FXML
     public Spinner<Integer> tradeWood;
@@ -58,26 +64,35 @@ public class TradingController implements Controller {
     private Player player;
     private final UserService userService;
     private final PioneerService pioneerService;
+    private final ColorService colorService;
 
-    private final PlayerRequestsController playerRequestsController;
+    private CompositeDisposable disposables;
+
+    private PlayerRequestsController playerRequestsController;
 
     @Inject
-    public TradingController(ResourceBundle bundle, UserService userService, PioneerService pioneerService, PlayerRequestsController playerRequestsController) {
+    public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService, PioneerService pioneerService, ColorService colorService) {
+        this.inGameController = inGameController;
         this.bundle = bundle;
         this.userService = userService;
         this.pioneerService = pioneerService;
-        this.playerRequestsController = playerRequestsController;
+        this.colorService = colorService;
     }
 
     @Override
     public void init() {
         userID = userService.getCurrentUserID();
         player = pioneerService.getPlayer(userID).blockingFirst();
+        disposables = new CompositeDisposable();
 
     }
 
     @Override
     public void destroy(boolean closed) {
+        if (playerRequestsController != null) {
+            playerRequestsController.destroy(closed);
+            playerRequestsController = null;
+        }
 
     }
 
@@ -93,12 +108,15 @@ public class TradingController implements Controller {
             return null;
         }
         this.initSpinners();
+        playerRequestsController = new PlayerRequestsController(pioneerService,userService,colorService, bundle);
         this.playerRequestsController.load(requestList, userID);
         return parent;
     }
 
 
     public void cancel(ActionEvent actionEvent) {
+        inGameController.closeTradingMenu(false);
+
 
     }
 
@@ -224,6 +242,17 @@ public class TradingController implements Controller {
                 }
             }
             //TODO trade with player
+            HashMap<String, Integer> resources = new HashMap<>();
+            resources.put(RESOURCE_BRICK, 1);
+            resources.put(RESOURCE_GRAIN, -1);
+            disposables.add(pioneerService.createMove("build", null, null, null, resources )
+                    .observeOn(FX_SCHEDULER).
+                    subscribe(move -> {
+                        System.out.println("test");
+                    }, error -> {
+                        System.out.println(error.getMessage());
+                    }));
+
         }
 
     }

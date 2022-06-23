@@ -54,6 +54,8 @@ public class InGameController extends LoggedInController {
     private final GameService gameService;
     private final PioneerService pioneerService;
     public Button tradeButton;
+    public VBox tradeRequestPopup;
+    public Button viewRequestButton;
 
     private Player player;
     private final EventListener eventListener;
@@ -109,7 +111,7 @@ public class InGameController extends LoggedInController {
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
 
-    private final Provider<TradingController> tradingController;
+    private TradingController tradingController;
 
     @FXML
     private Slider soundSlider;
@@ -166,6 +168,8 @@ public class InGameController extends LoggedInController {
     private BuildMenuController buildMenuController;
     private Parent buildMenu;
 
+    private Parent tradingMenu;
+
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
 
@@ -187,7 +191,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, Provider<TradingController> tradingController) {
+                            ErrorService errorService, BuildService buildService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -204,7 +208,6 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
-        this.tradingController = tradingController;
         fieldsMovedAlready = false;
     }
 
@@ -372,6 +375,7 @@ public class InGameController extends LoggedInController {
                     rollButton.setStyle(colourString);
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
+                    tradeButton.setStyle(colourString);
                     diceImage1.setStyle(colourString);
                     diceImage2.setStyle(colourString);
                     try {
@@ -433,7 +437,7 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onPlayerUpdated));
         errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null)
+        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                 }, errorService::handleError));
@@ -606,6 +610,7 @@ public class InGameController extends LoggedInController {
     public void destroy(boolean closed) {
         super.destroy(closed);
         closeBuildMenu(closed);
+        closeTradingMenu(closed);
         if (timer != null) {
             timer.cancel();
         }
@@ -613,7 +618,7 @@ public class InGameController extends LoggedInController {
 
     public void finishMove(ActionEvent actionEvent) {
         errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove(MOVE_BUILD, null, null, null)
+        disposables.add(pioneerService.createMove(MOVE_BUILD, null, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
                 }, errorService::handleError));
@@ -643,7 +648,7 @@ public class InGameController extends LoggedInController {
             }
         }
         errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove("roll", null, null, null)
+        disposables.add(pioneerService.createMove("roll", null, null, null, null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                 }, errorService::handleError));
@@ -730,8 +735,20 @@ public class InGameController extends LoggedInController {
         }
     }
 
+    public void closeTradingMenu(boolean appClosed) {
+        if(tradingController != null) {
+            tradingController.destroy(appClosed);
+            tradingController = null;
+        }
+        if (tradingMenu != null) {
+            mainPane.getChildren().remove(tradingMenu);
+            tradingMenu = null;
+        }
+    }
+
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         closeBuildMenu(false);
+        closeTradingMenu(false);
         buildService.setSelectedField(null);
         buildService.setSelectedFieldCoordinates(null);
     }
@@ -888,15 +905,27 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        TradingController controller = tradingController.get();
-        controller.init();
-        Parent tradingScreen = controller.render();
-        tradingScreen.setStyle("-fx-background-color: #ffffff;");
-        tradingScreen.setLayoutX(0);
-        tradingScreen.setLayoutY(0);
+        tradingController = new TradingController(this, bundle,userService,pioneerService,colorService);
+        tradingController.init();
+        tradingMenu = tradingController.render();
+        tradingMenu.setStyle("-fx-background-color: #ffffff;");
+        tradingMenu.setLayoutX(0);
+        tradingMenu.setLayoutY(0);
+        mainPane.getChildren().add(tradingMenu);
 
-        mainPane.getChildren().add(tradingScreen);
+
+
+
         // Prevent the event handler from main pane to close the build menu immediately after this
         actionEvent.consume();
+    }
+
+    public void showTradeRequest(){
+        tradeRequestPopup.setVisible(true);
+    }
+
+    public void viewRequest(ActionEvent actionEvent) {
+        System.out.println("trade");
+
     }
 }

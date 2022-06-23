@@ -41,9 +41,10 @@ public class PlayerRequestsController implements Controller{
         this.playerList = node;
         this.currentPlayerID = startingPlayer;
         for (Player p : pioneerService.listPlayers().blockingFirst()) {
-            if (!Objects.equals(p.userId(), currentPlayerID)){
-                createPlayerBox(p);
-            }
+            createPlayerBox(p);
+            //if (!Objects.equals(p.userId(), currentPlayerID)){
+            //    createPlayerBox(p);
+            //}
         }
         playerList.setPadding(new Insets(10, 0, 10, 0));
     }
@@ -65,6 +66,10 @@ public class PlayerRequestsController implements Controller{
 
     @Override
     public void destroy(boolean closed) {
+        if (playerRequestsItemController != null) {
+            playerRequestsItemController.destroy(closed);
+            playerRequestsItemController = null;
+        }
 
     }
 
