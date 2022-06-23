@@ -2,10 +2,14 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Map;
+import com.aviumauctores.pioneers.model.Tile;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -31,6 +35,7 @@ public class MapController implements Controller {
     public Pane roadPane;
     @FXML
     public HBox vpBox;
+    @FXML public Label timeLabel;
     Image desert;
     Image fields;
     Image hills;
@@ -39,6 +44,7 @@ public class MapController implements Controller {
     Image pasture;
 
     public int mapRadius;
+    public Map gameMap;
 
     @Inject
     public MapController(ResourceBundle bundle) {
@@ -71,10 +77,39 @@ public class MapController implements Controller {
             e.printStackTrace();
             return null;
         }
-        double fitWidthHexagon = WIDTH_HEXAGON / (1 + 2 * mapRadius);
-        double fitHeightHexagon = HEIGHT_HEXAGON / (1 + 2 * mapRadius);
-        double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
-        double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
+        if (gameMap != null) {
+            double fitWidthHexagon = WIDTH_HEXAGON / (1 + 2 * mapRadius);
+            double fitHeightHexagon = HEIGHT_HEXAGON / (1 + 2 * mapRadius);
+            double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
+            double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
+            for (Tile tile : gameMap.tiles()) {
+                int posX = tile.x();
+                int posY = tile.y();
+                int posZ = tile.z();
+                String tileID = "hexagonX" + posX + "Y" + posY + "Z" + posZ;
+                tileID = tileID.replace("-", "_");
+                ImageView imageView = new ImageView();
+                imageView.setId(tileID);
+                imageView.setFitHeight(fitHeightHexagon);
+                imageView.setFitWidth(fitWidthHexagon);
+                switch (tile.type()) {
+                    case "desert" -> imageView.setImage(desert);
+                    case "fields" -> imageView.setImage(fields);
+                    case "hills" -> imageView.setImage(hills);
+                    case "mountains" -> imageView.setImage(mountains);
+                    case "forest" -> imageView.setImage(forest);
+                    case "pasture" -> imageView.setImage(pasture);
+                }
+                mainPane.getChildren().add(imageView);
+                double tileX = middleX - (0.75 * posX * fitWidthHexagon) - (0.75 * posY * fitWidthHexagon);
+                double tileY = middleY - (0.5 * posX * fitHeightHexagon) + (0.5 * posY * fitHeightHexagon);
+                if (posX == 0 && posY == 0) {
+                    tileX += posZ * fitWidthHexagon;
+                }
+                imageView.setX(tileX);
+                imageView.setY(tileY);
+            }
+        }
         return parent;
     }
 
@@ -104,5 +139,13 @@ public class MapController implements Controller {
 
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         inGameController.onMainPaneClicked(mouseEvent);
+    }
+
+    public void setGameMap(Map gameMap) {
+        this.gameMap = gameMap;
+    }
+
+    public Label getTimeLabel() {
+        return timeLabel;
     }
 }

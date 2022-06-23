@@ -25,6 +25,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -53,6 +54,9 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
+
+    @FXML
+    public BorderPane ingamePane;
 
     private Player player;
     private final EventListener eventListener;
@@ -314,112 +318,123 @@ public class InGameController extends LoggedInController {
             return null;
         }
         MapController controller = mapController.get();
-        controller.setInGameController(this);
-        controller.render();
-        mainPane = controller.getMainPane();
-        roadAndCrossingPane = controller.getRoadAndCrossingPane();
-        roadPane = controller.getRoadPane();
-        crossingPane = controller.getCrossingPane();
-        vpCircles = new Circle[]{};
-        runTimer();
-
-        resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
-
-        arrowOnDice.setFitHeight(40.0);
-        arrowOnDice.setFitWidth(40.0);
-        errorService.setErrorCodesGameMembersPost();
-        disposables.add(gameMemberService.getMember(userID)
+        disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(member -> {
-                    Color colour = member.color();
-                    String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                    String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
-                    rollButton.setStyle(colourString);
-                    leaveGameButton.setStyle(colourString);
-                    finishMoveButton.setStyle(colourString);
-                    diceImage1.setStyle(colourString);
-                    diceImage2.setStyle(colourString);
-                    try {
-                        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                        arrowOnDice.setImage(arrowIcon);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
+                .subscribe(map -> {
+                    if (controller != null) {
+                        controller.init();
+                        controller.setInGameController(this);
+                        controller.setGameMap(map);
+                        controller.setMapRadius(2);
+                        ingamePane.setCenter(controller.render());
                     }
-                }, errorService::handleError));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(buildingEventDto -> {
-                            if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-                                //listen to new and updatedbuildings, and load the image
-                                Building b = buildingEventDto.data();
-                                Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                                buildService.setPlayer(builder);
-                                buildService.setBuildingType(b.type());
-                                ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                                buildService.setSelectedField(position);
-                                buildService.loadBuildingImage(b._id());
-                                if (b.owner().equals(userID)) {
-                                    if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                        gainVP(1);
-                                    }
-                                }
-                                if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                    position.setVisible(true);
-                                    roadAndCrossingPane.getChildren().add(position);
-                                }
-                                if (soundImage.getImage() == muteImage) {
-                                    GameSounds buildSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
-                                    if (buildSound != null) {
-                                        buildSound.play();
-                                    }
-                                }
-                            }
-                        }, errorService::handleError
-                ));
-        diceImage1.setImage(dice1);
-        diceImage2.setImage(dice1);
-        this.soundImage.setImage(muteImage);
+                    mainPane = controller.getMainPane();
+                    roadAndCrossingPane = controller.getRoadAndCrossingPane();
+                    roadPane = controller.getRoadPane();
+                    crossingPane = controller.getCrossingPane();
+                    vpCircles = new Circle[]{};
+                    timeLabel = controller.getTimeLabel();
+                    runTimer();
 
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(state -> {
-                    //update class variables
-                    stateService.updateState(state);
-                    currentPlayerID = stateService.getCurrentPlayerID();
-                    currentAction = stateService.getCurrentAction();
-                    buildService.setCurrentAction(currentAction);
-                    playerResourceListController.setCurrentPlayerID(currentPlayerID);
-                    player = stateService.getUpdatedPlayer();
-                    playerResourceListController.setPlayer(player);
-                    updateVisuals();
-                }, this::handleError));
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(this::onPlayerUpdated));
-        errorService.setErrorCodesPioneersPost();
-        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
+                    resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
+
+                    arrowOnDice.setFitHeight(40.0);
+                    arrowOnDice.setFitWidth(40.0);
+                    errorService.setErrorCodesGameMembersPost();
+                    disposables.add(gameMemberService.getMember(userID)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(member -> {
+                                Color colour = member.color();
+                                String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                                String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
+                                rollButton.setStyle(colourString);
+                                leaveGameButton.setStyle(colourString);
+                                finishMoveButton.setStyle(colourString);
+                                diceImage1.setStyle(colourString);
+                                diceImage2.setStyle(colourString);
+                                try {
+                                    Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                                    arrowOnDice.setImage(arrowIcon);
+                                } catch (NullPointerException e) {
+                                    e.printStackTrace();
+                                }
+                            }, errorService::handleError));
+                    disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(buildingEventDto -> {
+                                        if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                            //listen to new and updatedbuildings, and load the image
+                                            Building b = buildingEventDto.data();
+                                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                                            buildService.setPlayer(builder);
+                                            buildService.setBuildingType(b.type());
+                                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                            buildService.setSelectedField(position);
+                                            buildService.loadBuildingImage(b._id());
+                                            if (b.owner().equals(userID)) {
+                                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                                    gainVP(1);
+                                                }
+                                            }
+                                            if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                                position.setVisible(true);
+                                                roadAndCrossingPane.getChildren().add(position);
+                                            }
+                                            if (soundImage.getImage() == muteImage) {
+                                                GameSounds buildSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+                                                if (buildSound != null) {
+                                                    buildSound.play();
+                                                }
+                                            }
+                                        }
+                                    }, errorService::handleError
+                            ));
+                    diceImage1.setImage(dice1);
+                    diceImage2.setImage(dice1);
+                    this.soundImage.setImage(muteImage);
+
+                    disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(state -> {
+                                //update class variables
+                                stateService.updateState(state);
+                                currentPlayerID = stateService.getCurrentPlayerID();
+                                currentAction = stateService.getCurrentAction();
+                                buildService.setCurrentAction(currentAction);
+                                playerResourceListController.setCurrentPlayerID(currentPlayerID);
+                                player = stateService.getUpdatedPlayer();
+                                playerResourceListController.setPlayer(player);
+                                updateVisuals();
+                            }, this::handleError));
+                    disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(this::onPlayerUpdated));
+                    errorService.setErrorCodesPioneersPost();
+                    disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe(move -> {
+                            }, errorService::handleError));
+                    currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
+                    arrowOnDice.setFitHeight(40.0);
+                    arrowOnDice.setFitWidth(40.0);
+                    yourTurnLabel.setVisible(false);
+                    if (currentPlayerID.equals(userID)) {
+                        arrowOnDice.setVisible(true);
+                        yourTurnLabel.setVisible(true);
+                        updateFields(false, roadPane);
+                        updateFields(true, crossingPane);
+                    } else {
+                        arrowOnDice.setVisible(false);
+                        yourTurnLabel.setVisible(false);
+                        updateFields(false, crossingPane, roadPane);
+                    }
+                    soundImage.setImage(muteImage);
+                    loadChat();
+                    playerResourceListController.init(playerList, currentPlayerID);
+                    finishMoveButton.setDisable(true);
                 }, errorService::handleError));
-        currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
-        arrowOnDice.setFitHeight(40.0);
-        arrowOnDice.setFitWidth(40.0);
-        yourTurnLabel.setVisible(false);
-        if (currentPlayerID.equals(userID)) {
-            arrowOnDice.setVisible(true);
-            yourTurnLabel.setVisible(true);
-            updateFields(false, roadPane);
-            updateFields(true, crossingPane);
-        } else {
-            arrowOnDice.setVisible(false);
-            yourTurnLabel.setVisible(false);
-            updateFields(false, crossingPane, roadPane);
-        }
-        soundImage.setImage(muteImage);
-        loadChat();
-        playerResourceListController.init(playerList, currentPlayerID);
-        finishMoveButton.setDisable(true);
+
 
         return parent;
     }
@@ -697,20 +712,16 @@ public class InGameController extends LoggedInController {
     public void gainVP(int vpGain) {
         memberVP += vpGain;
         for (int i = 0; i < memberVP; i++) {
-            if (memberVP > i) {
-                if (vpCircles[i].getFill() != Color.GOLD) {
-                    vpCircles[i].setFill(Color.GOLD);
-                    int finalI = i;
-                    new Thread(() -> {
-                        try {
-                            vpAnimation(finalI);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).start();
-                }
-            } else {
-                vpCircles[i].setFill(Color.GRAY);
+            if (vpCircles[i].getFill() != Color.GOLD) {
+                vpCircles[i].setFill(Color.GOLD);
+                int finalI = i;
+                new Thread(() -> {
+                    try {
+                        vpAnimation(finalI);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
             }
         }
     }

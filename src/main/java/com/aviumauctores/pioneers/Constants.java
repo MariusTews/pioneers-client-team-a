@@ -170,8 +170,8 @@ public class Constants {
 
 
     // values for smallest map-radius
-    public static final double WIDTH_HEXAGON = 259.375;
-    public static final double HEIGHT_HEXAGON = 223.4375;
+    public static final double WIDTH_HEXAGON = 518.75;
+    public static final double HEIGHT_HEXAGON = 446.875;
     public static final double MAIN_PAIN_MIDDLE_X = 291.5;
     public static final double MAIN_PAIN_MIDDLE_Y = 290.0;
 }
