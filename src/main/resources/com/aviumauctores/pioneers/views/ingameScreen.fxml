@@ -79,15 +79,7 @@
          <ImageView id="hexagon_202" fitHeight="89.375" fitWidth="103.75" layoutX="424.625" layoutY="345.125" pickOnBounds="true" preserveRatio="true">
             <Image url="@tiles/wheat.png" />
          </ImageView>
-         <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="679.0" prefWidth="579.0">
-            <children>
-               <VBox fx:id="tradeRequestPopup" alignment="CENTER" layoutX="325.0" layoutY="573.0" prefHeight="73.0" prefWidth="183.0" spacing="10.0" visible="false">
-                  <children>
-                     <Label fx:id="playerWantTradeLabel" text="%player.want.trade" />
-                     <Button fx:id="viewRequestButton" mnemonicParsing="false" onAction="#viewRequest" text="%view.request" />
-                  </children>
-               </VBox>
-            </children></Pane>
+         <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="679.0" prefWidth="579.0" />
          <Pane fx:id="crossingPane" prefHeight="580.0" prefWidth="583.0">
             <ImageView id="building2_200" fitHeight="20.0" fitWidth="20.0" layoutX="261.0" layoutY="113.6875" onMouseClicked="#onFieldClicked" pickOnBounds="true" preserveRatio="true">
                <Image url="@buildings/empty.png" />
@@ -1014,6 +1006,12 @@
                         <Label fx:id="resourceLabel" text="%your.resources" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
                      </children>
                   </GridPane>
+                  <VBox fx:id="tradeRequestPopup" alignment="CENTER" prefHeight="73.0" prefWidth="183.0" spacing="10.0" visible="false">
+                     <children>
+                        <Label fx:id="playerWantTradeLabel" text="%player.want.trade" />
+                        <Button fx:id="viewRequestButton" mnemonicParsing="false" onAction="#viewRequest" text="%view.request" />
+                     </children>
+                  </VBox>
                </children>
             </VBox>
          </center>

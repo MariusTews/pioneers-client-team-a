@@ -93,6 +93,7 @@ public class TradingController implements Controller {
             playerRequestsController.destroy(closed);
             playerRequestsController = null;
         }
+        disposables.dispose();
 
     }
 
@@ -154,6 +155,17 @@ public class TradingController implements Controller {
     }
 
     public void tradeWithBank(ActionEvent actionEvent) {
+
+        HashMap<String, Integer> resources = new HashMap<>();
+        resources.put(RESOURCE_BRICK, 1);
+        resources.put(RESOURCE_GRAIN, -4);
+        disposables.add(pioneerService.createMove("build", null, "684072366f72202b72406465", null, resources )
+                .observeOn(FX_SCHEDULER).
+                subscribe(move -> {
+                    System.out.println("test");
+                }, error -> {
+                    System.out.println(error.getMessage());
+                }));
         if (tradeWood.getValue() != 0){
             int toTrade = tradeWood.getValue();
             if(requestWool.getValue() != 0){
@@ -245,7 +257,8 @@ public class TradingController implements Controller {
             HashMap<String, Integer> resources = new HashMap<>();
             resources.put(RESOURCE_BRICK, 1);
             resources.put(RESOURCE_GRAIN, -1);
-            disposables.add(pioneerService.createMove("build", null, null, null, resources )
+            System.out.println(selectedPlayer.userId());
+            disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources )
                     .observeOn(FX_SCHEDULER).
                     subscribe(move -> {
                         System.out.println("test");
