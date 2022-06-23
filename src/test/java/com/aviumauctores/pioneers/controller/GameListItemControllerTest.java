@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import javafx.application.Platform;
@@ -29,7 +30,7 @@ class GameListItemControllerTest extends ApplicationTest {
     LobbyController parentController;
 
     @Spy
-    Game game = new Game("", "", "1", "name", "42", false, 1);
+    Game game = new Game("", "", "1", "name", "42", false, 1, new GameSettings(2, 10));
 
     @Mock
     ObservableList<Parent> items;
@@ -75,7 +76,7 @@ class GameListItemControllerTest extends ApplicationTest {
         assertEquals(gameNameLabel.getText(), game.name());
         assertEquals(numPlayersLabel.getText(), "1");
 
-        Game newGame = new Game("", "", "2", "game2", "42", false, 2);
+        Game newGame = new Game("", "", "2", "game2", "42", false, 2, new GameSettings(2, 10));
         Platform.runLater(() -> {
             gameListItemController.onGameUpdated(newGame);
 
