@@ -313,7 +313,6 @@ public class InGameController extends LoggedInController {
             e.printStackTrace();
             return null;
         }
-
         MapController controller = mapController.get();
         controller.setInGameController(this);
         controller.render();

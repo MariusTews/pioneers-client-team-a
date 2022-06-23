@@ -167,4 +167,11 @@ public class Constants {
 
 
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
+
+
+    // values for smallest map-radius
+    public static final double WIDTH_HEXAGON = 259.375;
+    public static final double HEIGHT_HEXAGON = 223.4375;
+    public static final double MAIN_PAIN_MIDDLE_X = 291.5;
+    public static final double MAIN_PAIN_MIDDLE_Y = 290.0;
 }

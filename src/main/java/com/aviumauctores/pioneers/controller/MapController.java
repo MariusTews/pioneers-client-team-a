@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
+import static com.aviumauctores.pioneers.Constants.*;
 
 public class MapController implements Controller {
 
@@ -34,6 +37,8 @@ public class MapController implements Controller {
     Image mountains;
     Image forest;
     Image pasture;
+
+    public int mapRadius;
 
     @Inject
     public MapController(ResourceBundle bundle) {
@@ -66,21 +71,33 @@ public class MapController implements Controller {
             e.printStackTrace();
             return null;
         }
+        double fitWidthHexagon = WIDTH_HEXAGON / (1 + 2 * mapRadius);
+        double fitHeightHexagon = HEIGHT_HEXAGON / (1 + 2 * mapRadius);
+        double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
+        double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
         return parent;
     }
 
     public void setInGameController(InGameController inGameController) {
         this.inGameController = inGameController;
     }
+
+    public void setMapRadius(int mapRadius) {
+        this.mapRadius = mapRadius;
+    }
+
     public Pane getMainPane() {
         return mainPane;
     }
+
     public Pane getRoadAndCrossingPane() {
         return roadAndCrossingPane;
     }
+
     public Pane getCrossingPane() {
         return crossingPane;
     }
+
     public Pane getRoadPane() {
         return roadPane;
     }
