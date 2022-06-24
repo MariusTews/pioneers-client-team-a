@@ -8,7 +8,6 @@ import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import com.aviumauctores.pioneers.rest.GamesApiService;
-import com.aviumauctores.pioneers.rest.PioneersApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -19,7 +18,6 @@ import java.util.List;
 public class GameService {
     private final GameMembersApiService gameMembersApiService;
     private final GamesApiService gamesApiService;
-    private final PioneersApiService pioneersApiService;
 
     private String currentGameID;
 
@@ -29,11 +27,15 @@ public class GameService {
 
     public String password;
 
+    private int radius;
+
+    private int victoryPoints;
+
+
     @Inject
-    public GameService(GameMembersApiService gameMembersApiService, GamesApiService gamesApiService, PioneersApiService pioneersApiService) {
+    public GameService(GameMembersApiService gameMembersApiService, GamesApiService gamesApiService) {
         this.gameMembersApiService = gameMembersApiService;
         this.gamesApiService = gamesApiService;
-        this.pioneersApiService = pioneersApiService;
     }
 
     public String getCurrentGameID() {
@@ -84,4 +86,24 @@ public class GameService {
     public void setOwnerID(String ID) {
         this.ownerID = ID;
     }
+
+    public Observable<Game> setUpdateOption(int radius, int victoryPoints) {
+        this.radius = radius;
+        this.victoryPoints = victoryPoints;
+
+        if (radius >= 0 && radius <= 10 && victoryPoints >= 3 && victoryPoints <= 15) {
+            return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, false, new GameSettings(radius, victoryPoints), password));
+        }
+        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, false, new GameSettings(2, 10), password));
+    }
+
+    public int getMapRadius() {
+        return this.radius;
+    }
+
+    public int getVictoryPoints() {
+        return this.victoryPoints;
+    }
+
+
 }

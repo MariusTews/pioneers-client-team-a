@@ -4,10 +4,8 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.model.Member;
-import com.aviumauctores.pioneers.model.Message;
-import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
+import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -22,6 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -47,6 +46,7 @@ public class GameReadyController extends PlayerListController {
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
     private final Provider<InGameController> inGameController;
+    public Label spectatorText;
 
     private Label deleteLabel;
 
@@ -85,8 +85,24 @@ public class GameReadyController extends PlayerListController {
     @FXML
     public ComboBox<Color> pickColourMenu;
 
+    @FXML
+    public Button gameOptionButton;
+
+    @FXML
+    public ToggleButton onButton;
+
+    @FXML
+    public ToggleButton offButton;
+
     private int readyMembers;
     private int allMembers;
+
+    private GameOptionController gameOptionController;
+
+    private Parent gameOption;
+
+    @FXML
+    public Pane paneOption;
 
     //list for storing message IDs of own messages to check whether a message can be deleted or not
     private final ArrayList<String> ownMessageIds = new ArrayList<>();
@@ -314,6 +330,9 @@ public class GameReadyController extends PlayerListController {
             e.printStackTrace();
             return null;
         }
+
+        offButton.setStyle("-fx-base: red ");
+
 
         disposables.add(gameService.getCurrentGame()
                 .observeOn(FX_SCHEDULER)
@@ -555,5 +574,60 @@ public class GameReadyController extends PlayerListController {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
+    }
+
+    public void gameOption(ActionEvent actionEvent) {
+        gameOptionController = new GameOptionController(bundle, this);
+        gameOption = gameOptionController.render();
+        paneOption.setVisible(true);
+        paneOption.getChildren().add(gameOption);
+    }
+
+    public void changeOnOff(ActionEvent actionEvent) {
+        if (actionEvent.getSource() == onButton) {
+            if (offButton.isSelected()) {
+                offButton.setSelected(false);
+                offButton.setStyle("-fx-base: lightgray ");
+                onButton.setStyle("-fx-base: lightgreen");
+
+                gameMemberService.setSpectator(userService.getCurrentUserID(), true).subscribe();
+
+            } else {
+                onButton.setSelected(true);
+            }
+        }
+
+        if (actionEvent.getSource() == offButton) {
+            if (onButton.isSelected()) {
+                onButton.setSelected(false);
+                onButton.setStyle("-fx-base: lightgray");
+                offButton.setStyle("-fx-base: red");
+                gameMemberService.setSpectator(userService.getCurrentUserID(), false).subscribe();
+                System.out.println("Aus");
+            } else {
+                offButton.setSelected(true);
+
+            }
+        }
+
+    }
+
+    public void closeGameOptionMenu(boolean menueClosed) {
+        if (gameOptionController != null) {
+            gameOptionController.destroy(menueClosed);
+            gameOptionController = null;
+        }
+        if (gameOption != null) {
+            paneOption.getChildren().remove(gameOption);
+            gameOption = null;
+        }
+    }
+
+    public void setMapsizeAndVictorypoints(int victorypoints, int mapSize) {
+        System.out.print(victorypoints + "Test" + mapSize);
+        if (mapSize >= 0 && mapSize <= 10 && victorypoints >= 3 && victorypoints <= 15) {
+            gameService.setUpdateOption(victorypoints, mapSize).subscribe();
+        }
+
     }
 }

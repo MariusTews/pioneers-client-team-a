@@ -55,4 +55,9 @@
       <ToggleButton fx:id="offButton" layoutX="413.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeOnOff" prefHeight="25.0" prefWidth="41.0" selected="true" snapToPixel="false" text="%off" />
       <Label fx:id="spectatorText" layoutX="372.0" layoutY="-1.0" prefHeight="31.0" prefWidth="106.0" text="%spectator" />
     </Pane>
+   <Pane fx:id="paneOption" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" visible="false">
+      <VBox.margin>
+         <Insets bottom="50.0" left="150.0" right="150.0" top="50.0" />
+      </VBox.margin>
+   </Pane>
 </VBox>

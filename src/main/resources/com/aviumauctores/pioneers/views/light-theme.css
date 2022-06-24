@@ -150,3 +150,10 @@
     -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
 }
+
+#paneOption {
+    -fx-background-color: rgba(202, 229, 231, 255);
+    -fx-border-color: #00496c;
+    -fx-border-width: 5;
+}
+
