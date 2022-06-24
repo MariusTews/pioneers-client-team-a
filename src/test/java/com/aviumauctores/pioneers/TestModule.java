@@ -345,21 +345,21 @@ public class TestModule {
             @Override
             public Observable<List<Game>> listGames() {
                 return Observable.just(List.of(
-                        new Game("", "", "101", "Game101", "1", false, 1)
+                        new Game("", "", "101", "Game101", "1", false, 1, new GameSettings(2, 10))
                 ));
             }
 
             @Override
             public Observable<Game> createGame(CreateGameDto createGameDto) {
                 return Observable.just(new Game(
-                        "", "", "101", "Game101", "1", false, 1
+                        "", "", "101", "Game101", "1", false, 1, new GameSettings(2, 10)
                 ));
             }
 
             @Override
             public Observable<Game> getGame(String id) {
                 return Observable.just(new Game(
-                        "", "", id, "Game" + id, "1", false, 1
+                        "", "", id, "Game" + id, "1", false, 1, new GameSettings(2, 10)
                 ));
             }
 
@@ -367,7 +367,7 @@ public class TestModule {
             public Observable<Game> updateGame(String id, UpdateGameDto updateGameDto) {
                 String name = updateGameDto.name() != null ? updateGameDto.name() : "Game" + id;
                 String owner = updateGameDto.owner() != null ? updateGameDto.owner() : "1";
-                Game game = new Game("", "", id, name, owner, updateGameDto.started(), 1);
+                Game game = new Game("", "", id, name, owner, updateGameDto.started(), 1, new GameSettings(2, 10));
                 testEventListener.fireEvent("games.101.*", new EventDto<>("games.101.updated", game));
                 return Observable.just(game);
             }
