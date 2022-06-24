@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -83,7 +84,7 @@ class LobbyControllerTest extends ApplicationTest {
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         User createdUser = new User("1", "Player1", "online", null, null);
         userUpdates = Observable.just(new EventDto<>("created", createdUser));
-        Game createdGame = new Game("", "", "1", "Game1", "2", false, 1);
+        Game createdGame = new Game("", "", "1", "Game1", "2", false, 1, new GameSettings(2, 10));
         gameUpdates = Observable.just(new EventDto<>("created", createdGame));
         when(eventListener.listen("users.*.*", User.class)).thenReturn(userUpdates);
         when(eventListener.listen("games.*.*", Game.class)).thenReturn(gameUpdates);

@@ -14,6 +14,8 @@ import com.aviumauctores.pioneers.dto.groups.UpdateGroupDto;
 import com.aviumauctores.pioneers.dto.messages.CreateMessageDto;
 import com.aviumauctores.pioneers.dto.messages.UpdateMessageDto;
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
+import com.aviumauctores.pioneers.dto.players.UpdatePlayerDto;
+import com.aviumauctores.pioneers.dto.rob.RobDto;
 import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.Map;
@@ -55,7 +57,8 @@ public class TestModule {
             }
 
             @Override
-            public void handleError(Throwable throwable) {}
+            public void handleError(Throwable throwable) {
+            }
         };
     }
 
@@ -299,35 +302,35 @@ public class TestModule {
             @Override
             public Observable<List<Member>> listMembers(String gameId) {
                 return Observable.just(List.of(
-                        new Member("", "", "101", "1", true, Color.GREEN)
+                        new Member("", "", "101", "1", true, Color.GREEN, true)
                 ));
             }
 
             @Override
             public Observable<Member> createMember(String gameId, CreateMemberDto createMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, "1", createMemberDto.ready(), null
+                        "", "", gameId, "1", createMemberDto.ready(), null, true
                 ));
             }
 
             @Override
             public Observable<Member> getMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false, null
+                        "", "", gameId, userId, false, null, true
                 ));
             }
 
             @Override
             public Observable<Member> updateMember(String gameId, String userId, UpdateMemberDto updateMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, updateMemberDto.ready(), null
+                        "", "", gameId, userId, updateMemberDto.ready(), null, true
                 ));
             }
 
             @Override
             public Observable<Member> deleteMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false, null
+                        "", "", gameId, userId, false, null, true
                 ));
             }
         };
@@ -342,21 +345,21 @@ public class TestModule {
             @Override
             public Observable<List<Game>> listGames() {
                 return Observable.just(List.of(
-                        new Game("", "", "101", "Game101", "1", false, 1)
+                        new Game("", "", "101", "Game101", "1", false, 1, new GameSettings(2, 10))
                 ));
             }
 
             @Override
             public Observable<Game> createGame(CreateGameDto createGameDto) {
                 return Observable.just(new Game(
-                        "", "", "101", "Game101", "1", false, 1
+                        "", "", "101", "Game101", "1", false, 1, new GameSettings(2, 10)
                 ));
             }
 
             @Override
             public Observable<Game> getGame(String id) {
                 return Observable.just(new Game(
-                        "", "", id, "Game" + id, "1", false, 1
+                        "", "", id, "Game" + id, "1", false, 1, new GameSettings(2, 10)
                 ));
             }
 
@@ -364,7 +367,7 @@ public class TestModule {
             public Observable<Game> updateGame(String id, UpdateGameDto updateGameDto) {
                 String name = updateGameDto.name() != null ? updateGameDto.name() : "Game" + id;
                 String owner = updateGameDto.owner() != null ? updateGameDto.owner() : "1";
-                Game game = new Game("", "", id, name, owner, updateGameDto.started(), 1);
+                Game game = new Game("", "", id, name, owner, updateGameDto.started(), 1, new GameSettings(2, 10));
                 testEventListener.fireEvent("games.101.*", new EventDto<>("games.101.updated", game));
                 return Observable.just(game);
             }
@@ -398,14 +401,14 @@ public class TestModule {
             @Override
             public Observable<List<Player>> listMembers(String gameId) {
                 return Observable.just(List.of(
-                        new Player(gameId, "1", "#008000", 3, new HashMap<>(), new HashMap<>())
+                        new Player(gameId, "1", "#008000", true, 3, new HashMap<>(), new HashMap<>(), 0, 0)
                 ));
             }
 
             @Override
             public Observable<Player> getPlayer(String gameId, String userId) {
                 return Observable.just(
-                        new Player(gameId, userId, "#008000", 3, new HashMap<>(), new HashMap<>())
+                        new Player(gameId, userId, "#008000", true, 3, new HashMap<>(), new HashMap<>(), 0, 0)
                 );
             }
 
@@ -418,9 +421,29 @@ public class TestModule {
                                 new ExpectedMove("founding-settlement-2", List.of("1")),
                                 new ExpectedMove("founding-road-2", List.of("1")),
                                 new ExpectedMove("roll", List.of("1"))
-                        ))
+                        ),      new Point3D(1, 1, 1))
                 );
             }
+
+            @Override
+            public Observable<List<Move>> getMoves(String gameId, String userId) {
+                return Observable.just(List.of());
+            }
+
+            @Override
+            public Observable<Move> getMoveId(String gameId, String userId) {
+                return Observable.just(
+                        new Move("", "", gameId, userId, "action", 1, "", new RobDto(1, 2, 3, ""), new HashMap<>(), "")
+                );
+            }
+
+            @Override
+            public Observable<Player> updatePlayer(String gameId, String userId, UpdatePlayerDto updatePlayerDto) {
+                return Observable.just(new Player(
+                        "", "", null, true, 1, new HashMap<>(), new HashMap<>(), 0, 0
+                ));
+            }
+
 
             @Override
             public Observable<Move> createMove(String gameId, CreateMoveDto createMoveDto) {

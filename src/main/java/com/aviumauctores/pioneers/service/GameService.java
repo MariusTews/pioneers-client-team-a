@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.dto.gamemembers.CreateMemberDto;
 import com.aviumauctores.pioneers.dto.games.CreateGameDto;
 import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
 import com.aviumauctores.pioneers.rest.GamesApiService;
@@ -47,12 +48,12 @@ public class GameService {
     public Observable<String> create(String name, String password) {
         this.name = name;
         this.password = password;
-        return gamesApiService.createGame(new CreateGameDto(name, false, password))
+        return gamesApiService.createGame(new CreateGameDto(name, false, new GameSettings(2, 10), password))
                 .map(Game::_id);
     }
 
     public Observable<Member> joinGame(String password) {
-        return gameMembersApiService.createMember(currentGameID, new CreateMemberDto(false, null, password));
+        return gameMembersApiService.createMember(currentGameID, new CreateMemberDto(false, null, password, false));
     }
 
     public Observable<List<Game>> listGames() {
@@ -69,12 +70,11 @@ public class GameService {
     }
 
     public Observable<Game> updateGame(Boolean started) {
-
-        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, started, password));
+        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, started, null, password));
     }
 
     public Observable<Game> startGame() {
-        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(null, null, true, null));
+        return gamesApiService.updateGame(currentGameID, new UpdateGameDto(null, null, true, null, null));
     }
 
     public String getOwnerID() {
@@ -84,6 +84,4 @@ public class GameService {
     public void setOwnerID(String ID) {
         this.ownerID = ID;
     }
-
-
 }

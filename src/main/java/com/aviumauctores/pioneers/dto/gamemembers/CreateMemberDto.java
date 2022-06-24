@@ -7,6 +7,7 @@ public record CreateMemberDto(
 
         boolean ready,
         String color,
-        String password
+        String password,
+        boolean spectator
 ) {
 }

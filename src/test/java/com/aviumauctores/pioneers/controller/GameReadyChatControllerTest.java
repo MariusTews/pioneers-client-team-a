@@ -2,10 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.model.Member;
-import com.aviumauctores.pioneers.model.Message;
-import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
@@ -63,14 +60,14 @@ class GameReadyChatControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Member member = new Member("", "", "1", "1", false, null);
+        Member member = new Member("", "", "1", "1", false, null, false);
         User user = new User("1", "Struppi", "online", null, null);
         messageCreateUpdates = Observable.just(new EventDto<>(".created", message));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(Observable.just(List.of(member)));
         when(gameService.getCurrentGameID()).thenReturn("1");
         when(userService.getUserName(anyString())).thenReturn(Observable.just("Player1"));
         when(userService.getCurrentUserID()).thenReturn("1");
-        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1)));
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1, new GameSettings(2, 10))));
         when(messageService.sendGameMessage(anyString(), anyString())).thenReturn(Observable.just(message));
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(eventListener.listen("games.1.members.*.*", Member.class)).thenReturn(Observable.just(new EventDto<>("", member)));
@@ -96,7 +93,7 @@ class GameReadyChatControllerTest extends ApplicationTest {
 
     @Test
     void sendMessage() {
-        Game game = new Game("", "", "1", "game1", "1", false, 1);
+        Game game = new Game("", "", "1", "game1", "1", false, 1, new GameSettings(2, 10));
         clickOn("#messageTextField");
         write("hello");
         type(KeyCode.ENTER);

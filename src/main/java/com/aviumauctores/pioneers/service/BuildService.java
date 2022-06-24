@@ -51,7 +51,7 @@ public class BuildService {
         }
         Building b = Building.readCoordinatesFromID(selectedField.getId());
         pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), null, buildingType,
-                        gameService.getCurrentGameID(), userID))
+                        gameService.getCurrentGameID(), userID),null,null)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                         }
