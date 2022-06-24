@@ -34,8 +34,6 @@ public class DropMenuController implements Controller {
     public Spinner<Integer> lumberSpinner;
     public final SimpleIntegerProperty currentAmountProperty = new SimpleIntegerProperty();
 
-    private CompositeDisposable disposable;
-
 
     public DropMenuController(InGameController inGameController, PioneerService pioneerService, ResourceBundle bundle,
                               HashMap<String, Integer> resources) {
@@ -48,15 +46,10 @@ public class DropMenuController implements Controller {
 
     @Override
     public void init() {
-        disposable = new CompositeDisposable();
     }
 
     @Override
     public void destroy(boolean closed) {
-        if (disposable != null) {
-            disposable.dispose();
-            disposable = null;
-        }
     }
 
     @Override
@@ -155,8 +148,8 @@ public class DropMenuController implements Controller {
             droppedResources.put(RESOURCE_GRAIN, -((int) grainSpinner.getValue()));
         }
 
-        disposable.add(pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null)
+        pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> inGameController.closeDropMenu(false)));
+                .subscribe(move -> inGameController.closeDropMenu(false));
     }
 }
