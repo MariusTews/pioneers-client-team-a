@@ -46,8 +46,6 @@ public class App extends Application {
         this.controller = controller;
     }
 
-
-
     @Override
     public void start(Stage primaryStage) {
 
@@ -88,7 +86,6 @@ public class App extends Application {
         stage.getScene().widthProperty().addListener(sizeListener);
         stage.getScene().heightProperty().addListener(sizeListener);
     }
-
 
     public void setWindow(Pane contentPane) {
         final double newWidth = stage.getScene().getWidth();

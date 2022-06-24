@@ -65,7 +65,6 @@ public class CreateGameController extends LoggedInController {
     @FXML
     public ImageView viewPassword;
 
-
     private CompositeDisposable disposables = new CompositeDisposable();
 
     Image show;
