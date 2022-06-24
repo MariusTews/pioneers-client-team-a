@@ -590,21 +590,21 @@ public class GameReadyController extends PlayerListController {
                 offButton.setSelected(false);
                 offButton.setStyle("-fx-base: lightgray ");
                 onButton.setStyle("-fx-base: lightgreen");
-                gameMemberService.setSpectator(userService.getCurrentUserID(), true).subscribe();
-
+                disposables.add(gameMemberService.setSpectator(userService.getCurrentUserID(), true)
+                        .subscribe(member -> gameReadyButton.setDisable(true)));
 
             } else {
                 onButton.setSelected(true);
             }
         }
-
         if (actionEvent.getSource() == offButton) {
             if (onButton.isSelected()) {
                 onButton.setSelected(false);
                 onButton.setStyle("-fx-base: lightgray");
                 offButton.setStyle("-fx-base: red");
-                gameMemberService.setSpectator(userService.getCurrentUserID(), false).subscribe();
-                System.out.println("Aus");
+                disposables.add(gameMemberService.setSpectator(userService.getCurrentUserID(), false)
+                        .subscribe(member -> gameReadyButton.setDisable(false)));
+
             } else {
                 offButton.setSelected(true);
 
