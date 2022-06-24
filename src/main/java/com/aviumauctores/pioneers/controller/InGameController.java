@@ -748,7 +748,6 @@ public class InGameController extends LoggedInController {
 
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         closeBuildMenu(false);
-        closeTradingMenu(false);
         buildService.setSelectedField(null);
         buildService.setSelectedFieldCoordinates(null);
     }
@@ -905,7 +904,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle,userService,pioneerService,colorService);
+        tradingController = new TradingController(this, bundle,userService,pioneerService,colorService, errorService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");

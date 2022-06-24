@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.ColorService;
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -53,8 +54,7 @@ public class TradingController implements Controller {
     public Label woolLabel;
     public Button cancelTradeButton;
     public ListView<HBox> requestList;
-    public Button playerTradeButton;
-    public Button bankTradeButton;
+    public Button tradeButton;
     public VBox bankWool;
     public VBox bankStone;
     public VBox bankClay;
@@ -65,18 +65,23 @@ public class TradingController implements Controller {
     private final UserService userService;
     private final PioneerService pioneerService;
     private final ColorService colorService;
+    private ErrorService errorService;
 
     private CompositeDisposable disposables;
 
     private PlayerRequestsController playerRequestsController;
 
+    private boolean bankTrade;
+
     @Inject
-    public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService, PioneerService pioneerService, ColorService colorService) {
+    public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService,
+                             PioneerService pioneerService, ColorService colorService, ErrorService errorService) {
         this.inGameController = inGameController;
         this.bundle = bundle;
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
+        this.errorService = errorService;
     }
 
     @Override
@@ -109,7 +114,7 @@ public class TradingController implements Controller {
             return null;
         }
         this.initSpinners();
-        playerRequestsController = new PlayerRequestsController(pioneerService,userService,colorService, bundle);
+        playerRequestsController = new PlayerRequestsController(this, pioneerService, userService, colorService, bundle);
         this.playerRequestsController.load(requestList, userID);
         return parent;
     }
@@ -154,102 +159,140 @@ public class TradingController implements Controller {
         requestWool.setValueFactory(valueFactory9);
     }
 
-    public void tradeWithBank(ActionEvent actionEvent) {
-
+    public void tradeWithBank() {
         HashMap<String, Integer> resources = new HashMap<>();
-        resources.put(RESOURCE_BRICK, 1);
-        resources.put(RESOURCE_GRAIN, -4);
-        disposables.add(pioneerService.createMove("build", null, "684072366f72202b72406465", null, resources )
-                .observeOn(FX_SCHEDULER).
-                subscribe(move -> {
-                    System.out.println("test");
-                }, error -> {
-                    System.out.println(error.getMessage());
-                }));
-        if (tradeWood.getValue() != 0){
-            int toTrade = tradeWood.getValue();
-            if(requestWool.getValue() != 0){
-                //TODO trade
-            } else if (requestWood.getValue() != 0) {
-                //TODO trade
+        if (tradeWood.getValue() != 0) {
+            int toTrade = -tradeWood.getValue();
+            if (requestWool.getValue() != 0) {
+                resources.put(RESOURCE_LUMBER, toTrade);
+                resources.put(RESOURCE_WOOL, requestWool.getValue());
+                this.sendBankTrade(resources);
             } else if (requestStone.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_LUMBER, toTrade);
+                resources.put(RESOURCE_ORE, requestStone.getValue());
+                this.sendBankTrade(resources);
             } else if (requestClay.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_LUMBER, toTrade);
+                resources.put(RESOURCE_BRICK, requestClay.getValue());
+                this.sendBankTrade(resources);
             } else if (requestBread.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_LUMBER, toTrade);
+                resources.put(RESOURCE_GRAIN, requestBread.getValue());
+                this.sendBankTrade(resources);
             }
         }
 
-        if (tradeBread.getValue() != 0){
-            int toTrade = tradeBread.getValue();
-            if(requestWool.getValue() != 0){
-                //TODO trade
+        if (tradeBread.getValue() != 0) {
+            int toTrade = -tradeBread.getValue();
+            if (requestWool.getValue() != 0) {
+                resources.put(RESOURCE_GRAIN, toTrade);
+                resources.put(RESOURCE_WOOL, requestWool.getValue());
+                this.sendBankTrade(resources);
             } else if (requestWood.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_GRAIN, toTrade);
+                resources.put(RESOURCE_LUMBER, requestWood.getValue());
+                this.sendBankTrade(resources);
             } else if (requestStone.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_GRAIN, toTrade);
+                resources.put(RESOURCE_ORE, requestStone.getValue());
+                this.sendBankTrade(resources);
             } else if (requestClay.getValue() != 0) {
-                //TODO trade
-            } else if (requestBread.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_GRAIN, toTrade);
+                resources.put(RESOURCE_BRICK, requestClay.getValue());
+                this.sendBankTrade(resources);
             }
         }
 
-        if (tradeWool.getValue() != 0){
-            int toTrade = tradeWool.getValue();
-            if(requestWool.getValue() != 0){
-                //TODO trade
-            } else if (requestWood.getValue() != 0) {
-                //TODO trade
+        if (tradeWool.getValue() != 0) {
+            int toTrade = -tradeWool.getValue();
+            if (requestWood.getValue() != 0) {
+                resources.put(RESOURCE_WOOL, toTrade);
+                resources.put(RESOURCE_LUMBER, requestWood.getValue());
+                this.sendBankTrade(resources);
             } else if (requestStone.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_WOOL, toTrade);
+                resources.put(RESOURCE_ORE, requestStone.getValue());
+                this.sendBankTrade(resources);
             } else if (requestClay.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_WOOL, toTrade);
+                resources.put(RESOURCE_BRICK, requestClay.getValue());
+                this.sendBankTrade(resources);
             } else if (requestBread.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_WOOL, toTrade);
+                resources.put(RESOURCE_GRAIN, requestBread.getValue());
+                this.sendBankTrade(resources);
             }
         }
 
-        if (tradeClay.getValue() != 0){
-            int toTrade = tradeClay.getValue();
-            if(requestWool.getValue() != 0){
-                //TODO trade
+        if (tradeClay.getValue() != 0) {
+            int toTrade = -tradeClay.getValue();
+            if (requestWool.getValue() != 0) {
+                resources.put(RESOURCE_BRICK, toTrade);
+                resources.put(RESOURCE_WOOL, requestWool.getValue());
+                this.sendBankTrade(resources);
             } else if (requestWood.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_BRICK, toTrade);
+                resources.put(RESOURCE_LUMBER, requestWood.getValue());
+                this.sendBankTrade(resources);
             } else if (requestStone.getValue() != 0) {
-                //TODO trade
-            } else if (requestClay.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_BRICK, toTrade);
+                resources.put(RESOURCE_ORE, requestStone.getValue());
+                this.sendBankTrade(resources);
             } else if (requestBread.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_BRICK, toTrade);
+                resources.put(RESOURCE_GRAIN, requestBread.getValue());
+                this.sendBankTrade(resources);
             }
         }
 
-        if (tradeStone.getValue() != 0){
-            int toTrade = tradeStone.getValue();
-            if(requestWool.getValue() != 0){
-                //TODO trade
+        if (tradeStone.getValue() != 0) {
+            int toTrade = -tradeStone.getValue();
+            if (requestWool.getValue() != 0) {
+                resources.put(RESOURCE_ORE, toTrade);
+                resources.put(RESOURCE_WOOL, requestWool.getValue());
+                this.sendBankTrade(resources);
             } else if (requestWood.getValue() != 0) {
-                //TODO trade
-            } else if (requestStone.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_ORE, toTrade);
+                resources.put(RESOURCE_LUMBER, requestWood.getValue());
+                this.sendBankTrade(resources);
             } else if (requestClay.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_ORE, toTrade);
+                resources.put(RESOURCE_BRICK, requestClay.getValue());
+                this.sendBankTrade(resources);
             } else if (requestBread.getValue() != 0) {
-                //TODO trade
+                resources.put(RESOURCE_ORE, toTrade);
+                resources.put(RESOURCE_GRAIN, requestBread.getValue());
+                this.sendBankTrade(resources);
             }
         }
 
     }
 
-    public void tradeWithPlayer(ActionEvent actionEvent) {
+    private void sendBankTrade(HashMap<String, Integer> resources) {
+        errorService.setErrorCodesTradeController();
+        disposables.add(pioneerService.createMove("build", null, "684072366f72202b72406465", null, resources)
+                .observeOn(FX_SCHEDULER).
+                subscribe(move -> {
+                }, errorService::handleError));
+    }
+
+    public void enterTrade(ActionEvent actionEvent) {
+        if (this.isBankTrade()) {
+            this.tradeWithBank();
+        } else {
+            this.tradeWithPlayer();
+        }
+
+    }
+
+    private void tradeWithPlayer() {
+        errorService.setErrorCodesTradeController();
         String playerName = playerRequestsController.getSelectedPlayer();
-        if (playerName != null){
+        if (playerName != null) {
             Player selectedPlayer = null;
             for (Player p : pioneerService.listPlayers().blockingFirst()) {
                 String getPlayer = userService.getUserName(p.userId()).blockingFirst();
-                if (Objects.equals(playerName, getPlayer)){
+                if (Objects.equals(playerName, getPlayer)) {
                     selectedPlayer = p;
                 }
             }
@@ -258,21 +301,25 @@ public class TradingController implements Controller {
             resources.put(RESOURCE_BRICK, 1);
             resources.put(RESOURCE_GRAIN, -1);
             System.out.println(selectedPlayer.userId());
-            disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources )
+            disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources)
                     .observeOn(FX_SCHEDULER).
                     subscribe(move -> {
                         System.out.println("test");
-                    }, error -> {
-                        System.out.println(error.getMessage());
-                    }));
-
+                    }, errorService::handleError
+                    ));
         }
-
     }
 
     public void enterWoodVariables(MouseEvent mouseEvent) {
+        this.setBankTrade(true);
         String totrade = woodLabel.getText();
-        if (totrade.charAt(0) == '3') {
+        if (totrade.charAt(0) == '4') {
+            tradeWood.getValueFactory().setValue(4);
+            tradeWool.getValueFactory().setValue(0);
+            tradeStone.getValueFactory().setValue(0);
+            tradeClay.getValueFactory().setValue(0);
+            tradeBread.getValueFactory().setValue(0);
+        } else if (totrade.charAt(0) == '3'){
             tradeWood.getValueFactory().setValue(3);
             tradeWool.getValueFactory().setValue(0);
             tradeStone.getValueFactory().setValue(0);
@@ -284,13 +331,19 @@ public class TradingController implements Controller {
             tradeStone.getValueFactory().setValue(0);
             tradeClay.getValueFactory().setValue(0);
             tradeBread.getValueFactory().setValue(0);
-
         }
     }
 
     public void enterBreadVariables(MouseEvent mouseEvent) {
+        this.setBankTrade(true);
         String totrade = woodLabel.getText();
-        if (totrade.charAt(0) == '3') {
+        if (totrade.charAt(0) == '4') {
+            tradeWood.getValueFactory().setValue(0);
+            tradeWool.getValueFactory().setValue(0);
+            tradeStone.getValueFactory().setValue(0);
+            tradeClay.getValueFactory().setValue(0);
+            tradeBread.getValueFactory().setValue(4);
+        } else if (totrade.charAt(0) == '3'){
             tradeWood.getValueFactory().setValue(0);
             tradeWool.getValueFactory().setValue(0);
             tradeStone.getValueFactory().setValue(0);
@@ -302,13 +355,19 @@ public class TradingController implements Controller {
             tradeStone.getValueFactory().setValue(0);
             tradeClay.getValueFactory().setValue(0);
             tradeBread.getValueFactory().setValue(2);
-
         }
     }
 
     public void enterClayVariables(MouseEvent mouseEvent) {
+        this.setBankTrade(true);
         String totrade = woodLabel.getText();
-        if (totrade.charAt(0) == '3') {
+        if (totrade.charAt(0) == '4') {
+            tradeWood.getValueFactory().setValue(0);
+            tradeWool.getValueFactory().setValue(0);
+            tradeStone.getValueFactory().setValue(0);
+            tradeClay.getValueFactory().setValue(4);
+            tradeBread.getValueFactory().setValue(0);
+        } else if (totrade.charAt(0) == '3'){
             tradeWood.getValueFactory().setValue(0);
             tradeWool.getValueFactory().setValue(0);
             tradeStone.getValueFactory().setValue(0);
@@ -320,13 +379,19 @@ public class TradingController implements Controller {
             tradeStone.getValueFactory().setValue(0);
             tradeClay.getValueFactory().setValue(2);
             tradeBread.getValueFactory().setValue(0);
-
         }
     }
 
     public void enterStoneVariables(MouseEvent mouseEvent) {
+        this.setBankTrade(true);
         String totrade = woodLabel.getText();
-        if (totrade.charAt(0) == '3') {
+        if (totrade.charAt(0) == '4') {
+            tradeWood.getValueFactory().setValue(0);
+            tradeWool.getValueFactory().setValue(0);
+            tradeStone.getValueFactory().setValue(4);
+            tradeClay.getValueFactory().setValue(0);
+            tradeBread.getValueFactory().setValue(0);
+        } else if (totrade.charAt(0) == '3'){
             tradeWood.getValueFactory().setValue(0);
             tradeWool.getValueFactory().setValue(0);
             tradeStone.getValueFactory().setValue(3);
@@ -338,14 +403,19 @@ public class TradingController implements Controller {
             tradeStone.getValueFactory().setValue(2);
             tradeClay.getValueFactory().setValue(0);
             tradeBread.getValueFactory().setValue(0);
-
         }
     }
 
     public void enterWoolVariables(MouseEvent mouseEvent) {
+        this.setBankTrade(true);
         String totrade = woodLabel.getText();
-        System.out.println(totrade.charAt(0));
-        if (totrade.charAt(0) == '3') {
+        if (totrade.charAt(0) == '4') {
+            tradeWood.getValueFactory().setValue(0);
+            tradeWool.getValueFactory().setValue(4);
+            tradeStone.getValueFactory().setValue(0);
+            tradeClay.getValueFactory().setValue(0);
+            tradeBread.getValueFactory().setValue(0);
+        } else if (totrade.charAt(0) == '3'){
             tradeWood.getValueFactory().setValue(0);
             tradeWool.getValueFactory().setValue(3);
             tradeStone.getValueFactory().setValue(0);
@@ -357,8 +427,15 @@ public class TradingController implements Controller {
             tradeStone.getValueFactory().setValue(0);
             tradeClay.getValueFactory().setValue(0);
             tradeBread.getValueFactory().setValue(0);
-
         }
 
+    }
+
+    public boolean isBankTrade() {
+        return bankTrade;
+    }
+
+    public void setBankTrade(boolean bankTrade) {
+        this.bankTrade = bankTrade;
     }
 }

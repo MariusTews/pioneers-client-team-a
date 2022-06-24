@@ -4,10 +4,12 @@ import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.ColorService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.UserService;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -18,6 +20,7 @@ import java.util.ResourceBundle;
 
 
 public class PlayerRequestsController implements Controller{
+    private TradingController tradingController;
     private final PioneerService pioneerService;
     private final UserService userService;
     private final ColorService colorService;
@@ -29,7 +32,8 @@ public class PlayerRequestsController implements Controller{
     private PlayerRequestsItemController playerRequestsItemController;
     private final HashMap<String, PlayerRequestsItemController> listItems = new HashMap<>();
     @Inject
-    public PlayerRequestsController(PioneerService pioneerService, UserService userService, ColorService colorService, ResourceBundle bundle){
+    public PlayerRequestsController(TradingController tradingController, PioneerService pioneerService, UserService userService, ColorService colorService, ResourceBundle bundle){
+        this.tradingController = tradingController;
 
         this.pioneerService = pioneerService;
         this.userService = userService;
@@ -47,6 +51,7 @@ public class PlayerRequestsController implements Controller{
             //}
         }
         playerList.setPadding(new Insets(10, 0, 10, 0));
+        playerList.setOnMouseClicked(event -> tradingController.setBankTrade(false));
     }
 
     private void createPlayerBox(Player player) {

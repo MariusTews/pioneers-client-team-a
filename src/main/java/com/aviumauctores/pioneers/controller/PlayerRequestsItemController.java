@@ -68,8 +68,6 @@ public class PlayerRequestsItemController implements Controller{
         //arrowView.setFitHeight(40.0);
         //arrowView.setFitWidth(40.0);
         //arrowView.setVisible(false);
-        System.out.println(playerName);
-
         VBox playerInfo = new VBox(playerName);
 
 
