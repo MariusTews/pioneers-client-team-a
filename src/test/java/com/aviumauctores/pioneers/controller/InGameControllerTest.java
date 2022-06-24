@@ -12,7 +12,9 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -186,7 +188,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
-        verify(pioneerService).createMove("roll", null, null,  null, null);
+        verify(pioneerService).createMove("roll", null, null, null, null);
     }
 
     @Test
@@ -214,13 +216,13 @@ public class InGameControllerTest extends ApplicationTest {
     }
 
     @Test
-    void openDropWindow() {
+    void dropResources() {
         HashMap<String, Integer> resources = new HashMap<>();
         resources.put(RESOURCE_ORE, 8);
-        resources.put(RESOURCE_GRAIN, 8);
-        resources.put(RESOURCE_LUMBER, 8);
-        resources.put(RESOURCE_BRICK, 8);
-        resources.put(RESOURCE_WOOL, 8);
+
+        HashMap<String, Integer> droppedResources = new HashMap<>();
+        droppedResources.put(RESOURCE_ORE, -4);
+
         String userID = userService.getCurrentUserID();
 
         Player player = new Player(gameService.getCurrentGameID(), userID, "#008000",
@@ -229,6 +231,9 @@ public class InGameControllerTest extends ApplicationTest {
         when(stateService.getUpdatedPlayer()).thenReturn(player);
         when(stateService.getCurrentPlayerID()).thenReturn(userID);
         when(stateService.getCurrentAction()).thenReturn(MOVE_DROP);
+        when(pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null))
+                .thenReturn(Observable.just(new Move(null, null, null, null, null,
+                        0, null, null, null, null)));
 
         //create a state in which the current player has to drop some resources
         stateUpdates.onNext(new EventDto<>("created",
@@ -240,5 +245,20 @@ public class InGameControllerTest extends ApplicationTest {
         //check that the drop menu opens
         Optional<Node> dropButton = lookup("#dropButton").tryQuery();
         assertThat(dropButton).isPresent();
+
+        Spinner<Integer> spinner = lookup("#oreSpinner").query();
+        Button button = (Button) dropButton.get();
+
+        //increment ore spinner by 2 and check that it is not possible to drop
+        spinner.increment(2);
+        clickOn(button);
+        dropButton = lookup("#dropButton").tryQuery();
+        assertThat(dropButton).isPresent();
+
+        //increment ore spinner again by 2 and check that it is now possible to drop (4 is the drop limit)
+        spinner.increment(2);
+        clickOn(button);
+        dropButton = lookup("#dropButton").tryQuery();
+        assertThat(dropButton).isNotPresent();
     }
 }

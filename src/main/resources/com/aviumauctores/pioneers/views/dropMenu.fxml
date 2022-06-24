@@ -28,7 +28,7 @@
         <ImageView fitHeight="65.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@Wood_icon.png"/>
         </ImageView>
-        <Spinner fx:id="woodSpinner"/>
+        <Spinner fx:id="lumberSpinner"/>
     </HBox>
     <HBox alignment="CENTER" prefHeight="63.0" prefWidth="200.0" spacing="40.0">
         <VBox.margin>
@@ -46,7 +46,7 @@
         <ImageView fitHeight="65.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@Metal_icon.png"/>
         </ImageView>
-        <Spinner fx:id="oreSpinner"/>
+        <Spinner fx:id="oreSpinner" id="oreSpinner"/>
     </HBox>
     <HBox alignment="CENTER" prefHeight="65.0" prefWidth="200.0" spacing="40.0">
         <VBox.margin>

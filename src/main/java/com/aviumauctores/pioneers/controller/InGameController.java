@@ -180,9 +180,6 @@ public class InGameController extends LoggedInController {
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
 
-    //TODO remove later
-    private boolean flag;
-
 
     @Inject
     public InGameController(App app,
@@ -209,8 +206,6 @@ public class InGameController extends LoggedInController {
         this.errorService = errorService;
         this.buildService = buildService;
         fieldsMovedAlready = false;
-        //TODO remove later
-        flag = false;
     }
 
 
@@ -266,91 +261,6 @@ public class InGameController extends LoggedInController {
                 }));
 
         errorCodes.put("429", bundle.getString("limit.reached"));
-    }
-
-    protected void onMoveEvent(EventDto<Move> eventDto) {
-        Move move = eventDto.data();
-        if (move.action().equals("roll")) {
-            int rolled = move.roll();
-            if (rolled == 7) {
-                System.out.println(7);
-            }
-            new Thread(() -> {
-                try {
-                    rollAllDice(rolled);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
-            rollSum.setText(" " + rolled + " ");
-        }
-    }
-
-    public void rollAllDice(int rolled) throws InterruptedException {
-        int i = 4;
-        while (i > 0) {
-            rollOneDice(((int) (Math.random() * 6)), diceImage1);
-            rollOneDice(((int) (Math.random() * 6)), diceImage2);
-            TimeUnit.MILLISECONDS.sleep(200);
-            i--;
-        }
-        switch (rolled) {
-            case 2 -> {
-                diceImage1.setImage(dice1);
-                diceImage2.setImage(dice1);
-            }
-            case 3 -> {
-                diceImage1.setImage(dice1);
-                diceImage2.setImage(dice2);
-            }
-            case 4 -> {
-                diceImage1.setImage(dice3);
-                diceImage2.setImage(dice1);
-            }
-            case 5 -> {
-                diceImage1.setImage(dice2);
-                diceImage2.setImage(dice3);
-            }
-            case 6 -> {
-                diceImage1.setImage(dice2);
-                diceImage2.setImage(dice4);
-            }
-            case 7 -> {
-                diceImage1.setImage(dice2);
-                diceImage2.setImage(dice5);
-            }
-            case 8 -> {
-                diceImage1.setImage(dice5);
-                diceImage2.setImage(dice3);
-            }
-            case 9 -> {
-                diceImage1.setImage(dice4);
-                diceImage2.setImage(dice5);
-            }
-            case 10 -> {
-                diceImage1.setImage(dice6);
-                diceImage2.setImage(dice4);
-            }
-            case 11 -> {
-                diceImage1.setImage(dice5);
-                diceImage2.setImage(dice6);
-            }
-            case 12 -> {
-                diceImage1.setImage(dice6);
-                diceImage2.setImage(dice6);
-            }
-        }
-    }
-
-    public void rollOneDice(int randomInteger, ImageView imageView) {
-        switch (randomInteger) {
-            case 1 -> imageView.setImage(dice1);
-            case 2 -> imageView.setImage(dice2);
-            case 3 -> imageView.setImage(dice3);
-            case 4 -> imageView.setImage(dice4);
-            case 5 -> imageView.setImage(dice5);
-            case 6 -> imageView.setImage(dice6);
-        }
     }
 
     @Override
@@ -479,6 +389,109 @@ public class InGameController extends LoggedInController {
         return parent;
     }
 
+    protected void onMoveEvent(EventDto<Move> eventDto) {
+        Move move = eventDto.data();
+        if (move.action().equals("roll")) {
+            int rolled = move.roll();
+            new Thread(() -> {
+                try {
+                    rollAllDice(rolled);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+            rollSum.setText(" " + rolled + " ");
+        }
+    }
+
+    private void onPlayerUpdated(EventDto<Player> playerEventDto) {
+        Player updatedPlayer = playerEventDto.data();
+        if (updatedPlayer.userId().equals(userID)) {
+            playerResourceListController.setPlayer(updatedPlayer);
+            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+
+            HashMap<String, Integer> resources = updatedPlayer.resources();
+            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
+            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
+            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
+            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
+            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
+
+            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
+            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
+            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
+
+        }
+        playerResourceListController.updatePlayerLabel(updatedPlayer);
+    }
+
+    public void rollAllDice(int rolled) throws InterruptedException {
+        int i = 4;
+        while (i > 0) {
+            rollOneDice(((int) (Math.random() * 6)), diceImage1);
+            rollOneDice(((int) (Math.random() * 6)), diceImage2);
+            TimeUnit.MILLISECONDS.sleep(200);
+            i--;
+        }
+        switch (rolled) {
+            case 2 -> {
+                diceImage1.setImage(dice1);
+                diceImage2.setImage(dice1);
+            }
+            case 3 -> {
+                diceImage1.setImage(dice1);
+                diceImage2.setImage(dice2);
+            }
+            case 4 -> {
+                diceImage1.setImage(dice3);
+                diceImage2.setImage(dice1);
+            }
+            case 5 -> {
+                diceImage1.setImage(dice2);
+                diceImage2.setImage(dice3);
+            }
+            case 6 -> {
+                diceImage1.setImage(dice2);
+                diceImage2.setImage(dice4);
+            }
+            case 7 -> {
+                diceImage1.setImage(dice2);
+                diceImage2.setImage(dice5);
+            }
+            case 8 -> {
+                diceImage1.setImage(dice5);
+                diceImage2.setImage(dice3);
+            }
+            case 9 -> {
+                diceImage1.setImage(dice4);
+                diceImage2.setImage(dice5);
+            }
+            case 10 -> {
+                diceImage1.setImage(dice6);
+                diceImage2.setImage(dice4);
+            }
+            case 11 -> {
+                diceImage1.setImage(dice5);
+                diceImage2.setImage(dice6);
+            }
+            case 12 -> {
+                diceImage1.setImage(dice6);
+                diceImage2.setImage(dice6);
+            }
+        }
+    }
+
+    public void rollOneDice(int randomInteger, ImageView imageView) {
+        switch (randomInteger) {
+            case 1 -> imageView.setImage(dice1);
+            case 2 -> imageView.setImage(dice2);
+            case 3 -> imageView.setImage(dice3);
+            case 4 -> imageView.setImage(dice4);
+            case 5 -> imageView.setImage(dice5);
+            case 6 -> imageView.setImage(dice6);
+        }
+    }
+
     private ImageView getView(int x, int y, int z, int side) {
         //create building id
         String location = "building" + x + y + z + side;
@@ -563,7 +576,7 @@ public class InGameController extends LoggedInController {
                         freeFieldVisibility(false);
                     }
                     case MOVE_DROP -> showDropWindow();
-                    case MOVE_ROB -> onRobberViewClicked();
+                    case MOVE_ROB -> skipRobber();
                 }
             }
         } else {
@@ -575,27 +588,6 @@ public class InGameController extends LoggedInController {
             roadAndCrossingPane.setDisable(true);
             freeFieldVisibility(false);
         }
-    }
-
-    private void onPlayerUpdated(EventDto<Player> playerEventDto) {
-        Player updatedPlayer = playerEventDto.data();
-        if (updatedPlayer.userId().equals(userID)) {
-            playerResourceListController.setPlayer(updatedPlayer);
-            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-
-            HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
-            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
-            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
-            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
-            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
-
-            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
-            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
-            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
-
-        }
-        playerResourceListController.updatePlayerLabel(updatedPlayer);
     }
 
     public void buildMap() {
@@ -621,15 +613,6 @@ public class InGameController extends LoggedInController {
                     }
                 }, errorService::handleError)
         );
-    }
-
-    @Override
-    public void destroy(boolean closed) {
-        super.destroy(closed);
-        closeBuildMenu(closed);
-        if (timer != null) {
-            timer.cancel();
-        }
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -741,11 +724,12 @@ public class InGameController extends LoggedInController {
         mouseEvent.consume();
     }
 
-    private void onRobberViewClicked() {
-        flag = !flag;
+    //dummy method to skip robber for now
+    //only works when all players in the game have at least one settlement/town at tile (0 0 0) and tile (0 0 2)
+    private void skipRobber() {
         int x = 0;
         int y = 0;
-        int z = flag ? 0 : 2;
+        int z = 0;
         String target = userID;
 
         errorService.setErrorCodesPioneersPost();
@@ -753,7 +737,18 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                         },
-                        errorService::handleError
+                        throwable -> {
+                        }
+                ));
+
+        z = 2;
+
+        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, target))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(move -> {
+                        },
+                        throwable -> {
+                        }
                 ));
     }
 
@@ -765,6 +760,16 @@ public class InGameController extends LoggedInController {
 
     }
 
+    @Override
+    public void destroy(boolean closed) {
+        super.destroy(closed);
+        closeBuildMenu(closed);
+        closeDropMenu(closed);
+        if (timer != null) {
+            timer.cancel();
+        }
+    }
+
     private void closeBuildMenu(boolean appClosed) {
         if (buildMenuController != null) {
             buildMenuController.destroy(appClosed);
@@ -773,6 +778,17 @@ public class InGameController extends LoggedInController {
         if (buildMenu != null) {
             mainPane.getChildren().remove(buildMenu);
             buildMenu = null;
+        }
+    }
+
+    public void closeDropMenu(boolean appClosed) {
+        if (dropMenuController != null) {
+            dropMenuController.destroy(appClosed);
+            dropMenuController = null;
+        }
+        if (dropMenu != null) {
+            mainPane.getChildren().remove(dropMenu);
+            dropMenu = null;
         }
     }
 
@@ -927,12 +943,15 @@ public class InGameController extends LoggedInController {
 
     private void showDropWindow() {
         HashMap<String, Integer> resources = stateService.getUpdatedPlayer().resources();
-        dropMenuController = new DropMenuController(this.pioneerService, this.bundle, resources);
+        dropMenuController = new DropMenuController(this, this.pioneerService, this.bundle, resources);
         dropMenu = dropMenuController.render();
 
-        //TODO remove later
-        dropMenu.setLayoutX(450);
-        dropMenu.setLayoutY(250);
+        //maybe change that later to a dynamic value
+        int layoutX = 400;
+        int layoutY = 250;
+
+        dropMenu.setLayoutX(layoutX);
+        dropMenu.setLayoutY(layoutY);
 
         mainPane.getChildren().add(dropMenu);
     }

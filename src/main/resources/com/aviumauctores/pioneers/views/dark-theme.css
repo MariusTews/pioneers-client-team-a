@@ -184,3 +184,8 @@
     -fx-background-color: #333333;
     -fx-background-radius: 8px;
 }
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-body-color: #00496c;
+}
