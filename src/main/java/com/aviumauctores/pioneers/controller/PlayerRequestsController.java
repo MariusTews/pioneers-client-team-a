@@ -51,7 +51,13 @@ public class PlayerRequestsController implements Controller{
             //}
         }
         playerList.setPadding(new Insets(10, 0, 10, 0));
-        playerList.setOnMouseClicked(event -> tradingController.setBankTrade(false));
+        playerList.setOnMouseClicked(event -> {
+            tradingController.removeListeners();
+            tradingController.setBankTrade(false);
+            tradingController.setRequestSpinnersReady();
+            tradingController.setTradeSpinnersReady();
+            tradingController.setSumRequest(0);
+        });
     }
 
     private void createPlayerBox(Player player) {
