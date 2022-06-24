@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -17,6 +18,7 @@ import java.util.ResourceBundle;
 
 public class GameOptionController implements Controller {
 
+    public Pane paneOption;
     @FXML
     private Spinner<Integer> victoryPoints;
     @FXML
