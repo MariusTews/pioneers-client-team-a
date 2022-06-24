@@ -18,6 +18,7 @@ import java.util.Objects;
 public class PlayerListItemController implements Controller {
     public static final String READY_SRC = "views/ready.png";
     public static final String NOT_READY_SRC = "views/notReady.png";
+    public static final String SPECTATOR_IMAGE_SOURCE= "views/spectator.png";
 
     private HBox root;
     private ImageView avatarView;
@@ -56,7 +57,13 @@ public class PlayerListItemController implements Controller {
         if (gameMember == null) {
             return null;
         }
-        String src = gameMember.ready() ? READY_SRC : NOT_READY_SRC;
+        String src;
+        if (gameMember.spectator()) {
+            src =SPECTATOR_IMAGE_SOURCE;
+
+        } else {
+            src = gameMember.ready() ? READY_SRC : NOT_READY_SRC;
+        }
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(src)));
     }
 

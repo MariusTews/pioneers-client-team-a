@@ -113,6 +113,7 @@ public class GameReadyController extends PlayerListController {
 
     private Color chosenColour;
 
+
     @Inject
     public GameReadyController(App app,
                                LoginService loginService, UserService userService,
@@ -589,8 +590,8 @@ public class GameReadyController extends PlayerListController {
                 offButton.setSelected(false);
                 offButton.setStyle("-fx-base: lightgray ");
                 onButton.setStyle("-fx-base: lightgreen");
-
                 gameMemberService.setSpectator(userService.getCurrentUserID(), true).subscribe();
+
 
             } else {
                 onButton.setSelected(true);
@@ -624,7 +625,6 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void setMapsizeAndVictorypoints(int victorypoints, int mapSize) {
-        System.out.print(victorypoints + "Test" + mapSize);
         if (mapSize >= 0 && mapSize <= 10 && victorypoints >= 3 && victorypoints <= 15) {
             gameService.setUpdateOption(victorypoints, mapSize).subscribe();
         }
