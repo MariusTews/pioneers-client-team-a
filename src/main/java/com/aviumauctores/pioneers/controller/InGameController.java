@@ -575,7 +575,10 @@ public class InGameController extends LoggedInController {
                         roadAndCrossingPane.setDisable(true);
                         freeFieldVisibility(false);
                     }
-                    case MOVE_DROP -> showDropWindow();
+                    case MOVE_DROP -> {
+                        rollButton.setDisable(true);
+                        showDropWindow();
+                    }
                     case MOVE_ROB -> skipRobber();
                 }
             }

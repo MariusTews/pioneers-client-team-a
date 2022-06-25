@@ -2,10 +2,11 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.PioneerService;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,6 +35,8 @@ public class DropMenuController implements Controller {
     public Spinner<Integer> lumberSpinner;
     public final SimpleIntegerProperty currentAmountProperty = new SimpleIntegerProperty();
 
+    ChangeListener<Integer> listener = this::computeAmount;
+
 
     public DropMenuController(InGameController inGameController, PioneerService pioneerService, ResourceBundle bundle,
                               HashMap<String, Integer> resources) {
@@ -50,6 +53,11 @@ public class DropMenuController implements Controller {
 
     @Override
     public void destroy(boolean closed) {
+        woolSpinner.valueProperty().removeListener(listener);
+        lumberSpinner.valueProperty().removeListener(listener);
+        brickSpinner.valueProperty().removeListener(listener);
+        oreSpinner.valueProperty().removeListener(listener);
+        grainSpinner.valueProperty().removeListener(listener);
     }
 
     @Override
@@ -81,14 +89,11 @@ public class DropMenuController implements Controller {
             grainSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, resources.get(RESOURCE_GRAIN)));
         }
 
-        //maybe these listeners have to be removed in the destroy method
-        //but anyway there is no reference to this controller anymore after you close the menu
-        //so the garbage collector should take care of that I think
-        woolSpinner.valueProperty().addListener(this::computeAmount);
-        lumberSpinner.valueProperty().addListener(this::computeAmount);
-        brickSpinner.valueProperty().addListener(this::computeAmount);
-        oreSpinner.valueProperty().addListener(this::computeAmount);
-        grainSpinner.valueProperty().addListener(this::computeAmount);
+        woolSpinner.valueProperty().addListener(listener);
+        lumberSpinner.valueProperty().addListener(listener);
+        brickSpinner.valueProperty().addListener(listener);
+        oreSpinner.valueProperty().addListener(listener);
+        grainSpinner.valueProperty().addListener(listener);
 
         int resourceAmount = 0;
 
@@ -106,7 +111,7 @@ public class DropMenuController implements Controller {
         return parent;
     }
 
-    private void computeAmount(Observable observable) {
+    private void computeAmount(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
         int currentSelectionAmount = 0;
 
         if (keys.contains(RESOURCE_WOOL)) {
@@ -148,8 +153,9 @@ public class DropMenuController implements Controller {
             droppedResources.put(RESOURCE_GRAIN, -((int) grainSpinner.getValue()));
         }
 
+        //noinspection ResultOfMethodCallIgnored
         pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> inGameController.closeDropMenu(false));
+                .subscribe(move -> inGameController.closeDropMenu(false), throwable -> {});
     }
 }
