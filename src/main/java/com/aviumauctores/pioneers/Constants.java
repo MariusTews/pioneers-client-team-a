@@ -174,4 +174,5 @@ public class Constants {
     public static final double HEIGHT_HEXAGON = 446.875;
     public static final double MAIN_PAIN_MIDDLE_X = 291.5;
     public static final double MAIN_PAIN_MIDDLE_Y = 290.0;
+    public static final double WIDTH_HEIGHT_BUILDING = 80.0;
 }

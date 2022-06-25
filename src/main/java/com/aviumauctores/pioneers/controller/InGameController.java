@@ -327,14 +327,14 @@ public class InGameController extends LoggedInController {
                         controller.setGameMap(map);
                         controller.setMapRadius(2);
                         ingamePane.setCenter(controller.render());
+                        mainPane = controller.getMainPane();
+                        roadAndCrossingPane = controller.getRoadAndCrossingPane();
+                        roadPane = controller.getRoadPane();
+                        crossingPane = controller.getCrossingPane();
+                        vpCircles = new Circle[]{};
+                        timeLabel = controller.getTimeLabel();
+                        runTimer();
                     }
-                    mainPane = controller.getMainPane();
-                    roadAndCrossingPane = controller.getRoadAndCrossingPane();
-                    roadPane = controller.getRoadPane();
-                    crossingPane = controller.getCrossingPane();
-                    vpCircles = new Circle[]{};
-                    timeLabel = controller.getTimeLabel();
-                    runTimer();
 
                     resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
 

@@ -1,6 +1,5 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.model.Tile;
@@ -28,6 +27,12 @@ public class MapController implements Controller {
     @FXML
     public Pane mainPane;
     @FXML
+    public Pane tilePane;
+    @FXML
+    public Pane tileLabelPane;
+    @FXML
+    public Pane robberPane;
+    @FXML
     public Pane roadAndCrossingPane;
     @FXML
     public Pane crossingPane;
@@ -35,16 +40,19 @@ public class MapController implements Controller {
     public Pane roadPane;
     @FXML
     public HBox vpBox;
-    @FXML public Label timeLabel;
+    @FXML
+    public Label timeLabel;
     Image desert;
     Image fields;
     Image hills;
     Image mountains;
     Image forest;
     Image pasture;
+    Image emptyCrossing;
 
     public int mapRadius;
     public Map gameMap;
+
 
     @Inject
     public MapController(ResourceBundle bundle) {
@@ -59,6 +67,7 @@ public class MapController implements Controller {
         mountains = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/ore.png")).toString());
         forest = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/forest.png")).toString());
         pasture = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/pasture.png")).toString());
+        emptyCrossing = new Image(Objects.requireNonNull(Main.class.getResource("views/buildings/empty.png")).toString());
     }
 
     @Override
@@ -78,39 +87,89 @@ public class MapController implements Controller {
             return null;
         }
         if (gameMap != null) {
-            double fitWidthHexagon = WIDTH_HEXAGON / (1 + 2 * mapRadius);
-            double fitHeightHexagon = HEIGHT_HEXAGON / (1 + 2 * mapRadius);
+            // calculate parameters
+            double factor = (1 + 2 * mapRadius);
+            double fitWidthHexagon = WIDTH_HEXAGON / factor;
+            double fitHeightHexagon = HEIGHT_HEXAGON / factor;
+            double fitSizeCrossing = WIDTH_HEIGHT_BUILDING / factor;
             double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
             double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
+            double offsetCrossing = 0.5 * fitSizeCrossing;
+
+            // creates the tiles
             for (Tile tile : gameMap.tiles()) {
                 int posX = tile.x();
                 int posY = tile.y();
                 int posZ = tile.z();
-                String tileID = "hexagonX" + posX + "Y" + posY + "Z" + posZ;
-                tileID = tileID.replace("-", "_");
-                ImageView imageView = new ImageView();
-                imageView.setId(tileID);
-                imageView.setFitHeight(fitHeightHexagon);
-                imageView.setFitWidth(fitWidthHexagon);
-                switch (tile.type()) {
-                    case "desert" -> imageView.setImage(desert);
-                    case "fields" -> imageView.setImage(fields);
-                    case "hills" -> imageView.setImage(hills);
-                    case "mountains" -> imageView.setImage(mountains);
-                    case "forest" -> imageView.setImage(forest);
-                    case "pasture" -> imageView.setImage(pasture);
-                }
-                mainPane.getChildren().add(imageView);
                 double tileX = middleX - (0.75 * posX * fitWidthHexagon) - (0.75 * posY * fitWidthHexagon);
                 double tileY = middleY - (0.5 * posX * fitHeightHexagon) + (0.5 * posY * fitHeightHexagon);
                 if (posX == 0 && posY == 0) {
                     tileX += posZ * fitWidthHexagon;
                 }
-                imageView.setX(tileX);
-                imageView.setY(tileY);
+                String position = "X" + posX + "Y" + posY + "Z" + posZ;
+                position = position.replace("-", "_");
+                double offsetMiddleY = tileY + 0.5 * fitHeightHexagon;
+                double offsetMiddleX = tileX + 0.5 * fitWidthHexagon;
+                createTile(position, tileX, tileY, fitWidthHexagon, fitHeightHexagon, tile);
+                createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken());
+                createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
+                createCrossing(position + "R3", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
+                createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
             }
         }
         return parent;
+    }
+
+    public void createTile(String position, double coordinateX, double coordinateY, double sizeX, double sizeY, Tile tile) {
+        ImageView imageView = new ImageView();
+        imageView.setId("hexagon" + position);
+        imageView.setFitHeight(sizeY);
+        imageView.setFitWidth(sizeX);
+        switch (tile.type()) {
+            case "desert" -> imageView.setImage(desert);
+            case "fields" -> imageView.setImage(fields);
+            case "hills" -> imageView.setImage(hills);
+            case "mountains" -> imageView.setImage(mountains);
+            case "forest" -> imageView.setImage(forest);
+            case "pasture" -> imageView.setImage(pasture);
+        }
+        if (tilePane.getChildren() != null) {
+            tilePane.getChildren().add(imageView);
+        }
+        imageView.setX(coordinateX);
+        imageView.setY(coordinateY);
+    }
+
+    public void createCrossing(String position, double coordinateX, double coordinateY, double size) {
+        ImageView imageView = new ImageView();
+        imageView.setId("building" + position);
+        imageView.setFitHeight(size);
+        imageView.setFitWidth(size);
+        imageView.setImage(emptyCrossing);
+        imageView.setX(coordinateX);
+        imageView.setY(coordinateY);
+        imageView.setOnMouseClicked(this::onFieldClicked);
+        crossingPane.getChildren().add(imageView);
+    }
+
+    public void createLabel(double coordinateX, double coordinateY, String text) {
+        Label label = new Label();
+        label.setText(text);
+        label.setStyle("-fx-background-color: #f0f0f0; -fx-font-size: 2em; -fx-text-fill: #00000f");
+        label.setLayoutX(coordinateX);
+        label.setLayoutY(coordinateY);
+        tileLabelPane.getChildren().add(label);
+    }
+
+    public void createRobberPosition(String position, double coordinateX, double coordinateY, double size) {
+        ImageView imageView = new ImageView();
+        imageView.setId("robber" + position);
+        imageView.setFitHeight(size);
+        imageView.setFitWidth(size);
+        imageView.setImage(emptyCrossing);
+        imageView.setX(coordinateX);
+        imageView.setY(coordinateY);
+        robberPane.getChildren().add(imageView);
     }
 
     public void setInGameController(InGameController inGameController) {
@@ -147,5 +206,9 @@ public class MapController implements Controller {
 
     public Label getTimeLabel() {
         return timeLabel;
+    }
+
+    public void onFieldClicked(MouseEvent mouseEvent) {
+        inGameController.onFieldClicked(mouseEvent);
     }
 }
