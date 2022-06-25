@@ -73,7 +73,7 @@ public class TradingController implements Controller {
 
     private CompositeDisposable disposables;
 
-    private PlayerRequestsController playerRequestsController;
+    private PlayerRequestsListController playerRequestsController;
 
     private boolean bankTrade;
     private int sumRequest;
@@ -119,7 +119,7 @@ public class TradingController implements Controller {
             return null;
         }
         this.initSpinners();
-        playerRequestsController = new PlayerRequestsController(this, pioneerService, userService, colorService);
+        playerRequestsController = new PlayerRequestsListController(this, pioneerService, userService, colorService);
         this.playerRequestsController.load(requestList, userID);
         return parent;
     }
@@ -131,84 +131,8 @@ public class TradingController implements Controller {
 
     //trade with the bank
     public void tradeWithBank() {
-        HashMap<String, Integer> resources = new HashMap<>();
-        if (tradeWood.getValue() != 0) {
-            int toTrade = -tradeWood.getValue();
-            resources.put(RESOURCE_LUMBER, toTrade);
-            if (requestWool.getValue() != 0) {
-                resources.put(RESOURCE_WOOL, requestWool.getValue());
-            }
-            if (requestStone.getValue() != 0) {
-                resources.put(RESOURCE_ORE, requestStone.getValue());
-            }
-            if (requestClay.getValue() != 0) {
-                resources.put(RESOURCE_BRICK, requestClay.getValue());
-            }
-            if (requestBread.getValue() != 0) {
-                resources.put(RESOURCE_GRAIN, requestBread.getValue());
-            }
-            this.sendBankTrade(resources);
-        }
-
-        if (tradeBread.getValue() != 0) {
-            int toTrade = -tradeBread.getValue();
-            resources.put(RESOURCE_GRAIN, toTrade);
-            if (requestWool.getValue() != 0) {
-                resources.put(RESOURCE_WOOL, requestWool.getValue());
-            } else if (requestWood.getValue() != 0) {
-                resources.put(RESOURCE_LUMBER, requestWood.getValue());
-            } else if (requestStone.getValue() != 0) {
-                resources.put(RESOURCE_ORE, requestStone.getValue());
-            } else if (requestClay.getValue() != 0) {
-                resources.put(RESOURCE_BRICK, requestClay.getValue());
-            }
-            this.sendBankTrade(resources);
-        }
-
-        if (tradeWool.getValue() != 0) {
-            int toTrade = -tradeWool.getValue();
-            resources.put(RESOURCE_WOOL, toTrade);
-            if (requestWood.getValue() != 0) {
-                resources.put(RESOURCE_LUMBER, requestWood.getValue());
-            } else if (requestStone.getValue() != 0) {
-                resources.put(RESOURCE_ORE, requestStone.getValue());
-            } else if (requestClay.getValue() != 0) {
-                resources.put(RESOURCE_BRICK, requestClay.getValue());
-            } else if (requestBread.getValue() != 0) {
-                resources.put(RESOURCE_GRAIN, requestBread.getValue());
-            }
-            this.sendBankTrade(resources);
-        }
-
-        if (tradeClay.getValue() != 0) {
-            int toTrade = -tradeClay.getValue();
-            resources.put(RESOURCE_BRICK, toTrade);
-            if (requestWool.getValue() != 0) {
-                resources.put(RESOURCE_WOOL, requestWool.getValue());
-            } else if (requestWood.getValue() != 0) {
-                resources.put(RESOURCE_LUMBER, requestWood.getValue());
-            } else if (requestStone.getValue() != 0) {
-                resources.put(RESOURCE_ORE, requestStone.getValue());
-            } else if (requestBread.getValue() != 0) {
-                resources.put(RESOURCE_GRAIN, requestBread.getValue());
-            }
-            this.sendBankTrade(resources);
-        }
-
-        if (tradeStone.getValue() != 0) {
-            int toTrade = -tradeStone.getValue();
-            resources.put(RESOURCE_ORE, toTrade);
-            if (requestWool.getValue() != 0) {
-                resources.put(RESOURCE_WOOL, requestWool.getValue());
-            } else if (requestWood.getValue() != 0) {
-                resources.put(RESOURCE_LUMBER, requestWood.getValue());
-            } else if (requestClay.getValue() != 0) {
-                resources.put(RESOURCE_BRICK, requestClay.getValue());
-            } else if (requestBread.getValue() != 0) {
-                resources.put(RESOURCE_GRAIN, requestBread.getValue());
-            }
-            this.sendBankTrade(resources);
-        }
+        HashMap<String, Integer> resources = this.getSpinnerValues();
+        this.sendBankTrade(resources);
     }
 
     private void sendBankTrade(HashMap<String, Integer> resources) {
@@ -242,9 +166,7 @@ public class TradingController implements Controller {
             }
             //Trade with player
             //TODO trade with player
-            HashMap<String, Integer> resources = new HashMap<>();
-            resources.put(RESOURCE_BRICK, 1);
-            resources.put(RESOURCE_GRAIN, -1);
+            HashMap<String, Integer> resources = this.getSpinnerValues();
             System.out.println(selectedPlayer.userId());
             disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources)
                     .observeOn(FX_SCHEDULER).
@@ -258,6 +180,7 @@ public class TradingController implements Controller {
 
 
     //change spinners, when user wants to trade with the bank
+
     private void setupBankTrade() {
         this.removeListeners();
         this.setRequestSpinnersReady();
@@ -335,11 +258,11 @@ public class TradingController implements Controller {
     public void enterWoolVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
         requestWool.setDisable(true);
-        String totrade = woolLabel.getText();
-        if (totrade.charAt(0) == '4') {
+        String toTrade = woolLabel.getText();
+        if (toTrade.charAt(0) == '4') {
             tradeWool.getValueFactory().setValue(4);
             this.setTradeSpinnersZeroAndDisable(tradeWood, tradeStone, tradeClay, tradeBread);
-        } else if (totrade.charAt(0) == '3') {
+        } else if (toTrade.charAt(0) == '3') {
             tradeWool.getValueFactory().setValue(3);
             this.setTradeSpinnersZeroAndDisable(tradeWood, tradeStone, tradeClay, tradeBread);
         } else {
@@ -419,6 +342,7 @@ public class TradingController implements Controller {
     }
 
     //change listener for spinners
+
     private void setListeners() {
         ChangeListener<Integer> listener = this::onChangeListener;
         ChangeListener<Integer> listener1 = this::onChangeListener;
@@ -481,6 +405,42 @@ public class TradingController implements Controller {
     }
 
     //getter and setter
+
+    private HashMap<String, Integer> getSpinnerValues() {
+        HashMap<String, Integer> resources = new HashMap<>();
+        if (tradeWood.getValue() != 0) {
+            resources.put(RESOURCE_LUMBER, -tradeWood.getValue());
+        }
+        if (tradeStone.getValue() != 0) {
+            resources.put(RESOURCE_ORE, -tradeStone.getValue());
+        }
+        if (tradeWool.getValue() != 0) {
+            resources.put(RESOURCE_WOOL, -tradeWool.getValue());
+        }
+        if (tradeClay.getValue() != 0) {
+            resources.put(RESOURCE_BRICK, -tradeWool.getValue());
+        }
+        if (tradeBread.getValue() != 0) {
+            resources.put(RESOURCE_GRAIN, -tradeBread.getValue());
+        }
+        if (requestWood.getValue() != 0) {
+            resources.put(RESOURCE_LUMBER, requestWood.getValue());
+        }
+        if (requestStone.getValue() != 0) {
+            resources.put(RESOURCE_ORE, requestStone.getValue());
+        }
+        if (requestWool.getValue() != 0) {
+            resources.put(RESOURCE_WOOL, requestWool.getValue());
+        }
+        if (requestClay.getValue() != 0) {
+            resources.put(RESOURCE_BRICK, requestClay.getValue());
+        }
+        if (requestBread.getValue() != 0) {
+            resources.put(RESOURCE_GRAIN, requestBread.getValue());
+        }
+        return resources;
+    }
+
     public boolean isBankTrade() {
         return bankTrade;
     }

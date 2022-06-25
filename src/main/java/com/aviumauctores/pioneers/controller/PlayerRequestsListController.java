@@ -4,22 +4,18 @@ import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.ColorService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.UserService;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.ResourceBundle;
 
 
-public class PlayerRequestsController implements Controller{
+public class PlayerRequestsListController implements Controller{
     private final TradingController tradingController;
     private final PioneerService pioneerService;
     private final UserService userService;
@@ -31,7 +27,7 @@ public class PlayerRequestsController implements Controller{
     private PlayerRequestsItemController playerRequestsItemController;
     private final HashMap<String, PlayerRequestsItemController> listItems = new HashMap<>();
     @Inject
-    public PlayerRequestsController(TradingController tradingController, PioneerService pioneerService, UserService userService, ColorService colorService){
+    public PlayerRequestsListController(TradingController tradingController, PioneerService pioneerService, UserService userService, ColorService colorService){
         this.tradingController = tradingController;
 
         this.pioneerService = pioneerService;

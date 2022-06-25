@@ -56,6 +56,7 @@ public class InGameController extends LoggedInController {
     public Button tradeButton;
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
+    public Button acceptTradeButton;
 
     private Player player;
     private final EventListener eventListener;
@@ -169,6 +170,8 @@ public class InGameController extends LoggedInController {
     private Parent buildMenu;
 
     private Parent tradingMenu;
+    private TradeRequestController tradeRequestController;
+    private Parent requestMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
@@ -735,17 +738,6 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    public void closeTradingMenu(boolean appClosed) {
-        if(tradingController != null) {
-            tradingController.destroy(appClosed);
-            tradingController = null;
-        }
-        if (tradingMenu != null) {
-            mainPane.getChildren().remove(tradingMenu);
-            tradingMenu = null;
-        }
-    }
-
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         closeBuildMenu(false);
         buildService.setSelectedField(null);
@@ -904,7 +896,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle,userService,pioneerService,colorService, errorService);
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
@@ -913,18 +905,57 @@ public class InGameController extends LoggedInController {
         mainPane.getChildren().add(tradingMenu);
 
 
-
-
         // Prevent the event handler from main pane to close the build menu immediately after this
         actionEvent.consume();
     }
 
-    public void showTradeRequest(){
+
+    // trade with the bank or another player
+
+    public void showTradeRequest() {
+        viewRequestButton.setDisable(false);
+        tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
         tradeRequestPopup.setVisible(true);
     }
-
     public void viewRequest(ActionEvent actionEvent) {
-        System.out.println("trade");
+        System.out.println("test");
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService);
+        tradeRequestController.init();
+        requestMenu = tradeRequestController.render();
+        requestMenu.setStyle("-fx-background-color: #ffffff;");
+        requestMenu.setLayoutX(0);
+        requestMenu.setLayoutY(0);
+        mainPane.getChildren().add(requestMenu);
 
+    }
+
+    public void acceptTrade(ActionEvent actionEvent) {
+        this.showTradeRequest();
+
+    }
+
+    public void closeTradingMenu(boolean appClosed) {
+        if (tradingController != null) {
+            tradingController.destroy(appClosed);
+            tradingController = null;
+        }
+        if (tradingMenu != null) {
+            mainPane.getChildren().remove(tradingMenu);
+            tradingMenu = null;
+        }
+    }
+
+    public void closeRequestMenu(boolean appClosed) {
+        if (tradeRequestController != null) {
+            tradeRequestController.destroy(appClosed);
+            tradeRequestController = null;
+        }
+        if (requestMenu != null) {
+            mainPane.getChildren().remove(requestMenu);
+            requestMenu = null;
+        }
+        if (tradeRequestPopup.isVisible()) {
+            tradeRequestPopup.setVisible(false);
+        }
     }
 }
