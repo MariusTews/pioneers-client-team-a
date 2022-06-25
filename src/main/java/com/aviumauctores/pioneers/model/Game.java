@@ -7,6 +7,7 @@ public record Game(
         String name,
         String owner,
         boolean started,
-        int members
+        int members,
+        GameSettings settings
 ) {
 }

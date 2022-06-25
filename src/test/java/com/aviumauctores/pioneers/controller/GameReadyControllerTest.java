@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.Game;
+import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
@@ -78,7 +79,7 @@ class GameReadyControllerTest extends ApplicationTest {
                 Observable.just(new User("1", "Player1", "online", null, null)));
         when(userService.getUserName(anyString())).thenReturn(Observable.just("Player1"));
         when(userService.getCurrentUserID()).thenReturn("1");
-        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1)));
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1, new GameSettings(2, 10))));
         when(gameService.getCurrentGameID()).thenReturn("12");
         existingMembers = Observable.just(List.of(existingMember));
         when(gameMemberService.listCurrentGameMembers()).thenReturn(existingMembers);
@@ -142,7 +143,7 @@ class GameReadyControllerTest extends ApplicationTest {
     void deleteGame() {
         when(userService.getCurrentUserID()).thenReturn("1");
         when(gameService.getOwnerID()).thenReturn("1");
-        when(gameService.deleteGame()).thenReturn(Observable.just(new Game("", "", null, "name", "1", false, 0)));
+        when(gameService.deleteGame()).thenReturn(Observable.just(new Game("", "", null, "name", "1", false, 0, new GameSettings(2, 10))));
         clickOn("#leaveGameButton");
         clickOn("OK");
         verify(gameService).deleteGame();
