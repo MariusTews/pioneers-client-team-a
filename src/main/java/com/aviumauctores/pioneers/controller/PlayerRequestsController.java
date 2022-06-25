@@ -20,11 +20,10 @@ import java.util.ResourceBundle;
 
 
 public class PlayerRequestsController implements Controller{
-    private TradingController tradingController;
+    private final TradingController tradingController;
     private final PioneerService pioneerService;
     private final UserService userService;
     private final ColorService colorService;
-    private final ResourceBundle bundle;
 
     public ListView<HBox> playerList;
     private String currentPlayerID;
@@ -32,13 +31,12 @@ public class PlayerRequestsController implements Controller{
     private PlayerRequestsItemController playerRequestsItemController;
     private final HashMap<String, PlayerRequestsItemController> listItems = new HashMap<>();
     @Inject
-    public PlayerRequestsController(TradingController tradingController, PioneerService pioneerService, UserService userService, ColorService colorService, ResourceBundle bundle){
+    public PlayerRequestsController(TradingController tradingController, PioneerService pioneerService, UserService userService, ColorService colorService){
         this.tradingController = tradingController;
 
         this.pioneerService = pioneerService;
         this.userService = userService;
         this.colorService = colorService;
-        this.bundle = bundle;
     }
 
     public void load(ListView<HBox> node, String startingPlayer) {
@@ -64,7 +62,7 @@ public class PlayerRequestsController implements Controller{
         String playerID = player.userId();
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
-        playerRequestsItemController = new PlayerRequestsItemController(player, playerName, colorName, userService, bundle);
+        playerRequestsItemController = new PlayerRequestsItemController(player, playerName, colorName, userService);
         listItems.put(playerID, playerRequestsItemController);
         playerList.getItems().add(playerList.getItems().size(), playerRequestsItemController.createBox());
 

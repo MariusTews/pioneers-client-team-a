@@ -68,8 +68,8 @@ public class TradingController implements Controller {
     private final UserService userService;
     private final PioneerService pioneerService;
     private final ColorService colorService;
-    private ErrorService errorService;
-    private HashMap<ChangeListener<Integer>, Spinner<Integer>> listenerSpinnerHashMap;
+    private final ErrorService errorService;
+    private final HashMap<ChangeListener<Integer>, Spinner<Integer>> listenerSpinnerHashMap;
 
     private CompositeDisposable disposables;
 
@@ -119,7 +119,7 @@ public class TradingController implements Controller {
             return null;
         }
         this.initSpinners();
-        playerRequestsController = new PlayerRequestsController(this, pioneerService, userService, colorService, bundle);
+        playerRequestsController = new PlayerRequestsController(this, pioneerService, userService, colorService);
         this.playerRequestsController.load(requestList, userID);
         return parent;
     }
@@ -240,17 +240,7 @@ public class TradingController implements Controller {
                     selectedPlayer = p;
                 }
             }
-            //TODO trade with player
-            HashMap<String, Integer> resources = new HashMap<>();
-            resources.put(RESOURCE_BRICK, 1);
-            resources.put(RESOURCE_GRAIN, -1);
-            System.out.println(selectedPlayer.userId());
-            disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources)
-                    .observeOn(FX_SCHEDULER).
-                    subscribe(move -> {
-                                System.out.println("test");
-                            }, errorService::handleError
-                    ));
+            //Trade with player
         }
     }
 
@@ -260,9 +250,10 @@ public class TradingController implements Controller {
         this.removeListeners();
         this.setRequestSpinnersReady();
         this.setTradeSpinnersReady();
-        this.setListeners();
         this.setBankTrade(true);
         this.setRequestSpinnersZero();
+        this.setSumRequest(0);
+        this.setListeners();
     }
 
     public void enterWoodVariables(MouseEvent mouseEvent) {
@@ -437,7 +428,6 @@ public class TradingController implements Controller {
     private void onChangeListener(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
         if (newValue > oldValue) {
             sumRequest += 1;
-            System.out.println(sumRequest);
             if (sumRequest > 1) {
                 if (tradeWood.getValue() != 0) {
                     tradeWood.getValueFactory().setValue(tradeWood.getValue() + Integer.parseInt(String.valueOf(woodLabel.getText().charAt(0))));
@@ -471,12 +461,10 @@ public class TradingController implements Controller {
     }
 
     public void removeListeners() {
-        if (listenerSpinnerHashMap != null) {
-            for (Map.Entry<ChangeListener<Integer>, Spinner<Integer>> entry : listenerSpinnerHashMap.entrySet()) {
-                Spinner<Integer> spinner = entry.getValue();
-                ChangeListener<Integer> listener = entry.getKey();
-                spinner.valueProperty().removeListener(listener);
-            }
+        for (Map.Entry<ChangeListener<Integer>, Spinner<Integer>> entry : listenerSpinnerHashMap.entrySet()) {
+            Spinner<Integer> spinner = entry.getValue();
+            ChangeListener<Integer> listener = entry.getKey();
+            spinner.valueProperty().removeListener(listener);
         }
     }
 

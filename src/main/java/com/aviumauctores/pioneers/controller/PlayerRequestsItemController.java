@@ -16,20 +16,18 @@ import java.util.ResourceBundle;
 
 public class PlayerRequestsItemController implements Controller{
 
-    private Player player;
+    private final Player player;
     private final String name;
     private final UserService userService;
-    private final ResourceBundle bundle;
     private final String id;
     private final String color;
 
-    public PlayerRequestsItemController(Player player, String name, String color, UserService userService, ResourceBundle bundle) {
+    public PlayerRequestsItemController(Player player, String name, String color, UserService userService) {
         this.player = player;
         this.id = player.userId();
         this.name = name;
         this.color = color;
         this.userService = userService;
-        this.bundle = bundle;
     }
 
     @Override
