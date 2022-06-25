@@ -241,6 +241,18 @@ public class TradingController implements Controller {
                 }
             }
             //Trade with player
+            //TODO trade with player
+            HashMap<String, Integer> resources = new HashMap<>();
+            resources.put(RESOURCE_BRICK, 1);
+            resources.put(RESOURCE_GRAIN, -1);
+            System.out.println(selectedPlayer.userId());
+            disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources)
+                    .observeOn(FX_SCHEDULER).
+                    subscribe(move -> {
+                                System.out.println("test");
+                            }, errorService::handleError
+                    ));
+
         }
     }
 
