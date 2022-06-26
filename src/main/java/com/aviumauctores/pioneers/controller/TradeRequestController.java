@@ -75,13 +75,14 @@ public class TradeRequestController implements Controller {
     }
 
     public void acceptRequest(ActionEvent actionEvent) {
+        /*
         errorService.setErrorCodesTradeController();
         disposables.add(pioneerService.createMove("build", null, "62b6ca620fbbbb001440fad2", null, null)
                 .observeOn(FX_SCHEDULER).
                 subscribe(move -> System.out.println("Erfolgreich"), errorService::handleError
                 ));
+         */
         inGameController.closeRequestMenu(false);
-
     }
 
     public void declineRequest(ActionEvent actionEvent) {

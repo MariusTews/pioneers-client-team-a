@@ -140,7 +140,7 @@ public class TradingController implements Controller {
         disposables.add(pioneerService.createMove("build", null, "684072366f72202b72406465", null, resources)
                 .observeOn(FX_SCHEDULER).
                 subscribe(move -> {
-                }, errorService::handleError));
+                }, System.out::println));
     }
 
     //send trade to bank or player
@@ -165,15 +165,17 @@ public class TradingController implements Controller {
                 }
             }
             //Trade with player
-            //TODO trade with player
+            /*
             HashMap<String, Integer> resources = this.getSpinnerValues();
-            System.out.println(selectedPlayer.userId());
-            disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources)
-                    .observeOn(FX_SCHEDULER).
-                    subscribe(move -> {
-                                System.out.println("test");
-                            }, errorService::handleError
-                    ));
+            System.out.println(selectedPlayer != null ? selectedPlayer.userId() : null);
+            if (selectedPlayer != null) {
+                disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(move -> {
+                                    System.out.println("test");
+                                }, errorService::handleError
+                        ));
+            }*/
 
         }
     }
@@ -418,7 +420,7 @@ public class TradingController implements Controller {
             resources.put(RESOURCE_WOOL, -tradeWool.getValue());
         }
         if (tradeClay.getValue() != 0) {
-            resources.put(RESOURCE_BRICK, -tradeWool.getValue());
+            resources.put(RESOURCE_BRICK, -tradeClay.getValue());
         }
         if (tradeBread.getValue() != 0) {
             resources.put(RESOURCE_GRAIN, -tradeBread.getValue());
@@ -447,10 +449,6 @@ public class TradingController implements Controller {
 
     public void setBankTrade(boolean bankTrade) {
         this.bankTrade = bankTrade;
-    }
-
-    public int getSumRequest() {
-        return sumRequest;
     }
 
     public void setSumRequest(int sum) {

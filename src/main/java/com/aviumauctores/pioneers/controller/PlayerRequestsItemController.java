@@ -12,7 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class PlayerRequestsItemController implements Controller{
 

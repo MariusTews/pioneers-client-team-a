@@ -56,8 +56,6 @@ public class InGameController extends LoggedInController {
     public Button tradeButton;
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
-    public Button acceptTradeButton;
-
     private Player player;
     private final EventListener eventListener;
     private final SoundService soundService;
@@ -462,6 +460,7 @@ public class InGameController extends LoggedInController {
         loadChat();
         playerResourceListController.init(playerList, currentPlayerID);
         finishMoveButton.setDisable(true);
+        tradeButton.setDisable(true);
         buildMap();
 
         return parent;
@@ -515,6 +514,7 @@ public class InGameController extends LoggedInController {
                 rollButton.setDisable(true);
                 arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
+                tradeButton.setDisable(true);
                 switch (currentAction) {
                     case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
                         updateFields(true, roadPane);
@@ -540,6 +540,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
+                        tradeButton.setDisable(false);
                         updateFields(true, roadAndCrossingPane);
                     }
 
@@ -547,6 +548,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
+                        tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
                         freeFieldVisibility(false);
                     }
@@ -557,6 +559,7 @@ public class InGameController extends LoggedInController {
             yourTurnLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
+            tradeButton.setDisable(true);
             updateFields(false, crossingPane, roadPane);
             roadAndCrossingPane.setDisable(true);
             freeFieldVisibility(false);
@@ -926,11 +929,6 @@ public class InGameController extends LoggedInController {
         requestMenu.setLayoutX(0);
         requestMenu.setLayoutY(0);
         mainPane.getChildren().add(requestMenu);
-
-    }
-
-    public void acceptTrade(ActionEvent actionEvent) {
-        this.showTradeRequest();
 
     }
 

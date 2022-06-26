@@ -931,8 +931,7 @@
                <Font size="16.0" />
             </font></Label>
          <Label fx:id="timeLabel" layoutX="238.0" layoutY="608.0" prefHeight="17.0" prefWidth="143.0" text="Label" />
-         <Button fx:id="acceptTradeButton" layoutX="571.0" layoutY="666.0" mnemonicParsing="false" onAction="#acceptTrade" text="Button" />
-         <Button fx:id="tradeButton" layoutX="565.0" layoutY="634.0" mnemonicParsing="false" onAction="#trade" text="%trading" />
+         <Button fx:id="tradeButton" layoutX="557.0" layoutY="655.0" mnemonicParsing="false" onAction="#trade" text="%trading" />
       </Pane>
    </center>
    <right>
