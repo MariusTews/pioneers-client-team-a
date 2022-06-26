@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="ingamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
+<BorderPane fx:id="ingamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
       <Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER">
          <ImageView id="hexagon20_2" fitHeight="89.375" fitWidth="103.75" layoutX="113.375" layoutY="166.375" pickOnBounds="true" preserveRatio="true">
