@@ -140,7 +140,7 @@ public class TradingController implements Controller {
         disposables.add(pioneerService.createMove("build", null, "684072366f72202b72406465", null, resources)
                 .observeOn(FX_SCHEDULER).
                 subscribe(move -> {
-                }, System.out::println));
+                }, errorService::handleError));
     }
 
     //send trade to bank or player
