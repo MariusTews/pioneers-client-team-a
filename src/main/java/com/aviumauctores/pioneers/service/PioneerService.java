@@ -7,6 +7,7 @@ import com.aviumauctores.pioneers.rest.PioneersApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
 
 public class PioneerService {
@@ -25,9 +26,10 @@ public class PioneerService {
         return pioneersApiService.getState(gameService.getCurrentGameID());
     }
 
-    public Observable<Move> createMove(String action, Building building, String partner,
-                                       RobDto rob) {
-        return pioneersApiService.createMove(gameService.getCurrentGameID(), new CreateMoveDto(action, building, partner, rob));
+    public Observable<Move> createMove(String action, Building building, HashMap<String, Integer> resources,
+                                       String partner, RobDto rob) {
+        return pioneersApiService.createMove(gameService.getCurrentGameID(),
+                new CreateMoveDto(action, building, resources, partner, rob));
     }
 
 
