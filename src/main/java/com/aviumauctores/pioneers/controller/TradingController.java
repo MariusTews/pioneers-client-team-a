@@ -137,7 +137,7 @@ public class TradingController implements Controller {
 
     private void sendBankTrade(HashMap<String, Integer> resources) {
         errorService.setErrorCodesTradeController();
-        disposables.add(pioneerService.createMove("build", null, "684072366f72202b72406465", null, resources)
+        disposables.add(pioneerService.createMove("build", null, resources, "684072366f72202b72406465", null)
                 .observeOn(FX_SCHEDULER).
                 subscribe(move -> {
                 }, errorService::handleError));
