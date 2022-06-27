@@ -50,19 +50,21 @@ public class BuildService {
             return;
         }
         Building b = Building.readCoordinatesFromID(selectedField.getId());
-        pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), null, buildingType,
-                        gameService.getCurrentGameID(), userID),null,null, null)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                        }
-                        , throwable -> {
-                            if (throwable instanceof HttpException) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                String content = bundle.getString(buildingType.equals(BUILDING_TYPE_ROAD) ? "road.location.mismatch" : "settlement.location.mismatch");
-                                alert.setContentText(content);
-                                alert.showAndWait();
+        if (b != null) {
+            pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), null, buildingType,
+                            gameService.getCurrentGameID(), userID),null, null,null)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(move -> {
                             }
-                        });
+                            , throwable -> {
+                                if (throwable instanceof HttpException) {
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    String content = bundle.getString(buildingType.equals(BUILDING_TYPE_ROAD) ? "road.location.mismatch" : "settlement.location.mismatch");
+                                    alert.setContentText(content);
+                                    alert.showAndWait();
+                                }
+                            });
+        }
 
     }
 

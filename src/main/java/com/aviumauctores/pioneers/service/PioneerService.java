@@ -26,9 +26,10 @@ public class PioneerService {
         return pioneersApiService.getState(gameService.getCurrentGameID());
     }
 
-    public Observable<Move> createMove(String action, Building building, String partner,
-                                       RobDto rob, HashMap<String, Integer> resources) {
-        return pioneersApiService.createMove(gameService.getCurrentGameID(), new CreateMoveDto(action, building, resources, partner, rob));
+    public Observable<Move> createMove(String action, Building building, HashMap<String, Integer> resources,
+                                       String partner, RobDto rob) {
+        return pioneersApiService.createMove(gameService.getCurrentGameID(),
+                new CreateMoveDto(action, building, resources, partner, rob));
     }
 
 
