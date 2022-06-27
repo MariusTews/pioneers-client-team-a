@@ -110,18 +110,22 @@ public class MapController implements Controller {
                 int posX = tile.x();
                 int posY = tile.y();
                 int posZ = tile.z();
+
                 // tile-coordinates
                 double tileX = middleX - (0.75 * posX * fitWidthHexagon) - (0.75 * posY * fitWidthHexagon);
                 double tileY = middleY - (0.5 * posX * fitHeightHexagon) + (0.5 * posY * fitHeightHexagon);
                 if (posX == 0 && posY == 0) {
                     tileX += posZ * fitWidthHexagon;
                 }
+
                 // position in grid
                 String position = "X" + posX + "Y" + posY + "Z" + posZ;
                 position = position.replace("-", "_");
+
                 // offsets
                 double offsetMiddleY = tileY + 0.5 * fitHeightHexagon;
                 double offsetMiddleX = tileX + 0.5 * fitWidthHexagon;
+
                 // creation
                 createTile(position, tileX, tileY, fitWidthHexagon, fitHeightHexagon, tile);
                 createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken());
@@ -131,6 +135,52 @@ public class MapController implements Controller {
                 createRoad(position + "R3", offsetMiddleX - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
                 createRoad(position + "R7", tileX + 0.75 * fitWidthHexagon, tileY + fitHeightHexagon - 3 * fitHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
                 createRoad(position + "R11", tileX, offsetMiddleY + 2 * fitHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+            }
+
+            // add remaining crossings and roads
+            // top left (1 o clock)
+            int radius = mapRadius + 1;
+            for (int yIterator = 0; yIterator > -1 * radius; yIterator--) {
+                double tileX = middleX - (0.75 * radius * fitWidthHexagon) - (0.75 * yIterator * fitWidthHexagon);
+                double tileY = middleY - (0.5 * radius * fitHeightHexagon) + (0.5 * yIterator * fitHeightHexagon);
+                String position = "X" + radius + "Y" + yIterator + "Z" + -1 * (radius + yIterator);
+                position = position.replace("-", "_");
+                createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
+                createRoad(position + "R7", tileX + 0.75 * fitWidthHexagon, tileY + fitHeightHexagon - 3 * fitHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+            }
+            // bottom left (11 o clock)
+            for (int xIterator = 0; xIterator >= -1 * radius; xIterator--) {
+                double tileX = middleX - (0.75 * xIterator * fitWidthHexagon) - (0.75 * radius * fitWidthHexagon);
+                double tileY = middleY - (0.5 * xIterator * fitHeightHexagon) + (0.5 * radius * fitHeightHexagon);
+                String position = "X" + xIterator + "Y" + radius + "Z" + -1 * (radius + xIterator);
+                position = position.replace("-", "_");
+                if (xIterator != -1 * radius) {
+                    createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
+                }
+                if (xIterator != 0) {
+                    createRoad(position + "R3", (tileX + 0.5 * fitWidthHexagon) - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
+                }
+            }
+            // top right (5 o clock)
+            radius = -1 * radius;
+            for (int xIterator = 0; xIterator < -1 * radius; xIterator++) {
+                double tileX = middleX - (0.75 * xIterator * fitWidthHexagon) - (0.75 * radius * fitWidthHexagon);
+                double tileY = middleY - (0.5 * xIterator * fitHeightHexagon) + (0.5 * radius * fitHeightHexagon);
+                String position = "X" + xIterator + "Y" + radius + "Z" + -1 * (radius + xIterator);
+                position = position.replace("-", "_");
+                createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
+                createRoad(position + "R11", tileX, (tileY + 0.5 * fitHeightHexagon) + 2 * fitHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+            }
+            // bottom right (7 o clock)
+            for (int yIterator = 0; yIterator < -1 * radius; yIterator++) {
+                double tileX = middleX - (0.75 * radius * fitWidthHexagon) - (0.75 * yIterator * fitWidthHexagon);
+                double tileY = middleY - (0.5 * radius * fitHeightHexagon) + (0.5 * yIterator * fitHeightHexagon);
+                String position = "X" + radius + "Y" + yIterator + "Z" + (radius + yIterator);
+                position = position.replace("-", "_");
+                createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
+                if (yIterator != 0) {
+                    createRoad(position + "R3", (tileX + 0.5 * fitWidthHexagon) - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
+                }
             }
         }
         return parent;
