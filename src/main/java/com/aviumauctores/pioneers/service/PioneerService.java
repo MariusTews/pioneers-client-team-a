@@ -28,7 +28,7 @@ public class PioneerService {
 
     public Observable<Move> createMove(String action, Building building, String partner,
                                        RobDto rob, HashMap<String, Integer> resources) {
-        return pioneersApiService.createMove(gameService.getCurrentGameID(), new CreateMoveDto(action, building, partner, rob, resources));
+        return pioneersApiService.createMove(gameService.getCurrentGameID(), new CreateMoveDto(action, building, resources, partner, rob));
     }
 
 

@@ -64,7 +64,6 @@ public class TradingController implements Controller {
     public VBox bankBread;
     public VBox bankWood;
     private String userID;
-    private Player player;
     private final UserService userService;
     private final PioneerService pioneerService;
     private final ColorService colorService;
@@ -94,7 +93,6 @@ public class TradingController implements Controller {
     @Override
     public void init() {
         userID = userService.getCurrentUserID();
-        player = pioneerService.getPlayer(userID).blockingFirst();
         disposables = new CompositeDisposable();
     }
 
@@ -104,7 +102,9 @@ public class TradingController implements Controller {
             playerRequestsController.destroy(closed);
             playerRequestsController = null;
         }
-        disposables.dispose();
+        if (disposables != null) {
+            disposables.dispose();
+        }
     }
 
     @Override
@@ -164,22 +164,8 @@ public class TradingController implements Controller {
                     selectedPlayer = p;
                 }
             }
-            //Trade with player
-            /*
-            HashMap<String, Integer> resources = this.getSpinnerValues();
-            System.out.println(selectedPlayer != null ? selectedPlayer.userId() : null);
-            if (selectedPlayer != null) {
-                disposables.add(pioneerService.createMove("build", null, selectedPlayer.userId(), null, resources)
-                        .observeOn(FX_SCHEDULER).
-                        subscribe(move -> {
-                                    System.out.println("test");
-                                }, errorService::handleError
-                        ));
-            }*/
-
         }
     }
-
 
     //change spinners, when user wants to trade with the bank
 

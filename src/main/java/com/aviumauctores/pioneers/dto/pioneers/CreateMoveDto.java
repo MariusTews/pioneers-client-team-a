@@ -8,8 +8,9 @@ import java.util.HashMap;
 public record CreateMoveDto(
         String action,
         Building building,
+        HashMap<String, Integer> resources,
         String partner,
-        RobDto rob,
-        HashMap<String, Integer> resources
+        RobDto rob
+
 ) {
 }

@@ -13,7 +13,7 @@ import javafx.scene.text.Font;
 
 import java.util.Objects;
 
-public class PlayerRequestsItemController implements Controller{
+public class PlayerRequestsItemController implements Controller {
 
     private final Player player;
     private final String name;
@@ -59,12 +59,6 @@ public class PlayerRequestsItemController implements Controller{
         playerName.setFont(new Font(18));
         playerName.setStyle("-fx-font-weight: bold");
         playerName.setStyle("-fx-text-fill: " + color);
-
-        //Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + color + ".png")).toString());
-        //arrowView = new ImageView(arrowIcon);
-        //arrowView.setFitHeight(40.0);
-        //arrowView.setFitWidth(40.0);
-        //arrowView.setVisible(false);
         VBox playerInfo = new VBox(playerName);
 
 

@@ -13,21 +13,20 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.Objects;
 
 
-public class PlayerRequestsListController implements Controller{
+public class PlayerRequestsListController implements Controller {
     private final TradingController tradingController;
     private final PioneerService pioneerService;
     private final UserService userService;
     private final ColorService colorService;
 
     public ListView<HBox> playerList;
-    private String currentPlayerID;
-
-    private PlayerRequestsItemController playerRequestsItemController;
     private final HashMap<String, PlayerRequestsItemController> listItems = new HashMap<>();
+
     @Inject
-    public PlayerRequestsListController(TradingController tradingController, PioneerService pioneerService, UserService userService, ColorService colorService){
+    public PlayerRequestsListController(TradingController tradingController, PioneerService pioneerService, UserService userService, ColorService colorService) {
         this.tradingController = tradingController;
 
         this.pioneerService = pioneerService;
@@ -37,12 +36,11 @@ public class PlayerRequestsListController implements Controller{
 
     public void load(ListView<HBox> node, String startingPlayer) {
         this.playerList = node;
-        this.currentPlayerID = startingPlayer;
         for (Player p : pioneerService.listPlayers().blockingFirst()) {
             createPlayerBox(p);
-            //if (!Objects.equals(p.userId(), currentPlayerID)){
-            //    createPlayerBox(p);
-            //}
+            if (!Objects.equals(p.userId(), startingPlayer)) {
+                createPlayerBox(p);
+            }
         }
         playerList.setPadding(new Insets(10, 0, 10, 0));
         playerList.setOnMouseClicked(event -> {
@@ -58,7 +56,7 @@ public class PlayerRequestsListController implements Controller{
         String playerID = player.userId();
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
-        playerRequestsItemController = new PlayerRequestsItemController(player, playerName, colorName, userService);
+        PlayerRequestsItemController playerRequestsItemController = new PlayerRequestsItemController(player, playerName, colorName, userService);
         listItems.put(playerID, playerRequestsItemController);
         playerList.getItems().add(playerList.getItems().size(), playerRequestsItemController.createBox());
 
@@ -71,9 +69,9 @@ public class PlayerRequestsListController implements Controller{
 
     @Override
     public void destroy(boolean closed) {
-        if (playerRequestsItemController != null) {
-            playerRequestsItemController.destroy(closed);
-            playerRequestsItemController = null;
+        for (PlayerRequestsItemController items : listItems.values()) {
+            items.destroy(closed);
+            items = null;
         }
 
     }

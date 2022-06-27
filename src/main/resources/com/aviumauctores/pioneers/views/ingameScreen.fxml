@@ -1007,14 +1007,14 @@
                         <Label fx:id="resourceLabel" text="%your.resources" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
                      </children>
                   </GridPane>
-                  <VBox fx:id="tradeRequestPopup" alignment="CENTER" prefHeight="73.0" prefWidth="173.0" spacing="10.0" visible="false">
-                     <children>
-                        <Label fx:id="playerWantTradeLabel" text="%player.want.trade" />
-                        <Button fx:id="viewRequestButton" mnemonicParsing="false" onAction="#viewRequest" text="%view.request" />
-                     </children>
+                  <VBox fx:id="tradeRequestPopup" alignment="CENTER" prefHeight="73.0" prefWidth="173.0" spacing="10.0"
+                        visible="false">
                      <opaqueInsets>
-                        <Insets />
+                        <Insets/>
                      </opaqueInsets>
+                     <Label fx:id="playerWantTradeLabel" text="%player.want.trade"/>
+                     <Button fx:id="viewRequestButton" mnemonicParsing="false" onAction="#viewRequest"
+                             text="%view.request"/>
                   </VBox>
                </children>
             </VBox>
