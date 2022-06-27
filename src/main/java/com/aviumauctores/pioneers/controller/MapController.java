@@ -12,6 +12,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -113,7 +116,7 @@ public class MapController implements Controller {
                 createTile(position, tileX, tileY, fitWidthHexagon, fitHeightHexagon, tile);
                 createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken());
                 createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
-                createCrossing(position + "R3", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
+                createCrossing(position + "R0", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
             }
         }
@@ -141,6 +144,13 @@ public class MapController implements Controller {
     }
 
     public void createCrossing(String position, double coordinateX, double coordinateY, double size) {
+        Circle circle = new Circle();
+        circle.setFill(Color.TRANSPARENT);
+        circle.setId("building" + position + "Colour");
+        circle.setRadius(size / 2);
+        circle.setLayoutX(coordinateX);
+        circle.setLayoutY(coordinateY);
+        crossingPane.getChildren().add(circle);
         ImageView imageView = new ImageView();
         imageView.setId("building" + position);
         imageView.setFitHeight(size);
@@ -170,6 +180,10 @@ public class MapController implements Controller {
         imageView.setX(coordinateX);
         imageView.setY(coordinateY);
         robberPane.getChildren().add(imageView);
+    }
+
+    public void createRoad(String position, double coordinateX, double coordinateY, double sizeX, double sizeY) {
+
     }
 
     public void setInGameController(InGameController inGameController) {
