@@ -10,7 +10,6 @@ public record Member(
         String userId,
         boolean ready,
         Color color,
-
         boolean spectator
 ) {
 }

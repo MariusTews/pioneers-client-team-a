@@ -146,9 +146,18 @@
     -fx-background-color: #f0f0f0;
 }
 
+.drop-menu {
+    -fx-background-color: #f0f0f0;
+}
+
 #changeWindowVBox {
     -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-body-color: #00496c;
 }
 
 #paneOption {
