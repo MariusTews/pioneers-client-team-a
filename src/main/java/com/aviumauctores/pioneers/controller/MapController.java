@@ -52,6 +52,7 @@ public class MapController implements Controller {
     Image forest;
     Image pasture;
     Image emptyCrossing;
+    Image emptyRoad;
 
     public int mapRadius;
     public Map gameMap;
@@ -71,6 +72,7 @@ public class MapController implements Controller {
         forest = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/forest.png")).toString());
         pasture = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/pasture.png")).toString());
         emptyCrossing = new Image(Objects.requireNonNull(Main.class.getResource("views/buildings/empty.png")).toString());
+        emptyRoad = new Image(Objects.requireNonNull(Main.class.getResource("views/buildings/emptyRoad.png")).toString());
     }
 
     @Override
@@ -97,27 +99,38 @@ public class MapController implements Controller {
             double fitSizeCrossing = WIDTH_HEIGHT_BUILDING / factor;
             double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
             double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
+            double fitWidthRoad = WIDTH_ROAD / factor;
+            double fitHeightRoad = HEIGHT_ROAD / factor;
             double offsetCrossing = 0.5 * fitSizeCrossing;
+            double offsetWidthRoad = 0.5 * fitWidthRoad;
+            double offsetHeightRoad = 0.5 * fitHeightRoad;
 
             // creates the tiles
             for (Tile tile : gameMap.tiles()) {
                 int posX = tile.x();
                 int posY = tile.y();
                 int posZ = tile.z();
+                // tile-coordinates
                 double tileX = middleX - (0.75 * posX * fitWidthHexagon) - (0.75 * posY * fitWidthHexagon);
                 double tileY = middleY - (0.5 * posX * fitHeightHexagon) + (0.5 * posY * fitHeightHexagon);
                 if (posX == 0 && posY == 0) {
                     tileX += posZ * fitWidthHexagon;
                 }
+                // position in grid
                 String position = "X" + posX + "Y" + posY + "Z" + posZ;
                 position = position.replace("-", "_");
+                // offsets
                 double offsetMiddleY = tileY + 0.5 * fitHeightHexagon;
                 double offsetMiddleX = tileX + 0.5 * fitWidthHexagon;
+                // creation
                 createTile(position, tileX, tileY, fitWidthHexagon, fitHeightHexagon, tile);
                 createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken());
                 createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createCrossing(position + "R0", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
+                createRoad(position + "R3", offsetMiddleX - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
+                createRoad(position + "R7", tileX + 0.75 * fitWidthHexagon, tileY + fitHeightHexagon - 3 * fitHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+                createRoad(position + "R11", tileX, offsetMiddleY + 2 * fitHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
             }
         }
         return parent;
@@ -144,18 +157,15 @@ public class MapController implements Controller {
     }
 
     public void createCrossing(String position, double coordinateX, double coordinateY, double size) {
-        Circle circle = new Circle();
-        circle.setFill(Color.TRANSPARENT);
+        Circle circle = new Circle(size / 2, Color.TRANSPARENT);
         circle.setId("building" + position + "Colour");
-        circle.setRadius(size / 2);
         circle.setLayoutX(coordinateX);
         circle.setLayoutY(coordinateY);
         crossingPane.getChildren().add(circle);
-        ImageView imageView = new ImageView();
+        ImageView imageView = new ImageView(emptyCrossing);
         imageView.setId("building" + position);
         imageView.setFitHeight(size);
         imageView.setFitWidth(size);
-        imageView.setImage(emptyCrossing);
         imageView.setX(coordinateX);
         imageView.setY(coordinateY);
         imageView.setOnMouseClicked(this::onFieldClicked);
@@ -172,18 +182,31 @@ public class MapController implements Controller {
     }
 
     public void createRobberPosition(String position, double coordinateX, double coordinateY, double size) {
-        ImageView imageView = new ImageView();
+        ImageView imageView = new ImageView(emptyCrossing);
         imageView.setId("robber" + position);
         imageView.setFitHeight(size);
         imageView.setFitWidth(size);
-        imageView.setImage(emptyCrossing);
         imageView.setX(coordinateX);
         imageView.setY(coordinateY);
         robberPane.getChildren().add(imageView);
     }
 
-    public void createRoad(String position, double coordinateX, double coordinateY, double sizeX, double sizeY) {
-
+    public void createRoad(String position, double coordinateX, double coordinateY, double sizeX, double sizeY, double rotation) {
+        Rectangle rectangle = new Rectangle(coordinateX, coordinateY, sizeX, sizeY);
+        rectangle.setId("building" + position + "Colour");
+        rectangle.setFill(Color.TRANSPARENT);
+        rectangle.setRotate(rotation);
+        roadPane.getChildren().add(rectangle);
+        ImageView imageView = new ImageView(emptyRoad);
+        imageView.setId("building" + position);
+        imageView.setFitWidth(sizeX);
+        imageView.setFitHeight(sizeY);
+        imageView.setX(coordinateX);
+        imageView.setY(coordinateY);
+        imageView.setOnMouseClicked(this::onFieldClicked);
+        imageView.preserveRatioProperty().setValue(true);
+        imageView.setRotate(rotation);
+        roadPane.getChildren().add(imageView);
     }
 
     public void setInGameController(InGameController inGameController) {
