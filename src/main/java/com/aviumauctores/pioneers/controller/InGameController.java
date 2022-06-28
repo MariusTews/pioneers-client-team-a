@@ -1026,7 +1026,6 @@ public class InGameController extends LoggedInController {
         tradeRequestPopup.setVisible(true);
     }
     public void viewRequest(ActionEvent actionEvent) {
-        System.out.println("test");
         tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
