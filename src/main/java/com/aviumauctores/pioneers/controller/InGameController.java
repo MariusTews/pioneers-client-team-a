@@ -264,6 +264,9 @@ public class InGameController extends LoggedInController {
                         robberPane = controller.getRobberPane();
                         vpCircles = new Circle[]{};
                         timeLabel = controller.getTimeLabel();
+                        String desertTileId = controller.getDesertTileId();
+                        String desertRobberImageId = desertTileId.replace("hexagon", "robber");
+                        moveRobber(desertRobberImageId);
                         runTimer();
                     }
 
@@ -559,7 +562,10 @@ public class InGameController extends LoggedInController {
         if (currentPlayerID.equals(userID)) {
 
             //TODO maybe remove
-            moveRobber();
+            Point3D point = stateService.getRobberPosition();
+            String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+            id = id.replace("-", "_");
+            moveRobber(id);
 
             yourTurnLabel.setVisible(true);
             if (currentAction.startsWith("founding")) {
@@ -616,7 +622,11 @@ public class InGameController extends LoggedInController {
             updateFields(false, crossingPane, roadPane);
             roadAndCrossingPane.setDisable(true);
             freeFieldVisibility(false);
-            moveRobber();
+
+            Point3D point = stateService.getRobberPosition();
+            String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+            id = id.replace("-", "_");
+            moveRobber(id);
         }
     }
 
@@ -659,11 +669,11 @@ public class InGameController extends LoggedInController {
                 }, errorService::handleError));
     }
 
-    private void moveRobber() {
-        Point3D point = stateService.getRobberPosition();
-        String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
-        ImageView image = getNodeByID(id, true);
-        image.setImage(robberView);
+    private void moveRobber(String tileId) {
+        ImageView image = getNodeByID(tileId, true);
+        if (image != null) {
+            image.setImage(robberView);
+        }
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
