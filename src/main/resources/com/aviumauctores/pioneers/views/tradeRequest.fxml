@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.TradeRequestController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.TradeRequestController">
    <ImageView fitHeight="57.0" fitWidth="49.0" layoutX="35.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@Wood_icon.png" />
    </ImageView>
@@ -24,19 +24,18 @@
    </ImageView>
    <Label layoutX="133.0" layoutY="15.0" prefHeight="30.0" prefWidth="77.0" text="%trade" />
    <Label layoutX="250.0" layoutY="21.0" text="%you.get" />
-   <Label fx:id="tradeWoodLabel" layoutX="144.0" layoutY="62.0" text="Label" />
-   <Label fx:id="tradeBreadLabel" layoutX="144.0" layoutY="107.0" text="Label" />
-   <Label fx:id="tradeClayLabel" layoutX="144.0" layoutY="147.0" text="Label" />
-   <Label fx:id="tradeStoneLabel" layoutX="144.0" layoutY="192.0" text="Label" />
-   <Label fx:id="tradeWoolLabel" layoutX="144.0" layoutY="238.0" text="Label" />
-   <Label fx:id="getWoodLabel" layoutX="261.0" layoutY="63.0" text="Label" />
-   <Label fx:id="getBreadLabel" layoutX="261.0" layoutY="108.0" text="Label" />
-   <Label fx:id="getClayLabel" layoutX="261.0" layoutY="148.0" text="Label" />
-   <Label fx:id="getStoneLabel" layoutX="261.0" layoutY="193.0" text="Label" />
-   <Label fx:id="getWoolLabel" layoutX="261.0" layoutY="238.0" text="Label" />
-   <ImageView fx:id="playerAvatar" fitHeight="30.0" fitWidth="28.0" layoutX="393.0" layoutY="102.0" pickOnBounds="true"
-              preserveRatio="true">
-      <Image url="@ProfileSettings.png"/>
+   <Label fx:id="tradeWoodLabel" layoutX="144.0" layoutY="62.0" text="0" />
+   <Label fx:id="tradeBreadLabel" layoutX="144.0" layoutY="107.0" text="0" />
+   <Label fx:id="tradeClayLabel" layoutX="144.0" layoutY="147.0" text="0" />
+   <Label fx:id="tradeStoneLabel" layoutX="144.0" layoutY="192.0" text="0" />
+   <Label fx:id="tradeWoolLabel" layoutX="144.0" layoutY="238.0" text="0" />
+   <Label fx:id="getWoodLabel" layoutX="261.0" layoutY="63.0" text="0" />
+   <Label fx:id="getBreadLabel" layoutX="261.0" layoutY="108.0" text="0" />
+   <Label fx:id="getClayLabel" layoutX="261.0" layoutY="148.0" text="0" />
+   <Label fx:id="getStoneLabel" layoutX="261.0" layoutY="193.0" text="0" />
+   <Label fx:id="getWoolLabel" layoutX="261.0" layoutY="238.0" text="0" />
+   <ImageView fx:id="playerAvatar" fitHeight="30.0" fitWidth="28.0" layoutX="393.0" layoutY="102.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@ProfileSettings.png" />
    </ImageView>
    <Label fx:id="playerLabel" layoutX="434.0" layoutY="108.0" text="Player" />
    <Button fx:id="acceptButton" layoutX="424.0" layoutY="266.0" mnemonicParsing="false" onAction="#acceptRequest" text="%accept" />

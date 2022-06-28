@@ -164,11 +164,26 @@ public class TradingController implements Controller {
                     selectedPlayer = p;
                 }
             }
+
+            //Trade with player
+
+            HashMap<String, Integer> resources = this.getSpinnerValues();
+            System.out.println(selectedPlayer != null ? selectedPlayer.userId() : null);
+            if (selectedPlayer != null) {
+                disposables.add(pioneerService.createMove("build", null, resources, selectedPlayer.userId(), null)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(move -> {
+                                    System.out.println("test");
+                                }, error -> {
+                                    System.out.println(error);
+                                }
+                        ));
+            }
+
         }
     }
 
     //change spinners, when user wants to trade with the bank
-
     private void setupBankTrade() {
         this.removeListeners();
         this.setRequestSpinnersReady();
@@ -217,36 +232,20 @@ public class TradingController implements Controller {
 
     //setup spinners
     private void initSpinners() {
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory1 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory1.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory2 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory2.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory3 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory3.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory4 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory4.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory5 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory5.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory6 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory6.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory7 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory7.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory8 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory8.setValue(0);
-        SpinnerValueFactory<Integer> valueFactory9 = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
-        valueFactory9.setValue(0);
-        tradeWood.setValueFactory(valueFactory);
-        requestWood.setValueFactory(valueFactory1);
-        tradeBread.setValueFactory(valueFactory2);
-        requestBread.setValueFactory(valueFactory3);
-        tradeClay.setValueFactory(valueFactory4);
-        requestClay.setValueFactory(valueFactory5);
-        tradeStone.setValueFactory(valueFactory6);
-        requestStone.setValueFactory(valueFactory7);
-        tradeWool.setValueFactory(valueFactory8);
-        requestWool.setValueFactory(valueFactory9);
+        tradeWood.setValueFactory(this.createValueFactory());
+        requestWood.setValueFactory(this.createValueFactory());
+        tradeBread.setValueFactory(this.createValueFactory());
+        requestBread.setValueFactory(this.createValueFactory());
+        tradeClay.setValueFactory(this.createValueFactory());
+        requestClay.setValueFactory(this.createValueFactory());
+        tradeStone.setValueFactory(this.createValueFactory());
+        requestStone.setValueFactory(this.createValueFactory());
+        tradeWool.setValueFactory(this.createValueFactory());
+        requestWool.setValueFactory(this.createValueFactory());
+    }
+
+    private SpinnerValueFactory<Integer> createValueFactory() {
+        return new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
     }
 
     public void setRequestSpinnersReady() {
@@ -285,7 +284,6 @@ public class TradingController implements Controller {
     }
 
     //change listener for spinners
-
     private void setListeners() {
         ChangeListener<Integer> listener = this::onChangeListener;
         ChangeListener<Integer> listener1 = this::onChangeListener;
@@ -348,7 +346,6 @@ public class TradingController implements Controller {
     }
 
     //getter and setter
-
     private HashMap<String, Integer> getSpinnerValues() {
         HashMap<String, Integer> resources = new HashMap<>();
         if (tradeWood.getValue() != 0) {

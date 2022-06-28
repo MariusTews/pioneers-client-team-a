@@ -11,6 +11,7 @@ import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -57,6 +58,8 @@ public class InGameController extends LoggedInController {
     public Button tradeButton;
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
+    public Button accept;
+    public Label playerWantTradeLabel;
     private Player player;
     private final EventListener eventListener;
     private final SoundService soundService;
@@ -187,6 +190,10 @@ public class InGameController extends LoggedInController {
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
+    private HashMap<String, Integer> tradeRessources;
+    private String tradePartner;
+    private String tradePartnerAvatarUrl;
+    private String tradePartnerColor;
 
 
     @Inject
@@ -340,25 +347,25 @@ public class InGameController extends LoggedInController {
                                         buildSound.play();
                                     }
                                 }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD )) {
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
                                     GameSounds roadSound = soundService
                                             .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
                                     if (roadSound != null) {
                                         roadSound.play();
                                     }
                                 }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT )) {
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
                                     GameSounds settlementSound = soundService
                                             .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
-                                    if (settlementSound  != null) {
-                                        settlementSound .play();
+                                    if (settlementSound != null) {
+                                        settlementSound.play();
                                     }
                                 }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY )) {
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
                                     GameSounds citySound = soundService
                                             .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
-                                    if (citySound  != null) {
-                                        citySound .play();
+                                    if (citySound != null) {
+                                        citySound.play();
                                     }
                                 }
                             }
@@ -432,6 +439,9 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
+        }
+        if (move.action().equals("build") && move.partner().equals(userID)) {
+            this.showTradeRequest(move.resources(), move.userId());
         }
     }
 
@@ -1020,13 +1030,20 @@ public class InGameController extends LoggedInController {
 
     // trade with the bank or another player
 
-    public void showTradeRequest() {
+    public void showTradeRequest(HashMap<String, Integer> resources, String partner) {
+        tradeRessources = resources;
         viewRequestButton.setDisable(false);
         tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
+        tradePartner = userService.getUserName(partner).blockingFirst();
+        tradePartnerAvatarUrl = userService.getUserByID(partner).blockingFirst().avatar();
+        Player partnerPlayer = pioneerService.getPlayer(partner).blockingFirst();
+        tradePartnerColor = colorService.getColor(partnerPlayer.color());
+        playerWantTradeLabel.setText(tradePartner + bundle.getString("player.want.trade"));
         tradeRequestPopup.setVisible(true);
     }
+
     public void viewRequest(ActionEvent actionEvent) {
-        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService);
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");
@@ -1059,5 +1076,17 @@ public class InGameController extends LoggedInController {
         if (tradeRequestPopup.isVisible()) {
             tradeRequestPopup.setVisible(false);
         }
+    }
+
+    public void acceptTrade(ActionEvent actionEvent) {
+        disposables.add(pioneerService.createMove("accept", null, null, "62b6ca620fbbbb001440fad2", null)
+                .observeOn(FX_SCHEDULER).
+                subscribe(move -> {
+                            System.out.println("Erfolgreich");
+                        },
+                        error -> {
+                            System.out.println("error");
+                        }
+                ));
     }
 }

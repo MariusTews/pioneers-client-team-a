@@ -9,10 +9,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
+
+import static com.aviumauctores.pioneers.Constants.*;
 
 public class TradeRequestController implements Controller {
     public Label tradeWoodLabel;
@@ -31,12 +37,31 @@ public class TradeRequestController implements Controller {
     public Button declineButton;
     private final InGameController inGameController;
     private final ResourceBundle bundle;
+    private PioneerService pioneerService;
+    private ErrorService errorService;
+    private HashMap<String, Integer> tradeRessources;
+    private String tradePartner;
+    private String tradePartnerAvatarUrl;
+    private String tradePartnerColor;
     private CompositeDisposable disposables;
 
-    public TradeRequestController(InGameController inGameController, ResourceBundle bundle, PioneerService pioneerService, ErrorService errorService) {
+    public TradeRequestController(InGameController inGameController,
+                                  ResourceBundle bundle,
+                                  PioneerService pioneerService,
+                                  ErrorService errorService,
+                                  HashMap<String, Integer> tradeRessources,
+                                  String tradePartner,
+                                  String tradePartnerAvatarUrl,
+                                  String tradePartnerColor) {
 
         this.inGameController = inGameController;
         this.bundle = bundle;
+        this.pioneerService = pioneerService;
+        this.errorService = errorService;
+        this.tradeRessources = tradeRessources;
+        this.tradePartner = tradePartner;
+        this.tradePartnerAvatarUrl = tradePartnerAvatarUrl;
+        this.tradePartnerColor = tradePartnerColor;
     }
 
 
@@ -65,7 +90,35 @@ public class TradeRequestController implements Controller {
             e.printStackTrace();
             return null;
         }
+        this.fillLabels();
+        playerLabel.setText(tradePartner);
+        Image playerIcon = tradePartnerAvatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + tradePartnerColor + ".png")).toString()) : new Image(tradePartnerAvatarUrl);
+        playerAvatar = new ImageView(playerIcon);
+        playerAvatar.setFitHeight(40.0);
+        playerAvatar.setFitWidth(40.0);
         return parent;
+    }
+
+    private void fillLabels() {
+        for (Map.Entry<String, Integer> entry : tradeRessources.entrySet()) {
+            String key = entry.getKey();
+            Integer value = entry.getValue();
+            switch (key) {
+                case RESOURCE_LUMBER -> this.fillLabel(tradeWoodLabel, getWoodLabel, value);
+                case RESOURCE_BRICK -> this.fillLabel(tradeClayLabel, getClayLabel, value);
+                case RESOURCE_GRAIN -> this.fillLabel(tradeBreadLabel, getBreadLabel, value);
+                case RESOURCE_ORE -> this.fillLabel(tradeStoneLabel, getStoneLabel, value);
+                case RESOURCE_WOOL -> this.fillLabel(tradeWoolLabel, getWoolLabel, value);
+            }
+        }
+    }
+
+    private void fillLabel(Label tradeLabel, Label getLabel, Integer value) {
+        if (value < 0) {
+            tradeLabel.setText(String.valueOf(value));
+        } else {
+            getLabel.setText(String.valueOf(-value));
+        }
     }
 
     public void acceptRequest(ActionEvent actionEvent) {
