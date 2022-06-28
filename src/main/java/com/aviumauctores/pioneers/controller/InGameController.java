@@ -331,25 +331,25 @@ public class InGameController extends LoggedInController {
                                         buildSound.play();
                                     }
                                 }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD )) {
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
                                     GameSounds roadSound = soundService
                                             .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
                                     if (roadSound != null) {
                                         roadSound.play();
                                     }
                                 }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT )) {
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
                                     GameSounds settlementSound = soundService
                                             .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
-                                    if (settlementSound  != null) {
-                                        settlementSound .play();
+                                    if (settlementSound != null) {
+                                        settlementSound.play();
                                     }
                                 }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY )) {
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
                                     GameSounds citySound = soundService
                                             .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
-                                    if (citySound  != null) {
-                                        citySound .play();
+                                    if (citySound != null) {
+                                        citySound.play();
                                     }
                                 }
                             }

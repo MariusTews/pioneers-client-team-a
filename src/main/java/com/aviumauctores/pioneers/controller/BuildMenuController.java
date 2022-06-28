@@ -21,7 +21,6 @@ public class BuildMenuController implements Controller {
     @FXML
     private Button buildButton;
 
-
     public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType) {
         this.buildService = buildService;
         this.bundle = bundle;

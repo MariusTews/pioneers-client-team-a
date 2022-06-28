@@ -33,7 +33,7 @@ public class PlayerListItemController implements Controller {
     private final ObservableList<Parent> playerItems;
 
     public PlayerListItemController(PlayerListController parentController, User user, ObservableList<Parent> playerItems) {
-        this (parentController, user, null, playerItems);
+        this(parentController, user, null, playerItems);
     }
 
     public PlayerListItemController(PlayerListController parentController, User user, Member gameMember, ObservableList<Parent> playerItems) {
@@ -50,7 +50,7 @@ public class PlayerListItemController implements Controller {
 
     @Override
     public void destroy(boolean closed) {
-        playerItems.remove (root);
+        playerItems.remove(root);
     }
 
     private Image createReadyImg() {
@@ -58,59 +58,59 @@ public class PlayerListItemController implements Controller {
             return null;
         }
         String src;
-        if (gameMember.spectator ()) {
+        if (gameMember.spectator()) {
             src = SPECTATOR_IMAGE_SOURCE;
 
         } else {
-            src = gameMember.ready () ? READY_SRC : NOT_READY_SRC;
+            src = gameMember.ready() ? READY_SRC : NOT_READY_SRC;
         }
-        return new Image (Objects.requireNonNull (Main.class.getResourceAsStream (src)));
+        return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(src)));
     }
 
     @Override
     public Parent render() {
-        avatarView = new ImageView ();
-        avatarView.setFitWidth (40.0);
-        avatarView.setFitHeight (40.0);
-        String avatarUrl = user.avatar ();
-        Image avatar = avatarUrl == null ? null : new Image (avatarUrl);
-        avatarView.setImage (avatar);
-        readyView = new ImageView (createReadyImg ());
-        playerName = new Label (user.name ());
-        playerName.setMinWidth (95.0);
-        root = new HBox (10.0, avatarView, playerName, readyView);
-        root.setAlignment (Pos.CENTER_LEFT);
-        root.setOnMouseClicked (this::onItemClicked);
+        avatarView = new ImageView();
+        avatarView.setFitWidth(40.0);
+        avatarView.setFitHeight(40.0);
+        String avatarUrl = user.avatar();
+        Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+        avatarView.setImage(avatar);
+        readyView = new ImageView(createReadyImg());
+        playerName = new Label(user.name());
+        playerName.setMinWidth(95.0);
+        root = new HBox(10.0, avatarView, playerName, readyView);
+        root.setAlignment(Pos.CENTER_LEFT);
+        root.setOnMouseClicked(this::onItemClicked);
         return root;
     }
 
     private void onItemClicked(MouseEvent event) {
-        if (!event.getButton ().equals (MouseButton.PRIMARY) || event.getClickCount () < 2) {
+        if (!event.getButton().equals(MouseButton.PRIMARY) || event.getClickCount() < 2) {
             // only listen to double-clicks on primary button
             return;
         }
-        parentController.onPlayerItemClicked (user);
+        parentController.onPlayerItemClicked(user);
     }
 
     public void onPlayerUpdated(User newUser) {
         user = newUser;
-        String avatarUrl = newUser.avatar ();
-        Image newAvatar = avatarUrl == null ? null : new Image (avatarUrl);
-        avatarView.setImage (newAvatar);
-        playerName.setText (newUser.name ());
+        String avatarUrl = newUser.avatar();
+        Image newAvatar = avatarUrl == null ? null : new Image(avatarUrl);
+        avatarView.setImage(newAvatar);
+        playerName.setText(newUser.name());
     }
 
     public int onGameMemberUpdated(Member newGameMember) {
         // Value which is added to the amount of ready game members
         int readyMemberChange = 0;
-        boolean newGameMemberReady = newGameMember.ready ();
+        boolean newGameMemberReady = newGameMember.ready();
         // Update the amount of ready game members only if the ready state of this member changed
-        if (newGameMemberReady != gameMember.ready ()) {
+        if (newGameMemberReady != gameMember.ready()) {
             // If ready from false to true increment the amount of members otherwise decrement
             readyMemberChange = newGameMemberReady ? 1 : -1;
         }
         gameMember = newGameMember;
-        readyView.setImage (createReadyImg ());
+        readyView.setImage(createReadyImg());
         return readyMemberChange;
     }
 }

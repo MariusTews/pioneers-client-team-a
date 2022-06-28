@@ -72,7 +72,6 @@ public class GameOptionController implements Controller {
         return parent;
     }
 
-
     public void leaveOption(ActionEvent actionEvent) {
         gameReadyController.closeGameOptionMenu(true);
         gameReadyController.paneOption.setVisible(false);
