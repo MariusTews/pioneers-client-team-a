@@ -34,11 +34,10 @@ public class PlayerRequestsListController implements Controller {
         this.colorService = colorService;
     }
 
-    public void load(ListView<HBox> node, String startingPlayer) {
+    public void load(ListView<HBox> node, String self) {
         this.playerList = node;
         for (Player p : pioneerService.listPlayers().blockingFirst()) {
-            createPlayerBox(p);
-            if (!Objects.equals(p.userId(), startingPlayer)) {
+            if (!Objects.equals(p.userId(), self)) {
                 createPlayerBox(p);
             }
         }

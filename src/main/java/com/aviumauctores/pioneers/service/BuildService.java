@@ -24,7 +24,7 @@ public class BuildService {
     private final ColorService colorService;
     private ImageView selectedField;
     private String currentAction;
-    private String userID;
+    private final String userID;
     private final ResourceBundle bundle;
     private Player player;
     private String buildingType;
@@ -82,7 +82,6 @@ public class BuildService {
         }
         if (selectedField.getId().startsWith("building")) {
             selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
-            return;
         }
     }
 

@@ -182,81 +182,36 @@ public class TradingController implements Controller {
     public void enterWoodVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
         requestWood.setDisable(true);
-        String totrade = woodLabel.getText();
-        if (totrade.charAt(0) == '4') {
-            tradeWood.getValueFactory().setValue(4);
-            this.setTradeSpinnersZeroAndDisable(tradeWool, tradeStone, tradeClay, tradeBread);
-        } else if (totrade.charAt(0) == '3') {
-            tradeWood.getValueFactory().setValue(3);
-            this.setTradeSpinnersZeroAndDisable(tradeWool, tradeStone, tradeClay, tradeBread);
-        } else {
-            tradeWood.getValueFactory().setValue(2);
-            this.setTradeSpinnersZeroAndDisable(tradeWool, tradeStone, tradeClay, tradeBread);
-        }
+        tradeWood.getValueFactory().setValue(Integer.parseInt(String.valueOf(woodLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeWool, tradeStone, tradeClay, tradeBread);
     }
 
     public void enterBreadVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
         requestBread.setDisable(true);
-        String totrade = breadLabel.getText();
-        if (totrade.charAt(0) == '4') {
-            tradeBread.getValueFactory().setValue(4);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeClay);
-        } else if (totrade.charAt(0) == '3') {
-            tradeBread.getValueFactory().setValue(3);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeClay);
-        } else {
-            tradeBread.getValueFactory().setValue(2);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeClay);
-        }
+        tradeBread.getValueFactory().setValue(Integer.parseInt(String.valueOf(breadLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeClay);
     }
 
     public void enterClayVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
         requestClay.setDisable(true);
-        String totrade = clayLabel.getText();
-        if (totrade.charAt(0) == '4') {
-            tradeClay.getValueFactory().setValue(4);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeBread);
-        } else if (totrade.charAt(0) == '3') {
-            tradeClay.getValueFactory().setValue(3);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeBread);
-        } else {
-            tradeClay.getValueFactory().setValue(2);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeBread);
-        }
+        tradeClay.getValueFactory().setValue(Integer.parseInt(String.valueOf(clayLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeBread);
     }
 
     public void enterStoneVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
         requestStone.setDisable(true);
-        String totrade = stoneLabel.getText();
-        if (totrade.charAt(0) == '4') {
-            tradeStone.getValueFactory().setValue(4);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeClay, tradeBread);
-        } else if (totrade.charAt(0) == '3') {
-            tradeStone.getValueFactory().setValue(3);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeClay, tradeBread);
-        } else {
-            tradeStone.getValueFactory().setValue(2);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeClay, tradeBread);
-        }
+        tradeStone.getValueFactory().setValue(Integer.parseInt(String.valueOf(stoneLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeClay, tradeBread);
     }
 
     public void enterWoolVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
         requestWool.setDisable(true);
-        String toTrade = woolLabel.getText();
-        if (toTrade.charAt(0) == '4') {
-            tradeWool.getValueFactory().setValue(4);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeStone, tradeClay, tradeBread);
-        } else if (toTrade.charAt(0) == '3') {
-            tradeWool.getValueFactory().setValue(3);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeStone, tradeClay, tradeBread);
-        } else {
-            tradeWool.getValueFactory().setValue(2);
-            this.setTradeSpinnersZeroAndDisable(tradeWood, tradeStone, tradeClay, tradeBread);
-        }
+        tradeWool.getValueFactory().setValue(Integer.parseInt(String.valueOf(woolLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeStone, tradeClay, tradeBread);
     }
 
 
