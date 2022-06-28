@@ -5,13 +5,11 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.dto.rob.RobDto;
-import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.model.*;
-import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,11 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -38,9 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.*;
-import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -58,7 +50,6 @@ public class InGameController extends LoggedInController {
     public Button tradeButton;
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
-    public Button accept;
     public Label playerWantTradeLabel;
     private Player player;
     private final EventListener eventListener;
@@ -440,8 +431,10 @@ public class InGameController extends LoggedInController {
             }).start();
             rollSum.setText(" " + rolled + " ");
         }
-        if (move.action().equals("build") && move.partner().equals(userID)) {
-            this.showTradeRequest(move.resources(), move.userId());
+        if (move.partner() != null) {
+            if (move.action().equals("build") && move.partner().equals(userID)) {
+                this.showTradeRequest(move.resources(), move.userId());
+            }
         }
     }
 
@@ -1029,14 +1022,14 @@ public class InGameController extends LoggedInController {
 
 
     // trade with the bank or another player
-
     public void showTradeRequest(HashMap<String, Integer> resources, String partner) {
         tradeRessources = resources;
         viewRequestButton.setDisable(false);
         tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
-        tradePartner = userService.getUserName(partner).blockingFirst();
-        tradePartnerAvatarUrl = userService.getUserByID(partner).blockingFirst().avatar();
+        User user = userService.getUserByID(partner).blockingFirst();
         Player partnerPlayer = pioneerService.getPlayer(partner).blockingFirst();
+        tradePartnerAvatarUrl = user.avatar();
+        tradePartner = user.name();
         tradePartnerColor = colorService.getColor(partnerPlayer.color());
         playerWantTradeLabel.setText(tradePartner + bundle.getString("player.want.trade"));
         tradeRequestPopup.setVisible(true);
@@ -1076,17 +1069,5 @@ public class InGameController extends LoggedInController {
         if (tradeRequestPopup.isVisible()) {
             tradeRequestPopup.setVisible(false);
         }
-    }
-
-    public void acceptTrade(ActionEvent actionEvent) {
-        disposables.add(pioneerService.createMove("accept", null, null, "62b6ca620fbbbb001440fad2", null)
-                .observeOn(FX_SCHEDULER).
-                subscribe(move -> {
-                            System.out.println("Erfolgreich");
-                        },
-                        error -> {
-                            System.out.println("error");
-                        }
-                ));
     }
 }

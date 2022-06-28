@@ -37,12 +37,12 @@ public class TradeRequestController implements Controller {
     public Button declineButton;
     private final InGameController inGameController;
     private final ResourceBundle bundle;
-    private PioneerService pioneerService;
+    private final PioneerService pioneerService;
     private ErrorService errorService;
-    private HashMap<String, Integer> tradeRessources;
-    private String tradePartner;
-    private String tradePartnerAvatarUrl;
-    private String tradePartnerColor;
+    private final HashMap<String, Integer> tradeRessources;
+    private final String tradePartner;
+    private final String tradePartnerAvatarUrl;
+    private final String tradePartnerColor;
     private CompositeDisposable disposables;
 
     public TradeRequestController(InGameController inGameController,
@@ -93,7 +93,7 @@ public class TradeRequestController implements Controller {
         this.fillLabels();
         playerLabel.setText(tradePartner);
         Image playerIcon = tradePartnerAvatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + tradePartnerColor + ".png")).toString()) : new Image(tradePartnerAvatarUrl);
-        playerAvatar = new ImageView(playerIcon);
+        playerAvatar.setImage(playerIcon);
         playerAvatar.setFitHeight(40.0);
         playerAvatar.setFitWidth(40.0);
         return parent;
@@ -115,13 +115,22 @@ public class TradeRequestController implements Controller {
 
     private void fillLabel(Label tradeLabel, Label getLabel, Integer value) {
         if (value < 0) {
-            tradeLabel.setText(String.valueOf(value));
-        } else {
             getLabel.setText(String.valueOf(-value));
+        } else {
+            tradeLabel.setText(String.valueOf(value));
         }
     }
 
     public void acceptRequest(ActionEvent actionEvent) {
+        errorService.setErrorCodesTradeController();
+        HashMap<String, Integer> resources = tradeRessources;
+        for (Map.Entry<String, Integer> entry : resources.entrySet()) {
+            entry.setValue(-entry.getValue());
+        }
+        disposables.add(pioneerService.createMove("offer", null, resources, null, null)
+                .observeOn(FX_SCHEDULER).
+                subscribe(move -> {
+                }, errorService::handleError));
         inGameController.closeRequestMenu(false);
     }
 
