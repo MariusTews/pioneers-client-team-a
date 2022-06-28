@@ -1,10 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.ExpectedMove;
-import com.aviumauctores.pioneers.model.Move;
-import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.model.State;
+import com.aviumauctores.pioneers.model.*;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -20,6 +17,7 @@ public class StateService {
     private final String userID;
     private String oldPlayerID;
     private boolean newPlayer;
+    private Point3D robberPosition;
 
 
     @Inject
@@ -36,6 +34,7 @@ public class StateService {
         oldAction = currentAction;
         oldPlayerID = currentPlayerID;
         State currentState = state.data();
+        robberPosition = currentState.robber();
         ExpectedMove move = currentState.expectedMoves().get(0);
 
         //check whether my own player is allowed to take his turn now
@@ -78,5 +77,9 @@ public class StateService {
 
     public String getOldAction() {
         return oldAction;
+    }
+
+    public Point3D getRobberPosition() {
+        return robberPosition;
     }
 }

@@ -86,6 +86,7 @@ public class InGameController extends LoggedInController {
     public Pane crossingPane;
     public Pane roadPane;
     public Pane roadAndCrossingPane;
+    private Pane robberPane;
     @FXML
     private ImageView soundImage;
     @FXML
@@ -145,6 +146,9 @@ public class InGameController extends LoggedInController {
 
     Image muteImage;
     Image unmuteImage;
+
+    private Image robberView;
+
     private final ErrorService errorService;
     private final BuildService buildService;
     private final Provider<MapController> mapController;
@@ -207,6 +211,9 @@ public class InGameController extends LoggedInController {
         dice4 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_4.png")).toString());
         dice5 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_5.png")).toString());
         dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
+
+        robberView = new Image(Objects.requireNonNull(Main.class.getResource("views/robber.png")).toString());
+
         // Listen to game-move events
         disposables.add(eventListener.listen(
                         "games." + gameService.getCurrentGameID() + ".moves.*.*",
@@ -254,6 +261,7 @@ public class InGameController extends LoggedInController {
                         roadAndCrossingPane = controller.getRoadAndCrossingPane();
                         roadPane = controller.getRoadPane();
                         crossingPane = controller.getCrossingPane();
+                        robberPane = controller.getRobberPane();
                         vpCircles = new Circle[]{};
                         timeLabel = controller.getTimeLabel();
                         runTimer();
@@ -498,30 +506,42 @@ public class InGameController extends LoggedInController {
         //create building id
         String location = "building" + x + y + z + side;
         location = location.replace("-", "_");
-        return getNodeByID(location);
+        return getNodeByID(location, false);
     }
 
-    private ImageView getNodeByID(String id) {
-        //search for Node in road and crossingpane
+    private ImageView getNodeByID(String id, boolean robber) {
         ImageView view = null;
-        if (currentAction.startsWith("founding")) {
-            for (Node n : crossingPane.getChildren()) {
-                if (n.getId().equals(id)) {
+        if (robber) {
+            for (Node n : robberPane.getChildren()) {
+                String nID = n.getId();
+                if (nID.equals(id)) {
                     view = (ImageView) n;
                 }
+                if (Objects.requireNonNull((ImageView) n).getImage() != null) {
+                    ((ImageView) n).setImage(null);
+                }
             }
-            if (view == null) {
-                for (Node n : roadPane.getChildrenUnmodifiable()) {
+        }
+        else {
+            if (currentAction.startsWith("founding")) {
+                for (Node n : crossingPane.getChildren()) {
                     if (n.getId().equals(id)) {
                         view = (ImageView) n;
                     }
                 }
-            }
-        } else {
-            for (Node n : roadAndCrossingPane.getChildren()) {
-                String nID = n.getId().split("#")[0];
-                if (nID.equals(id)) {
-                    view = (ImageView) n;
+                if (view == null) {
+                    for (Node n : roadPane.getChildrenUnmodifiable()) {
+                        if (n.getId().equals(id)) {
+                            view = (ImageView) n;
+                        }
+                    }
+                }
+            } else {
+                for (Node n : roadAndCrossingPane.getChildren()) {
+                    String nID = n.getId().split("#")[0];
+                    if (nID.equals(id)) {
+                        view = (ImageView) n;
+                    }
                 }
             }
         }
@@ -537,6 +557,10 @@ public class InGameController extends LoggedInController {
         }
         //update visuals, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
+
+            //TODO maybe remove
+            moveRobber();
+
             yourTurnLabel.setVisible(true);
             if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
@@ -592,36 +616,7 @@ public class InGameController extends LoggedInController {
             updateFields(false, crossingPane, roadPane);
             roadAndCrossingPane.setDisable(true);
             freeFieldVisibility(false);
-        }
-    }
-
-    private void onPlayerUpdated(EventDto<Player> playerEventDto) {
-        Player updatedPlayer = playerEventDto.data();
-        if (updatedPlayer.userId().equals(userID)) {
-            playerResourceListController.setPlayer(updatedPlayer);
-            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-
-            HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
-            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
-            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
-            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
-            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
-
-            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
-            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
-            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
-
-        }
-        playerResourceListController.updatePlayerLabel(updatedPlayer);
-    }
-
-    @Override
-    public void destroy(boolean closed) {
-        super.destroy(closed);
-        closeBuildMenu(closed);
-        if (timer != null) {
-            timer.cancel();
+            moveRobber();
         }
     }
 
@@ -662,6 +657,13 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                 }, errorService::handleError));
+    }
+
+    private void moveRobber() {
+        Point3D point = stateService.getRobberPosition();
+        String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+        ImageView image = getNodeByID(id, true);
+        image.setImage(robberView);
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
@@ -947,7 +949,7 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    private void showDropWindow() {
+    private void    showDropWindow() {
         HashMap<String, Integer> resources = stateService.getUpdatedPlayer().resources();
         dropMenuController = new DropMenuController(this, this.pioneerService, this.bundle, resources);
         dropMenu = dropMenuController.render();

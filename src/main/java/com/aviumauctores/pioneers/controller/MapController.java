@@ -283,6 +283,10 @@ public class MapController implements Controller {
         return roadPane;
     }
 
+    public Pane getRobberPane() {
+        return robberPane;
+    }
+
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         inGameController.onMainPaneClicked(mouseEvent);
     }
