@@ -507,7 +507,7 @@ public class InGameController extends LoggedInController {
 
     private ImageView getView(int x, int y, int z, int side) {
         //create building id
-        String location = "building" + x + y + z + side;
+        String location = "buildingX" + x + "Y" + y + "Z" + z + "R" + side;
         location = location.replace("-", "_");
         return getNodeByID(location, false);
     }
@@ -563,11 +563,14 @@ public class InGameController extends LoggedInController {
 
             //TODO maybe remove
             Point3D point = stateService.getRobberPosition();
-            String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
-            id = id.replace("-", "_");
-            moveRobber(id);
+            if (point != null) {
+                String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+                id = id.replace("-", "_");
+                moveRobber(id);
+            }
 
             yourTurnLabel.setVisible(true);
+
             if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
                 arrowOnDice.setVisible(false);
@@ -624,9 +627,11 @@ public class InGameController extends LoggedInController {
             freeFieldVisibility(false);
 
             Point3D point = stateService.getRobberPosition();
-            String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
-            id = id.replace("-", "_");
-            moveRobber(id);
+            if (point != null) {
+                String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+                id = id.replace("-", "_");
+                moveRobber(id);
+            }
         }
     }
 
@@ -840,20 +845,21 @@ public class InGameController extends LoggedInController {
     }
 
     public void gainVP(int vpGain) {
-        memberVP += vpGain;
-        for (int i = 0; i < memberVP; i++) {
-            if (vpCircles[i].getFill() != Color.GOLD) {
-                vpCircles[i].setFill(Color.GOLD);
-                int finalI = i;
-                new Thread(() -> {
-                    try {
-                        vpAnimation(finalI);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).start();
-            }
-        }
+        //TODO
+//        memberVP += vpGain;
+//        for (int i = 0; i < memberVP; i++) {
+//            if (vpCircles[i].getFill() != Color.GOLD) {
+//                vpCircles[i].setFill(Color.GOLD);
+//                int finalI = i;
+//                new Thread(() -> {
+//                    try {
+//                        vpAnimation(finalI);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }).start();
+//            }
+//        }
     }
 
     public void vpAnimation(int index) throws InterruptedException {

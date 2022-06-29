@@ -70,16 +70,18 @@ public class BuildService {
 
 
     public void loadBuildingImage(String buildingID) {
-        switch (buildingType) {
-            case BUILDING_TYPE_SETTLEMENT -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                    ("views/buildings/settlement.png")).toString()));
-            case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                    ("views/buildings/road.png")).toString()));
-            case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
-                    "views/buildings/town.png")).toString()));
-        }
-        if (selectedField.getId().startsWith("building")) {
-            selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
+        if (selectedField != null) {
+            switch (buildingType) {
+                case BUILDING_TYPE_SETTLEMENT -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                        ("views/buildings/settlement.png")).toString()));
+                case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                        ("views/buildings/road.png")).toString()));
+                case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
+                        "views/buildings/town.png")).toString()));
+            }
+            if (selectedField.getId().startsWith("building")) {
+                selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
+            }
         }
     }
 
