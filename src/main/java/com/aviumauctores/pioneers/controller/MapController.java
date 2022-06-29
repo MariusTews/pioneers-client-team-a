@@ -298,4 +298,8 @@ public class MapController implements Controller {
     public void onFieldClicked(MouseEvent mouseEvent) {
         inGameController.onFieldClicked(mouseEvent);
     }
+
+    public HBox getVpBox() {
+        return vpBox;
+    }
 }
