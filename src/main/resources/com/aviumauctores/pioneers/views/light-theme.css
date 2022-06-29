@@ -13,6 +13,13 @@
     -fx-background-radius: 8px;
 }
 
+#spectatorText{
+    -fx-font-size: 11;
+    -fx-background-radius: 8px;
+}
+
+
+
 #gameNameLabel{
     -fx-font-size: 24;
     -fx-background-radius: 8px;
@@ -152,3 +159,10 @@
 .spinner .decrement-arrow-button {
     -fx-body-color: #00496c;
 }
+
+#paneOption {
+    -fx-background-color: rgba(202, 229, 231, 255);
+    -fx-border-color: #00496c;
+    -fx-border-width: 5;
+}
+
