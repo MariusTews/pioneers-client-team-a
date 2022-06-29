@@ -122,15 +122,6 @@ public class TradeRequestController implements Controller {
     }
 
     public void acceptRequest(ActionEvent actionEvent) {
-        errorService.setErrorCodesTradeController();
-        HashMap<String, Integer> resources = tradeRessources;
-        for (Map.Entry<String, Integer> entry : resources.entrySet()) {
-            entry.setValue(-entry.getValue());
-        }
-        disposables.add(pioneerService.createMove("offer", null, resources, null, null)
-                .observeOn(FX_SCHEDULER).
-                subscribe(move -> {
-                }, errorService::handleError));
         inGameController.closeRequestMenu(false);
     }
 

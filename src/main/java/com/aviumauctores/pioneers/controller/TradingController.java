@@ -164,17 +164,6 @@ public class TradingController implements Controller {
                     selectedPlayer = p;
                 }
             }
-
-            //Trade with player
-            HashMap<String, Integer> resources = this.getSpinnerValues();
-            if (selectedPlayer != null) {
-                disposables.add(pioneerService.createMove("build", null, resources, selectedPlayer.userId(), null)
-                        .observeOn(FX_SCHEDULER).
-                        subscribe(move -> {
-                                }, errorService::handleError
-                        ));
-            }
-
         }
     }
 
