@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.model.Player;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -80,7 +81,6 @@ public class BuildService {
         }
         if (selectedField.getId().startsWith("building")) {
             selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
-            return;
         }
     }
 

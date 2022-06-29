@@ -374,6 +374,7 @@ public class InGameController extends LoggedInController {
                                                     ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                                                     buildService.setSelectedField(position);
                                                     buildService.loadBuildingImage(b._id());
+                                                    enableBuildingColor(b._id());
                                                     if (b.owner().equals(userID)) {
                                                         if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                                                             gainVP(1);
@@ -579,6 +580,20 @@ public class InGameController extends LoggedInController {
 
     public void build(ActionEvent event) {
         buildService.build();
+    }
+
+    private void enableBuildingColor(String id) {
+        Circle circle = null;
+        for (Node n : crossingPane.getChildren()) {
+            if (n.getId().equals(id + "Colour")) {
+                circle = (Circle) n;
+            }
+        }
+        if (circle != null) {
+            if (!(circle.isVisible())) {
+                circle.setVisible(true);
+            }
+        }
     }
 
 
