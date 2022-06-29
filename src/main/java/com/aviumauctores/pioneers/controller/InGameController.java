@@ -441,7 +441,7 @@ public class InGameController extends LoggedInController {
 
     private ImageView getView(int x, int y, int z, int side) {
         //create building id
-        String location = "building" + x + y + z + side;
+        String location = "buildingX" + x + "Y"+ y + "Z" + z + "R" + side;
         location = location.replace("-", "_");
         return getNodeByID(location);
     }
@@ -628,7 +628,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         int side = coordinateHolder.side();
-        String sideType = "";
+        String sideType;
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
