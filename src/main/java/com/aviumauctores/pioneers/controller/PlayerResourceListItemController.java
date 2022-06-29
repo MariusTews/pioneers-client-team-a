@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
+import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -31,6 +32,7 @@ public class PlayerResourceListItemController {
     private final String color;
 
     private final UserService userService;
+
     private final ResourceBundle bundle;
 
     //Containers
@@ -48,6 +50,7 @@ public class PlayerResourceListItemController {
         this.color = color;
         this.userService = userService;
         this.bundle = bundle;
+
     }
 
     public HBox createBox() {

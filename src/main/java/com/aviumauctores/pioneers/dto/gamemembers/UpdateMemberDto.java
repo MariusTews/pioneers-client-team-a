@@ -5,6 +5,6 @@ import javafx.scene.paint.Color;
 public record UpdateMemberDto(
         boolean ready,
         String color,
-        boolean spectator
+        Boolean spectator
 ) {
 }

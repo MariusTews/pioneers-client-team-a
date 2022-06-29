@@ -16,22 +16,21 @@ public class PlayerResourceListController {
     private final PioneerService pioneerService;
     private final ColorService colorService;
     private final ResourceBundle bundle;
-
     private final ErrorService errorService;
-
+    private final GameMemberService gameMemberService;
     public ListView<HBox> playerList;
-
     private String currentPlayerID;
     private final HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
     private Player player;
 
     @Inject
-    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService) {
+    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService,GameMemberService gameMemberService) {
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.bundle = bundle;
         this.errorService = errorService;
+        this.gameMemberService=gameMemberService;
     }
 
     public void init(ListView<HBox> node, String startingPlayer) {
@@ -48,12 +47,21 @@ public class PlayerResourceListController {
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
         PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
+
+        gameMemberService.getMember(playerID).subscribe(member ->{
+            if(member.spectator()){
+                playerList.getItems().add(playerList.getItems().size(), controller.createSpectatorBox());
+            }else{
+                playerList.getItems().add(playerList.getItems().size(), controller.createBox());
+                //  playerList.getItems ().add (playerList.getItems ().size (), controller.createSpectatorBox ());
+                if (playerID.equals(this.currentPlayerID)) {
+                    controller.showArrow();
+                }
+            }
+        });
+
         listItems.put(playerID, controller);
-        playerList.getItems().add(playerList.getItems().size(), controller.createBox());
-        //  playerList.getItems ().add (playerList.getItems ().size (), controller.createSpectatorBox ());
-        if (playerID.equals(this.currentPlayerID)) {
-            controller.showArrow();
-        }
+
     }
 
     public void updatePlayerLabel(Player player) {
