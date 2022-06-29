@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
@@ -18,7 +17,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -48,9 +46,6 @@ public class LobbyController extends PlayerListController {
     private final Provider<SettingsController> settingsController;
 
     private final Provider<LobbyController> lobbyController;
-
-
-    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML
     public Label gameLabel;
@@ -155,11 +150,6 @@ public class LobbyController extends PlayerListController {
         disposables.add(eventListener.listen("users.*.*", User.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onUserEvent));
-
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("invalid.token"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
-
     }
 
     private void addGameToList(Game game) {
@@ -239,10 +229,10 @@ public class LobbyController extends PlayerListController {
         disposables.add(loginService.logout()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(() -> {
-                            preferenceService.setRememberMe(false);
-                            preferenceService.setRefreshToken("");
-                            app.show(loginController.get());
-                        }, errorService::handleError));
+                    preferenceService.setRememberMe(false);
+                    preferenceService.setRefreshToken("");
+                    app.show(loginController.get());
+                }, errorService::handleError));
     }
 
     public void toSettings(ActionEvent event) {

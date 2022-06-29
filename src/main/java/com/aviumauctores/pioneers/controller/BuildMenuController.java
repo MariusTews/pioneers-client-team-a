@@ -1,6 +1,5 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.BuildService;
 import javafx.event.ActionEvent;

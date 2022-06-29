@@ -56,6 +56,7 @@ public class MapController implements Controller {
 
     public int mapRadius;
     public Map gameMap;
+    private String desertTileId;
 
 
     @Inject
@@ -192,7 +193,10 @@ public class MapController implements Controller {
         imageView.setFitHeight(sizeY);
         imageView.setFitWidth(sizeX);
         switch (tile.type()) {
-            case "desert" -> imageView.setImage(desert);
+            case "desert" -> {
+                imageView.setImage(desert);
+                desertTileId = imageView.getId();
+            }
             case "fields" -> imageView.setImage(fields);
             case "hills" -> imageView.setImage(hills);
             case "mountains" -> imageView.setImage(mountains);
@@ -283,6 +287,10 @@ public class MapController implements Controller {
         return roadPane;
     }
 
+    public Pane getRobberPane() {
+        return robberPane;
+    }
+
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         inGameController.onMainPaneClicked(mouseEvent);
     }
@@ -301,5 +309,9 @@ public class MapController implements Controller {
 
     public HBox getVpBox() {
         return vpBox;
+    }
+
+    public String getDesertTileId() {
+        return desertTileId;
     }
 }

@@ -1,10 +1,10 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.model.State;
+import com.aviumauctores.pioneers.model.*;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class StateService {
     private final BuildService buildService;
@@ -17,6 +17,7 @@ public class StateService {
     private final String userID;
     private String oldPlayerID;
     private boolean newPlayer;
+    private Point3D robberPosition;
 
 
     @Inject
@@ -29,17 +30,28 @@ public class StateService {
     }
 
     public void updateState(EventDto<State> state) {
+        player = pioneerService.getPlayer(userID).blockingFirst();
         oldAction = currentAction;
         oldPlayerID = currentPlayerID;
         State currentState = state.data();
-        currentPlayerID = currentState.expectedMoves().get(0).players().get(0);
-        currentAction = currentState.expectedMoves().get(0).action();
+        robberPosition = currentState.robber();
+        ExpectedMove move = currentState.expectedMoves().get(0);
+
+        //check whether my own player is allowed to take his turn now
+        if (move.players().contains(userID)) {
+            currentPlayerID = userID;
+        } else {
+            currentPlayerID = move.players().get(0);
+        }
+
+        currentAction = move.action();
+
         if (oldPlayerID == null) {
             newPlayer = true;
         } else {
             newPlayer = !currentPlayerID.equals(oldPlayerID);
         }
-        player = pioneerService.getPlayer(userID).blockingFirst();
+
         buildService.setPlayer(player);
     }
 
@@ -65,5 +77,9 @@ public class StateService {
 
     public String getOldAction() {
         return oldAction;
+    }
+
+    public Point3D getRobberPosition() {
+        return robberPosition;
     }
 }
