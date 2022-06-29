@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Objects;
@@ -61,6 +60,18 @@ public class PlayerRequestsListController implements Controller {
 
     }
 
+    public void showRequestOpen(String playerID) {
+        listItems.get(playerID).showRequestOpen();
+    }
+
+    public void showRequestAccepted(String playerID) {
+        listItems.get(playerID).showRequestAccepted();
+    }
+
+    public void showRequestDeclined(String playerID) {
+        listItems.get(playerID).showRequestDeclined();
+    }
+
     @Override
     public void init() {
 
@@ -83,7 +94,7 @@ public class PlayerRequestsListController implements Controller {
     public String getSelectedPlayer() {
         HBox hBox = playerList.getSelectionModel().getSelectedItem();
         if (hBox != null) {
-            VBox vBox = (VBox) hBox.getChildren().get(1);
+            VBox vBox = (VBox) hBox.getChildren().get(2);
             Label name = (Label) vBox.getChildren().get(0);
             return name.getText();
         }

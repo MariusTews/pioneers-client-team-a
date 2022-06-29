@@ -38,11 +38,12 @@ public class TradeRequestController implements Controller {
     private final InGameController inGameController;
     private final ResourceBundle bundle;
     private final PioneerService pioneerService;
-    private ErrorService errorService;
+    private final ErrorService errorService;
     private final HashMap<String, Integer> tradeRessources;
     private final String tradePartner;
     private final String tradePartnerAvatarUrl;
     private final String tradePartnerColor;
+    private final String color;
     private CompositeDisposable disposables;
 
     public TradeRequestController(InGameController inGameController,
@@ -52,7 +53,7 @@ public class TradeRequestController implements Controller {
                                   HashMap<String, Integer> tradeRessources,
                                   String tradePartner,
                                   String tradePartnerAvatarUrl,
-                                  String tradePartnerColor) {
+                                  String tradePartnerColor, String myColor) {
 
         this.inGameController = inGameController;
         this.bundle = bundle;
@@ -62,6 +63,7 @@ public class TradeRequestController implements Controller {
         this.tradePartner = tradePartner;
         this.tradePartnerAvatarUrl = tradePartnerAvatarUrl;
         this.tradePartnerColor = tradePartnerColor;
+        this.color = myColor;
     }
 
 
@@ -96,6 +98,8 @@ public class TradeRequestController implements Controller {
         playerAvatar.setImage(playerIcon);
         playerAvatar.setFitHeight(40.0);
         playerAvatar.setFitWidth(40.0);
+        acceptButton.setStyle("-fx-background-color: " + color);
+        declineButton.setStyle("-fx-background-color: " + color);
         return parent;
     }
 
@@ -122,10 +126,26 @@ public class TradeRequestController implements Controller {
     }
 
     public void acceptRequest(ActionEvent actionEvent) {
-        inGameController.closeRequestMenu(false);
+        errorService.setErrorCodesTrading();
+        HashMap<String, Integer> resources = tradeRessources;
+        for (Map.Entry<String, Integer> entry : resources.entrySet()) {
+            entry.setValue(-entry.getValue());
+        }
+        disposables.add(pioneerService.createMove("offer", null, resources, null, null)
+                .observeOn(FX_SCHEDULER).
+                subscribe(move -> inGameController.closeRequestMenu(false), error -> {
+                    errorService.handleError(error);
+                    inGameController.closeRequestMenu(false);
+                }));
     }
 
     public void declineRequest(ActionEvent actionEvent) {
-        inGameController.closeRequestMenu(false);
+        errorService.setErrorCodesTrading();
+        disposables.add(pioneerService.createMove("offer", null, null, null, null)
+                .observeOn(FX_SCHEDULER).
+                subscribe(move -> inGameController.closeRequestMenu(false), error -> {
+                    errorService.handleError(error);
+                    inGameController.closeRequestMenu(false);
+                }));
     }
 }

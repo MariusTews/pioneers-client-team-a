@@ -51,6 +51,7 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
+
     private Player player;
     private final EventListener eventListener;
     private final SoundService soundService;
@@ -431,9 +432,45 @@ public class InGameController extends LoggedInController {
             }).start();
             rollSum.setText(" " + rolled + " ");
         }
+        //show trade request if a player wants to trade with you
         if (move.partner() != null) {
             if (move.action().equals("build") && move.partner().equals(userID)) {
                 this.showTradeRequest(move.resources(), move.userId());
+            }
+        }
+
+        //accepted trade
+        errorService.setErrorCodesTrading();
+        if (move.resources() != null) {
+            if (move.action().equals("offer")) {
+                disposables.add(pioneerService.createMove("accept", null, null, move.userId(), null)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(success -> {
+                                    tradingController.enableButtons();
+                                    tradingController.showRequestAccepted(move.userId());
+                                },
+                                error -> {
+                                    errorService.handleError(error);
+                                    tradingController.enableButtons();
+                                }
+                        ));
+            }
+        }
+
+        //declined trade
+        if (move.resources() == null) {
+            if (move.action().equals("offer")) {
+                disposables.add(pioneerService.createMove("accept", null, null, null, null)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(success -> {
+                                    tradingController.enableButtons();
+                                    tradingController.showRequestDeclined(move.userId());
+                                },
+                                error -> {
+                                    errorService.handleError(error);
+                                    tradingController.enableButtons();
+                                }
+                        ));
             }
         }
     }
@@ -1026,17 +1063,20 @@ public class InGameController extends LoggedInController {
         tradeRessources = resources;
         viewRequestButton.setDisable(false);
         tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
+        viewRequestButton.setStyle("-fx-background-color: " + player.color());
+
         User user = userService.getUserByID(partner).blockingFirst();
-        Player partnerPlayer = pioneerService.getPlayer(partner).blockingFirst();
         tradePartnerAvatarUrl = user.avatar();
         tradePartner = user.name();
+
+        Player partnerPlayer = pioneerService.getPlayer(partner).blockingFirst();
         tradePartnerColor = colorService.getColor(partnerPlayer.color());
-        playerWantTradeLabel.setText(tradePartner + bundle.getString("player.want.trade"));
+        playerWantTradeLabel.setText(tradePartner + " " + bundle.getString("player.want.trade"));
         tradeRequestPopup.setVisible(true);
     }
 
     public void viewRequest(ActionEvent actionEvent) {
-        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor);
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()));
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");

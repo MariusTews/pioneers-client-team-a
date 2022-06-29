@@ -136,7 +136,7 @@ public class TradingController implements Controller {
     }
 
     private void sendBankTrade(HashMap<String, Integer> resources) {
-        errorService.setErrorCodesTradeController();
+        errorService.setErrorCodesTrading();
         disposables.add(pioneerService.createMove("build", null, resources, "684072366f72202b72406465", null)
                 .observeOn(FX_SCHEDULER).
                 subscribe(move -> {
@@ -154,7 +154,8 @@ public class TradingController implements Controller {
 
     //trade with a player
     private void tradeWithPlayer() {
-        errorService.setErrorCodesTradeController();
+        errorService.setErrorCodesTrading();
+        //get the correct player out of the list
         String playerName = playerRequestsController.getSelectedPlayer();
         if (playerName != null) {
             Player selectedPlayer = null;
@@ -164,6 +165,21 @@ public class TradingController implements Controller {
                     selectedPlayer = p;
                 }
             }
+
+            //Trade with player
+            HashMap<String, Integer> resources = this.getSpinnerValues();
+            if (selectedPlayer != null) {
+                Player finalSelectedPlayer = selectedPlayer;
+                disposables.add(pioneerService.createMove("build", null, resources, selectedPlayer.userId(), null)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(move -> {
+                                    showRequestOpen(finalSelectedPlayer.userId());
+                                    tradeButton.setDisable(true);
+                                    cancelTradeButton.setDisable(true);
+                                }, errorService::handleError
+                        ));
+            }
+
         }
     }
 
@@ -375,5 +391,22 @@ public class TradingController implements Controller {
 
     public void setSumRequest(int sum) {
         this.sumRequest = sum;
+    }
+
+    public void enableButtons() {
+        this.cancelTradeButton.setDisable(false);
+        this.tradeButton.setDisable(false);
+    }
+
+    public void showRequestOpen(String playerID) {
+        playerRequestsController.showRequestOpen(playerID);
+    }
+
+    public void showRequestAccepted(String playerID) {
+        playerRequestsController.showRequestAccepted(playerID);
+    }
+
+    public void showRequestDeclined(String playerID) {
+        playerRequestsController.showRequestDeclined(playerID);
     }
 }

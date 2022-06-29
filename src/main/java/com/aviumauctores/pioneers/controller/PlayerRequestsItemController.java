@@ -20,6 +20,7 @@ public class PlayerRequestsItemController implements Controller {
     private final UserService userService;
     private final String id;
     private final String color;
+    private ImageView requestView;
 
     public PlayerRequestsItemController(Player player, String name, String color, UserService userService) {
         this.player = player;
@@ -50,10 +51,15 @@ public class PlayerRequestsItemController implements Controller {
 
         String avatarUrl = userService.getUserByID(player.userId()).blockingFirst().avatar();
         Image playerIcon = avatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + color + ".png")).toString()) : new Image(avatarUrl);
-
         ImageView playerView = new ImageView(playerIcon);
         playerView.setFitHeight(40.0);
         playerView.setFitWidth(40.0);
+
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/Loading.png")).toString());
+        requestView = new ImageView(requestStatus);
+        requestView.setFitHeight(40.0);
+        requestView.setFitWidth(40.0);
+        requestView.setVisible(false);
 
         Label playerName = new Label(name.length() > 12 ? name.substring(0, 9) + ".." : name);
         playerName.setFont(new Font(18));
@@ -62,8 +68,22 @@ public class PlayerRequestsItemController implements Controller {
         VBox playerInfo = new VBox(playerName);
 
 
-        playerBox.getChildren().addAll(playerView, playerInfo);
+        playerBox.getChildren().addAll(requestView, playerView, playerInfo);
         playerBox.setSpacing(5.0);
         return playerBox;
+    }
+
+    public void showRequestOpen() {
+        requestView.setVisible(true);
+    }
+
+    public void showRequestDeclined() {
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/notReady.png")).toString());
+        requestView.setImage(requestStatus);
+    }
+
+    public void showRequestAccepted() {
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/ready.png")).toString());
+        requestView.setImage(requestStatus);
     }
 }
