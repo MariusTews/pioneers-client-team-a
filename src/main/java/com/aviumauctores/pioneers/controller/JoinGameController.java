@@ -170,8 +170,8 @@ public class JoinGameController extends LoggedInController {
         disposables.add(gameService.joinGame(passwordTextField.getText())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
-                            app.show(gameReadyController.get());
-                        }, errorService::handleError));
+                    app.show(gameReadyController.get());
+                }, errorService::handleError));
     }
 
     public void quit(ActionEvent actionEvent) {

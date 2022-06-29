@@ -189,4 +189,5 @@ public class CreateGameController extends LoggedInController {
         gamePasswordInput.setVisible(!hidePassword);
         hidePassword = !hidePassword;
     }
+
 }

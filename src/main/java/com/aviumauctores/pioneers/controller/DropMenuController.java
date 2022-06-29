@@ -156,6 +156,7 @@ public class DropMenuController implements Controller {
         //noinspection ResultOfMethodCallIgnored
         pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> inGameController.closeDropMenu(false), throwable -> {});
+                .subscribe(move -> inGameController.closeDropMenu(false), throwable -> {
+                });
     }
 }

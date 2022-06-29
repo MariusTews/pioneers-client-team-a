@@ -221,7 +221,8 @@ public class ChatController extends PlayerListController {
         // send the message
         messageService.sendGroupMessage(namespace, message, groupId)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(r -> {}, errorService::handleError);
+                .subscribe(r -> {
+                }, errorService::handleError);
     }
 
 
@@ -233,7 +234,8 @@ public class ChatController extends PlayerListController {
         }
         messageService.deleteMessage(namespace, messageId, groupId)
                 .observeOn(FX_SCHEDULER)
-                .subscribe(r -> {}, errorService::handleError);
+                .subscribe(r -> {
+                }, errorService::handleError);
     }
 
 
