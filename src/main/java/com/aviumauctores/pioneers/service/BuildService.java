@@ -80,7 +80,6 @@ public class BuildService {
         }
         if (selectedField.getId().startsWith("building")) {
             selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
-            return;
         }
     }
 

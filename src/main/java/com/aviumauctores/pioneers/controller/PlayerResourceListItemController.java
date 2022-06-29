@@ -19,6 +19,8 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class PlayerResourceListItemController {
 
     private Player player;
+    private int allResources = 0;
+    private int oldResources;
 
     private ImageView arrowView;
 
@@ -89,9 +91,10 @@ public class PlayerResourceListItemController {
     }
 
     public void updateResources() {
-        int num = getResource(RESOURCE_BRICK) + getResource(RESOURCE_ORE) + getResource(RESOURCE_GRAIN)
+        oldResources = allResources;
+        allResources = getResource(RESOURCE_BRICK) + getResource(RESOURCE_ORE) + getResource(RESOURCE_GRAIN)
                 + getResource(RESOURCE_LUMBER) + getResource(RESOURCE_WOOL);
-        resourceLabel.setText(num + " " + bundle.getString("resources"));
+        resourceLabel.setText(allResources + " " + bundle.getString("resources"));
     }
 
     public void setPlayer(Player player) {
@@ -107,4 +110,11 @@ public class PlayerResourceListItemController {
         return this.playerBox;
     }
 
+    public int getAllResources() {
+        return allResources;
+    }
+
+    public int getPreviousResources() {
+        return oldResources;
+    }
 }

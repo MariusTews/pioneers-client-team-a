@@ -8,8 +8,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.*;
 
+
+@Singleton
 public class PlayerResourceListController {
 
     private final UserService userService;
@@ -84,7 +87,6 @@ public class PlayerResourceListController {
         for (int i = size - 1; i > 0; i--) {
             puffer = playerList.getItems().set(i, puffer);
         }
-
     }
 
     public void setPlayer(Player player) {
@@ -106,6 +108,18 @@ public class PlayerResourceListController {
 
     public int getResource(HashMap<String, Integer> resources, String resourceName) {
         return resources.getOrDefault(resourceName, 0);
+    }
+
+    public int getResources(String playerId){
+        return listItems.get(playerId).getAllResources();
+    }
+
+    public int getPreviousResources(String playerId){
+        return listItems.get(playerId).getPreviousResources();
+    }
+
+    public int getLastGain(String id) {
+        return  0;
     }
 }
 

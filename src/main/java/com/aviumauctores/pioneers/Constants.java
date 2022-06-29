@@ -165,6 +165,14 @@ public class Constants {
 
     public static final String RESOURCE_WOOL = "wool";
 
-
+    //Stats
+    public static final String STAT_RESOURCES_GAINED = "resources.gained";
+    public static final String STAT_RESOURCES_LOST = "resources.lost";
+    public static final String STAT_LONGEST_ROAD = "longest.road";
+    public static final String STAT_CITIES_BUILT = "cities.built";
+    public static final String STAT_SETTLEMENTS_BUILT = "settlements.built";
+    public static final String STAT_ROADS_BUILT = "road.built";
+    public static final String[] ALL_STAT_NAMES = new String[]{STAT_RESOURCES_GAINED, STAT_RESOURCES_LOST, STAT_LONGEST_ROAD,
+        STAT_CITIES_BUILT, STAT_SETTLEMENTS_BUILT, STAT_ROADS_BUILT};
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 }

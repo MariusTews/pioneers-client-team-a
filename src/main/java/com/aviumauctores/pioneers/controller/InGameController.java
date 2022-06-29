@@ -164,6 +164,7 @@ public class InGameController extends LoggedInController {
     private Parent buildMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
+    private int requiredPoints;
 
 
     // These are the Sound-Icons
@@ -172,6 +173,8 @@ public class InGameController extends LoggedInController {
     Image unmuteImage;
     private final ErrorService errorService;
     private final BuildService buildService;
+    private final Provider<PostGameController> postGameController;
+    private final StatService statService;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
@@ -184,7 +187,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService) {
+                            ErrorService errorService, BuildService buildService, Provider<PostGameController> postGameController, StatService statService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -201,6 +204,8 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
+        this.postGameController = postGameController;
+        this.statService = statService;
         fieldsMovedAlready = false;
     }
 
@@ -218,6 +223,8 @@ public class InGameController extends LoggedInController {
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
         player = pioneerService.getPlayer(userID).blockingFirst();
+        requiredPoints = gameService.getCurrentGame().blockingFirst().settings().victoryPoints();
+        statService.init();
 
 
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -269,6 +276,8 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
+        }else if(move.rob() != null){
+            statService.playerRobbed(move.rob().target());
         }
     }
 
@@ -383,6 +392,7 @@ public class InGameController extends LoggedInController {
                             if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
                                 //listen to new and updatedbuildings, and load the image
                                 Building b = buildingEventDto.data();
+                                statService.onBuildingBuilt(b.owner(), b.type());
                                 Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
                                 buildService.setPlayer(builder);
                                 buildService.setBuildingType(b.type());
@@ -554,6 +564,10 @@ public class InGameController extends LoggedInController {
 
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
+        if (updatedPlayer.victoryPoints() >= requiredPoints){
+            app.show(postGameController.get());
+            return;
+        }
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
@@ -571,6 +585,7 @@ public class InGameController extends LoggedInController {
 
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
+        statService.updatePlayerStats(updatedPlayer);
     }
 
     public void buildMap() {
@@ -631,6 +646,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void rollDice(ActionEvent actionEvent) {
+        app.show(postGameController.get());
         if (soundImage.getImage() == muteImage) {
             GameSounds diceSound = soundService
                     .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
