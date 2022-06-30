@@ -437,6 +437,10 @@ public class InGameController extends LoggedInController {
         if (move.partner() != null) {
             if (move.action().equals("build") && move.partner().equals(userID)) {
                 this.showTradeRequest(move.resources(), move.userId());
+            } else if (move.action().equals("build")) {
+                disposables.add(pioneerService.createMove("offer", null, null, null, null)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(success -> {}, errorService::handleError));
             }
         }
 
