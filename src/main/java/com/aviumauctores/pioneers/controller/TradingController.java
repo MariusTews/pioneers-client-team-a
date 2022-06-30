@@ -68,6 +68,7 @@ public class TradingController implements Controller {
     private final PioneerService pioneerService;
     private final ColorService colorService;
     private final ErrorService errorService;
+    private final Player player;
     private final HashMap<ChangeListener<Integer>, Spinner<Integer>> listenerSpinnerHashMap;
 
     private CompositeDisposable disposables;
@@ -79,13 +80,14 @@ public class TradingController implements Controller {
 
     @Inject
     public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService,
-                             PioneerService pioneerService, ColorService colorService, ErrorService errorService) {
+                             PioneerService pioneerService, ColorService colorService, ErrorService errorService, Player player) {
         this.inGameController = inGameController;
         this.bundle = bundle;
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.errorService = errorService;
+        this.player = player;
         this.listenerSpinnerHashMap = new HashMap<>();
         this.sumRequest = 0;
     }
@@ -231,21 +233,21 @@ public class TradingController implements Controller {
 
 
     //setup spinners
-    private void initSpinners() {
-        tradeWood.setValueFactory(this.createValueFactory());
-        requestWood.setValueFactory(this.createValueFactory());
-        tradeBread.setValueFactory(this.createValueFactory());
-        requestBread.setValueFactory(this.createValueFactory());
-        tradeClay.setValueFactory(this.createValueFactory());
-        requestClay.setValueFactory(this.createValueFactory());
-        tradeStone.setValueFactory(this.createValueFactory());
-        requestStone.setValueFactory(this.createValueFactory());
-        tradeWool.setValueFactory(this.createValueFactory());
-        requestWool.setValueFactory(this.createValueFactory());
+    public void initSpinners() {
+        tradeWood.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_LUMBER)));
+        requestWood.setValueFactory(this.createValueFactory(32));
+        tradeBread.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_GRAIN)));
+        requestBread.setValueFactory(this.createValueFactory(32));
+        tradeClay.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_BRICK)));
+        requestClay.setValueFactory(this.createValueFactory(32));
+        tradeStone.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_ORE)));
+        requestStone.setValueFactory(this.createValueFactory(32));
+        tradeWool.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_WOOL)));
+        requestWool.setValueFactory(this.createValueFactory(32));
     }
 
-    private SpinnerValueFactory<Integer> createValueFactory() {
-        return new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 32);
+    private SpinnerValueFactory<Integer> createValueFactory(int maxValue) {
+        return new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue);
     }
 
     public void setRequestSpinnersReady() {

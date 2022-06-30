@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -44,6 +45,7 @@ public class TradeRequestController implements Controller {
     private final String tradePartnerAvatarUrl;
     private String tradePartnerColor;
     private final String color;
+    private final Player player;
     private CompositeDisposable disposables;
 
     public TradeRequestController(InGameController inGameController,
@@ -53,7 +55,7 @@ public class TradeRequestController implements Controller {
                                   HashMap<String, Integer> tradeRessources,
                                   String tradePartner,
                                   String tradePartnerAvatarUrl,
-                                  String tradePartnerColor, String myColor) {
+                                  String tradePartnerColor, String myColor, Player player) {
 
         this.inGameController = inGameController;
         this.bundle = bundle;
@@ -64,6 +66,7 @@ public class TradeRequestController implements Controller {
         this.tradePartnerAvatarUrl = tradePartnerAvatarUrl;
         this.tradePartnerColor = tradePartnerColor;
         this.color = myColor;
+        this.player = player;
     }
 
 
@@ -106,6 +109,18 @@ public class TradeRequestController implements Controller {
         playerAvatar.setFitWidth(40.0);
         acceptButton.setStyle("-fx-background-color: " + color);
         declineButton.setStyle("-fx-background-color: " + color);
+
+        HashMap<String, Integer> myRessources = player.resources();
+        for (Map.Entry<String, Integer> entry : tradeRessources.entrySet()) {
+            String key = entry.getKey();
+            Integer value = entry.getValue();
+            if (value > 0) {
+                if (myRessources.get(key) < value) {
+                    acceptButton.setDisable(true);
+                    break;
+                }
+            }
+        }
         return parent;
     }
 

@@ -231,6 +231,7 @@ public class InGameController extends LoggedInController {
         player = pioneerService.getPlayer(userID).blockingFirst();
 
 
+
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
@@ -442,7 +443,7 @@ public class InGameController extends LoggedInController {
         //accepted trade
         errorService.setErrorCodesTrading();
         if (move.resources() != null) {
-            if (move.action().equals("offer")) {
+            if (move.action().equals("offer") && !Objects.equals(move.userId(), userID)) {
                 disposables.add(pioneerService.createMove("accept", null, null, move.userId(), null)
                         .observeOn(FX_SCHEDULER).
                         subscribe(success -> {
@@ -459,7 +460,7 @@ public class InGameController extends LoggedInController {
 
         //declined trade
         if (move.resources() == null) {
-            if (move.action().equals("offer")) {
+            if (move.action().equals("offer") && !Objects.equals(move.userId(), userID)) {
                 disposables.add(pioneerService.createMove("accept", null, null, null, null)
                         .observeOn(FX_SCHEDULER).
                         subscribe(success -> {
@@ -478,6 +479,7 @@ public class InGameController extends LoggedInController {
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
         if (updatedPlayer.userId().equals(userID)) {
+            player = updatedPlayer;
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
 
@@ -487,6 +489,10 @@ public class InGameController extends LoggedInController {
             int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
+
+            if (tradingController != null) {
+                tradingController.initSpinners();
+            }
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
@@ -1044,7 +1050,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService);
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
@@ -1076,7 +1082,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void viewRequest(ActionEvent actionEvent) {
-        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()));
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");
