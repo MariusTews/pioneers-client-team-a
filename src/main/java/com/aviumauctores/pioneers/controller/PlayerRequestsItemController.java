@@ -19,7 +19,7 @@ public class PlayerRequestsItemController implements Controller {
     private final String name;
     private final UserService userService;
     private final String id;
-    private final String color;
+    private String color;
     private ImageView requestView;
 
     public PlayerRequestsItemController(Player player, String name, String color, UserService userService) {
@@ -49,7 +49,12 @@ public class PlayerRequestsItemController implements Controller {
         HBox playerBox = new HBox();
         playerBox.setId(id);
 
+        //only for testing
         String avatarUrl = userService.getUserByID(player.userId()).blockingFirst().avatar();
+        if (color == null) {
+            color = "blue";
+        }
+
         Image playerIcon = avatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + color + ".png")).toString()) : new Image(avatarUrl);
         ImageView playerView = new ImageView(playerIcon);
         playerView.setFitHeight(40.0);

@@ -42,7 +42,7 @@ public class TradeRequestController implements Controller {
     private final HashMap<String, Integer> tradeRessources;
     private final String tradePartner;
     private final String tradePartnerAvatarUrl;
-    private final String tradePartnerColor;
+    private String tradePartnerColor;
     private final String color;
     private CompositeDisposable disposables;
 
@@ -94,6 +94,12 @@ public class TradeRequestController implements Controller {
         }
         this.fillLabels();
         playerLabel.setText(tradePartner);
+
+        //only for testing
+        if (tradePartnerColor == null) {
+            tradePartnerColor = "blue";
+        }
+
         Image playerIcon = tradePartnerAvatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + tradePartnerColor + ".png")).toString()) : new Image(tradePartnerAvatarUrl);
         playerAvatar.setImage(playerIcon);
         playerAvatar.setFitHeight(40.0);
