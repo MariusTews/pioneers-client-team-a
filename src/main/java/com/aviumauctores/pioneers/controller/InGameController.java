@@ -114,7 +114,7 @@ public class InGameController extends LoggedInController {
     private Slider soundSlider;
 
 
-    public Circle[] vpCircles;
+    public List<Circle> vpCircles;
 
     public int memberVP;
 
@@ -251,26 +251,29 @@ public class InGameController extends LoggedInController {
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
-                    if (controller != null) {
-                        controller.init();
-                        controller.setInGameController(this);
-                        controller.setGameMap(map);
-                        controller.setMapRadius(2);
-                        ingamePane.setCenter(controller.render());
-                        mainPane = controller.getMainPane();
-                        roadAndCrossingPane = controller.getRoadAndCrossingPane();
-                        roadPane = controller.getRoadPane();
-                        crossingPane = controller.getCrossingPane();
-                        robberPane = controller.getRobberPane();
-                        vpCircles = new Circle[]{};
+                            if (controller != null) {
+                                controller.init();
+                                controller.setInGameController(this);
+                                controller.setGameMap(map);
+                                controller.setMapRadius(2);
+                                ingamePane.setCenter(controller.render());
+                                mainPane = controller.getMainPane();
+                                roadAndCrossingPane = controller.getRoadAndCrossingPane();
+                                roadPane = controller.getRoadPane();
+                                crossingPane = controller.getCrossingPane();
+                                robberPane = controller.getRobberPane();
+                        vpCircles = new ArrayList<>();
+                                for (Node vpCircle : controller.getVpBox().getChildren()) {
+                                    vpCircles.add((Circle) vpCircle);
+                                }
                         timeLabel = controller.getTimeLabel();
                         String desertTileId = controller.getDesertTileId();
                         String desertRobberImageId = desertTileId.replace("hexagon", "robber");
                         moveRobber(desertRobberImageId);
-                        runTimer();
-                    }
+                                runTimer();
+                            }
 
-                    resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
+                            resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
 
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
@@ -348,9 +351,9 @@ public class InGameController extends LoggedInController {
                         }, errorService::handleError
                 ));
 
-                    diceImage1.setImage(dice1);
-                    diceImage2.setImage(dice1);
-                    this.soundImage.setImage(muteImage);
+                            diceImage1.setImage(dice1);
+                            diceImage2.setImage(dice1);
+                            this.soundImage.setImage(muteImage);
 
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                 .observeOn(FX_SCHEDULER)
@@ -364,7 +367,7 @@ public class InGameController extends LoggedInController {
                     player = stateService.getUpdatedPlayer();
                     playerResourceListController.setPlayer(player);
                     updateVisuals();
-                }, this::handleError));
+                }/*, this::handleError*/));
 
         disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                 .observeOn(FX_SCHEDULER)
@@ -393,11 +396,12 @@ public class InGameController extends LoggedInController {
             updateFields(false, crossingPane, roadPane);
         }
 
-                    soundImage.setImage(muteImage);
-                    loadChat();
-                    playerResourceListController.init(playerList, currentPlayerID);
-                    finishMoveButton.setDisable(true);
-                }, errorService::handleError));
+                            soundImage.setImage(muteImage);
+                            loadChat();
+                            playerResourceListController.init(playerList, currentPlayerID);
+                            finishMoveButton.setDisable(true);
+                        }, errorService::handleError
+                ));
 
         return parent;
     }
@@ -712,7 +716,6 @@ public class InGameController extends LoggedInController {
 
         int side = coordinateHolder.side();
         String sideType;
-
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
@@ -848,8 +851,8 @@ public class InGameController extends LoggedInController {
         //TODO
 //        memberVP += vpGain;
 //        for (int i = 0; i < memberVP; i++) {
-//            if (vpCircles[i].getFill() != Color.GOLD) {
-//                vpCircles[i].setFill(Color.GOLD);
+//            if (vpCircles.get(i).getFill() != Color.GOLD) {
+//                vpCircles.get(i).setFill(Color.GOLD);
 //                int finalI = i;
 //                new Thread(() -> {
 //                    try {
@@ -865,7 +868,7 @@ public class InGameController extends LoggedInController {
     public void vpAnimation(int index) throws InterruptedException {
         double radius = 100.0;
         while (radius >= 10.0) {
-            vpCircles[index].setRadius(radius);
+            vpCircles.get(index).setRadius(radius);
             radius -= 10.0;
             TimeUnit.MILLISECONDS.sleep(100);
         }
@@ -958,9 +961,11 @@ public class InGameController extends LoggedInController {
 
     public void freeFieldVisibility(boolean var) {
         for (Node n : roadAndCrossingPane.getChildren()) {
-            ImageView field = (ImageView) n;
-            if (field.getImage().getUrl().endsWith("empty.png") || field.getImage().getUrl().endsWith("emptyRoad.png")) {
-                field.setVisible(var);
+            if (n.getClass().equals(ImageView.class)) {
+                ImageView field = (ImageView) n;
+                if (field.getImage().getUrl().endsWith("empty.png") || field.getImage().getUrl().endsWith("emptyRoad.png")) {
+                    field.setVisible(var);
+                }
             }
         }
     }

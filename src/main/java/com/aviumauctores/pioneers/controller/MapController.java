@@ -310,4 +310,8 @@ public class MapController implements Controller {
     public String getDesertTileId() {
         return desertTileId;
     }
+
+    public HBox getVpBox() {
+        return vpBox;
+    }
 }
