@@ -5,28 +5,24 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 @Singleton
 public class RankingService {
 
     private final PioneerService pioneerService;
-    private final List<Player> ranking = new ArrayList<>();
-
+    private final HashMap<Integer, Player>  ranking= new HashMap<>();
     @Inject
     public RankingService(PioneerService pioneerService){
         this.pioneerService = pioneerService;
     }
-//TODO create HashMap containing the ranking
-    public List<Player> createRanking(){
+    public HashMap<Integer, Player> createRanking(){
         List<Player> players = pioneerService.listPlayers().blockingFirst();
         System.out.println(players);
         players.sort(Comparator.comparing(Player::victoryPoints));
-        for (Player p : players){
-            if (players.indexOf(p) == 4){
-                break;
-            }
-            ranking.add(p);
+        for (int i = 0; i < players.size(); i++){
+            ranking.put(i, players.get(i));
         }
         return ranking;
     }
@@ -34,7 +30,7 @@ public class RankingService {
     public void clear(){
         ranking.clear();
     }
-    public List<Player> getRanking(){
+    public HashMap<Integer, Player> getRanking(){
         return ranking;
     }
 

@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -73,7 +74,7 @@ public class PostGameController extends  LoggedInController {
         }
         Node[] container = new Node[]{winnerContainer, secondPlayerContainer, thirdPlayerContainer, fourthPlayerContainer};
         Label[] labels = new Label[]{winnerName, secondPlayerName, thirdPlayerName, fourthPlayerName};
-        List<Player> ranking = rankingService.createRanking();
+        HashMap<Integer, Player> ranking = rankingService.createRanking();
         int numPlayers = ranking.size();
         for(int i = 0; i < 4; i++){
             if(i >= numPlayers){
@@ -94,7 +95,6 @@ public class PostGameController extends  LoggedInController {
     }
 
     public void toStatScreen(ActionEvent event) {
-        rankingService.clear();
         app.show(statController.get());
     }
 }
