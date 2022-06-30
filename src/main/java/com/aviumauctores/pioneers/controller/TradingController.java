@@ -234,15 +234,15 @@ public class TradingController implements Controller {
 
     //setup spinners
     public void initSpinners() {
-        tradeWood.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_LUMBER)));
+        tradeWood.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_LUMBER, 0)));
         requestWood.setValueFactory(this.createValueFactory(32));
-        tradeBread.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_GRAIN)));
+        tradeBread.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_GRAIN, 0)));
         requestBread.setValueFactory(this.createValueFactory(32));
-        tradeClay.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_BRICK)));
+        tradeClay.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_BRICK, 0)));
         requestClay.setValueFactory(this.createValueFactory(32));
-        tradeStone.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_ORE)));
+        tradeStone.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_ORE, 0)));
         requestStone.setValueFactory(this.createValueFactory(32));
-        tradeWool.setValueFactory(this.createValueFactory(player.resources().get(RESOURCE_WOOL)));
+        tradeWool.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_WOOL, 0)));
         requestWool.setValueFactory(this.createValueFactory(32));
     }
 
