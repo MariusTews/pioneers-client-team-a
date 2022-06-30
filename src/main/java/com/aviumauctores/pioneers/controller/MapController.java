@@ -271,8 +271,8 @@ public class MapController implements Controller {
     public void createCrossing(String position, double coordinateX, double coordinateY, double size) {
         Circle circle = new Circle(size / 2, Color.TRANSPARENT);
         circle.setId("building" + position + "Colour");
-        circle.setLayoutX(coordinateX);
-        circle.setLayoutY(coordinateY);
+        circle.setLayoutX(coordinateX + 0.5 * size);
+        circle.setLayoutY(coordinateY + 0.5 * size);
         crossingPane.getChildren().add(circle);
         ImageView imageView = new ImageView(emptyCrossing);
         imageView.setId("building" + position);
