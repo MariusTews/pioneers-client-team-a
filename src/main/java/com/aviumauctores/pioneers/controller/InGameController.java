@@ -32,6 +32,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -262,13 +263,14 @@ public class InGameController extends LoggedInController {
                                 roadPane = controller.getRoadPane();
                                 crossingPane = controller.getCrossingPane();
                                 robberPane = controller.getRobberPane();
-                        vpCircles = new ArrayList<>();
+                                vpCircles = new ArrayList<>();
                                 for (Node vpCircle : controller.getVpBox().getChildren()) {
                                     vpCircles.add((Circle) vpCircle);
                                 }
-                                timeLabel = controller.getTimeLabel();String desertTileId = controller.getDesertTileId();
-                        String desertRobberImageId = desertTileId.replace("hexagon", "robber");
-                        moveRobber(desertRobberImageId);
+                                timeLabel = controller.getTimeLabel();
+                                String desertTileId = controller.getDesertTileId();
+                                String desertRobberImageId = desertTileId.replace("hexagon", "robber");
+                                moveRobber(desertRobberImageId);
                                 runTimer();
                             }
 
@@ -298,54 +300,55 @@ public class InGameController extends LoggedInController {
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(buildingEventDto -> {
-                                                if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-                                                    //listen to new and updatedbuildings, and load the image
-                                                    Building b = buildingEventDto.data();
-                                                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                                                    buildService.setPlayer(builder);
-                                                    buildService.setBuildingType(b.type());
-                                                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                                                    buildService.setSelectedField(position);
-                                                    buildService.loadBuildingImage(b._id());
-                                                    enableBuildingColor(b._id());
-                                                    if (b.owner().equals(userID)) {
-                                                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                                            gainVP(1);
-                                                        }
-                                                    }
-                                                    if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                                        position.setVisible(true);
-                                                        roadAndCrossingPane.getChildren().add(position);
-                                                    }
-                                                    if (soundImage.getImage() == muteImage) {
-                                                        GameSounds buildSound = soundService
-                                                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
-                                                        if (buildSound != null) {
-                                                            buildSound.play();
-                                                        }
-                                                    }
-                                        if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD )) {
-                                    GameSounds roadSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
-                                    if (roadSound != null) {
-                                        roadSound.play();
-                                    }
-                                }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT )) {
-                                    GameSounds settlementSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
-                                    if (settlementSound  != null) {
-                                        settlementSound .play();
-                                    }
-                                }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY )) {
-                                    GameSounds citySound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
-                                    if (citySound  != null) {
-                                        citySound .play();
-                                    }
-                                }        }
-                                            }, errorService::handleError));
+                                        if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                            //listen to new and updatedbuildings, and load the image
+                                            Building b = buildingEventDto.data();
+                                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                                            buildService.setPlayer(builder);
+                                            buildService.setBuildingType(b.type());
+                                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                            buildService.setSelectedField(position);
+                                            buildService.loadBuildingImage(b._id());
+                                            enableBuildingColor(position.getId().split("#")[0]);
+                                            if (b.owner().equals(userID)) {
+                                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                                    gainVP(1);
+                                                }
+                                            }
+                                            if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                                position.setVisible(true);
+                                                roadAndCrossingPane.getChildren().add(position);
+                                            }
+                                            if (soundImage.getImage() == muteImage) {
+                                                GameSounds buildSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+                                                if (buildSound != null) {
+                                                    buildSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
+                                                GameSounds roadSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
+                                                if (roadSound != null) {
+                                                    roadSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                                GameSounds settlementSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
+                                                if (settlementSound != null) {
+                                                    settlementSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
+                                                GameSounds citySound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
+                                                if (citySound != null) {
+                                                    citySound.play();
+                                                }
+                                            }
+                                        }
+                                    }, errorService::handleError));
 
                             diceImage1.setImage(dice1);
                             diceImage2.setImage(dice1);
@@ -363,7 +366,8 @@ public class InGameController extends LoggedInController {
                                         player = stateService.getUpdatedPlayer();
                                         playerResourceListController.setPlayer(player);
                                         updateVisuals();
-                                    }/*, this::handleError*/));
+                                    }, this::handleError));
+
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(this::onPlayerUpdated));
@@ -384,7 +388,8 @@ public class InGameController extends LoggedInController {
                             } else {
                                 arrowOnDice.setVisible(false);
                                 yourTurnLabel.setVisible(false);
-                                updateFields(false, crossingPane, roadPane);}
+                                updateFields(false, crossingPane, roadPane);
+                            }
 
                             soundImage.setImage(muteImage);
                             loadChat();
@@ -518,8 +523,7 @@ public class InGameController extends LoggedInController {
                     ((ImageView) n).setImage(null);
                 }
             }
-        }
-        else {
+        } else {
             if (currentAction.startsWith("founding")) {
                 for (Node n : crossingPane.getChildren()) {
                     if (n.getId().equals(id)) {
@@ -642,15 +646,23 @@ public class InGameController extends LoggedInController {
     }
 
     private void enableBuildingColor(String id) {
-        Circle circle = null;
-        for (Node n : crossingPane.getChildren()) {
+        Node node = null;
+        for (Node n : roadAndCrossingPane.getChildren()) {
             if (n.getId().equals(id + "Colour")) {
-                circle = (Circle) n;
+                node = n;
             }
         }
-        if (circle != null) {
-            if (!(circle.isVisible())) {
-                circle.setVisible(true);
+        if (node == null) {
+            return;
+        }
+        if (node instanceof Circle circle) {
+            if (circle.getFill().equals(Color.TRANSPARENT)) {
+                circle.setFill(Color.web(stateService.getUpdatedPlayer().color()));
+            }
+        }
+        if (node instanceof Rectangle rectangle) {
+            if (rectangle.getFill().equals(Color.TRANSPARENT)) {
+                rectangle.setFill(Color.web(stateService.getUpdatedPlayer().color()));
             }
         }
     }
@@ -767,7 +779,7 @@ public class InGameController extends LoggedInController {
         String target = userID;
 
         errorService.setErrorCodesPioneersPost();
-        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, target))
+        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                         },
@@ -777,7 +789,7 @@ public class InGameController extends LoggedInController {
 
         z = 2;
 
-        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, target))
+        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                         },
@@ -974,7 +986,7 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    private void    showDropWindow() {
+    private void showDropWindow() {
         HashMap<String, Integer> resources = stateService.getUpdatedPlayer().resources();
         dropMenuController = new DropMenuController(this, this.pioneerService, this.bundle, resources);
         dropMenu = dropMenuController.render();

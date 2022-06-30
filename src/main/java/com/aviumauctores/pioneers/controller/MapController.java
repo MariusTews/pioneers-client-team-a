@@ -215,7 +215,7 @@ public class MapController implements Controller {
         circle.setId("building" + position + "Colour");
         circle.setLayoutX(coordinateX);
         circle.setLayoutY(coordinateY);
-        crossingPane.getChildren().add(circle);
+        roadAndCrossingPane.getChildren().add(circle);
         ImageView imageView = new ImageView(emptyCrossing);
         imageView.setId("building" + position);
         imageView.setFitHeight(size);
@@ -250,7 +250,7 @@ public class MapController implements Controller {
         rectangle.setId("building" + position + "Colour");
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setRotate(rotation);
-        roadPane.getChildren().add(rectangle);
+        roadAndCrossingPane.getChildren().add(rectangle);
         ImageView imageView = new ImageView(emptyRoad);
         imageView.setId("building" + position);
         imageView.setFitWidth(sizeX);
