@@ -437,7 +437,7 @@ public class InGameController extends LoggedInController {
         if (move.partner() != null) {
             if (move.action().equals("build") && move.partner().equals(userID)) {
                 this.showTradeRequest(move.resources(), move.userId());
-            } else if (move.action().equals("build")) {
+            } else if (move.action().equals("build") && !Objects.equals(move.userId(), userID)) {
                 disposables.add(pioneerService.createMove("offer", null, null, null, null)
                         .observeOn(FX_SCHEDULER).
                         subscribe(success -> {}, errorService::handleError));
@@ -464,7 +464,7 @@ public class InGameController extends LoggedInController {
 
         //declined trade
         if (move.resources() == null) {
-            if (move.action().equals("offer") && !Objects.equals(move.userId(), userID)) {
+            if (move.action().equals("offer") && !Objects.equals(move.userId(), userID) && tradingController != null) {
                 disposables.add(pioneerService.createMove("accept", null, null, null, null)
                         .observeOn(FX_SCHEDULER).
                         subscribe(success -> {

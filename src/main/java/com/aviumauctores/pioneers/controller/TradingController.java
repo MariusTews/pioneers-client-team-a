@@ -31,38 +31,38 @@ public class TradingController implements Controller {
     private final InGameController inGameController;
     private final ResourceBundle bundle;
     @FXML
-    public Spinner<Integer> tradeWood;
+    public Spinner<Integer> tradeLumber;
     @FXML
-    public Spinner<Integer> requestWood;
+    public Spinner<Integer> requestLumber;
     @FXML
-    public Spinner<Integer> tradeBread;
+    public Spinner<Integer> tradeGrain;
     @FXML
-    public Spinner<Integer> requestBread;
+    public Spinner<Integer> requestGrain;
     @FXML
-    public Spinner<Integer> tradeClay;
+    public Spinner<Integer> tradeBrick;
     @FXML
-    public Spinner<Integer> requestClay;
+    public Spinner<Integer> requestBrick;
     @FXML
-    public Spinner<Integer> tradeStone;
+    public Spinner<Integer> tradeOre;
     @FXML
-    public Spinner<Integer> requestStone;
+    public Spinner<Integer> requestOre;
     @FXML
     public Spinner<Integer> tradeWool;
     @FXML
     public Spinner<Integer> requestWool;
-    public Label woodLabel;
-    public Label breadLabel;
-    public Label clayLabel;
-    public Label stoneLabel;
+    public Label lumberLabel;
+    public Label grainLabel;
+    public Label brickLabel;
+    public Label oreLabel;
     public Label woolLabel;
     public Button cancelTradeButton;
     public ListView<HBox> requestList;
     public Button tradeButton;
     public VBox bankWool;
-    public VBox bankStone;
-    public VBox bankClay;
-    public VBox bankBread;
-    public VBox bankWood;
+    public VBox bankOre;
+    public VBox bankBrick;
+    public VBox bankGrain;
+    public VBox bankLumber;
     private String userID;
     private final UserService userService;
     private final PioneerService pioneerService;
@@ -196,52 +196,52 @@ public class TradingController implements Controller {
         this.setListeners();
     }
 
-    public void enterWoodVariables(MouseEvent mouseEvent) {
+    public void enterLumberVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
-        requestWood.setDisable(true);
-        tradeWood.getValueFactory().setValue(Integer.parseInt(String.valueOf(woodLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeWool, tradeStone, tradeClay, tradeBread);
+        requestLumber.setDisable(true);
+        tradeLumber.getValueFactory().setValue(Integer.parseInt(String.valueOf(lumberLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeWool, tradeOre, tradeBrick, tradeGrain);
     }
 
-    public void enterBreadVariables(MouseEvent mouseEvent) {
+    public void enterGrainVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
-        requestBread.setDisable(true);
-        tradeBread.getValueFactory().setValue(Integer.parseInt(String.valueOf(breadLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeClay);
+        requestGrain.setDisable(true);
+        tradeGrain.getValueFactory().setValue(Integer.parseInt(String.valueOf(grainLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeWool, tradeOre, tradeBrick);
     }
 
-    public void enterClayVariables(MouseEvent mouseEvent) {
+    public void enterBrickVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
-        requestClay.setDisable(true);
-        tradeClay.getValueFactory().setValue(Integer.parseInt(String.valueOf(clayLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeStone, tradeBread);
+        requestBrick.setDisable(true);
+        tradeBrick.getValueFactory().setValue(Integer.parseInt(String.valueOf(brickLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeWool, tradeOre, tradeGrain);
     }
 
-    public void enterStoneVariables(MouseEvent mouseEvent) {
+    public void enterOreVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
-        requestStone.setDisable(true);
-        tradeStone.getValueFactory().setValue(Integer.parseInt(String.valueOf(stoneLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeWool, tradeClay, tradeBread);
+        requestOre.setDisable(true);
+        tradeOre.getValueFactory().setValue(Integer.parseInt(String.valueOf(oreLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeWool, tradeBrick, tradeGrain);
     }
 
     public void enterWoolVariables(MouseEvent mouseEvent) {
         this.setupBankTrade();
         requestWool.setDisable(true);
         tradeWool.getValueFactory().setValue(Integer.parseInt(String.valueOf(woolLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeWood, tradeStone, tradeClay, tradeBread);
+        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeOre, tradeBrick, tradeGrain);
     }
 
 
     //setup spinners
     public void initSpinners() {
-        tradeWood.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_LUMBER, 0)));
-        requestWood.setValueFactory(this.createValueFactory(32));
-        tradeBread.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_GRAIN, 0)));
-        requestBread.setValueFactory(this.createValueFactory(32));
-        tradeClay.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_BRICK, 0)));
-        requestClay.setValueFactory(this.createValueFactory(32));
-        tradeStone.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_ORE, 0)));
-        requestStone.setValueFactory(this.createValueFactory(32));
+        tradeLumber.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_LUMBER, 0)));
+        requestLumber.setValueFactory(this.createValueFactory(32));
+        tradeGrain.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_GRAIN, 0)));
+        requestGrain.setValueFactory(this.createValueFactory(32));
+        tradeBrick.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_BRICK, 0)));
+        requestBrick.setValueFactory(this.createValueFactory(32));
+        tradeOre.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_ORE, 0)));
+        requestOre.setValueFactory(this.createValueFactory(32));
         tradeWool.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_WOOL, 0)));
         requestWool.setValueFactory(this.createValueFactory(32));
     }
@@ -251,11 +251,11 @@ public class TradingController implements Controller {
     }
 
     public void setRequestSpinnersReady() {
-        requestWood.setDisable(false);
+        requestLumber.setDisable(false);
         requestWool.setDisable(false);
-        requestStone.setDisable(false);
-        requestBread.setDisable(false);
-        requestClay.setDisable(false);
+        requestOre.setDisable(false);
+        requestGrain.setDisable(false);
+        requestBrick.setDisable(false);
     }
 
     private void setTradeSpinnersZeroAndDisable(Spinner<Integer> spinner, Spinner<Integer> spinner1, Spinner<Integer> spinner2, Spinner<Integer> spinner3) {
@@ -270,19 +270,19 @@ public class TradingController implements Controller {
     }
 
     private void setRequestSpinnersZero() {
-        requestWood.getValueFactory().setValue(0);
-        requestStone.getValueFactory().setValue(0);
-        requestClay.getValueFactory().setValue(0);
-        requestBread.getValueFactory().setValue(0);
+        requestLumber.getValueFactory().setValue(0);
+        requestOre.getValueFactory().setValue(0);
+        requestBrick.getValueFactory().setValue(0);
+        requestGrain.getValueFactory().setValue(0);
         requestWool.getValueFactory().setValue(0);
     }
 
     public void setTradeSpinnersReady() {
-        tradeBread.setDisable(false);
-        tradeClay.setDisable(false);
-        tradeStone.setDisable(false);
+        tradeGrain.setDisable(false);
+        tradeBrick.setDisable(false);
+        tradeOre.setDisable(false);
         tradeWool.setDisable(false);
-        tradeWood.setDisable(false);
+        tradeLumber.setDisable(false);
     }
 
     //change listener for spinners
@@ -292,47 +292,47 @@ public class TradingController implements Controller {
         ChangeListener<Integer> listener2 = this::onChangeListener;
         ChangeListener<Integer> listener3 = this::onChangeListener;
         ChangeListener<Integer> listener4 = this::onChangeListener;
-        requestClay.valueProperty().addListener(listener);
-        requestBread.valueProperty().addListener(listener1);
-        requestStone.valueProperty().addListener(listener2);
+        requestBrick.valueProperty().addListener(listener);
+        requestGrain.valueProperty().addListener(listener1);
+        requestOre.valueProperty().addListener(listener2);
         requestWool.valueProperty().addListener(listener3);
-        requestWood.valueProperty().addListener(listener4);
-        listenerSpinnerHashMap.put(listener, requestClay);
-        listenerSpinnerHashMap.put(listener1, requestBread);
-        listenerSpinnerHashMap.put(listener2, requestStone);
+        requestLumber.valueProperty().addListener(listener4);
+        listenerSpinnerHashMap.put(listener, requestBrick);
+        listenerSpinnerHashMap.put(listener1, requestGrain);
+        listenerSpinnerHashMap.put(listener2, requestOre);
         listenerSpinnerHashMap.put(listener3, requestWool);
-        listenerSpinnerHashMap.put(listener4, requestWood);
+        listenerSpinnerHashMap.put(listener4, requestLumber);
     }
 
     private void onChangeListener(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
         if (newValue > oldValue) {
             sumRequest += 1;
             if (sumRequest > 1) {
-                if (tradeWood.getValue() != 0) {
-                    tradeWood.getValueFactory().setValue(tradeWood.getValue() + Integer.parseInt(String.valueOf(woodLabel.getText().charAt(0))));
-                } else if (tradeBread.getValue() != 0) {
-                    tradeBread.getValueFactory().setValue(tradeBread.getValue() + Integer.parseInt(String.valueOf(breadLabel.getText().charAt(0))));
+                if (tradeLumber.getValue() != 0) {
+                    tradeLumber.getValueFactory().setValue(tradeLumber.getValue() + Integer.parseInt(String.valueOf(lumberLabel.getText().charAt(0))));
+                } else if (tradeGrain.getValue() != 0) {
+                    tradeGrain.getValueFactory().setValue(tradeGrain.getValue() + Integer.parseInt(String.valueOf(grainLabel.getText().charAt(0))));
                 } else if (tradeWool.getValue() != 0) {
                     tradeWool.getValueFactory().setValue(tradeWool.getValue() + Integer.parseInt(String.valueOf(woolLabel.getText().charAt(0))));
-                } else if (tradeClay.getValue() != 0) {
-                    tradeClay.getValueFactory().setValue(tradeClay.getValue() + Integer.parseInt(String.valueOf(clayLabel.getText().charAt(0))));
-                } else if (tradeStone.getValue() != 0) {
-                    tradeStone.getValueFactory().setValue(tradeStone.getValue() + Integer.parseInt(String.valueOf(stoneLabel.getText().charAt(0))));
+                } else if (tradeBrick.getValue() != 0) {
+                    tradeBrick.getValueFactory().setValue(tradeBrick.getValue() + Integer.parseInt(String.valueOf(brickLabel.getText().charAt(0))));
+                } else if (tradeOre.getValue() != 0) {
+                    tradeOre.getValueFactory().setValue(tradeOre.getValue() + Integer.parseInt(String.valueOf(oreLabel.getText().charAt(0))));
                 }
             }
         } else {
             sumRequest -= 1;
             if (sumRequest >= 1) {
-                if (tradeWood.getValue() != 0) {
-                    tradeWood.getValueFactory().setValue(tradeWood.getValue() - Integer.parseInt(String.valueOf(woodLabel.getText().charAt(0))));
-                } else if (tradeBread.getValue() != 0) {
-                    tradeBread.getValueFactory().setValue(tradeBread.getValue() - Integer.parseInt(String.valueOf(breadLabel.getText().charAt(0))));
+                if (tradeLumber.getValue() != 0) {
+                    tradeLumber.getValueFactory().setValue(tradeLumber.getValue() - Integer.parseInt(String.valueOf(lumberLabel.getText().charAt(0))));
+                } else if (tradeGrain.getValue() != 0) {
+                    tradeGrain.getValueFactory().setValue(tradeGrain.getValue() - Integer.parseInt(String.valueOf(grainLabel.getText().charAt(0))));
                 } else if (tradeWool.getValue() != 0) {
                     tradeWool.getValueFactory().setValue(tradeWool.getValue() - Integer.parseInt(String.valueOf(woolLabel.getText().charAt(0))));
-                } else if (tradeClay.getValue() != 0) {
-                    tradeClay.getValueFactory().setValue(tradeClay.getValue() - Integer.parseInt(String.valueOf(clayLabel.getText().charAt(0))));
-                } else if (tradeStone.getValue() != 0) {
-                    tradeStone.getValueFactory().setValue(tradeStone.getValue() - Integer.parseInt(String.valueOf(stoneLabel.getText().charAt(0))));
+                } else if (tradeBrick.getValue() != 0) {
+                    tradeBrick.getValueFactory().setValue(tradeBrick.getValue() - Integer.parseInt(String.valueOf(brickLabel.getText().charAt(0))));
+                } else if (tradeOre.getValue() != 0) {
+                    tradeOre.getValueFactory().setValue(tradeOre.getValue() - Integer.parseInt(String.valueOf(oreLabel.getText().charAt(0))));
                 }
             }
         }
@@ -350,35 +350,35 @@ public class TradingController implements Controller {
     //getter and setter
     private HashMap<String, Integer> getSpinnerValues() {
         HashMap<String, Integer> resources = new HashMap<>();
-        if (tradeWood.getValue() != 0) {
-            resources.put(RESOURCE_LUMBER, -tradeWood.getValue());
+        if (tradeLumber.getValue() != 0) {
+            resources.put(RESOURCE_LUMBER, -tradeLumber.getValue());
         }
-        if (tradeStone.getValue() != 0) {
-            resources.put(RESOURCE_ORE, -tradeStone.getValue());
+        if (tradeOre.getValue() != 0) {
+            resources.put(RESOURCE_ORE, -tradeOre.getValue());
         }
         if (tradeWool.getValue() != 0) {
             resources.put(RESOURCE_WOOL, -tradeWool.getValue());
         }
-        if (tradeClay.getValue() != 0) {
-            resources.put(RESOURCE_BRICK, -tradeClay.getValue());
+        if (tradeBrick.getValue() != 0) {
+            resources.put(RESOURCE_BRICK, -tradeBrick.getValue());
         }
-        if (tradeBread.getValue() != 0) {
-            resources.put(RESOURCE_GRAIN, -tradeBread.getValue());
+        if (tradeGrain.getValue() != 0) {
+            resources.put(RESOURCE_GRAIN, -tradeGrain.getValue());
         }
-        if (requestWood.getValue() != 0) {
-            resources.put(RESOURCE_LUMBER, requestWood.getValue());
+        if (requestLumber.getValue() != 0) {
+            resources.put(RESOURCE_LUMBER, requestLumber.getValue());
         }
-        if (requestStone.getValue() != 0) {
-            resources.put(RESOURCE_ORE, requestStone.getValue());
+        if (requestOre.getValue() != 0) {
+            resources.put(RESOURCE_ORE, requestOre.getValue());
         }
         if (requestWool.getValue() != 0) {
             resources.put(RESOURCE_WOOL, requestWool.getValue());
         }
-        if (requestClay.getValue() != 0) {
-            resources.put(RESOURCE_BRICK, requestClay.getValue());
+        if (requestBrick.getValue() != 0) {
+            resources.put(RESOURCE_BRICK, requestBrick.getValue());
         }
-        if (requestBread.getValue() != 0) {
-            resources.put(RESOURCE_GRAIN, requestBread.getValue());
+        if (requestGrain.getValue() != 0) {
+            resources.put(RESOURCE_GRAIN, requestGrain.getValue());
         }
         return resources;
     }
@@ -393,6 +393,15 @@ public class TradingController implements Controller {
 
     public void setSumRequest(int sum) {
         this.sumRequest = sum;
+    }
+
+    public void setCorrectTradeRatio(HashMap<String, Integer> ratio) {
+        lumberLabel.setText(ratio.get(RESOURCE_LUMBER).toString() + ":1");
+        oreLabel.setText(ratio.get(RESOURCE_ORE).toString() + ":1");
+        brickLabel.setText(ratio.get(RESOURCE_BRICK).toString() + ":1");
+        woolLabel.setText(ratio.get(RESOURCE_WOOL).toString() + ":1");
+        grainLabel.setText(ratio.get(RESOURCE_GRAIN).toString() + ":1");
+
     }
 
     public void enableButtons() {

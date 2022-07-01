@@ -22,15 +22,15 @@ import java.util.ResourceBundle;
 import static com.aviumauctores.pioneers.Constants.*;
 
 public class TradeRequestController implements Controller {
-    public Label tradeWoodLabel;
-    public Label tradeBreadLabel;
-    public Label tradeClayLabel;
-    public Label tradeStoneLabel;
+    public Label tradeLumberLabel;
+    public Label tradeGrainLabel;
+    public Label tradeBrickLabel;
+    public Label tradeOreLabel;
     public Label tradeWoolLabel;
-    public Label getWoodLabel;
-    public Label getBreadLabel;
-    public Label getClayLabel;
-    public Label getStoneLabel;
+    public Label getLumberLabel;
+    public Label getGrainLabel;
+    public Label getBrickLabel;
+    public Label getOreLabel;
     public Label getWoolLabel;
     public ImageView playerAvatar;
     public Label playerLabel;
@@ -129,10 +129,10 @@ public class TradeRequestController implements Controller {
             String key = entry.getKey();
             Integer value = entry.getValue();
             switch (key) {
-                case RESOURCE_LUMBER -> this.fillLabel(tradeWoodLabel, getWoodLabel, value);
-                case RESOURCE_BRICK -> this.fillLabel(tradeClayLabel, getClayLabel, value);
-                case RESOURCE_GRAIN -> this.fillLabel(tradeBreadLabel, getBreadLabel, value);
-                case RESOURCE_ORE -> this.fillLabel(tradeStoneLabel, getStoneLabel, value);
+                case RESOURCE_LUMBER -> this.fillLabel(tradeLumberLabel, getLumberLabel, value);
+                case RESOURCE_BRICK -> this.fillLabel(tradeBrickLabel, getBrickLabel, value);
+                case RESOURCE_GRAIN -> this.fillLabel(tradeGrainLabel, getGrainLabel, value);
+                case RESOURCE_ORE -> this.fillLabel(tradeOreLabel, getOreLabel, value);
                 case RESOURCE_WOOL -> this.fillLabel(tradeWoolLabel, getWoolLabel, value);
             }
         }
