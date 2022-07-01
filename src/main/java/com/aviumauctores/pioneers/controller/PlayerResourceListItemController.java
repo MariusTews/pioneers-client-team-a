@@ -22,6 +22,8 @@ public class PlayerResourceListItemController {
 
     private ImageView arrowView;
 
+    private ImageView spectatorView;
+
     private final String id;
 
     private final String name;
@@ -73,6 +75,42 @@ public class PlayerResourceListItemController {
         this.resourceLabel = new Label();
         updateResources();
         VBox playerInfo = new VBox(playerName, resourceLabel);
+
+
+        playerBox.getChildren().addAll(arrowView, playerView, playerInfo);
+        playerBox.setSpacing(5.0);
+        return playerBox;
+    }
+
+    public HBox createSpectatorBox() {
+        playerBox = new HBox();
+        playerBox.setId(id);
+
+        String avatarUrl = userService.getUserByID(player.userId()).blockingFirst().avatar();
+        Image playerIcon = avatarUrl == null ? new Image(Objects.requireNonNull(Main.class.getResource("icons/playerIcon_" + color + ".png")).toString()) : new Image(avatarUrl);
+
+        ImageView playerView = new ImageView(playerIcon);
+        playerView.setFitHeight(40.0);
+        playerView.setFitWidth(40.0);
+
+        Label playerName = new Label(name.length() > 12 ? name.substring(0, 9) + ".." : name);
+        playerName.setFont(new Font(18));
+        playerName.setStyle("-fx-font-weight: bold");
+        playerName.setStyle("-fx-text-fill: " + color);
+
+        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + color + ".png")).toString());
+        arrowView = new ImageView(arrowIcon);
+        arrowView.setFitHeight(40.0);
+        arrowView.setFitWidth(40.0);
+        arrowView.setVisible(false);
+
+        Image spectatorImage = new Image(Objects.requireNonNull(Main.class.getResource("spectator.png")).toString());
+        spectatorView = new ImageView(spectatorImage);
+        spectatorView.setFitHeight(10.0);
+        spectatorView.setFitWidth(10.0);
+
+
+        VBox playerInfo = new VBox(playerName, spectatorView);
 
 
         playerBox.getChildren().addAll(arrowView, playerView, playerInfo);

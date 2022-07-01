@@ -4,9 +4,8 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.dto.rob.RobDto;
-import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.model.*;
-import com.aviumauctores.pioneers.service.GameService;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -17,11 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -36,9 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.*;
-import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -53,6 +46,10 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
+    public Button tradeButton;
+    public VBox tradeRequestPopup;
+    public Button viewRequestButton;
+    public Label playerWantTradeLabel;
     private final EventListener eventListener;
     private final SoundService soundService;
 
@@ -105,6 +102,8 @@ public class InGameController extends LoggedInController {
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
 
+    private TradingController tradingController;
+
     @FXML
     private Slider soundSlider;
 
@@ -134,6 +133,10 @@ public class InGameController extends LoggedInController {
     private Parent buildMenu;
     private Parent dropMenu;
 
+    private Parent tradingMenu;
+    private TradeRequestController tradeRequestController;
+    private Parent requestMenu;
+
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
 
@@ -152,6 +155,10 @@ public class InGameController extends LoggedInController {
     private boolean fieldsMovedAlready;
     private String desertTileId;
     private final List<Node> robTargets = new ArrayList<>();
+    private HashMap<String, Integer> tradeRessources;
+    private String tradePartner;
+    private String tradePartnerAvatarUrl;
+    private String tradePartnerColor;
 
 
     @Inject
@@ -286,7 +293,7 @@ public class InGameController extends LoggedInController {
                                         rollButton.setStyle(colourString);
                                         leaveGameButton.setStyle(colourString);
                                         finishMoveButton.setStyle(colourString);
-                                        diceImage1.setStyle(colourString);
+                                        tradeButton.setStyle(colourString);diceImage1.setStyle(colourString);
                                         diceImage2.setStyle(colourString);
                                         try {
                                             Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
@@ -395,6 +402,7 @@ public class InGameController extends LoggedInController {
                             loadChat();
                             playerResourceListController.init(playerList, currentPlayerID);
                             finishMoveButton.setDisable(true);
+                            tradeButton.setDisable(true);
                         }, errorService::handleError
                 ));
 
@@ -413,6 +421,11 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
+        }
+        if (move.partner() != null) {
+            if (move.action().equals("build") && move.partner().equals(userID)) {
+                this.showTradeRequest(move.resources(), move.userId());
+            }
         }
     }
 
@@ -551,6 +564,7 @@ public class InGameController extends LoggedInController {
                 rollButton.setDisable(true);
                 arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
+                tradeButton.setDisable(true);
                 switch (currentAction) {
                     case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
                         updateFields(true, roadPane);
@@ -576,6 +590,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
+                        tradeButton.setDisable(false);
                         updateFields(true, roadAndCrossingPane);
                     }
 
@@ -583,6 +598,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
+                        tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
                         freeFieldVisibility(false);
                     }
@@ -598,6 +614,7 @@ public class InGameController extends LoggedInController {
             yourTurnLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
+            tradeButton.setDisable(true);
             updateFields(false, crossingPane, roadPane);
             roadAndCrossingPane.setDisable(true);
             freeFieldVisibility(false);
@@ -731,6 +748,7 @@ public class InGameController extends LoggedInController {
     public void destroy(boolean closed) {
         super.destroy(closed);
         closeBuildMenu(closed);
+        closeTradingMenu(closed);
         closeDropMenu(closed);
         if (timer != null) {
             timer.cancel();
@@ -1089,5 +1107,70 @@ public class InGameController extends LoggedInController {
             }
         }
         return view;
+    }
+
+    public void trade(ActionEvent actionEvent) {
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService);
+        tradingController.init();
+        tradingMenu = tradingController.render();
+        tradingMenu.setStyle("-fx-background-color: #ffffff;");
+        tradingMenu.setLayoutX(0);
+        tradingMenu.setLayoutY(0);
+        mainPane.getChildren().add(tradingMenu);
+
+
+        // Prevent the event handler from main pane to close the build menu immediately after this
+        actionEvent.consume();
+    }
+
+
+    // trade with the bank or another player
+    public void showTradeRequest(HashMap<String, Integer> resources, String partner) {
+        tradeRessources = resources;
+        viewRequestButton.setDisable(false);
+        tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
+        User user = userService.getUserByID(partner).blockingFirst();
+        Player partnerPlayer = pioneerService.getPlayer(partner).blockingFirst();
+        tradePartnerAvatarUrl = user.avatar();
+        tradePartner = user.name();
+        tradePartnerColor = colorService.getColor(partnerPlayer.color());
+        playerWantTradeLabel.setText(tradePartner + bundle.getString("player.want.trade"));
+        tradeRequestPopup.setVisible(true);
+    }
+
+    public void viewRequest(ActionEvent actionEvent) {
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor);
+        tradeRequestController.init();
+        requestMenu = tradeRequestController.render();
+        requestMenu.setStyle("-fx-background-color: #ffffff;");
+        requestMenu.setLayoutX(0);
+        requestMenu.setLayoutY(0);
+        mainPane.getChildren().add(requestMenu);
+
+    }
+
+    public void closeTradingMenu(boolean appClosed) {
+        if (tradingController != null) {
+            tradingController.destroy(appClosed);
+            tradingController = null;
+        }
+        if (tradingMenu != null) {
+            mainPane.getChildren().remove(tradingMenu);
+            tradingMenu = null;
+        }
+    }
+
+    public void closeRequestMenu(boolean appClosed) {
+        if (tradeRequestController != null) {
+            tradeRequestController.destroy(appClosed);
+            tradeRequestController = null;
+        }
+        if (requestMenu != null) {
+            mainPane.getChildren().remove(requestMenu);
+            requestMenu = null;
+        }
+        if (tradeRequestPopup.isVisible()) {
+            tradeRequestPopup.setVisible(false);
+        }
     }
 }
