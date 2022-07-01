@@ -182,10 +182,14 @@ public class InGameController extends LoggedInController {
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
+
+    //for tradingController
     private HashMap<String, Integer> tradeRessources;
     private String tradePartner;
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
+
+    private HashMap<String, Integer> resourceRatio;
 
 
     @Inject
@@ -230,6 +234,13 @@ public class InGameController extends LoggedInController {
         userID = userService.getCurrentUserID();
         player = pioneerService.getPlayer(userID).blockingFirst();
 
+        // init HashMap for trading ratio
+        resourceRatio = new HashMap<>();
+        resourceRatio.put(RESOURCE_LUMBER, 4);
+        resourceRatio.put(RESOURCE_BRICK, 4);
+        resourceRatio.put(RESOURCE_GRAIN, 4);
+        resourceRatio.put(RESOURCE_ORE, 4);
+        resourceRatio.put(RESOURCE_WOOL, 4);
 
 
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -440,7 +451,8 @@ public class InGameController extends LoggedInController {
             } else if (move.action().equals("build") && !Objects.equals(move.userId(), userID)) {
                 disposables.add(pioneerService.createMove("offer", null, null, null, null)
                         .observeOn(FX_SCHEDULER).
-                        subscribe(success -> {}, errorService::handleError));
+                        subscribe(success -> {
+                        }, errorService::handleError));
             }
         }
 
@@ -1054,7 +1066,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player);
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, resourceRatio);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");

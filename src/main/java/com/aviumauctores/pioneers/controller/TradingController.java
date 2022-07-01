@@ -69,6 +69,7 @@ public class TradingController implements Controller {
     private final ColorService colorService;
     private final ErrorService errorService;
     private final Player player;
+    private final HashMap<String, Integer> resourceRatio;
     private final HashMap<ChangeListener<Integer>, Spinner<Integer>> listenerSpinnerHashMap;
 
     private CompositeDisposable disposables;
@@ -80,7 +81,7 @@ public class TradingController implements Controller {
 
     @Inject
     public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService,
-                             PioneerService pioneerService, ColorService colorService, ErrorService errorService, Player player) {
+                             PioneerService pioneerService, ColorService colorService, ErrorService errorService, Player player, HashMap<String, Integer> resourceRatio) {
         this.inGameController = inGameController;
         this.bundle = bundle;
         this.userService = userService;
@@ -88,6 +89,7 @@ public class TradingController implements Controller {
         this.colorService = colorService;
         this.errorService = errorService;
         this.player = player;
+        this.resourceRatio = resourceRatio;
         this.listenerSpinnerHashMap = new HashMap<>();
         this.sumRequest = 0;
     }
@@ -123,6 +125,7 @@ public class TradingController implements Controller {
         this.initSpinners();
         playerRequestsController = new PlayerRequestsListController(this, pioneerService, userService, colorService);
         this.playerRequestsController.load(requestList, userID);
+        this.setCorrectTradeRatio(resourceRatio);
         return parent;
     }
 
