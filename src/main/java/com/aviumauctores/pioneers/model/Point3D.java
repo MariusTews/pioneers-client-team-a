@@ -11,11 +11,10 @@ public record Point3D(
      * Returns a dummy object which only contains the coordinates given by the robber field id.
      */
     public static Point3D readCoordinatesFromID(String id) {
-        if (!id.startsWith("robber")) {
-            return null;
-        } else if (id.contains("R")) {
+        if (id.contains("R")) {
             id = id.split("R")[0];
         }
+        id = id.replace("building", "robber");
         // Cut the robber string off and replace _ with -
         // so coordinateString contains only the concatenated coordinates
         String coordinateString = id.substring("robberX".length()).replace('_', '-');

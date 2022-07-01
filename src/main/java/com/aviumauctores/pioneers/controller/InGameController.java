@@ -960,19 +960,36 @@ public class InGameController extends LoggedInController {
         if (count == 0) {
             changeRobberPositionAndRobTarget(id, null);
         }
+        else {
+            robberPane.setVisible(false);
+            robberPane.setDisable(true);
+            roadAndCrossingPane.setDisable(false);
+        }
     }
 
     private int markBuildingsForRob(String id) {
-        String buildingId = id.replace("robber", "building");
+        List<String> possibleIds = new ArrayList<>();
+        Point3D p = Point3D.readCoordinatesFromID(id);
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y()) + "Z" + (p.z()) + "R0").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y()) + "Z" + (p.z()) + "R6").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()+1) + "Y" + (p.y()) + "Z" + (p.z()-1) + "R6").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y()-1) + "Z" + (p.z()+1) + "R0").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()-1) + "Y" + (p.y()) + "Z" + (p.z()+1) + "R0").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y()+1) + "Z" + (p.z()-1) + "R6").replace("-", "_"));
+
         int count = 0;
         for (Node n : roadAndCrossingPane.getChildren()) {
             String[] nIdParts = n.getId().split("#");
             if (nIdParts.length == 3) {
-                if (nIdParts[0].startsWith(buildingId) && (nIdParts[1].equals(BUILDING_TYPE_SETTLEMENT) || nIdParts[1].equals(BUILDING_TYPE_CITY))
-                        && !(nIdParts[2].equals(userID))) {
+                if (possibleIds.contains(nIdParts[0]) && !(nIdParts[2].equals(userID))) {
                     n.setOnMouseClicked(this::initiateRob);
+                    n.setDisable(false);
                     robTargets.add(n);
                     count++;
+
+                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth()+10);
+                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight()+10);
+
                 }
             }
         }
@@ -987,9 +1004,6 @@ public class InGameController extends LoggedInController {
 
     private void changeRobberPositionAndRobTarget(String id, String target) {
         Point3D p = Point3D.readCoordinatesFromID(id);
-        if (p == null) {
-            return;
-        }
 
         errorService.setErrorCodesPioneersPost();
         disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(p.x(), p.y(), p.z(), target))
@@ -1009,8 +1023,17 @@ public class InGameController extends LoggedInController {
                             }
                             for (Node n : robTargets) {
                                 n.setOnMouseClicked(this::onFieldClicked);
+                                //TODO
+                                n.setDisable(true);
+
+                                ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth()-10);
+                                ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight()-10);
+
                             }
                             robTargets.clear();
+                            robberPane.setVisible(true);
+                            robberPane.setDisable(false);
+                            roadAndCrossingPane.setDisable(true);
                         },
                         throwable -> {
                         }
