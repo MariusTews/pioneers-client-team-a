@@ -7,19 +7,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.TradeRequestController">
-   <ImageView fitHeight="57.0" fitWidth="49.0" layoutX="35.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@Wood_icon.png" />
    </ImageView>
-   <ImageView fitHeight="57.0" fitWidth="44.0" layoutX="35.0" layoutY="221.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="57.0" fitWidth="40.0" layoutX="35.0" layoutY="221.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@Sheep_icon.png" />
    </ImageView>
-   <ImageView fitHeight="57.0" fitWidth="44.0" layoutX="35.0" layoutY="127.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="35.0" layoutY="136.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@Bricks_icon.png" />
    </ImageView>
-   <ImageView fitHeight="57.0" fitWidth="44.0" layoutX="35.0" layoutY="87.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@Bread_icon.png" />
    </ImageView>
-   <ImageView fitHeight="57.0" fitWidth="44.0" layoutX="35.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="35.0" layoutY="181.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@Metal_icon.png" />
    </ImageView>
    <Label layoutX="133.0" layoutY="15.0" prefHeight="30.0" prefWidth="77.0" text="%trade" />

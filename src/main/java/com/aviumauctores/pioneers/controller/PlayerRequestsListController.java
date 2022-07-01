@@ -47,6 +47,7 @@ public class PlayerRequestsListController implements Controller {
             tradingController.setRequestSpinnersReady();
             tradingController.setTradeSpinnersReady();
             tradingController.setSumRequest(0);
+            tradingController.initSpinnersPrivateTrade();
         });
     }
 

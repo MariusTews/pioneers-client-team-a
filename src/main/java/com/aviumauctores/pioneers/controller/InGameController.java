@@ -477,32 +477,6 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    private void onPlayerUpdated(EventDto<Player> playerEventDto) {
-        Player updatedPlayer = playerEventDto.data();
-        if (updatedPlayer.userId().equals(userID)) {
-            player = updatedPlayer;
-            playerResourceListController.setPlayer(updatedPlayer);
-            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-
-            HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
-            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
-            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
-            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
-            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
-
-            if (tradingController != null) {
-                tradingController.initSpinners();
-            }
-
-            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
-            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
-            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
-
-        }
-        playerResourceListController.updatePlayerLabel(updatedPlayer);
-    }
-
     public void rollAllDice(int rolled) throws InterruptedException {
         int i = 4;
         while (i > 0) {
@@ -680,6 +654,7 @@ public class InGameController extends LoggedInController {
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+            player = updatedPlayer;
 
             HashMap<String, Integer> resources = updatedPlayer.resources();
             int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
@@ -688,21 +663,16 @@ public class InGameController extends LoggedInController {
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
 
+
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
             enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
 
+            if (tradingController != null) {
+                tradingController.initSpinnersPrivateTrade();
+            }
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
-    }
-
-    @Override
-    public void destroy(boolean closed) {
-        super.destroy(closed);
-        closeBuildMenu(closed);
-        if (timer != null) {
-            timer.cancel();
-        }
     }
 
     public void finishMove(ActionEvent actionEvent) {

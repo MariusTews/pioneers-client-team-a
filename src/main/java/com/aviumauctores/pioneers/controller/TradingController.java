@@ -122,7 +122,7 @@ public class TradingController implements Controller {
             e.printStackTrace();
             return null;
         }
-        this.initSpinners();
+        this.initSpinnersBankTrade();
         playerRequestsController = new PlayerRequestsListController(this, pioneerService, userService, colorService);
         this.playerRequestsController.load(requestList, userID);
         this.setCorrectTradeRatio(resourceRatio);
@@ -191,10 +191,10 @@ public class TradingController implements Controller {
     //change spinners, when user wants to trade with the bank
     private void setupBankTrade() {
         this.removeListeners();
+        this.initSpinnersBankTrade();
         this.setRequestSpinnersReady();
         this.setTradeSpinnersReady();
         this.setBankTrade(true);
-        this.setRequestSpinnersZero();
         this.setSumRequest(0);
         this.setListeners();
     }
@@ -236,7 +236,7 @@ public class TradingController implements Controller {
 
 
     //setup spinners
-    public void initSpinners() {
+    public void initSpinnersPrivateTrade() {
         tradeLumber.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_LUMBER, 0)));
         requestLumber.setValueFactory(this.createValueFactory(32));
         tradeGrain.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_GRAIN, 0)));
@@ -246,6 +246,19 @@ public class TradingController implements Controller {
         tradeOre.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_ORE, 0)));
         requestOre.setValueFactory(this.createValueFactory(32));
         tradeWool.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_WOOL, 0)));
+        requestWool.setValueFactory(this.createValueFactory(32));
+    }
+
+    public void initSpinnersBankTrade() {
+        tradeLumber.setValueFactory(this.createValueFactory(32));
+        requestLumber.setValueFactory(this.createValueFactory(32));
+        tradeGrain.setValueFactory(this.createValueFactory(32));
+        requestGrain.setValueFactory(this.createValueFactory(32));
+        tradeBrick.setValueFactory(this.createValueFactory(32));
+        requestBrick.setValueFactory(this.createValueFactory(32));
+        tradeOre.setValueFactory(this.createValueFactory(32));
+        requestOre.setValueFactory(this.createValueFactory(32));
+        tradeWool.setValueFactory(this.createValueFactory(32));
         requestWool.setValueFactory(this.createValueFactory(32));
     }
 
