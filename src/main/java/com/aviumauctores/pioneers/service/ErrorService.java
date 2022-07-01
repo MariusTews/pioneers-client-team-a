@@ -148,4 +148,8 @@ public class ErrorService {
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
+    public void setErrorCodesTradeController() {
+        errorCodes.put("403" , bundle.getString("trade.error"));
+    }
+
 }

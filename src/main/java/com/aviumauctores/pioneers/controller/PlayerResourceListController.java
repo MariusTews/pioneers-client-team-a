@@ -50,6 +50,7 @@ public class PlayerResourceListController {
         PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
         listItems.put(playerID, controller);
         playerList.getItems().add(playerList.getItems().size(), controller.createBox());
+        //  playerList.getItems ().add (playerList.getItems ().size (), controller.createSpectatorBox ());
         if (playerID.equals(this.currentPlayerID)) {
             controller.showArrow();
         }
@@ -84,13 +85,11 @@ public class PlayerResourceListController {
         for (int i = size - 1; i > 0; i--) {
             puffer = playerList.getItems().set(i, puffer);
         }
-
     }
 
     public void setPlayer(Player player) {
         this.player = player;
     }
-
 
     public void hideArrow(String playerID) {
         listItems.get(playerID).hideArrow();

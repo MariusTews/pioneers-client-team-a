@@ -16,6 +16,12 @@
     -fx-text-fill: #eee;
 }
 
+
+#spectatorText{
+    -fx-font-size: 11;
+
+}
+
 #passwordErrorLabel{
     -fx-font-size: 11;
 }
@@ -157,6 +163,10 @@
     -fx-background-color: #333333;
 }
 
+.drop-menu {
+    -fx-background-color: #333333;
+}
+
 #ingamePane {
     -fx-background-color: #00233B;
 }
@@ -179,4 +189,15 @@
 #changeWindowVBox {
     -fx-background-color: #333333;
     -fx-background-radius: 8px;
+}
+
+#paneOption {
+    -fx-background-color: rgb(0, 1, 17);
+    -fx-border-color: #00496c;
+    -fx-border-width: 5;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-body-color: #00496c;
 }

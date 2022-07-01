@@ -1,6 +1,5 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.BuildService;
 import javafx.event.ActionEvent;
@@ -21,7 +20,6 @@ public class BuildMenuController implements Controller {
 
     @FXML
     private Button buildButton;
-
 
     public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType) {
         this.buildService = buildService;

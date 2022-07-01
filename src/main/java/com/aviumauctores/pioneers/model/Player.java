@@ -13,10 +13,7 @@ public record Player(String gameID,
                      int foundingRoll,
                      HashMap<String, Integer> resources,
                      HashMap<String, Integer> remainingBuildings,
-
                      int victoryPoints,
-
                      int longestRoad
-
 ) {
 }

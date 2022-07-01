@@ -63,7 +63,7 @@ public class InGameChatController implements Controller {
     private InGameController inGameController;
 
     private CompositeDisposable disposables;
-private String userID;
+    private String userID;
 
     @Inject
     public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -222,7 +222,8 @@ private String userID;
     public void delete(String messageId) {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
-                .subscribe(r -> {}, errorService::handleError);
+                .subscribe(r -> {
+                }, errorService::handleError);
     }
 
     @Override
