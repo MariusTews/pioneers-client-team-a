@@ -26,7 +26,7 @@ public class BuildService {
     private String currentAction;
     private final String userID;
     private final ResourceBundle bundle;
-    private Player player;
+    private String playerId;
     private String buildingType;
     private String selectedFieldCoordinates;
 
@@ -80,7 +80,7 @@ public class BuildService {
                         "views/buildings/town.png")).toString()));
             }
             if (selectedField.getId().startsWith("building")) {
-                selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
+                selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);
             }
         }
     }
@@ -98,8 +98,8 @@ public class BuildService {
         selectedField = field;
     }
 
-    public void setPlayer(Player updatedPlayer) {
-        player = updatedPlayer;
+    public void setPlayerId(String id) {
+        playerId = id;
     }
 
 

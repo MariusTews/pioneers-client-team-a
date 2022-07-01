@@ -13,8 +13,8 @@ public record Point3D(
     public static Point3D readCoordinatesFromID(String id) {
         if (!id.startsWith("robber")) {
             return null;
-        } else if (id.contains("#")) {
-            id = id.split("#")[0];
+        } else if (id.contains("R")) {
+            id = id.split("R")[0];
         }
         // Cut the robber string off and replace _ with -
         // so coordinateString contains only the concatenated coordinates

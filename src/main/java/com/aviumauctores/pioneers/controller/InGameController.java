@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.dto.rob.RobDto;
 import com.aviumauctores.pioneers.service.*;
@@ -32,7 +31,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -55,11 +53,6 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
-
-    @FXML
-    public BorderPane ingamePane;
-
-    private Player player;
     private final EventListener eventListener;
     private final SoundService soundService;
 
@@ -72,7 +65,6 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label numSheepLabel;
 
-
     @FXML
     public ImageView arrowOnDice;
 
@@ -81,6 +73,9 @@ public class InGameController extends LoggedInController {
 
     @FXML
     Label timeLabel;
+
+    @FXML
+    public BorderPane ingamePane;
 
     public Pane mainPane;
     public Pane crossingPane;
@@ -156,7 +151,7 @@ public class InGameController extends LoggedInController {
 
     private boolean fieldsMovedAlready;
     private String desertTileId;
-
+    private final List<Node> robTargets = new ArrayList<>();
 
 
     @Inject
@@ -200,7 +195,6 @@ public class InGameController extends LoggedInController {
 
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
-        player = pioneerService.getPlayer(userID).blockingFirst();
 
 
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -305,8 +299,7 @@ public class InGameController extends LoggedInController {
                                                 if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
                                                     //listen to new and updatedbuildings, and load the image
                                                     Building b = buildingEventDto.data();
-                                                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                                                    buildService.setPlayer(builder);
+                                                    buildService.setPlayerId(b.owner());
                                                     buildService.setBuildingType(b.type());
                                                     ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                                                     buildService.setSelectedField(position);
@@ -365,8 +358,6 @@ public class InGameController extends LoggedInController {
                                         currentAction = stateService.getCurrentAction();
                                         buildService.setCurrentAction(currentAction);
                                         playerResourceListController.setCurrentPlayerID(currentPlayerID);
-                                        player = stateService.getUpdatedPlayer();
-                                        playerResourceListController.setPlayer(player);
                                         updateVisuals();
                                     }, throwable -> System.out.println(throwable.toString() + "| error on state update")));
 
@@ -913,7 +904,8 @@ public class InGameController extends LoggedInController {
     }
 
     private void showDropWindow() {
-        HashMap<String, Integer> resources = stateService.getUpdatedPlayer().resources();
+        Player player = pioneerService.getPlayer(userID).blockingFirst();
+        HashMap<String, Integer> resources = player.resources();
         dropMenuController = new DropMenuController(this, this.pioneerService, this.bundle, resources);
         dropMenu = dropMenuController.render();
 
@@ -949,7 +941,7 @@ public class InGameController extends LoggedInController {
                 ((ImageView) n).setImage(emptyCircle);
                 n.setOnMouseEntered(this::showRobberField);
                 n.setOnMouseExited(this::hideRobberField);
-                n.setOnMouseClicked(this::changeRobberPosition);
+                n.setOnMouseClicked(this::initiateRobberMove);
             }
         }
     }
@@ -962,18 +954,45 @@ public class InGameController extends LoggedInController {
         ((ImageView) mouseEvent.getSource()).setImage(emptyCircle);
     }
 
-    private void changeRobberPosition(MouseEvent mouseEvent) {
+    private void initiateRobberMove(MouseEvent mouseEvent) {
         String id = ((Node) mouseEvent.getSource()).getId();
+        int count = markBuildingsForRob(id);
+        if (count == 0) {
+            changeRobberPositionAndRobTarget(id, null);
+        }
+    }
+
+    private int markBuildingsForRob(String id) {
+        String buildingId = id.replace("robber", "building");
+        int count = 0;
+        for (Node n : roadAndCrossingPane.getChildren()) {
+            String[] nIdParts = n.getId().split("#");
+            if (nIdParts.length == 3) {
+                if (nIdParts[0].startsWith(buildingId) && (nIdParts[1].equals(BUILDING_TYPE_SETTLEMENT) || nIdParts[1].equals(BUILDING_TYPE_CITY))
+                        && !(nIdParts[2].equals(userID))) {
+                    n.setOnMouseClicked(this::initiateRob);
+                    robTargets.add(n);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private void initiateRob(MouseEvent mouseEvent) {
+        String id = ((Node) mouseEvent.getSource()).getId();
+        String target = id.split("#")[2];
+        changeRobberPositionAndRobTarget(id, target);
+    }
+
+    private void changeRobberPositionAndRobTarget(String id, String target) {
         Point3D p = Point3D.readCoordinatesFromID(id);
         if (p == null) {
             return;
         }
-        int x = p.x();
-        int y = p.y();
-        int z = p.z();
 
         errorService.setErrorCodesPioneersPost();
-        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, null))
+        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(p.x(), p.y(), p.z(), target))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(move -> {
                             for (Node n : robberPane.getChildren()) {
@@ -981,13 +1000,17 @@ public class InGameController extends LoggedInController {
                                 n.setOnMouseEntered(null);
                                 n.setOnMouseExited(null);
                                 n.setOnMouseClicked(null);
-                                if (n.getId().equals(id)) {
+                                if (n.getId().equals(id.split("R")[0].replace("building", "robber"))) {
                                     ((ImageView) n).setImage(robberView);
                                 }
                                 else {
                                     ((ImageView) n).setImage(null);
                                 }
                             }
+                            for (Node n : robTargets) {
+                                n.setOnMouseClicked(this::onFieldClicked);
+                            }
+                            robTargets.clear();
                         },
                         throwable -> {
                         }

@@ -228,7 +228,7 @@ public class InGameControllerTest extends ApplicationTest {
         Player player = new Player(gameService.getCurrentGameID(), userID, "#008000",
                 true, 2, resources, null, 0, 0);
 
-        when(stateService.getUpdatedPlayer()).thenReturn(player);
+        when(pioneerService.getPlayer(userID)).thenReturn(Observable.just(player));
         when(stateService.getCurrentPlayerID()).thenReturn(userID);
         when(stateService.getCurrentAction()).thenReturn(MOVE_DROP);
         when(pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null))
