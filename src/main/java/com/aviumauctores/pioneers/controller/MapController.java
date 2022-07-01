@@ -214,29 +214,23 @@ public class MapController implements Controller {
                 imageView.setFitHeight(2 * fitSizeCrossing);
                 imageView.setFitWidth(2 * fitSizeCrossing);
                 switch (harbor.side()) {
-                    case 1 -> {
-                        harborX -= fitSizeCrossing;
-                        harborY -= fitSizeCrossing;
-                    }
+                    case 1 -> harborX -= fitSizeCrossing;
                     case 3 -> {
                         harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
-                        harborY -= fitSizeCrossing;
+                        harborY -= 2 * fitSizeCrossing;
                     }
-                    case 5 -> {
-                        harborX += fitWidthHexagon + fitSizeCrossing;
-                        harborY -= fitSizeCrossing;
-                    }
+                    case 5 -> harborX += fitWidthHexagon - fitSizeCrossing;
                     case 7 -> {
-                        harborX += fitWidthHexagon + fitSizeCrossing;
+                        harborX += fitWidthHexagon - 2 * fitSizeCrossing;
                         harborY += fitHeightHexagon;
                     }
                     case 9 -> {
                         harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
-                        harborY += fitHeightHexagon + fitSizeCrossing;
+                        harborY += fitHeightHexagon;
                     }
                     case 11 -> {
                         harborX -= fitSizeCrossing;
-                        harborY += fitHeightHexagon + fitSizeCrossing;
+                        harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
                     }
                 }
                 imageView.setX(harborX);
