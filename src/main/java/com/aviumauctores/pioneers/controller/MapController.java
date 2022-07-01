@@ -197,7 +197,7 @@ public class MapController implements Controller {
             }
             // middle right (6 o clock)
             for (int xIterator = -1 * mapRadius; xIterator <= -1; xIterator++) {
-                int yIterator = -1 * mapRadius - 1 -xIterator;
+                int yIterator = -1 * mapRadius - 1 - xIterator;
                 double tileX = middleX - (0.75 * xIterator * fitWidthHexagon) - (0.75 * yIterator * fitWidthHexagon);
                 double tileY = middleY - (0.5 * xIterator * fitHeightHexagon) + (0.5 * yIterator * fitHeightHexagon);
                 String position = "X" + xIterator + "Y" + yIterator + "Z" + -1 * (xIterator + yIterator);
@@ -207,36 +207,45 @@ public class MapController implements Controller {
             }
 
             // generate harbors
-            for (Harbor harbor: gameMap.harbors()) {
+            for (Harbor harbor : gameMap.harbors()) {
                 double harborX = middleX - (0.75 * harbor.x() * fitWidthHexagon) - (0.75 * harbor.y() * fitWidthHexagon);
                 double harborY = middleY - (0.5 * harbor.x() * fitHeightHexagon) + (0.5 * harbor.y() * fitHeightHexagon);
                 ImageView imageView = new ImageView(harborImage);
                 imageView.setFitHeight(2 * fitSizeCrossing);
                 imageView.setFitWidth(2 * fitSizeCrossing);
                 switch (harbor.side()) {
-                    case 1 -> harborX -= fitSizeCrossing;
+                    case 1 -> {
+                        harborX -= fitSizeCrossing;
+                        createLabel(harborX - 3 * fitSizeCrossing, harborY - 2 * fitSizeCrossing, harbor.type());
+                    }
                     case 3 -> {
                         harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
                         harborY -= 2 * fitSizeCrossing;
+                        createLabel(harborX + 2 * fitSizeCrossing, harborY, harbor.type());
                     }
-                    case 5 -> harborX += fitWidthHexagon - fitSizeCrossing;
+                    case 5 -> {
+                        harborX += fitWidthHexagon - fitSizeCrossing;
+                        createLabel(harborX + 2 * fitSizeCrossing, harborY, harbor.type());
+                    }
                     case 7 -> {
-                        harborX += fitWidthHexagon - 2 * fitSizeCrossing;
-                        harborY += fitHeightHexagon;
+                        harborX += fitWidthHexagon - 1.5 * fitSizeCrossing;
+                        harborY += fitHeightHexagon - 0.5 * fitSizeCrossing;
+                        createLabel(harborX + 2 * fitSizeCrossing, harborY, harbor.type());
                     }
                     case 9 -> {
                         harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
                         harborY += fitHeightHexagon;
+                        createLabel(harborX, harborY + 2 * fitSizeCrossing, harbor.type());
                     }
                     case 11 -> {
                         harborX -= fitSizeCrossing;
                         harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
+                        createLabel(harborX - 3 * fitSizeCrossing, harborY - fitSizeCrossing, harbor.type());
                     }
                 }
                 imageView.setX(harborX);
                 imageView.setY(harborY);
                 tilePane.getChildren().add(imageView);
-
             }
         }
         return parent;
