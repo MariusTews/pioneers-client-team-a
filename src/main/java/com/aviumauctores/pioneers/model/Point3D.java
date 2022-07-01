@@ -8,7 +8,7 @@ public record Point3D(
         int z
 ) {
     /**
-     * Returns a dummy object which only contains the coordinates given by the building id.
+     * Returns a dummy object which only contains the coordinates given by the robber field id.
      */
     public static Point3D readCoordinatesFromID(String id) {
         if (!id.startsWith("robber")) {
