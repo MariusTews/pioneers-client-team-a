@@ -312,7 +312,7 @@ public class MapController implements Controller {
     }
 
     public void createRoad(String position, double coordinateX, double coordinateY, double sizeX, double sizeY, double rotation) {
-        Rectangle rectangle = new Rectangle(coordinateX, coordinateY, 0.9*sizeX, 0.8*sizeY);
+        Rectangle rectangle = new Rectangle(coordinateX + 0.1 * sizeX, coordinateY, sizeX, 0.8*sizeY);
         rectangle.setId("building" + position + "Colour");
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setRotate(rotation);

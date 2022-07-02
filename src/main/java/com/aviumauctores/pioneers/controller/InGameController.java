@@ -48,7 +48,7 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
-    public Button tradeButton;
+    @FXML public Button tradeButton;
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
@@ -271,7 +271,8 @@ public class InGameController extends LoggedInController {
                                     vpCircles.add((Circle) vpCircle);
                                 }
                                 timeLabel = controller.getTimeLabel();
-                                //put robber on desert tile desertTileId = controller.getDesertTileId();
+                                //put robber on desert tile
+                                desertTileId = controller.getDesertTileId();
                                 String desertRobberImageId = desertTileId.replace("hexagon", "robber");
                                 moveRobber(desertRobberImageId);
                                 runTimer();
@@ -291,7 +292,9 @@ public class InGameController extends LoggedInController {
                                         rollButton.setStyle(colourString);
                                         leaveGameButton.setStyle(colourString);
                                         finishMoveButton.setStyle(colourString);
-                                        tradeButton.setStyle(colourString);diceImage1.setStyle(colourString);
+                                        //TODO
+                                        //tradeButton.setStyle(colourString);
+                                        diceImage1.setStyle(colourString);
                                         diceImage2.setStyle(colourString);
                                         try {
                                             Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
@@ -311,7 +314,7 @@ public class InGameController extends LoggedInController {
                                             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                                             buildService.setSelectedField(position);
                                             buildService.loadBuildingImage(b._id());
-                                            enableBuildingColor(position.getId().split("#")[0], b.owner());
+                                            enableBuildingColor(position.getId().split("#")[0], b.owner(), b.type());
                                             if (b.owner().equals(userID)) {
                                                 if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                                                     gainVP(1);
@@ -365,7 +368,6 @@ public class InGameController extends LoggedInController {
                                         currentAction = stateService.getCurrentAction();
                                         buildService.setCurrentAction(currentAction);
                                         playerResourceListController.setCurrentPlayerID(currentPlayerID);
-
                                         updateVisuals();
                                     }, throwable -> System.out.println(throwable.toString() + "| error on state update")));
 
@@ -396,7 +398,8 @@ public class InGameController extends LoggedInController {
                             loadChat();
                             playerResourceListController.init(playerList, currentPlayerID);
                             finishMoveButton.setDisable(true);
-                        tradeButton.setDisable(true);}, errorService::handleError
+                            tradeButton.setDisable(true);
+                        }, errorService::handleError
                 ));
 
         return parent;
@@ -557,7 +560,7 @@ public class InGameController extends LoggedInController {
                 rollButton.setDisable(true);
                 arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
-                tradeButton.setDisable(true);
+                //TODO tradeButton.setDisable(true);
                 switch (currentAction) {
                     case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
                         updateFields(true, roadPane);
@@ -583,7 +586,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
-                        tradeButton.setDisable(false);
+                        //TODO tradeButton.setDisable(false);
                         updateFields(true, roadAndCrossingPane);
                     }
 
@@ -591,7 +594,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
-                        tradeButton.setDisable(true);
+                        //TODO tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
                         freeFieldVisibility(false);
                     }
@@ -637,7 +640,7 @@ public class InGameController extends LoggedInController {
         buildService.build();
     }
 
-    private void enableBuildingColor(String id, String owner) {
+    private void enableBuildingColor(String id, String owner, String type) {
         Node node = null;
         for (Node n : roadAndCrossingPane.getChildren()) {
             if (n.getId().equals(id + "Colour")) {
@@ -651,6 +654,9 @@ public class InGameController extends LoggedInController {
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
                 circle.setFill(Color.web(player.color()));
+            }
+            if (type.equals(BUILDING_TYPE_CITY)) {
+                //TODO
             }
         }
         if (node instanceof Rectangle rectangle) {
