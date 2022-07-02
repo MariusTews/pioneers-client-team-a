@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Harbor;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.model.Tile;
 import javafx.fxml.FXML;
@@ -53,6 +54,7 @@ public class MapController implements Controller {
     Image pasture;
     Image emptyCrossing;
     Image emptyRoad;
+    Image harborImage;
 
     public int mapRadius;
     public Map gameMap;
@@ -74,6 +76,7 @@ public class MapController implements Controller {
         pasture = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/pasture.png")).toString());
         emptyCrossing = new Image(Objects.requireNonNull(Main.class.getResource("views/buildings/empty.png")).toString());
         emptyRoad = new Image(Objects.requireNonNull(Main.class.getResource("views/buildings/emptyRoad.png")).toString());
+        harborImage = new Image(Objects.requireNonNull(Main.class.getResource("views/harbor.png")).toString());
     }
 
     @Override
@@ -183,6 +186,68 @@ public class MapController implements Controller {
                     createRoad(position + "R3", (tileX + 0.5 * fitWidthHexagon) - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
                 }
             }
+            // middle left (0 0 clock)
+            for (int xIterator = mapRadius; xIterator >= 1; xIterator--) {
+                int yIterator = mapRadius + 1 - xIterator;
+                double tileX = middleX - (0.75 * xIterator * fitWidthHexagon) - (0.75 * yIterator * fitWidthHexagon);
+                double tileY = middleY - (0.5 * xIterator * fitHeightHexagon) + (0.5 * yIterator * fitHeightHexagon);
+                String position = "X" + xIterator + "Y" + yIterator + "Z" + -1 * (xIterator + yIterator);
+                position = position.replace("-", "_");
+                createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
+                createRoad(position + "R7", tileX + 0.75 * fitWidthHexagon, tileY + fitHeightHexagon - 3 * fitHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+            }
+            // middle right (6 o clock)
+            for (int xIterator = -1 * mapRadius; xIterator <= -1; xIterator++) {
+                int yIterator = -1 * mapRadius - 1 - xIterator;
+                double tileX = middleX - (0.75 * xIterator * fitWidthHexagon) - (0.75 * yIterator * fitWidthHexagon);
+                double tileY = middleY - (0.5 * xIterator * fitHeightHexagon) + (0.5 * yIterator * fitHeightHexagon);
+                String position = "X" + xIterator + "Y" + yIterator + "Z" + -1 * (xIterator + yIterator);
+                position = position.replace("-", "_");
+                createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
+                createRoad(position + "R11", tileX, (tileY + 0.5 * fitHeightHexagon) + 2 * fitHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+            }
+
+            // generate harbors
+            for (Harbor harbor : gameMap.harbors()) {
+                double harborX = middleX - (0.75 * harbor.x() * fitWidthHexagon) - (0.75 * harbor.y() * fitWidthHexagon);
+                double harborY = middleY - (0.5 * harbor.x() * fitHeightHexagon) + (0.5 * harbor.y() * fitHeightHexagon);
+                ImageView imageView = new ImageView(harborImage);
+                imageView.setFitHeight(2 * fitSizeCrossing);
+                imageView.setFitWidth(2 * fitSizeCrossing);
+                switch (harbor.side()) {
+                    case 1 -> {
+                        harborX -= fitSizeCrossing;
+                        createLabel(harborX - 3 * fitSizeCrossing, harborY - 2 * fitSizeCrossing, harbor.type());
+                    }
+                    case 3 -> {
+                        harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
+                        harborY -= 2 * fitSizeCrossing;
+                        createLabel(harborX + 2 * fitSizeCrossing, harborY, harbor.type());
+                    }
+                    case 5 -> {
+                        harborX += fitWidthHexagon - fitSizeCrossing;
+                        createLabel(harborX + 2 * fitSizeCrossing, harborY, harbor.type());
+                    }
+                    case 7 -> {
+                        harborX += fitWidthHexagon - 1.5 * fitSizeCrossing;
+                        harborY += fitHeightHexagon - 0.5 * fitSizeCrossing;
+                        createLabel(harborX + 2 * fitSizeCrossing, harborY, harbor.type());
+                    }
+                    case 9 -> {
+                        harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
+                        harborY += fitHeightHexagon;
+                        createLabel(harborX, harborY + 2 * fitSizeCrossing, harbor.type());
+                    }
+                    case 11 -> {
+                        harborX -= fitSizeCrossing;
+                        harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
+                        createLabel(harborX - 3 * fitSizeCrossing, harborY - fitSizeCrossing, harbor.type());
+                    }
+                }
+                imageView.setX(harborX);
+                imageView.setY(harborY);
+                tilePane.getChildren().add(imageView);
+            }
         }
         return parent;
     }
@@ -213,8 +278,8 @@ public class MapController implements Controller {
     public void createCrossing(String position, double coordinateX, double coordinateY, double size) {
         Circle circle = new Circle(size / 2, Color.TRANSPARENT);
         circle.setId("building" + position + "Colour");
-        circle.setLayoutX(coordinateX);
-        circle.setLayoutY(coordinateY);
+        circle.setLayoutX(coordinateX + 0.5 * size);
+        circle.setLayoutY(coordinateY + 0.5 * size);
         roadAndCrossingPane.getChildren().add(circle);
         ImageView imageView = new ImageView(emptyCrossing);
         imageView.setId("building" + position);
