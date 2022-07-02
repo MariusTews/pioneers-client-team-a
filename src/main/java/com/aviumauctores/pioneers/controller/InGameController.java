@@ -293,7 +293,8 @@ public class InGameController extends LoggedInController {
                                         rollButton.setStyle(colourString);
                                         leaveGameButton.setStyle(colourString);
                                         finishMoveButton.setStyle(colourString);
-                                        tradeButton.setStyle(colourString);diceImage1.setStyle(colourString);
+                                        tradeButton.setStyle(colourString);
+                                        diceImage1.setStyle(colourString);
                                         diceImage2.setStyle(colourString);
                                         try {
                                             Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
@@ -606,7 +607,10 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(true);
                         showDropWindow();
                     }
-                    case MOVE_ROB -> enableRobberFields();
+                    case MOVE_ROB -> {
+                        rollButton.setDisable(true);
+                        enableRobberFields();
+                    }
                 }
             }
         } else {
@@ -1029,6 +1033,7 @@ public class InGameController extends LoggedInController {
 
                     robTargets.add(n);
 
+                    //temporary implementation
                     ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() + 10);
                     ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() + 10);
 
@@ -1070,7 +1075,9 @@ public class InGameController extends LoggedInController {
                             for (Node n : robTargets) {
                                 n.setOnMouseClicked(this::onFieldClicked);
                                 n.setDisable(true);
+                                n.setAccessibleText(null);
 
+                                //temporary implementation
                                 ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() - 10);
                                 ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() - 10);
 
