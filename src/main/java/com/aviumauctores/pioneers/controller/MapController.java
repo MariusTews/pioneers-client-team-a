@@ -101,6 +101,7 @@ public class MapController implements Controller {
             double fitWidthHexagon = WIDTH_HEXAGON / factor;
             double fitHeightHexagon = HEIGHT_HEXAGON / factor;
             double fitSizeCrossing = WIDTH_HEIGHT_BUILDING / factor;
+            double fitSizeRobber = (WIDTH_HEIGHT_BUILDING / factor) * 1.5;
             double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
             double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
             double fitWidthRoad = WIDTH_ROAD / factor;
@@ -133,7 +134,7 @@ public class MapController implements Controller {
                 // creation
                 createTile(position, tileX, tileY, fitWidthHexagon, fitHeightHexagon, tile);
                 createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken());
-                createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
+                createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeRobber);
                 createCrossing(position + "R0", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createRoad(position + "R3", offsetMiddleX - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
@@ -301,7 +302,7 @@ public class MapController implements Controller {
     }
 
     public void createRobberPosition(String position, double coordinateX, double coordinateY, double size) {
-        ImageView imageView = new ImageView(emptyCrossing);
+        ImageView imageView = new ImageView();
         imageView.setId("robber" + position);
         imageView.setFitHeight(size);
         imageView.setFitWidth(size);

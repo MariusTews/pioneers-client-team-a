@@ -4,16 +4,13 @@ import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.model.*;
 
 import javax.inject.Inject;
-import java.util.List;
 
 public class StateService {
     private final BuildService buildService;
-    private final PioneerService pioneerService;
 
     private String oldAction;
     private String currentAction;
     private String currentPlayerID;
-    private Player player;
     private final String userID;
     private String oldPlayerID;
     private boolean newPlayer;
@@ -24,13 +21,11 @@ public class StateService {
     public StateService(UserService userService, BuildService buildService,
                         PioneerService pioneerService) {
         this.buildService = buildService;
-        this.pioneerService = pioneerService;
         this.userID = userService.getCurrentUserID();
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
     }
 
     public void updateState(EventDto<State> state) {
-        player = pioneerService.getPlayer(userID).blockingFirst();
         oldAction = currentAction;
         oldPlayerID = currentPlayerID;
         State currentState = state.data();
@@ -52,7 +47,7 @@ public class StateService {
             newPlayer = !currentPlayerID.equals(oldPlayerID);
         }
 
-        buildService.setPlayer(player);
+        buildService.setPlayerId(currentPlayerID);
     }
 
     public String getCurrentAction() {
@@ -65,10 +60,6 @@ public class StateService {
 
     public boolean getNewPlayer() {
         return newPlayer;
-    }
-
-    public Player getUpdatedPlayer() {
-        return player;
     }
 
     public String getOldPlayerID() {

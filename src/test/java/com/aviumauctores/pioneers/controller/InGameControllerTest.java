@@ -113,6 +113,9 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     ErrorService errorService;
 
+    @Mock
+    Provider<MapController> mapController;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
@@ -131,7 +134,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000", true,
                 2, new HashMap<>(), new HashMap<>(), 0, 0);
-        when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
+        //when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))), new Point3D(1, 3, 4))));
 
@@ -143,6 +146,7 @@ public class InGameControllerTest extends ApplicationTest {
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(1, 1, 1, "desert", 0)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
+        //when(mapController.get()).thenReturn(new MapController(bundle));
         new App(inGameController).start(stage);
     }
 
@@ -228,7 +232,7 @@ public class InGameControllerTest extends ApplicationTest {
         Player player = new Player(gameService.getCurrentGameID(), userID, "#008000",
                 true, 2, resources, null, 0, 0);
 
-        when(stateService.getUpdatedPlayer()).thenReturn(player);
+        when(pioneerService.getPlayer(userID)).thenReturn(Observable.just(player));
         when(stateService.getCurrentPlayerID()).thenReturn(userID);
         when(stateService.getCurrentAction()).thenReturn(MOVE_DROP);
         when(pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null))

@@ -87,7 +87,6 @@ public class App extends Application {
         stage.getScene().heightProperty().addListener(sizeListener);
     }
 
-
     public void setWindow(Pane contentPane) {
         final double newWidth = stage.getScene().getWidth();
         final double newHeight = stage.getScene().getHeight();
