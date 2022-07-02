@@ -39,7 +39,7 @@ public class PlayerResourceListItemController {
     private HBox playerBox;
 
 
-    private Label resourceLabel;
+    private Label resourceLabel = new Label();
     private HashMap<String, Integer> resources = new HashMap<>();
 
 
@@ -84,6 +84,7 @@ public class PlayerResourceListItemController {
         playerBox.setSpacing(5.0);
         return playerBox;
     }
+    //für a
 
     public HBox createSpectatorBox() {
         playerBox = new HBox();
@@ -132,7 +133,7 @@ public class PlayerResourceListItemController {
     public void updateResources() {
         int num = getResource(RESOURCE_BRICK) + getResource(RESOURCE_ORE) + getResource(RESOURCE_GRAIN)
                 + getResource(RESOURCE_LUMBER) + getResource(RESOURCE_WOOL);
-        resourceLabel.setText(num + " " + bundle.getString("resources"));
+                resourceLabel.setText(num + " " + bundle.getString("resources"));
     }
 
     public void setPlayer(Player player) {

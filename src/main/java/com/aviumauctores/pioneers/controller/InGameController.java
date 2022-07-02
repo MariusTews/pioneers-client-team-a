@@ -221,9 +221,13 @@ public class InGameController extends LoggedInController {
 
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
-        player = pioneerService.getPlayer(userID).blockingFirst();
 
+        try {
+            player = pioneerService.getPlayer(userID).blockingFirst();
+        } catch (Exception ignored) {
 
+        }
+        
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
