@@ -96,6 +96,8 @@ public class GameReadyController extends PlayerListController {
     private int readyMembers;
     private int allMembers;
 
+    private boolean spectator;
+
     private GameOptionController gameOptionController;
 
     private Parent gameOption;
@@ -162,7 +164,9 @@ public class GameReadyController extends PlayerListController {
                     if (event.endsWith("created") || event.endsWith("updated")) {
                         allMembers = game.members();
                         if (game.started()) {
-                            app.show(inGameController.get());
+                            InGameController controller = inGameController.get();
+                            controller.setSpectator(spectator);
+                            app.show(controller);
                         }
                     }
                 }));
@@ -249,6 +253,10 @@ public class GameReadyController extends PlayerListController {
         Member member = eventDto.data();
         String memberID = member.userId();
         Color memberColor = member.color();
+
+        if (memberID.equals(userService.getCurrentUserID())) {
+            spectator = member.spectator();
+        }
         // if the colour is valid
         if (colourIsTaken.get(memberColor) != null) {
             // check all colours
@@ -372,6 +380,8 @@ public class GameReadyController extends PlayerListController {
                 Color.MAGENTA,
                 Color.CHOCOLATE);
         updateComboBox();
+
+        gameService.setUpdateOption(2, 10);
 
         return parent;
     }

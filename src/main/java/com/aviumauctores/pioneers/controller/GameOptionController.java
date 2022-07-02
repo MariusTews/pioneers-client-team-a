@@ -69,6 +69,8 @@ public class GameOptionController implements Controller {
         this.victoryPoints.setValueFactory(victoryValue);
         mapValue = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 2);
         this.mapSize.setValueFactory(mapValue);
+        gameReadyController.setMapsizeAndVictorypoints(10, 2);
+
         return parent;
     }
 

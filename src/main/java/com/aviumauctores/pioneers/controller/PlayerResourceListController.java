@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.*;
 import javafx.geometry.Insets;
@@ -23,14 +24,16 @@ public class PlayerResourceListController {
     private final HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
     private Player player;
 
+    private Member member;
+
     @Inject
-    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService,GameMemberService gameMemberService) {
+    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService, GameMemberService gameMemberService) {
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.bundle = bundle;
         this.errorService = errorService;
-        this.gameMemberService=gameMemberService;
+        this.gameMemberService = gameMemberService;
     }
 
     public void init(ListView<HBox> node, String startingPlayer) {
@@ -38,6 +41,12 @@ public class PlayerResourceListController {
         this.currentPlayerID = startingPlayer;
         for (Player p : pioneerService.listPlayers().blockingFirst()) {
             createPlayerBox(p);
+        }
+
+        for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
+            if (m.spectator()) {
+                createSpectatorBox(m);
+            }
         }
         playerList.setPadding(new Insets(10, 0, 10, 0));
     }
@@ -47,22 +56,28 @@ public class PlayerResourceListController {
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
         PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
+        listItems.put(playerID, controller);
+        playerList.getItems().add(playerList.getItems().size(), controller.createBox());
 
-        gameMemberService.getMember(playerID).subscribe(member ->{
-            if(member.spectator()){
-                playerList.getItems().add(playerList.getItems().size(), controller.createSpectatorBox());
-            }else{
-                playerList.getItems().add(playerList.getItems().size(), controller.createBox());
-                //  playerList.getItems ().add (playerList.getItems ().size (), controller.createSpectatorBox ());
-                if (playerID.equals(this.currentPlayerID)) {
-                    controller.showArrow();
-                }
-            }
-        });
+        if (playerID.equals(this.currentPlayerID)) {
+            controller.showArrow();
+        }
+
+    }
+
+    public void createSpectatorBox(Member member) {
+        String playerID = member.userId();
+        String playerName = userService.getUserName(playerID).blockingFirst();
+        String colorName = colorService.getColor(member.color());
+
+        PlayerResourceListItemController controller = new PlayerResourceListItemController(member, playerName, colorName, userService, bundle);
+
+        playerList.getItems().add(playerList.getItems().size(), controller.createSpectatorBox());
 
         listItems.put(playerID, controller);
 
     }
+
 
     public void updatePlayerLabel(Player player) {
         PlayerResourceListItemController controller = listItems.get(player.userId());

@@ -99,18 +99,13 @@ public class InGameController extends LoggedInController {
     private String currentPlayerID;
     private String userID;
     private String currentAction;
-
     private final Provider<InGameChatController> inGameChatController;
     private final StateService stateService;
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
-
     private TradingController tradingController;
-
     @FXML
     private Slider soundSlider;
-
-
     @FXML
     public Circle vp01;
     @FXML
@@ -186,6 +181,8 @@ public class InGameController extends LoggedInController {
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
 
+    private Boolean spectator;
+
 
     @Inject
     public InGameController(App app,
@@ -214,6 +211,9 @@ public class InGameController extends LoggedInController {
         fieldsMovedAlready = false;
     }
 
+    public void setSpectator(Boolean spectator) {
+        this.spectator = (spectator);
+    }
 
     @Override
     public void init() {
@@ -233,7 +233,7 @@ public class InGameController extends LoggedInController {
         } catch (Exception ignored) {
 
         }
-        
+
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
@@ -391,11 +391,13 @@ public class InGameController extends LoggedInController {
 
         errorService.setErrorCodesPioneersPost();
 
-        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                }, errorService::handleError));
 
+        if (!spectator) {
+            disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(move -> {
+                    }, errorService::handleError));
+        }
         currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
