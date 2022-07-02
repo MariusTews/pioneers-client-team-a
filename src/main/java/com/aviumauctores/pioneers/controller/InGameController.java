@@ -311,7 +311,7 @@ public class InGameController extends LoggedInController {
                                             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                                             buildService.setSelectedField(position);
                                             buildService.loadBuildingImage(b._id());
-                                            enableBuildingColor(position.getId().split("#")[0]);
+                                            enableBuildingColor(position.getId().split("#")[0], b.owner());
                                             if (b.owner().equals(userID)) {
                                                 if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                                                     gainVP(1);
@@ -637,7 +637,7 @@ public class InGameController extends LoggedInController {
         buildService.build();
     }
 
-    private void enableBuildingColor(String id) {
+    private void enableBuildingColor(String id, String owner) {
         Node node = null;
         for (Node n : roadAndCrossingPane.getChildren()) {
             if (n.getId().equals(id + "Colour")) {
@@ -647,14 +647,15 @@ public class InGameController extends LoggedInController {
         if (node == null) {
             return;
         }
+        Player player = pioneerService.getPlayer(owner).blockingFirst();
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
-                circle.setFill(Color.web(stateService.getUpdatedPlayer().color()));
+                circle.setFill(Color.web(player.color()));
             }
         }
         if (node instanceof Rectangle rectangle) {
             if (rectangle.getFill().equals(Color.TRANSPARENT)) {
-                rectangle.setFill(Color.web(stateService.getUpdatedPlayer().color()));
+                rectangle.setFill(Color.web(player.color()));
             }
         }
     }
