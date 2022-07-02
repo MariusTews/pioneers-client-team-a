@@ -115,7 +115,7 @@ public class TradeRequestController implements Controller {
             String key = entry.getKey();
             Integer value = entry.getValue();
             if (value > 0) {
-                if (myRessources.get(key) < value) {
+                if (myRessources.getOrDefault(key, -value) < value) {
                     acceptButton.setDisable(true);
                     break;
                 }

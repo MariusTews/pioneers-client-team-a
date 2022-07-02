@@ -68,7 +68,7 @@ public class TradingController implements Controller {
     private final PioneerService pioneerService;
     private final ColorService colorService;
     private final ErrorService errorService;
-    private final Player player;
+    private Player player;
     private final HashMap<String, Integer> resourceRatio;
     private final HashMap<ChangeListener<Integer>, Spinner<Integer>> listenerSpinnerHashMap;
 
@@ -126,7 +126,12 @@ public class TradingController implements Controller {
         playerRequestsController = new PlayerRequestsListController(this, pioneerService, userService, colorService);
         this.playerRequestsController.load(requestList, userID);
         this.setCorrectTradeRatio(resourceRatio);
+        tradeButton.setDisable(true);
         return parent;
+    }
+
+    public void updatePlayer(Player player) {
+        this.player = player;
     }
 
 
@@ -190,6 +195,7 @@ public class TradingController implements Controller {
 
     //change spinners, when user wants to trade with the bank
     private void setupBankTrade() {
+        this.enableButtons();
         this.removeListeners();
         this.initSpinnersBankTrade();
         this.setRequestSpinnersReady();
@@ -249,7 +255,7 @@ public class TradingController implements Controller {
         requestWool.setValueFactory(this.createValueFactory(32));
     }
 
-    public void initSpinnersBankTrade() {
+    private void initSpinnersBankTrade() {
         tradeLumber.setValueFactory(this.createValueFactory(32));
         requestLumber.setValueFactory(this.createValueFactory(32));
         tradeGrain.setValueFactory(this.createValueFactory(32));
@@ -283,14 +289,6 @@ public class TradingController implements Controller {
         spinner2.setDisable(true);
         spinner3.getValueFactory().setValue(0);
         spinner3.setDisable(true);
-    }
-
-    private void setRequestSpinnersZero() {
-        requestLumber.getValueFactory().setValue(0);
-        requestOre.getValueFactory().setValue(0);
-        requestBrick.getValueFactory().setValue(0);
-        requestGrain.getValueFactory().setValue(0);
-        requestWool.getValueFactory().setValue(0);
     }
 
     public void setTradeSpinnersReady() {
@@ -423,6 +421,10 @@ public class TradingController implements Controller {
     public void enableButtons() {
         this.cancelTradeButton.setDisable(false);
         this.tradeButton.setDisable(false);
+    }
+
+    public void enableCancelButton() {
+        this.cancelTradeButton.setDisable(false);
     }
 
     public void showRequestOpen(String playerID) {

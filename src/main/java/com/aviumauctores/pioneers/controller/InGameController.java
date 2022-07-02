@@ -442,12 +442,12 @@ public class InGameController extends LoggedInController {
                 disposables.add(pioneerService.createMove("accept", null, null, move.userId(), null)
                         .observeOn(FX_SCHEDULER).
                         subscribe(success -> {
-                                    tradingController.enableButtons();
+                                    tradingController.enableCancelButton();
                                     tradingController.showRequestAccepted(move.userId());
                                 },
                                 error -> {
                                     errorService.handleError(error);
-                                    tradingController.enableButtons();
+                                    tradingController.enableCancelButton();
                                 }
                         ));
             }
@@ -459,12 +459,12 @@ public class InGameController extends LoggedInController {
                 disposables.add(pioneerService.createMove("accept", null, null, null, null)
                         .observeOn(FX_SCHEDULER).
                         subscribe(success -> {
-                                    tradingController.enableButtons();
+                                    tradingController.enableCancelButton();
                                     tradingController.showRequestDeclined(move.userId());
                                 },
                                 error -> {
                                     errorService.handleError(error);
-                                    tradingController.enableButtons();
+                                    tradingController.enableCancelButton();
                                 }
                         ));
             }
@@ -663,7 +663,7 @@ public class InGameController extends LoggedInController {
             enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
 
             if (tradingController != null) {
-                tradingController.initSpinnersPrivateTrade();
+                tradingController.updatePlayer(updatedPlayer);
             }
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);

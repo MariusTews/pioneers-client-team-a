@@ -150,6 +150,8 @@ public class ErrorService {
 
     public void setErrorCodesTrading() {
         errorCodes.put("403" , bundle.getString("trade.error"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("400", bundle.getString("bad.request"));
     }
 
 }
