@@ -48,7 +48,8 @@ public class InGameController extends LoggedInController {
     private final GameMemberService gameMemberService;
     private final GameService gameService;
     private final PioneerService pioneerService;
-    @FXML public Button tradeButton;
+    @FXML
+    public Button tradeButton;
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
@@ -656,7 +657,9 @@ public class InGameController extends LoggedInController {
                 circle.setFill(Color.web(player.color()));
             }
             if (type.equals(BUILDING_TYPE_CITY)) {
-                //TODO
+                circle.setRadius(circle.getRadius() * 1.2);
+                circle.setLayoutX(circle.getLayoutX() + (circle.getRadius() / 8));
+                circle.setLayoutY(circle.getLayoutY() + (circle.getRadius() / 8));
             }
         }
         if (node instanceof Rectangle rectangle) {
@@ -1056,8 +1059,8 @@ public class InGameController extends LoggedInController {
                     robTargets.add(n);
 
                     //temporary implementation
-                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() + 10);
-                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() + 10);
+                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() * 1.1);
+                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() * 1.1);
 
                     count++;
                 }
@@ -1100,8 +1103,8 @@ public class InGameController extends LoggedInController {
                                 n.setAccessibleText(null);
 
                                 //temporary implementation
-                                ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() - 10);
-                                ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() - 10);
+                                ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() / 1.1);
+                                ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() / 1.1);
 
                             }
                             robTargets.clear();
