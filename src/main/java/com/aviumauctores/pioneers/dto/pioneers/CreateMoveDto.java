@@ -11,5 +11,6 @@ public record CreateMoveDto(
         HashMap<String, Integer> resources,
         String partner,
         RobDto rob
+
 ) {
 }
