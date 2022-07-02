@@ -255,7 +255,7 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(2);
+                                controller.setMapRadius(gameService.getMapRadius());
                                 ingamePane.setCenter(controller.render());
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
@@ -282,7 +282,8 @@ public class InGameController extends LoggedInController {
                                         String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
                                         rollButton.setStyle(colourString);
                                         leaveGameButton.setStyle(colourString);
-                                        finishMoveButton.setStyle(colourString);tradeButton.setStyle(colourString);
+                                        finishMoveButton.setStyle(colourString);
+                                        tradeButton.setStyle(colourString);
                                         diceImage1.setStyle(colourString);
                                         diceImage2.setStyle(colourString);
                                         try {
@@ -295,53 +296,54 @@ public class InGameController extends LoggedInController {
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(buildingEventDto -> {
-                                                if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-                                                    //listen to new and updatedbuildings, and load the image
-                                                    Building b = buildingEventDto.data();
-                                                    Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                                                    buildService.setPlayer(builder);
-                                                    buildService.setBuildingType(b.type());
-                                                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                                                    buildService.setSelectedField(position);
-                                                    buildService.loadBuildingImage(b._id());
-                                                    if (b.owner().equals(userID)) {
-                                                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                                            gainVP(1);
-                                                        }
-                                                    }
-                                                    if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                                        position.setVisible(true);
-                                                        roadAndCrossingPane.getChildren().add(position);
-                                                    }
-                                                    if (soundImage.getImage() == muteImage) {
-                                                        GameSounds buildSound = soundService
-                                                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
-                                                        if (buildSound != null) {
-                                                            buildSound.play();
-                                                        }
-                                                    }
-                                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
-                                    GameSounds roadSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
-                                    if (roadSound != null) {
-                                        roadSound.play();
-                                    }
-                                }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
-                                    GameSounds settlementSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
-                                    if (settlementSound != null) {
-                                        settlementSound.play();
-                                    }
-                                }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
-                                    GameSounds citySound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
-                                    if (citySound != null) {
-                                        citySound.play();
-                                    }
-                                }}
-                                            }, errorService::handleError));
+                                        if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                            //listen to new and updatedbuildings, and load the image
+                                            Building b = buildingEventDto.data();
+                                            Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
+                                            buildService.setPlayer(builder);
+                                            buildService.setBuildingType(b.type());
+                                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                            buildService.setSelectedField(position);
+                                            buildService.loadBuildingImage(b._id());
+                                            if (b.owner().equals(userID)) {
+                                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                                    gainVP(1);
+                                                }
+                                            }
+                                            if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                                position.setVisible(true);
+                                                roadAndCrossingPane.getChildren().add(position);
+                                            }
+                                            if (soundImage.getImage() == muteImage) {
+                                                GameSounds buildSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+                                                if (buildSound != null) {
+                                                    buildSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
+                                                GameSounds roadSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
+                                                if (roadSound != null) {
+                                                    roadSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                                GameSounds settlementSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
+                                                if (settlementSound != null) {
+                                                    settlementSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
+                                                GameSounds citySound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
+                                                if (citySound != null) {
+                                                    citySound.play();
+                                                }
+                                            }
+                                        }
+                                    }, errorService::handleError));
 
                             diceImage1.setImage(dice1);
                             diceImage2.setImage(dice1);
@@ -380,12 +382,13 @@ public class InGameController extends LoggedInController {
                             } else {
                                 arrowOnDice.setVisible(false);
                                 yourTurnLabel.setVisible(false);
-                                updateFields(false, crossingPane, roadPane);}
-
+                                updateFields(false, crossingPane, roadPane);
+                            }
                             soundImage.setImage(muteImage);
                             loadChat();
                             playerResourceListController.init(playerList, currentPlayerID);
-                            finishMoveButton.setDisable(true);tradeButton.setDisable(true);
+                            finishMoveButton.setDisable(true);
+                            tradeButton.setDisable(true);
                         }, errorService::handleError
                 ));
 
