@@ -17,12 +17,10 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
-import org.testfx.service.query.NodeQuery;
 
 import java.util.*;
 
-import static com.aviumauctores.pioneers.Constants.RESOURCE_LUMBER;
-import static com.aviumauctores.pioneers.Constants.RESOURCE_WOOL;
+import static com.aviumauctores.pioneers.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -32,8 +30,33 @@ import static org.testfx.assertions.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class TradingControllerTest extends ApplicationTest {
+
+    HashMap<String, Integer> myRessources = new HashMap<>();
+
+    {
+        myRessources.put(RESOURCE_LUMBER, 100);
+        myRessources.put(RESOURCE_GRAIN, 100);
+        myRessources.put(RESOURCE_WOOL, 100);
+        myRessources.put(RESOURCE_BRICK, 100);
+        myRessources.put(RESOURCE_ORE, 100);
+    }
+
+    @Spy
+    HashMap<String, Integer> resourceRatio = new HashMap<>();
+    {
+        resourceRatio.put(RESOURCE_LUMBER, 4);
+        resourceRatio.put(RESOURCE_GRAIN, 3);
+        resourceRatio.put(RESOURCE_WOOL, 2);
+        resourceRatio.put(RESOURCE_BRICK, 4);
+        resourceRatio.put(RESOURCE_ORE, 4);
+    }
+
     @Mock
     InGameController inGameController;
+
+    @Spy
+    Player player = new Player("1", "2", "#111111", true, 2, myRessources, null, 2, 0);
+
 
 
     @Spy
@@ -92,7 +115,7 @@ class TradingControllerTest extends ApplicationTest {
         resources.put(RESOURCE_WOOL, 2);
         Move move = new Move("1", "2", "3", "4", "5", 0, "6", new RobDto(1,2,3, "4"), resources, "7");
         when(pioneerService.createMove("build", null, resources, "684072366f72202b72406465", null)).thenReturn(Observable.just(move));
-        clickOn("#bankWood");
+        clickOn("#bankLumber");
         Spinner<Integer> spinnerRequestWool = lookup("#requestWool").query();
         spinnerRequestWool.increment();
         spinnerRequestWool.increment();
@@ -111,8 +134,8 @@ class TradingControllerTest extends ApplicationTest {
         when(pioneerService.createMove("build", null, resources, null, null)).thenReturn(Observable.just(move));
 
         Spinner<Integer> spinnerRequestWool = lookup("#requestWool").query();
-        Spinner<Integer> spinnerTradeWood = lookup("#tradeWood").query();
-        spinnerTradeWood.increment();
+        Spinner<Integer> spinnerTradeLumber = lookup("#tradeLumber").query();
+        spinnerTradeLumber.increment();
         spinnerRequestWool.increment();
         spinnerRequestWool.increment();
         clickOn("#tradeButton");
@@ -123,14 +146,14 @@ class TradingControllerTest extends ApplicationTest {
 
 
     @Test
-    void testBankTradeWood() {
-        clickOn("#bankWood");
+    void testBankTradeLumber() {
+        clickOn("#bankLumber");
         verifyThat("#tradeWool", NodeMatchers.isDisabled());
-        verifyThat("#tradeClay", NodeMatchers.isDisabled());
-        verifyThat("#tradeStone", NodeMatchers.isDisabled());
-        verifyThat("#tradeBread", NodeMatchers.isDisabled());
-        verifyThat("#requestWood", NodeMatchers.isDisabled());
-        Spinner<Integer> spinnerTradeWood = lookup("#tradeWood").query();
+        verifyThat("#tradeBrick", NodeMatchers.isDisabled());
+        verifyThat("#tradeOre", NodeMatchers.isDisabled());
+        verifyThat("#tradeGrain", NodeMatchers.isDisabled());
+        verifyThat("#requestLumber", NodeMatchers.isDisabled());
+        Spinner<Integer> spinnerTradeWood = lookup("#tradeLumber").query();
         Spinner<Integer> spinnerRequestWool = lookup("#requestWool").query();
 
         spinnerRequestWool.increment();
@@ -146,34 +169,34 @@ class TradingControllerTest extends ApplicationTest {
     @Test
     void testBankTradeWool() {
         clickOn("#bankWool");
-        verifyThat("#tradeWood", NodeMatchers.isDisabled());
-        verifyThat("#tradeClay", NodeMatchers.isDisabled());
-        verifyThat("#tradeStone", NodeMatchers.isDisabled());
-        verifyThat("#tradeBread", NodeMatchers.isDisabled());
+        verifyThat("#tradeLumber", NodeMatchers.isDisabled());
+        verifyThat("#tradeBrick", NodeMatchers.isDisabled());
+        verifyThat("#tradeOre", NodeMatchers.isDisabled());
+        verifyThat("#tradeGrain", NodeMatchers.isDisabled());
         verifyThat("#requestWool", NodeMatchers.isDisabled());
         Spinner<Integer> spinnerTradeWool = lookup("#tradeWool").query();
-        Spinner<Integer> spinnerRequestClay = lookup("#requestClay").query();
+        Spinner<Integer> spinnerRequestClay = lookup("#requestBrick").query();
+
+        spinnerRequestClay.increment();
+        assertEquals(spinnerTradeWool.getValue(), 2);
 
         spinnerRequestClay.increment();
         assertEquals(spinnerTradeWool.getValue(), 4);
-
-        spinnerRequestClay.increment();
-        assertEquals(spinnerTradeWool.getValue(), 8);
 
         spinnerRequestClay.decrement();
-        assertEquals(spinnerTradeWool.getValue(), 4);
+        assertEquals(spinnerTradeWool.getValue(), 2);
     }
 
     @Test
-    void testBankTradeClay() {
-        clickOn("#bankClay");
-        verifyThat("#tradeWood", NodeMatchers.isDisabled());
+    void testBankTradeBrick() {
+        clickOn("#bankBrick");
+        verifyThat("#tradeLumber", NodeMatchers.isDisabled());
         verifyThat("#tradeWool", NodeMatchers.isDisabled());
-        verifyThat("#tradeStone", NodeMatchers.isDisabled());
-        verifyThat("#tradeBread", NodeMatchers.isDisabled());
-        verifyThat("#requestClay", NodeMatchers.isDisabled());
-        Spinner<Integer> spinnerTradeClay = lookup("#tradeClay").query();
-        Spinner<Integer> spinnerRequestWood = lookup("#requestWood").query();
+        verifyThat("#tradeOre", NodeMatchers.isDisabled());
+        verifyThat("#tradeGrain", NodeMatchers.isDisabled());
+        verifyThat("#requestBrick", NodeMatchers.isDisabled());
+        Spinner<Integer> spinnerTradeClay = lookup("#tradeBrick").query();
+        Spinner<Integer> spinnerRequestWood = lookup("#requestLumber").query();
 
         spinnerRequestWood.increment();
         assertEquals(spinnerTradeClay.getValue(), 4);
@@ -186,15 +209,15 @@ class TradingControllerTest extends ApplicationTest {
     }
 
     @Test
-    void testBankTradeStone() {
-        clickOn("#bankStone");
-        verifyThat("#tradeWood", NodeMatchers.isDisabled());
-        verifyThat("#tradeClay", NodeMatchers.isDisabled());
+    void testBankTradeOre() {
+        clickOn("#bankOre");
+        verifyThat("#tradeLumber", NodeMatchers.isDisabled());
+        verifyThat("#tradeBrick", NodeMatchers.isDisabled());
         verifyThat("#tradeWool", NodeMatchers.isDisabled());
-        verifyThat("#tradeBread", NodeMatchers.isDisabled());
-        verifyThat("#requestStone", NodeMatchers.isDisabled());
-        Spinner<Integer> spinnerTradeStone = lookup("#tradeStone").query();
-        Spinner<Integer> spinnerRequestBread= lookup("#requestBread").query();
+        verifyThat("#tradeGrain", NodeMatchers.isDisabled());
+        verifyThat("#requestOre", NodeMatchers.isDisabled());
+        Spinner<Integer> spinnerTradeStone = lookup("#tradeOre").query();
+        Spinner<Integer> spinnerRequestBread= lookup("#requestGrain").query();
 
         spinnerRequestBread.increment();
         assertEquals(spinnerTradeStone.getValue(), 4);
@@ -207,24 +230,24 @@ class TradingControllerTest extends ApplicationTest {
     }
 
     @Test
-    void testBankTradeBread() {
-        clickOn("#bankBread");
-        verifyThat("#tradeWood", NodeMatchers.isDisabled());
-        verifyThat("#tradeClay", NodeMatchers.isDisabled());
-        verifyThat("#tradeStone", NodeMatchers.isDisabled());
+    void testBankTradeGrain() {
+        clickOn("#bankGrain");
+        verifyThat("#tradeLumber", NodeMatchers.isDisabled());
+        verifyThat("#tradeBrick", NodeMatchers.isDisabled());
+        verifyThat("#tradeOre", NodeMatchers.isDisabled());
         verifyThat("#tradeWool", NodeMatchers.isDisabled());
-        verifyThat("#requestBread", NodeMatchers.isDisabled());
-        Spinner<Integer> spinnerTradeBread = lookup("#tradeBread").query();
-        Spinner<Integer> spinnerRequestStone = lookup("#requestStone").query();
+        verifyThat("#requestGrain", NodeMatchers.isDisabled());
+        Spinner<Integer> spinnerTradeBread = lookup("#tradeGrain").query();
+        Spinner<Integer> spinnerRequestStone = lookup("#requestOre").query();
 
         spinnerRequestStone.increment();
-        assertEquals(spinnerTradeBread.getValue(), 4);
+        assertEquals(spinnerTradeBread.getValue(), 3);
 
         spinnerRequestStone.increment();
-        assertEquals(spinnerTradeBread.getValue(), 8);
+        assertEquals(spinnerTradeBread.getValue(), 6);
 
         spinnerRequestStone.decrement();
-        assertEquals(spinnerTradeBread.getValue(), 4);
+        assertEquals(spinnerTradeBread.getValue(), 3);
     }
 
 }
