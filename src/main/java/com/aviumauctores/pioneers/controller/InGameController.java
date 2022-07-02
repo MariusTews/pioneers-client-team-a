@@ -41,7 +41,6 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class InGameController extends LoggedInController {
     private final App app;
     private final ResourceBundle bundle;
-
     private final ColorService colorService;
     private final PlayerResourceListController playerResourceListController;
     private final GameMemberService gameMemberService;
@@ -54,23 +53,16 @@ public class InGameController extends LoggedInController {
     private Player player;
     private final EventListener eventListener;
     private final SoundService soundService;
-
     private String[] resourceNames;
-
     private Timer timer;
-
     private Label[] resourceLabels;
 
     @FXML
     public Label numSheepLabel;
-
-
     @FXML
     public ImageView arrowOnDice;
-
     @FXML
     public Label yourTurnLabel;
-
     @FXML
     Label timeLabel;
     @FXML
@@ -79,7 +71,6 @@ public class InGameController extends LoggedInController {
     public Pane crossingPane;
     @FXML
     public Pane roadPane;
-
     @FXML
     public Pane roadAndCrossingPane;
     @FXML
@@ -126,15 +117,10 @@ public class InGameController extends LoggedInController {
     public Circle vp09;
     @FXML
     public Circle vp10;
-
-
     public Circle[] vpCircles;
-
     public int memberVP;
-
     @FXML
     public Label rollSum;
-
     @FXML
     public ImageView diceImage1;
     @FXML
@@ -145,35 +131,29 @@ public class InGameController extends LoggedInController {
     Image dice4;
     Image dice5;
     Image dice6;
-
     Image desert;
     Image fields;
     Image hills;
     Image mountains;
     Image forest;
     Image pasture;
-
     GameMusic gameSound;
 
     private BuildMenuController buildMenuController;
     private DropMenuController dropMenuController;
     private Parent buildMenu;
     private Parent dropMenu;
-
     private Parent tradingMenu;
     private TradeRequestController tradeRequestController;
     private Parent requestMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
-
     // These are the Sound-Icons
-
     Image muteImage;
     Image unmuteImage;
     private final ErrorService errorService;
     private final BuildService buildService;
-
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
     private HashMap<String, Integer> tradeRessources;
@@ -213,6 +193,10 @@ public class InGameController extends LoggedInController {
 
     public void setSpectator(Boolean spectator) {
         this.spectator = (spectator);
+    }
+
+    public boolean getSpectator() {
+        return this.spectator;
     }
 
     @Override
@@ -854,7 +838,6 @@ public class InGameController extends LoggedInController {
 
     }
 
-
     public void soundOnOff(MouseEvent mouseEvent) {
         if (gameSound.isRunning()) {
             soundImage.setImage(unmuteImage);
@@ -915,7 +898,6 @@ public class InGameController extends LoggedInController {
     }
 
     private int i = 0;
-
 
     private void runTimer() {
         timer = new Timer();

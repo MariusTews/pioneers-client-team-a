@@ -16,27 +16,29 @@
     -fx-text-fill: #eee;
 }
 
-
-#spectatorText{
-    -fx-font-size: 11;
-
+#msgSpectatorLabel {
+    -fx-text-fill: gray;
 }
 
-#passwordErrorLabel{
+#spectatorText {
     -fx-font-size: 11;
 }
 
-#usernameErrorLabel{
+#passwordErrorLabel {
     -fx-font-size: 11;
 }
 
-#gameNameLabel{
+#usernameErrorLabel {
+    -fx-font-size: 11;
+}
+
+#gameNameLabel {
     -fx-font-size: 24;
     -fx-background-radius: 8px;
     -fx-text-fill: #eee;
 }
 
-#nameLabel{
+#nameLabel {
     -fx-font-size: 12;
     -fx-background-radius: 8px;
     -fx-background-color: #545454;
@@ -82,7 +84,7 @@
 }
 
 .list-view .corner {
-    -fx-background-color: transparent ;
+    -fx-background-color: transparent;
 }
 
 .text {
@@ -111,7 +113,6 @@
 .tab-header-background {
     -fx-background-color: #00496c;
     -fx-background-radius: 8 8 0 0;
-
 }
 
 .scroll-bar {

@@ -42,7 +42,7 @@ public class ColorService {
     }
 
     public String getColor(Color color) {
-        String colorFormat = String.format("#%02X%02X%02X",
+        String colorFormat = String.format("#%02x%02x%02x",
                 (int) (color.getRed() * 255),
                 (int) (color.getGreen() * 255),
                 (int) (color.getBlue() * 255));

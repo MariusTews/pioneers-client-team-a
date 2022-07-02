@@ -3,7 +3,6 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.UserService;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -11,7 +10,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -26,8 +24,6 @@ public class PlayerResourceListItemController {
 
     private ImageView arrowView;
 
-    private ImageView spectatorView;
-
     private final String id;
 
     private final String name;
@@ -41,8 +37,9 @@ public class PlayerResourceListItemController {
     //Containers
     private HBox playerBox;
 
-
     private Label resourceLabel = new Label();
+
+    private final Label spectatorLabel = new Label();
     private HashMap<String, Integer> resources = new HashMap<>();
 
 
@@ -65,7 +62,6 @@ public class PlayerResourceListItemController {
         this.bundle = bundle;
 
     }
-
 
     public HBox createBox() {
         playerBox = new HBox();
@@ -93,12 +89,10 @@ public class PlayerResourceListItemController {
         updateResources();
         VBox playerInfo = new VBox(playerName, resourceLabel);
 
-
         playerBox.getChildren().addAll(arrowView, playerView, playerInfo);
         playerBox.setSpacing(5.0);
         return playerBox;
     }
-    //für a
 
     public HBox createSpectatorBox() {
         playerBox = new HBox();
@@ -111,21 +105,21 @@ public class PlayerResourceListItemController {
         playerView.setFitHeight(40.0);
         playerView.setFitWidth(40.0);
 
+        spectatorLabel.setText(bundle.getString("spectator2"));
+
         Label playerName = new Label(name.length() > 12 ? name.substring(0, 9) + ".." : name);
         playerName.setFont(new Font(18));
         playerName.setStyle("-fx-font-weight: bold");
         playerName.setStyle("-fx-text-fill: " + color);
 
         Image spectatorImage = new Image(Objects.requireNonNull(Main.class.getResource("views/spectator.png")).toString());
-        spectatorView = new ImageView(spectatorImage);
-        spectatorView.setFitHeight(10.0);
-        spectatorView.setFitWidth(10.0);
+        ImageView spectatorView = new ImageView(spectatorImage);
+        spectatorView.setFitHeight(40.0);
+        spectatorView.setFitWidth(40.0);
 
+        VBox playerInfo = new VBox(playerName, spectatorLabel);
 
-        VBox playerInfo = new VBox(playerName, spectatorView);
-
-
-        playerBox.getChildren().addAll(playerView, playerInfo);
+        playerBox.getChildren().addAll(spectatorView, playerView, playerInfo);
         playerBox.setSpacing(5.0);
         return playerBox;
     }
@@ -141,7 +135,7 @@ public class PlayerResourceListItemController {
     public void updateResources() {
         int num = getResource(RESOURCE_BRICK) + getResource(RESOURCE_ORE) + getResource(RESOURCE_GRAIN)
                 + getResource(RESOURCE_LUMBER) + getResource(RESOURCE_WOOL);
-                resourceLabel.setText(num + " " + bundle.getString("resources"));
+        resourceLabel.setText(num + " " + bundle.getString("resources"));
     }
 
     public void setPlayer(Player player) {
