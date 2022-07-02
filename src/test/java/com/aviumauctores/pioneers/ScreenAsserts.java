@@ -58,7 +58,7 @@ public class ScreenAsserts {
     }
 
     void assertIngameScreen() {
-        Optional<Node> mainPane = test.lookup("#mainPane").tryQuery();
+        Optional<Node> mainPane = test.lookup("#ingamePane").tryQuery();
         assertThat(mainPane).isPresent();
     }
 }

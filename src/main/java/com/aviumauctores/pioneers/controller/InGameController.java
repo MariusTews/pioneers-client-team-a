@@ -267,7 +267,7 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(2);
+                                controller.setMapRadius(gameService.getMapRadius());
                                 ingamePane.setCenter(controller.render());
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
@@ -297,7 +297,7 @@ public class InGameController extends LoggedInController {
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                     tradeButton.setStyle(colourString);
-                    diceImage1.setStyle(colourString);
+                    tradeButton.setStyle(colourString);diceImage1.setStyle(colourString);
                     diceImage2.setStyle(colourString);
                     try {
                         Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
@@ -332,7 +332,27 @@ public class InGameController extends LoggedInController {
                                     GameSounds buildSound = soundService
                                             .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
                                     if (buildSound != null) {
-                                        buildSound.play();
+                                        buildSound.play();}
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
+                                                GameSounds roadSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
+                                                if (roadSound != null) {
+                                                    roadSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                                GameSounds settlementSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
+                                                if (settlementSound != null) {
+                                                    settlementSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
+                                                GameSounds citySound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
+                                                if (citySound != null) {
+                                                    citySound.play();
                                     }
                                 }
                                 if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
@@ -357,8 +377,7 @@ public class InGameController extends LoggedInController {
                                     }
                                 }
                             }
-                        }, errorService::handleError
-                ));
+                        }, errorService::handleError));
 
                             diceImage1.setImage(dice1);
                             diceImage2.setImage(dice1);
