@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -315,7 +316,8 @@ public class InGameController extends LoggedInController {
                                             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                                             buildService.setSelectedField(position);
                                             buildService.loadBuildingImage(b._id());
-                                            enableBuildingColor(position.getId().split("#")[0], b.owner(), b.type());
+                                            String buildingId = position.getId().split("#")[0];
+                                            enableBuildingColor(buildingId, b.owner(), b.type());
                                             if (b.owner().equals(userID)) {
                                                 if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                                                     gainVP(1);
@@ -641,6 +643,7 @@ public class InGameController extends LoggedInController {
         buildService.build();
     }
 
+    //enables the circle/rectangle behind buildings and fills it with color
     private void enableBuildingColor(String id, String owner, String type) {
         Node node = null;
         for (Node n : roadAndCrossingPane.getChildren()) {
@@ -652,16 +655,19 @@ public class InGameController extends LoggedInController {
             return;
         }
         Player player = pioneerService.getPlayer(owner).blockingFirst();
+        //cirles are behind settlements and cities
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
                 circle.setFill(Color.web(player.color()));
             }
+            //increase color size in case a settlement is upgraded to a city
             if (type.equals(BUILDING_TYPE_CITY)) {
                 circle.setRadius(circle.getRadius() * 1.2);
                 circle.setLayoutX(circle.getLayoutX() + (circle.getRadius() / 8));
                 circle.setLayoutY(circle.getLayoutY() + (circle.getRadius() / 8));
             }
         }
+        //rectangles are behind roads
         if (node instanceof Rectangle rectangle) {
             if (rectangle.getFill().equals(Color.TRANSPARENT)) {
                 rectangle.setFill(Color.web(player.color()));
@@ -1058,9 +1064,9 @@ public class InGameController extends LoggedInController {
 
                     robTargets.add(n);
 
-                    //temporary implementation
                     ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() * 1.1);
                     ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() * 1.1);
+                    n.setEffect(new Glow());
 
                     count++;
                 }
@@ -1105,6 +1111,7 @@ public class InGameController extends LoggedInController {
                                 //temporary implementation
                                 ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() / 1.1);
                                 ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() / 1.1);
+                                n.setEffect(null);
 
                             }
                             robTargets.clear();

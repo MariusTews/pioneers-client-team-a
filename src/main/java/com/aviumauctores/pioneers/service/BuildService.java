@@ -82,6 +82,7 @@ public class BuildService {
                 case BUILDING_TYPE_CITY -> {
                     selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
                             "views/buildings/town.png")).toString()));
+                    //increase image view size in case a settlement is upgraded to a city
                     selectedField.setFitWidth(selectedField.getFitWidth() * 1.2);
                     selectedField.setFitHeight(selectedField.getFitHeight() * 1.2);
                 }
