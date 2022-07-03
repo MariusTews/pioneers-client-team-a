@@ -226,7 +226,7 @@ public class MapController implements Controller {
                 switch (harbor.side()) {
                     case 1 -> {
                         harborX -= fitSizeCrossing;
-                        createHarborLabels(harborX - 3 * fitSizeCrossing, harborY - 2 * fitSizeCrossing, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX - 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 0));
                         nextCrossings.add("building" + positionToString(harbor.x() + 1, harbor.y(), harbor.z() - 1, 6));
                     }
@@ -244,8 +244,8 @@ public class MapController implements Controller {
                         nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()-1,harbor.z()+1,0));
                     }
                     case 7 -> {
-                        harborX += fitWidthHexagon - 1.5 * fitSizeCrossing;
-                        harborY += fitHeightHexagon - 0.5 * fitSizeCrossing;
+                        harborX += fitWidthHexagon - fitSizeCrossing;
+                        harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
                         createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 6));
                         nextCrossings.add("building"+positionToString(harbor.x()-1,harbor.y(),harbor.z()+1,0));
@@ -260,7 +260,7 @@ public class MapController implements Controller {
                     case 11 -> {
                         harborX -= fitSizeCrossing;
                         harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
-                        createHarborLabels(harborX - 3 * fitSizeCrossing, harborY - fitSizeCrossing, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX, harborY + 2 * fitSizeCrossing, fitSizeCrossing, harbor.type());
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 0));
                         nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()+1,harbor.z()-1,6));
                     }

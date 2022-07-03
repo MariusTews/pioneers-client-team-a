@@ -146,6 +146,7 @@ public class InGameControllerTest extends ApplicationTest {
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "desert", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
+        when(gameService.getMapRadius()).thenReturn(0);
         new App(inGameController).start(stage);
     }
 
@@ -194,6 +195,8 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
+        // this is required, because the button does not trigger its onClick-event in this test
+        inGameController.rollButton.fire();
         verify(pioneerService).createMove("roll", null, null, null, null);
     }
 
