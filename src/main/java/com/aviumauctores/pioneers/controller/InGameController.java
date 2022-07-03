@@ -54,6 +54,7 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
+
     private final EventListener eventListener;
     private final SoundService soundService;
 
@@ -154,7 +155,7 @@ public class InGameController extends LoggedInController {
 
     private final ErrorService errorService;
     private final BuildService buildService;
-    private final Provider<MapController> mapController;
+    private final MapController mapController;
 
     private boolean fieldsMovedAlready;
     private String desertTileId;
@@ -172,7 +173,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, Provider<MapController> mapController) {
+                            ErrorService errorService, BuildService buildService, MapController mapController) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -253,7 +254,7 @@ public class InGameController extends LoggedInController {
             e.printStackTrace();
             return null;
         }
-        MapController controller = mapController.get();
+        MapController controller = mapController;
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
@@ -261,7 +262,7 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(2);
+                                controller.setMapRadius(gameService.getMapRadius());
                                 ingamePane.setCenter(controller.render());
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
@@ -1108,7 +1109,6 @@ public class InGameController extends LoggedInController {
                                 n.setDisable(true);
                                 n.setAccessibleText(null);
 
-                                //temporary implementation
                                 ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() / 1.1);
                                 ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() / 1.1);
                                 n.setEffect(null);
