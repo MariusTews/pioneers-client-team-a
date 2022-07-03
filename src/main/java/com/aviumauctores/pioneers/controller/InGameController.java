@@ -61,9 +61,6 @@ public class InGameController extends LoggedInController {
     private Label[] resourceLabels;
 
     @FXML
-    public BorderPane ingamePane;
-
-    @FXML
     public Label numSheepLabel;
 
     @FXML
@@ -1037,7 +1034,7 @@ public class InGameController extends LoggedInController {
 
                     robTargets.add(n);
 
-                    //temporary implementation
+                    //temporary implementation, will be changed soon
                     ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() + 10);
                     ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() + 10);
 
@@ -1081,7 +1078,7 @@ public class InGameController extends LoggedInController {
                                 n.setDisable(true);
                                 n.setAccessibleText(null);
 
-                                //temporary implementation
+                                //temporary implementation, will be changed soon
                                 ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() - 10);
                                 ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() - 10);
 
