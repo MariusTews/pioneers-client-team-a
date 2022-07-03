@@ -113,8 +113,8 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     ErrorService errorService;
 
-    @Mock
-    Provider<MapController> mapController;
+    @Spy
+    MapController mapController;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
@@ -134,7 +134,6 @@ public class InGameControllerTest extends ApplicationTest {
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000", true,
                 2, new HashMap<>(), new HashMap<>(), 0, 0);
-        //when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))), new Point3D(1, 3, 4))));
 
