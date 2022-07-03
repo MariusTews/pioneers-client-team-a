@@ -161,7 +161,7 @@ public class InGameController extends LoggedInController {
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
 
-    private HashMap<String, Integer> resourceRatio;
+    private HashMap<String, List<String>> nextHarbors;
 
 
     @Inject
@@ -206,14 +206,6 @@ public class InGameController extends LoggedInController {
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
         player = pioneerService.getPlayer(userID).blockingFirst();
-
-        // init HashMap for trading ratio
-        resourceRatio = new HashMap<>();
-        resourceRatio.put(RESOURCE_LUMBER, 4);
-        resourceRatio.put(RESOURCE_BRICK, 4);
-        resourceRatio.put(RESOURCE_GRAIN, 4);
-        resourceRatio.put(RESOURCE_ORE, 4);
-        resourceRatio.put(RESOURCE_WOOL, 4);
 
 
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -282,10 +274,10 @@ public class InGameController extends LoggedInController {
                             }
 
                             resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
-
         arrowOnDice.setFitHeight(40.0);
         arrowOnDice.setFitWidth(40.0);
         errorService.setErrorCodesGameMembersPost();
+        nextHarbors = Objects.requireNonNull(controller).getHarborCrossings();
 
         disposables.add(gameMemberService.getMember(userID)
                 .observeOn(FX_SCHEDULER)
@@ -697,7 +689,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void build(ActionEvent event) {
-        buildService.build();
+        buildService.build(nextHarbors);
     }
 
 
@@ -777,13 +769,13 @@ public class InGameController extends LoggedInController {
         buildService.setBuildingType(sideType);
         if (currentAction != null) {
             if (currentAction.startsWith("founding")) {
-                buildService.build();
+                buildService.build(nextHarbors);
                 return;
             }
 
         }
 
-        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType);
+        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -1036,7 +1028,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, resourceRatio);
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio());
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
