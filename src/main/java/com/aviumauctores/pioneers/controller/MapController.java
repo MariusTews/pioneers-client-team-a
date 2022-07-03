@@ -66,6 +66,10 @@ public class MapController implements Controller {
         this.bundle = bundle;
     }
 
+    public MapController() {
+        this.bundle = null;
+    }
+
     @Override
     public void init() {
         desert = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/desert.png")).toString());

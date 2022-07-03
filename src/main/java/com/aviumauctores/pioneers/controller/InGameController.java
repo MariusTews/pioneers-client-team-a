@@ -150,7 +150,7 @@ public class InGameController extends LoggedInController {
     Image unmuteImage;
     private final ErrorService errorService;
     private final BuildService buildService;
-    private final Provider<MapController> mapController;
+    private final MapController mapController;
 
     private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
@@ -167,7 +167,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, Provider<MapController> mapController) {
+                            ErrorService errorService, BuildService buildService, MapController mapController) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -247,7 +247,7 @@ public class InGameController extends LoggedInController {
             e.printStackTrace();
             return null;
         }
-        MapController controller = mapController.get();
+        MapController controller = mapController;
         disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(map -> {
