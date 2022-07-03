@@ -144,9 +144,9 @@ public class InGameControllerTest extends ApplicationTest {
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(pioneerService.createMove("founding-roll", null, null, null, null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
-        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(1, 1, 1, "desert", 0)))));
+        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "desert", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
-        //when(mapController.get()).thenReturn(new MapController(bundle));
+        when(gameService.getMapRadius()).thenReturn(0);
         new App(inGameController).start(stage);
     }
 
@@ -171,7 +171,7 @@ public class InGameControllerTest extends ApplicationTest {
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
         // Open the build menu
-        clickOn("#building01_10");
+        clickOn("#buildingX0Y0Z0R0");
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
         assertThat(settlementLabel).isPresent();
     }
@@ -180,7 +180,7 @@ public class InGameControllerTest extends ApplicationTest {
     void onMainPaneClicked() {
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
-        clickOn("#building01_10");
+        clickOn("#buildingX0Y0Z0R0");
         // Click on main pane to close the build menu
         clickOn("#mainPane");
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
@@ -189,9 +189,14 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onRollClicked() {
+        when(stateService.getCurrentPlayerID()).thenReturn("1");
+        when(stateService.getCurrentAction()).thenReturn(MOVE_ROLL);
+        stateUpdates.onNext(new EventDto<>("created", new State("2", "12", List.of(new ExpectedMove("roll", List.of("1"))), null)));
         when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
+        // this is required, because the button does not trigger its onClick-event in this test
+        inGameController.rollButton.fire();
         verify(pioneerService).createMove("roll", null, null, null, null);
     }
 
