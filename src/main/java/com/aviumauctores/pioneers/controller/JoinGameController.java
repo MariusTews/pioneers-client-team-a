@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.ErrorService;
@@ -10,7 +9,6 @@ import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -23,12 +21,10 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -66,8 +62,6 @@ public class JoinGameController extends LoggedInController {
     Image show;
     Image hide;
 
-
-    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
     public JoinGameController(App app,

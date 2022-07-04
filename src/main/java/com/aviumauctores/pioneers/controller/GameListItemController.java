@@ -17,7 +17,6 @@ public class GameListItemController implements Controller {
     private BorderPane root;
     private Label gameName;
     private Label numMembersLabel;
-    private Button joinButton;
 
     private final LobbyController parentController;
     private Game game;
@@ -52,7 +51,7 @@ public class GameListItemController implements Controller {
         numMembersTextLabel.getStyleClass().add("game-list");
         int numMembers = game.members();
         numMembersLabel = new Label(numMembers + "");
-        joinButton = new Button(bundle.getString("join"));
+        Button joinButton = new Button(bundle.getString("join"));
         joinButton.getStyleClass().add("game-list");
         joinButton.setOnAction(this::onJoinButtonPressed);
         // Don't let more than four players join

@@ -314,7 +314,7 @@ public class InGameController extends LoggedInController {
                 .observeOn(FX_SCHEDULER)
                 .subscribe(buildingEventDto -> {
                             if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-                                //listen to new and updatedbuildings, and load the image
+                                //listen to new and updated buildings, and load the image
                                 Building b = buildingEventDto.data();
                                 Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
                                 buildService.setPlayer(builder);

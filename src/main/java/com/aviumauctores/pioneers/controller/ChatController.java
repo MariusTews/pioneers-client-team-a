@@ -181,7 +181,7 @@ public class ChatController extends PlayerListController {
             }
         });
 
-        //Tabstructure
+        // Tab-structure
         allTab.setId(ALLCHAT_ID);
         allTab.setOnSelectionChanged(event -> {
             if (event.getTarget().equals(allTab)) {
@@ -342,7 +342,7 @@ public class ChatController extends PlayerListController {
     public void onMessageClicked(MouseEvent event) {
         errorService.setErrorCodesMessages();
         if (event.getButton() == MouseButton.SECONDARY) {
-            // Alert for the delete, only if you click on your message
+            // Alert for removal of a message, only if you click on your own message
             Label msg = (Label) event.getSource();
             String namespace = "groups";
             if (selectedTab.getId().equals(ALLCHAT_ID)) {

@@ -200,12 +200,14 @@ public class InGameChatController implements Controller {
             alert.setHeaderText(null);
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
-            if (res.get() == proceedButton) {
-                this.deleteHBox = messageHBox;
-                delete(this.deleteHBox.getId());
-                alert.close();
-            } else {
-                alert.close();
+            if (res.isPresent()) {
+                if (res.get() == proceedButton) {
+                    this.deleteHBox = messageHBox;
+                    delete(this.deleteHBox.getId());
+                    alert.close();
+                } else {
+                    alert.close();
+                }
             }
         }
     }

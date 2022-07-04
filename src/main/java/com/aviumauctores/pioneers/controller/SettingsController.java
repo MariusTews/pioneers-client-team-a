@@ -8,7 +8,6 @@ import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

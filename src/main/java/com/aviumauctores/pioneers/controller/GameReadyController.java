@@ -255,7 +255,7 @@ public class GameReadyController extends PlayerListController {
             for (Color colour : colourIsTaken.keySet()) {
                 // if they are assigned to this user
                 if (Objects.equals(colourIsTaken.get(colour), memberID)) {
-                    // unassign the colour
+                    // reset the colour
                     colourIsTaken.replace(colour, "");
                 }
             }
