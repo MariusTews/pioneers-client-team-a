@@ -350,7 +350,7 @@ public class MapController implements Controller {
 
     public void createHarborLabels(double coordinateX, double coordinateY, double size, String resource) {
         if (resource != null && !resource.equals("")) {
-            createLabel(coordinateX, coordinateY, bundle.getString(resource));
+            createLabel(coordinateX, coordinateY, resource);
             createLabel(coordinateX, coordinateY + size, "2:1");
         } else {
             createLabel(coordinateX, coordinateY, "3:1");
