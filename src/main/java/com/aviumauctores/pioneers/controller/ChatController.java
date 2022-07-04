@@ -43,8 +43,6 @@ public class ChatController extends PlayerListController {
 
     private final ObservableList<User> users = FXCollections.observableArrayList();
 
-    private List<User> onlineUsers = new ArrayList<>();
-
     private List<User> allUsers = new ArrayList<>();
 
     private List<String> usersIdList = new ArrayList<>();
@@ -362,12 +360,14 @@ public class ChatController extends PlayerListController {
                 alert.setHeaderText(null);
                 Optional<ButtonType> result = alert.showAndWait();
                 // delete if "Ok" is clicked
-                if (result.get() == proceedButton) {
-                    this.deleteLabel = (Label) event.getSource();
-                    delete(this.deleteLabel.getId(), this.selectedTab.getId());
-                    alert.close();
-                } else {
-                    alert.close();
+                if (result.isPresent()) {
+                    if (result.get() == proceedButton) {
+                        this.deleteLabel = (Label) event.getSource();
+                        delete(this.deleteLabel.getId(), this.selectedTab.getId());
+                        alert.close();
+                    } else {
+                        alert.close();
+                    }
                 }
             }, errorService::handleError);
         }

@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.PioneerService;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;

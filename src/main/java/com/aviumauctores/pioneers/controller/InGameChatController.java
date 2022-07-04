@@ -1,13 +1,11 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import javafx.css.StyleClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,7 +29,6 @@ import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class InGameChatController implements Controller {
 
-    private final App app;
     private final UserService userService;
     private final GameService gameService;
     private final GameMemberService gameMemberService;
@@ -40,7 +37,6 @@ public class InGameChatController implements Controller {
     private final ErrorService errorService;
     private final ResourceBundle bundle;
     private final MessageService messageService;
-    private final ColorService colorService;
 
     @FXML
     public TabPane tabPane;
@@ -66,14 +62,11 @@ public class InGameChatController implements Controller {
     private String userID;
 
     @Inject
-    public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
+    public InGameChatController(UserService userService, GameService gameService, GameMemberService gameMemberService,
                                 SoundService soundService,
                                 EventListener eventListener, ErrorService errorService,
-                                ResourceBundle bundle, MessageService messageService,
-                                ColorService colorService
+                                ResourceBundle bundle, MessageService messageService
     ) {
-
-        this.app = app;
         this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
@@ -82,8 +75,6 @@ public class InGameChatController implements Controller {
         this.errorService = errorService;
         this.bundle = bundle;
         this.messageService = messageService;
-
-        this.colorService = colorService;
     }
 
     public void init() {

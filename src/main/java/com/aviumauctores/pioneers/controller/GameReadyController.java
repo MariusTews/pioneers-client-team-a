@@ -460,13 +460,15 @@ public class GameReadyController extends PlayerListController {
             ownerAlert.setTitle(bundle.getString("warning"));
             ownerAlert.setHeaderText(null);
             Optional<ButtonType> result = ownerAlert.showAndWait();
-            if (result.get() == proceedButton) {
-                gameService.deleteGame()
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe();
-            } else {
-                ownerAlert.close();
-                return;
+            if (result.isPresent()) {
+                if (result.get() == proceedButton) {
+                    gameService.deleteGame()
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe();
+                } else {
+                    ownerAlert.close();
+                    return;
+                }
             }
         } else {
             ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
@@ -475,13 +477,15 @@ public class GameReadyController extends PlayerListController {
             memberAlert.setTitle(bundle.getString("warning"));
             memberAlert.setHeaderText(null);
             Optional<ButtonType> result = memberAlert.showAndWait();
-            if (result.get() == proceedButton) {
-                gameMemberService.deleteMember(userService.getCurrentUserID())
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe();
-            } else {
-                memberAlert.close();
-                return;
+            if (result.isPresent()) {
+                if (result.get() == proceedButton) {
+                    gameMemberService.deleteMember(userService.getCurrentUserID())
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe();
+                } else {
+                    memberAlert.close();
+                    return;
+                }
             }
         }
         gameService.setCurrentGameID(null);
@@ -562,9 +566,11 @@ public class GameReadyController extends PlayerListController {
             alert.setHeaderText(null);
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
-            if (res.get() == proceedButton) {
-                this.deleteLabel = label;
-                delete(this.deleteLabel.getId());
+            if (res.isPresent()) {
+                if (res.get() == proceedButton) {
+                    this.deleteLabel = label;
+                    delete(this.deleteLabel.getId());
+                }
             }
             alert.close();
         }
