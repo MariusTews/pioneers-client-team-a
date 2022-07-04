@@ -84,8 +84,8 @@ public class BuildService {
     }
 
     private void checkNewResourceRatio(HashMap<String, List<String>> harborCrossings, String field) {
-        for (String string : harborCrossings.get(null)) {
-            if (Objects.equals(string, field)) {
+        for (String crossing : harborCrossings.get(null)) {
+            if (Objects.equals(crossing, field)) {
                 if (resourceRatio.get(RESOURCE_BRICK) > 3) {
                     resourceRatio.put(RESOURCE_BRICK, 3);
                 }
@@ -113,8 +113,8 @@ public class BuildService {
     }
 
     private void checkTradingRatioTwotoOne(HashMap<String, List<String>> harborCrossings, String resource, String field) {
-        for (String string : harborCrossings.get(resource)) {
-            if (Objects.equals(string, field)) {
+        for (String crossing : harborCrossings.get(resource)) {
+            if (Objects.equals(crossing, field)) {
                 if (resourceRatio.get(resource) > 2) {
                     resourceRatio.put(resource, 2);
                     break;

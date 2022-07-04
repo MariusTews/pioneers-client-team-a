@@ -127,6 +127,9 @@ public class TradingController implements Controller {
         this.playerRequestsController.load(requestList, userID);
         this.setCorrectTradeRatio(resourceRatio);
         tradeButton.setDisable(true);
+
+        tradeButton.setStyle("-fx-background-color: " + player.color());
+        cancelTradeButton.setStyle("-fx-background-color: " + player.color());
         return parent;
     }
 
