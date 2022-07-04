@@ -361,7 +361,7 @@ public class InGameController extends LoggedInController {
                                         player = stateService.getUpdatedPlayer();
                                         playerResourceListController.setPlayer(player);
                                         updateVisuals();
-                                    }/*, this::handleError*/));
+                                    }, this::handleError));
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(this::onPlayerUpdated));
