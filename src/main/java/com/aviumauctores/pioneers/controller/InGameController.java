@@ -295,8 +295,7 @@ public class InGameController extends LoggedInController {
                                         rollButton.setStyle(colourString);
                                         leaveGameButton.setStyle(colourString);
                                         finishMoveButton.setStyle(colourString);
-                                        //TODO
-                                        //tradeButton.setStyle(colourString);
+                                        tradeButton.setStyle(colourString);
                                         diceImage1.setStyle(colourString);
                                         diceImage2.setStyle(colourString);
                                         try {
@@ -317,8 +316,8 @@ public class InGameController extends LoggedInController {
                                             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                                             buildService.setSelectedField(position);
                                             buildService.loadBuildingImage(b._id());
-                                            String buildingId = position.getId().split("#")[0];
-                                            enableBuildingColor(buildingId, b.owner(), b.type());
+                                            String buildingImageId = position.getId().split("#")[0];
+                                            enableBuildingColor(buildingImageId, b.owner(), b.type());
                                             if (b.owner().equals(userID)) {
                                                 if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                                                     gainVP(1);
@@ -564,7 +563,7 @@ public class InGameController extends LoggedInController {
                 rollButton.setDisable(true);
                 arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
-                //TODO tradeButton.setDisable(true);
+                tradeButton.setDisable(true);
                 switch (currentAction) {
                     case MOVE_FOUNDING_ROAD + "1", MOVE_FOUNDING_ROAD + "2" -> {
                         updateFields(true, roadPane);
@@ -590,7 +589,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
-                        //TODO tradeButton.setDisable(false);
+                        tradeButton.setDisable(false);
                         updateFields(true, roadAndCrossingPane);
                     }
 
@@ -598,7 +597,7 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
-                        //TODO tradeButton.setDisable(true);
+                        tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
                         freeFieldVisibility(false);
                     }
@@ -961,6 +960,9 @@ public class InGameController extends LoggedInController {
     }
 
     private void showDropWindow() {
+        //close the menu in case it is still open from last drop (that is a bug, and I did not find the cause yet)
+        closeDropMenu(false);
+
         Player player = pioneerService.getPlayer(userID).blockingFirst();
         HashMap<String, Integer> resources = player.resources();
         dropMenuController = new DropMenuController(this, this.pioneerService, this.bundle, resources);
