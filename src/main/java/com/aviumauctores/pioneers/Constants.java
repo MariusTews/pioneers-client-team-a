@@ -77,6 +77,13 @@ public class Constants {
     public static final String UPDATE_GAME_URL = "games/{id}";
     public static final String DELETE_GAME_URL = "games/{id}";
 
+    // Achievements API Service
+
+    public static final String ACHIEVEMENTS_URL = "achievements";
+    public static final String ACHIEVEMENTS_BY_ID_URL = ACHIEVEMENTS_URL + "/{id}";
+    public static final String USER_ACHIEVEMENTS_URL = "users/{userId}/" + ACHIEVEMENTS_URL;
+    public static final String USER_ACHIEVEMENTS_BY_ID_URL = USER_ACHIEVEMENTS_URL + "/{id}";
+
     // API Pioneers URL
 
     public static final String GET_MAP_URL = "games/{gameId}/map";
