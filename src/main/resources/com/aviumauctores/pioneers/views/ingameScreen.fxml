@@ -93,10 +93,10 @@
                         <Label fx:id="resourceLabel" text="%your.resources" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
                      </children>
                   </GridPane>
-                  <VBox fx:id="tradeRequestPopup" alignment="CENTER" prefHeight="98.0" prefWidth="230.0" spacing="5.0">
+                  <VBox fx:id="tradeRequestPopup" alignment="CENTER" prefHeight="98.0" prefWidth="230.0" spacing="5.0" visible="false">
                      <children>
                         <Label fx:id="playerWantTradeLabel" text="%player.want.trade" />
-                        <Button fx:id="viewRequestButton" mnemonicParsing="false" onAction="#viewRequest" text="Button" />
+                        <Button fx:id="viewRequestButton" mnemonicParsing="false" onAction="#viewRequest" text="%view.request" />
                      </children>
                   </VBox>
                </children>

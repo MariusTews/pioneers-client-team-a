@@ -93,4 +93,9 @@ public class PlayerRequestsItemController implements Controller {
         Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/ready.png")).toString());
         requestView.setImage(requestStatus);
     }
+
+    public void showRequest() {
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/questionMark.png")).toString());
+        requestView.setImage(requestStatus);
+    }
 }

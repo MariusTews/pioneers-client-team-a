@@ -143,6 +143,8 @@ public class InGameController extends LoggedInController {
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
+    private boolean tradeStarter = false;
+
 
     // These are the Sound-Icons
 
@@ -449,33 +451,25 @@ public class InGameController extends LoggedInController {
         //accepted trade
         errorService.setErrorCodesTrading();
         if (move.resources() != null) {
-            if (move.action().equals("offer") && !Objects.equals(move.userId(), userID)) {
-                disposables.add(pioneerService.createMove("accept", null, null, move.userId(), null)
-                        .observeOn(FX_SCHEDULER).
-                        subscribe(success -> {
-                                    tradingController.enableCancelButton();
-                                    tradingController.showRequestAccepted(move.userId());
-                                },
-                                error -> {
-                                    errorService.handleError(error);
-                                    tradingController.enableCancelButton();
-                                }
-                        ));
+            if (move.action().equals("offer") && this.tradingController != null) {
+                this.tradingController.handleRequest(move.resources(), move.userId());
             }
         }
 
         //declined trade
         if (move.resources() == null) {
-            if (move.action().equals("offer") && !Objects.equals(move.userId(), userID)) {
+            if (move.action().equals("offer") && this.tradingController != null) {
                 disposables.add(pioneerService.createMove("accept", null, null, null, null)
                         .observeOn(FX_SCHEDULER).
                         subscribe(success -> {
                                     tradingController.enableCancelButton();
                                     tradingController.showRequestDeclined(move.userId());
+                                    this.setTradeStarter(false);
                                 },
                                 error -> {
                                     errorService.handleError(error);
                                     tradingController.enableCancelButton();
+                                    this.setTradeStarter(false);
                                 }
                         ));
             }
@@ -1093,5 +1087,13 @@ public class InGameController extends LoggedInController {
         if (tradeRequestPopup.isVisible()) {
             tradeRequestPopup.setVisible(false);
         }
+    }
+
+    public boolean isTradeStarter() {
+        return tradeStarter;
+    }
+
+    public void setTradeStarter(boolean tradeStarter) {
+        this.tradeStarter = tradeStarter;
     }
 }

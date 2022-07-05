@@ -74,6 +74,11 @@ public class PlayerRequestsListController implements Controller {
         listItems.get(playerID).showRequestDeclined();
     }
 
+    public void showRequest(String playerID) {
+        listItems.get(playerID).showRequest();
+
+    }
+
     @Override
     public void init() {
 

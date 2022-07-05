@@ -6,10 +6,13 @@ import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -22,20 +25,31 @@ import java.util.ResourceBundle;
 import static com.aviumauctores.pioneers.Constants.*;
 
 public class TradeRequestController implements Controller {
-    public Label tradeLumberLabel;
-    public Label tradeGrainLabel;
-    public Label tradeBrickLabel;
-    public Label tradeOreLabel;
-    public Label tradeWoolLabel;
-    public Label getLumberLabel;
-    public Label getGrainLabel;
-    public Label getBrickLabel;
-    public Label getOreLabel;
-    public Label getWoolLabel;
-    public ImageView playerAvatar;
-    public Label playerLabel;
-    public Button acceptButton;
-    public Button declineButton;
+    @FXML public Label tradeLumberLabel;
+    @FXML public Label tradeGrainLabel;
+    @FXML public Label tradeBrickLabel;
+    @FXML public Label tradeOreLabel;
+    @FXML public Label tradeWoolLabel;
+    @FXML public Label getLumberLabel;
+    @FXML public Label getGrainLabel;
+    @FXML public Label getBrickLabel;
+    @FXML public Label getOreLabel;
+    @FXML public Label getWoolLabel;
+    @FXML public ImageView playerAvatar;
+    @FXML public Label playerLabel;
+    @FXML public Button acceptButton;
+    @FXML public Button declineButton;
+    @FXML public Button counterproposalButton;
+    @FXML public Spinner<Integer> tradeLumber;
+    @FXML public Spinner<Integer> tradeWool;
+    @FXML public Spinner<Integer> requestWool;
+    @FXML public Spinner<Integer> requestOre;
+    @FXML public Spinner<Integer> requestBrick;
+    @FXML public Spinner<Integer> requestGrain;
+    @FXML public Spinner<Integer> requestLumber;
+    @FXML public Spinner<Integer> tradeGrain;
+    @FXML public Spinner<Integer> tradeBrick;
+    @FXML public Spinner<Integer> tradeOre;
     private final InGameController inGameController;
     private final ResourceBundle bundle;
     private final PioneerService pioneerService;
@@ -148,9 +162,15 @@ public class TradeRequestController implements Controller {
 
     public void acceptRequest(ActionEvent actionEvent) {
         errorService.setErrorCodesTrading();
-        HashMap<String, Integer> resources = tradeRessources;
-        for (Map.Entry<String, Integer> entry : resources.entrySet()) {
-            entry.setValue(-entry.getValue());
+        HashMap<String,Integer> resources = new HashMap<>();
+        if (Objects.equals(acceptButton.getText(), bundle.getString("accept"))) {
+            resources = tradeRessources;
+            for (Map.Entry<String, Integer> entry : resources.entrySet()) {
+                entry.setValue(-entry.getValue());
+            }
+        }
+        else if (Objects.equals(acceptButton.getText(), bundle.getString("suggest"))){
+            resources = this.getSpinnerValues();
         }
         disposables.add(pioneerService.createMove("offer", null, resources, null, null)
                 .observeOn(FX_SCHEDULER).
@@ -168,5 +188,111 @@ public class TradeRequestController implements Controller {
                     errorService.handleError(error);
                     inGameController.closeRequestMenu(false);
                 }));
+    }
+
+    public void setupCounterproposal(ActionEvent actionEvent) {
+        this.setupSpinners();
+        this.makeLabelsInvisible();
+        this.showSpinners();
+        acceptButton.setText(this.bundle.getString("suggest"));
+
+    }
+
+    private void makeLabelsInvisible() {
+        tradeLumberLabel.setVisible(false);
+        getLumberLabel.setVisible(false);
+        tradeBrickLabel.setVisible(false);
+        getBrickLabel.setVisible(false);
+        tradeGrainLabel.setVisible(false);
+        getGrainLabel.setVisible(false);
+        tradeOreLabel.setVisible(false);
+        getOreLabel.setVisible(false);
+        tradeWoolLabel.setVisible(false);
+        getWoolLabel.setVisible(false);
+    }
+
+    private void showSpinners() {
+        tradeLumber.setVisible(true);
+        requestLumber.setVisible(true);
+        tradeWool.setVisible(true);
+        requestWool.setVisible(true);
+        tradeGrain.setVisible(true);
+        requestGrain.setVisible(true);
+        tradeOre.setVisible(true);
+        requestOre.setVisible(true);
+        tradeBrick.setVisible(true);
+        requestBrick.setVisible(true);
+    }
+
+    private void setupSpinners() {
+        tradeLumber.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_LUMBER, 0)));
+        tradeOre.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_ORE, 0)));
+        tradeBrick.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_BRICK, 0)));
+        tradeGrain.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_GRAIN, 0)));
+        tradeWool.setValueFactory(this.createValueFactory(player.resources().getOrDefault(RESOURCE_WOOL, 0)));
+
+        requestLumber.setValueFactory(this.createValueFactory(32));
+        requestOre.setValueFactory(this.createValueFactory(32));
+        requestBrick.setValueFactory(this.createValueFactory(32));
+        requestGrain.setValueFactory(this.createValueFactory(32));
+        requestWool.setValueFactory(this.createValueFactory(32));
+
+        this.setSpinnerValues();
+    }
+
+    private void setSpinnerValues() {
+        this.fillSpinners(RESOURCE_LUMBER, tradeLumber, requestLumber);
+        this.fillSpinners(RESOURCE_BRICK, tradeBrick, requestBrick);
+        this.fillSpinners(RESOURCE_GRAIN, tradeGrain, requestGrain);
+        this.fillSpinners(RESOURCE_ORE, tradeOre, requestOre);
+        this.fillSpinners(RESOURCE_WOOL, tradeWool, requestWool);
+    }
+
+    private void fillSpinners(String resource, Spinner<Integer> tradeSpinner, Spinner<Integer> requestSpinner) {
+        int value = tradeRessources.getOrDefault(resource, 0);
+        if (value < 0) {
+            requestSpinner.getValueFactory().setValue(value);
+        } else if (value > 0) {
+            tradeSpinner.getValueFactory().setValue(value);
+        }
+    }
+
+    private SpinnerValueFactory<Integer> createValueFactory(int maxValue) {
+        return new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue);
+    }
+
+    private HashMap<String, Integer> getSpinnerValues() {
+        HashMap<String, Integer> resources = new HashMap<>();
+        if (tradeLumber.getValue() != 0) {
+            resources.put(RESOURCE_LUMBER, -tradeLumber.getValue());
+        }
+        if (tradeOre.getValue() != 0) {
+            resources.put(RESOURCE_ORE, -tradeOre.getValue());
+        }
+        if (tradeWool.getValue() != 0) {
+            resources.put(RESOURCE_WOOL, -tradeWool.getValue());
+        }
+        if (tradeBrick.getValue() != 0) {
+            resources.put(RESOURCE_BRICK, -tradeBrick.getValue());
+        }
+        if (tradeGrain.getValue() != 0) {
+            resources.put(RESOURCE_GRAIN, -tradeGrain.getValue());
+        }
+        if (requestLumber.getValue() != 0) {
+            resources.put(RESOURCE_LUMBER, requestLumber.getValue());
+        }
+        if (requestOre.getValue() != 0) {
+            resources.put(RESOURCE_ORE, requestOre.getValue());
+        }
+        if (requestWool.getValue() != 0) {
+            resources.put(RESOURCE_WOOL, requestWool.getValue());
+        }
+        if (requestBrick.getValue() != 0) {
+            resources.put(RESOURCE_BRICK, requestBrick.getValue());
+        }
+        if (requestGrain.getValue() != 0) {
+            resources.put(RESOURCE_GRAIN, requestGrain.getValue());
+        }
+        return resources;
     }
 }

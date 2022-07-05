@@ -50,19 +50,19 @@ public class TradingController implements Controller {
     public Spinner<Integer> tradeWool;
     @FXML
     public Spinner<Integer> requestWool;
-    public Label lumberLabel;
-    public Label grainLabel;
-    public Label brickLabel;
-    public Label oreLabel;
-    public Label woolLabel;
-    public Button cancelTradeButton;
-    public ListView<HBox> requestList;
-    public Button tradeButton;
-    public VBox bankWool;
-    public VBox bankOre;
-    public VBox bankBrick;
-    public VBox bankGrain;
-    public VBox bankLumber;
+    @FXML public Label lumberLabel;
+    @FXML public Label grainLabel;
+    @FXML public Label brickLabel;
+    @FXML public Label oreLabel;
+    @FXML public Label woolLabel;
+    @FXML public Button cancelTradeButton;
+    @FXML public ListView<HBox> requestList;
+    @FXML public Button tradeButton;
+    @FXML public VBox bankWool;
+    @FXML public VBox bankOre;
+    @FXML public VBox bankBrick;
+    @FXML public VBox bankGrain;
+    @FXML public VBox bankLumber;
     private String userID;
     private final UserService userService;
     private final PioneerService pioneerService;
@@ -78,6 +78,9 @@ public class TradingController implements Controller {
 
     private boolean bankTrade;
     private int sumRequest;
+    private String partnerID;
+    private HashMap<String, Integer> tradeResources;
+    private HashMap<String, Integer> sendRessources;
 
     @Inject
     public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService,
@@ -139,7 +142,26 @@ public class TradingController implements Controller {
 
 
     public void cancel(ActionEvent actionEvent) {
-        inGameController.closeTradingMenu(false);
+        if (Objects.equals(cancelTradeButton.getText(), bundle.getString("decline"))) {
+            disposables.add(pioneerService.createMove("accept", null, null, null, null)
+                    .observeOn(FX_SCHEDULER).
+                    subscribe(success -> {
+                                this.enableCancelButton();
+                                tradeButton.setText(bundle.getString("trading"));
+                                cancelTradeButton.setText(bundle.getString("cancel"));
+                                this.showRequestAccepted(partnerID);
+                                inGameController.setTradeStarter(false);
+                            },
+                            error -> {
+                                errorService.handleError(error);
+                                this.enableCancelButton();
+                                inGameController.setTradeStarter(false);
+                            }
+                    ));
+        }
+        else {
+            inGameController.closeTradingMenu(false);
+        }
     }
 
     //trade with the bank
@@ -158,11 +180,32 @@ public class TradingController implements Controller {
 
     //send trade to bank or player
     public void enterTrade(ActionEvent actionEvent) {
-        if (this.isBankTrade()) {
+        if (Objects.equals(tradeButton.getText(), bundle.getString("accept"))){
+            this.acceptTrade();
+        }
+        else if (this.isBankTrade()) {
             this.tradeWithBank();
         } else {
             this.tradeWithPlayer();
         }
+    }
+
+    private void acceptTrade() {
+        disposables.add(pioneerService.createMove("accept", null, null, partnerID, null)
+                .observeOn(FX_SCHEDULER).
+                subscribe(success -> {
+                            this.enableCancelButton();
+                            tradeButton.setText(bundle.getString("trading"));
+                            cancelTradeButton.setText(bundle.getString("cancel"));
+                            this.showRequestAccepted(partnerID);
+                            inGameController.setTradeStarter(false);
+                        },
+                        error -> {
+                            errorService.handleError(error);
+                            this.enableCancelButton();
+                            inGameController.setTradeStarter(false);
+                        }
+                ));
     }
 
     //trade with a player
@@ -181,6 +224,7 @@ public class TradingController implements Controller {
 
             //Trade with player
             HashMap<String, Integer> resources = this.getSpinnerValues();
+            sendRessources = resources;
             if (selectedPlayer != null) {
                 Player finalSelectedPlayer = selectedPlayer;
                 disposables.add(pioneerService.createMove("build", null, resources, selectedPlayer.userId(), null)
@@ -189,6 +233,7 @@ public class TradingController implements Controller {
                                     showRequestOpen(finalSelectedPlayer.userId());
                                     tradeButton.setDisable(true);
                                     cancelTradeButton.setDisable(true);
+                                    inGameController.setTradeStarter(true);
                                 }, errorService::handleError
                         ));
             }
@@ -440,5 +485,53 @@ public class TradingController implements Controller {
 
     public void showRequestDeclined(String playerID) {
         playerRequestsController.showRequestDeclined(playerID);
+    }
+
+    public void showRequest(String playerID){ playerRequestsController.showRequest(playerID);}
+
+    public void handleRequest(HashMap<String, Integer> resources, String userId) {
+        if (resources == sendRessources) {
+            partnerID = userId;
+            tradeResources = resources;
+            this.showRequest(userId);
+            this.fillSpinnersAndDisable(resources);
+            tradeButton.setText(bundle.getString("accept"));
+            cancelTradeButton.setText(bundle.getString("decline"));
+            this.enableButtons();
+        }
+        else {
+            disposables.add(pioneerService.createMove("accept", null, null, partnerID, null)
+                    .observeOn(FX_SCHEDULER).
+                    subscribe(success -> {
+                                this.enableCancelButton();
+                                this.showRequestAccepted(partnerID);
+                                inGameController.setTradeStarter(false);
+                            },
+                            error -> {
+                                errorService.handleError(error);
+                                this.enableCancelButton();
+                                inGameController.setTradeStarter(false);
+                            }
+                    ));
+
+        }
+
+    }
+
+    private void fillSpinnersAndDisable(HashMap<String, Integer> resources) {
+        this.fillSpinners(RESOURCE_LUMBER, tradeLumber, requestLumber, resources);
+        this.fillSpinners(RESOURCE_BRICK, tradeBrick, requestBrick, resources);
+        this.fillSpinners(RESOURCE_GRAIN, tradeGrain, requestGrain, resources);
+        this.fillSpinners(RESOURCE_ORE, tradeOre, requestOre, resources);
+        this.fillSpinners(RESOURCE_WOOL, tradeWool, requestWool, resources);
+    }
+
+    private void fillSpinners(String resource, Spinner<Integer> tradeSpinner, Spinner<Integer> requestSpinner, HashMap<String, Integer> resources) {
+        int value = resources.getOrDefault(resource, 0);
+        if (value < 0) {
+            requestSpinner.getValueFactory().setValue(value);
+        } else if (value > 0) {
+            tradeSpinner.getValueFactory().setValue(value);
+        }
     }
 }
