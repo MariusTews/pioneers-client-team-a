@@ -117,7 +117,7 @@ public class InGameControllerTest extends ApplicationTest {
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @Spy
-    MapController mapController;
+    MapController mapController = new MapController(bundle);
 
     @InjectMocks
     InGameController inGameController;
@@ -144,7 +144,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
         when(pioneerService.createMove("founding-roll", null, null, null, null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
-        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "desert", 1)))));
+        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "lumber", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
         when(gameService.getMapRadius()).thenReturn(0);
         new App(inGameController).start(stage);

@@ -477,13 +477,15 @@ public class GameReadyController extends PlayerListController {
             memberAlert.setTitle(bundle.getString("warning"));
             memberAlert.setHeaderText(null);
             Optional<ButtonType> result = memberAlert.showAndWait();
-            if (result.get() == proceedButton) {
-                gameMemberService.deleteMember(userService.getCurrentUserID())
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe();
-            } else {
-                memberAlert.close();
-                return;
+            if (result.isPresent()) {
+                if (result.get() == proceedButton) {
+                    gameMemberService.deleteMember(userService.getCurrentUserID())
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe();
+                } else {
+                    memberAlert.close();
+                    return;
+                }
             }
         }
         gameService.setCurrentGameID(null);
