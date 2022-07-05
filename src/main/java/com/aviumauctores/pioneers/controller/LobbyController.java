@@ -21,10 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -72,7 +69,7 @@ public class LobbyController extends PlayerListController {
     public Button settingsButton;
 
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
-    private final Map<String, GameListItemController> gameListItemControllers = new HashMap<>();
+    private HashMap<String, GameListItemController> gameListItemControllers = new HashMap<>();
 
     @Inject
     public LobbyController(App app,
@@ -106,25 +103,48 @@ public class LobbyController extends PlayerListController {
 
     public void init() {
         disposables = new CompositeDisposable();
-        // Get games via REST
-        disposables.add(gameService.listGames()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(games -> {
-                    games.forEach(this::addGameToList);
-                    // This might be called before render when gameLabel is not initialized yet
-                    if (gameLabel != null) {
-                        updateGameLabel();
-                    }
-                }));
-        // Get users via REST
-        disposables.add(userService.listOnlineUsers()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(users -> {
-                    users.forEach(this::addPlayerToList);
-                    if (playerLabel != null) {
-                        updatePlayerLabel();
-                    }
-                }));
+
+
+        if (gameListItemControllers.size() > 0) {
+            Map<String, GameListItemController> oldGameListItemControllers = gameListItemControllers;
+            for (GameListItemController oldController : oldGameListItemControllers.values()) {
+                GameListItemController controller = new GameListItemController(this, oldController.getGame(), gameItems, bundle);
+                gameListItemControllers.put(oldController.getGame()._id(), controller);
+                addGameItem(controller);
+            }
+            if (gameLabel != null) {
+                updateGameLabel();
+            }
+        }
+        else {
+            // Get games via REST
+            disposables.add(gameService.listGames()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(games -> {
+                        games.forEach(this::addGameToList);
+                        // This might be called before render when gameLabel is not initialized yet
+                        if (gameLabel != null) {
+                            updateGameLabel();
+                        }
+                    }));
+        }
+        if (playerListItemControllers.size() > 0) {
+            playerListItemControllers.values().forEach(this::addPlayerItem);
+            if (playerLabel != null) {
+                updatePlayerLabel();
+            }
+        }
+        else {
+            // Get users via REST
+            disposables.add(userService.listOnlineUsers()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(users -> {
+                        users.forEach(this::addPlayerToList);
+                        if (playerLabel != null) {
+                            updatePlayerLabel();
+                        }
+                    }));
+        }
         // Listen to game updates
         disposables.add(eventListener.listen("games.*.*", Game.class)
                 .observeOn(FX_SCHEDULER)
@@ -155,6 +175,10 @@ public class LobbyController extends PlayerListController {
     private void addGameToList(Game game) {
         GameListItemController controller = new GameListItemController(this, game, gameItems, bundle);
         gameListItemControllers.put(game._id(), controller);
+        addGameItem(controller);
+    }
+
+    private void addGameItem(GameListItemController controller) {
         gameItems.add(controller.render());
     }
 
@@ -242,11 +266,21 @@ public class LobbyController extends PlayerListController {
 
     public void setGerman(MouseEvent event) {
         preferenceService.setLocale(Locale.GERMAN);
-        app.show(this.lobbyController.get());
+        LobbyController controller = this.lobbyController.get();
+        controller.setGameListItemControllers(gameListItemControllers);
+        controller.setPlayerListItemControllers(playerListItemControllers);
+        app.show(controller);
     }
 
     public void setEnglish(MouseEvent event) {
         preferenceService.setLocale(Locale.ENGLISH);
-        app.show(this.lobbyController.get());
+        LobbyController controller = this.lobbyController.get();
+        controller.setGameListItemControllers(gameListItemControllers);
+        controller.setPlayerListItemControllers(playerListItemControllers);
+        app.show(controller);
+    }
+
+    public void setGameListItemControllers(HashMap<String, GameListItemController> gameListItemControllers) {
+        this.gameListItemControllers = gameListItemControllers;
     }
 }

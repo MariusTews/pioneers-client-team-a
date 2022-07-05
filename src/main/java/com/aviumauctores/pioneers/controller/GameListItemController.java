@@ -55,8 +55,6 @@ public class GameListItemController implements Controller {
         joinButton = new Button(bundle.getString("join"));
         joinButton.getStyleClass().add("game-list");
         joinButton.setOnAction(this::onJoinButtonPressed);
-        // Don't let more than four players join
-        joinButton.setDisable(numMembers >= 4);
         HBox rightHBox = new HBox(8.0, numMembersLabel, joinButton);
         rightHBox.setAlignment(Pos.CENTER);
         root = new BorderPane(numMembersTextLabel, null, rightHBox, null, gameName);
@@ -76,5 +74,9 @@ public class GameListItemController implements Controller {
         gameName.setText(game.name());
         int numMembers = game.members();
         numMembersLabel.setText(numMembers + "");
+    }
+
+    public Game getGame() {
+        return game;
     }
 }
