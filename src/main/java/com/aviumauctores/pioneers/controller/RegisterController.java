@@ -5,7 +5,6 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.UserService;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -13,16 +12,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -174,7 +169,7 @@ public class RegisterController implements Controller {
                                 String message = errorCodes.get(Integer.toString(response.statusCode()));
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
-                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                                app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
                             }
                         }
 

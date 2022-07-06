@@ -59,11 +59,16 @@ public class MapController implements Controller {
 
     public int mapRadius;
     public Map gameMap;
+    private String desertTileId;
 
 
     @Inject
     public MapController(ResourceBundle bundle) {
         this.bundle = bundle;
+    }
+
+    public MapController() {
+        this.bundle = null;
     }
 
     @Override
@@ -102,6 +107,7 @@ public class MapController implements Controller {
             double fitWidthHexagon = WIDTH_HEXAGON / factor;
             double fitHeightHexagon = HEIGHT_HEXAGON / factor;
             double fitSizeCrossing = WIDTH_HEIGHT_BUILDING / factor;
+            double fitSizeRobber = (WIDTH_HEIGHT_BUILDING / factor) * 1.5;
             double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
             double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
             double fitWidthRoad = WIDTH_ROAD / factor;
@@ -119,9 +125,6 @@ public class MapController implements Controller {
                 // tile-coordinates
                 double tileX = middleX - (0.75 * posX * fitWidthHexagon) - (0.75 * posY * fitWidthHexagon);
                 double tileY = middleY - (0.5 * posX * fitHeightHexagon) + (0.5 * posY * fitHeightHexagon);
-                if (posX == 0 && posY == 0) {
-                    tileX += posZ * fitWidthHexagon;
-                }
 
                 // position in grid
                 String position = coordinatesToString(posX, posY, posZ);
@@ -134,12 +137,12 @@ public class MapController implements Controller {
                 // creation
                 createTile(position, tileX, tileY, fitWidthHexagon, fitHeightHexagon, tile);
                 createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken());
-                createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
+                createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeRobber);
                 createCrossing(position + "R0", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createRoad(position + "R3", offsetMiddleX - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
-                createRoad(position + "R7", tileX + 0.75 * fitWidthHexagon, tileY + fitHeightHexagon - 3 * fitHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
-                createRoad(position + "R11", tileX, offsetMiddleY + 2 * fitHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
             }
 
             // add remaining crossings and roads
@@ -151,7 +154,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(radius, yIterator, -1 * (radius + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R7", tileX + 0.75 * fitWidthHexagon, tileY + fitHeightHexagon - 3 * fitHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
             }
             // bottom left (11 o clock)
             for (int xIterator = 0; xIterator >= -1 * radius; xIterator--) {
@@ -174,7 +177,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(xIterator, radius, -1 * (radius + xIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R11", tileX, (tileY + 0.5 * fitHeightHexagon) + 2 * fitHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
             }
             // bottom right (7 o clock)
             for (int yIterator = 0; yIterator < -1 * radius; yIterator++) {
@@ -195,7 +198,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(xIterator, yIterator, -1 * (xIterator + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R7", tileX + 0.75 * fitWidthHexagon, tileY + fitHeightHexagon - 3 * fitHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
             }
             // middle right (6 o clock)
             for (int xIterator = -1 * mapRadius; xIterator <= -1; xIterator++) {
@@ -205,7 +208,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(xIterator, yIterator, -1 * (xIterator + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R11", tileX, (tileY + 0.5 * fitHeightHexagon) + 2 * fitHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
             }
 
             // generate harbors
@@ -222,7 +225,7 @@ public class MapController implements Controller {
                 switch (harbor.side()) {
                     case 1 -> {
                         harborX -= fitSizeCrossing;
-                        createHarborLabels(harborX - 3 * fitSizeCrossing, harborY - 2 * fitSizeCrossing, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX - 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 0));
                         nextCrossings.add("building" + positionToString(harbor.x() + 1, harbor.y(), harbor.z() - 1, 6));
                     }
@@ -240,8 +243,8 @@ public class MapController implements Controller {
                         nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()-1,harbor.z()+1,0));
                     }
                     case 7 -> {
-                        harborX += fitWidthHexagon - 1.5 * fitSizeCrossing;
-                        harborY += fitHeightHexagon - 0.5 * fitSizeCrossing;
+                        harborX += fitWidthHexagon - fitSizeCrossing;
+                        harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
                         createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 6));
                         nextCrossings.add("building"+positionToString(harbor.x()-1,harbor.y(),harbor.z()+1,0));
@@ -256,7 +259,7 @@ public class MapController implements Controller {
                     case 11 -> {
                         harborX -= fitSizeCrossing;
                         harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
-                        createHarborLabels(harborX - 3 * fitSizeCrossing, harborY - fitSizeCrossing, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX, harborY + 2 * fitSizeCrossing, fitSizeCrossing, harbor.type());
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 0));
                         nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()+1,harbor.z()-1,6));
                     }
@@ -280,7 +283,10 @@ public class MapController implements Controller {
         imageView.setFitHeight(sizeY);
         imageView.setFitWidth(sizeX);
         switch (tile.type()) {
-            case "desert" -> imageView.setImage(desert);
+            case "desert" -> {
+                imageView.setImage(desert);
+                desertTileId = imageView.getId();
+            }
             case "fields" -> imageView.setImage(fields);
             case "hills" -> imageView.setImage(hills);
             case "mountains" -> imageView.setImage(mountains);
@@ -299,7 +305,7 @@ public class MapController implements Controller {
         circle.setId("building" + position + "Colour");
         circle.setLayoutX(coordinateX + 0.5 * size);
         circle.setLayoutY(coordinateY + 0.5 * size);
-        crossingPane.getChildren().add(circle);
+        roadAndCrossingPane.getChildren().add(circle);
         ImageView imageView = new ImageView(emptyCrossing);
         imageView.setId("building" + position);
         imageView.setFitHeight(size);
@@ -320,7 +326,7 @@ public class MapController implements Controller {
     }
 
     public void createRobberPosition(String position, double coordinateX, double coordinateY, double size) {
-        ImageView imageView = new ImageView(emptyCrossing);
+        ImageView imageView = new ImageView();
         imageView.setId("robber" + position);
         imageView.setFitHeight(size);
         imageView.setFitWidth(size);
@@ -334,7 +340,9 @@ public class MapController implements Controller {
         rectangle.setId("building" + position + "Colour");
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setRotate(rotation);
-        roadPane.getChildren().add(rectangle);
+        rectangle.setArcHeight(5);
+        rectangle.setArcWidth(5);
+        roadAndCrossingPane.getChildren().add(rectangle);
         ImageView imageView = new ImageView(emptyRoad);
         imageView.setId("building" + position);
         imageView.setFitWidth(sizeX);
@@ -347,9 +355,9 @@ public class MapController implements Controller {
         roadPane.getChildren().add(imageView);
     }
 
-    public void createHarborLabels(double coordinateX, double coordinateY, double size, String ressource) {
-        if (ressource != null && !ressource.equals("")) {
-            createLabel(coordinateX, coordinateY, ressource);
+    public void createHarborLabels(double coordinateX, double coordinateY, double size, String resource) {
+        if (resource != null && !resource.equals("")) {
+            createLabel(coordinateX, coordinateY, bundle.getString(resource));
             createLabel(coordinateX, coordinateY + size, "2:1");
         } else {
             createLabel(coordinateX, coordinateY, "3:1");
@@ -388,6 +396,10 @@ public class MapController implements Controller {
         return roadPane;
     }
 
+    public Pane getRobberPane() {
+        return robberPane;
+    }
+
     public void onMainPaneClicked(MouseEvent mouseEvent) {
         inGameController.onMainPaneClicked(mouseEvent);
     }
@@ -410,5 +422,9 @@ public class MapController implements Controller {
 
     public HashMap<String, List<String>> getHarborCrossings() {
         return harborCrossings;
+    }
+
+    public String getDesertTileId() {
+        return desertTileId;
     }
 }
