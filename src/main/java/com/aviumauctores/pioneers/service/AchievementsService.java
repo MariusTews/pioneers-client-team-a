@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.dto.achievements.CreateAchievementDto;
+import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.rest.AchievementsApiService;
 import io.reactivex.rxjava3.core.Observable;
@@ -29,5 +30,13 @@ public class AchievementsService {
                 userService.getCurrentUserID(),
                 id,
                 new CreateAchievementDto(unlocked, progress));
+    }
+
+    public Observable<Achievement> updateAchievement(String id, String unlocked, int progress) {
+        return achievementsApiService.updateAchievement(
+                userService.getCurrentUserID(),
+                id,
+                new UpdateAchievementDto(unlocked, progress)
+        );
     }
 }
