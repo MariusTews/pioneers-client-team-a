@@ -171,6 +171,7 @@ public class InGameController extends LoggedInController {
     private String tradePartnerColor;
 
     private HashMap<String, List<String>> nextHarbors;
+    private Player player;
 
 
     @Inject
