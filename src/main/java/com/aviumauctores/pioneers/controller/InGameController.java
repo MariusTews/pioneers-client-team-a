@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.dto.rob.RobDto;
 import com.aviumauctores.pioneers.model.*;
@@ -21,12 +20,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -51,7 +50,7 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
-    private Player player;
+
     private final EventListener eventListener;
     private final SoundService soundService;
 
@@ -64,7 +63,6 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label numSheepLabel;
 
-
     @FXML
     public ImageView arrowOnDice;
 
@@ -73,15 +71,15 @@ public class InGameController extends LoggedInController {
 
     @FXML
     Label timeLabel;
-    @FXML
-    public Pane mainPane;
-    @FXML
-    public Pane crossingPane;
-    @FXML
-    public Pane roadPane;
 
     @FXML
+    public BorderPane ingamePane;
+
+    public Pane mainPane;
+    public Pane crossingPane;
+    public Pane roadPane;
     public Pane roadAndCrossingPane;
+    private Pane robberPane;
     @FXML
     private ImageView soundImage;
     @FXML
@@ -111,29 +109,7 @@ public class InGameController extends LoggedInController {
     private Slider soundSlider;
 
 
-    @FXML
-    public Circle vp01;
-    @FXML
-    public Circle vp02;
-    @FXML
-    public Circle vp03;
-    @FXML
-    public Circle vp04;
-    @FXML
-    public Circle vp05;
-    @FXML
-    public Circle vp06;
-    @FXML
-    public Circle vp07;
-    @FXML
-    public Circle vp08;
-    @FXML
-    public Circle vp09;
-    @FXML
-    public Circle vp10;
-
-
-    public Circle[] vpCircles;
+    public List<Circle> vpCircles;
 
     public int memberVP;
 
@@ -150,13 +126,6 @@ public class InGameController extends LoggedInController {
     Image dice4;
     Image dice5;
     Image dice6;
-
-    Image desert;
-    Image fields;
-    Image hills;
-    Image mountains;
-    Image forest;
-    Image pasture;
 
     GameMusic gameSound;
 
@@ -176,11 +145,17 @@ public class InGameController extends LoggedInController {
 
     Image muteImage;
     Image unmuteImage;
+
+    private Image robberView;
+    private Image emptyCircle;
+
     private final ErrorService errorService;
     private final BuildService buildService;
+    private final MapController mapController;
 
-    private final HashMap<String, String> errorCodes = new HashMap<>();
     private boolean fieldsMovedAlready;
+    private String desertTileId;
+    private final List<Node> robTargets = new ArrayList<>();
     private HashMap<String, Integer> tradeRessources;
     private String tradePartner;
     private String tradePartnerAvatarUrl;
@@ -194,7 +169,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService) {
+                            ErrorService errorService, BuildService buildService, MapController mapController) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -211,6 +186,7 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
+        this.mapController = mapController;
         fieldsMovedAlready = false;
     }
 
@@ -227,7 +203,6 @@ public class InGameController extends LoggedInController {
 
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
-        player = pioneerService.getPlayer(userID).blockingFirst();
 
 
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -240,12 +215,9 @@ public class InGameController extends LoggedInController {
         dice4 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_4.png")).toString());
         dice5 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_5.png")).toString());
         dice6 = new Image(Objects.requireNonNull(Main.class.getResource("views/diceImages/Dice_6.png")).toString());
-        desert = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/desert.png")).toString());
-        fields = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/wheat.png")).toString());
-        hills = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/brick.png")).toString());
-        mountains = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/ore.png")).toString());
-        forest = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/forest.png")).toString());
-        pasture = new Image(Objects.requireNonNull(Main.class.getResource("views/tiles/pasture.png")).toString());
+
+        robberView = new Image(Objects.requireNonNull(Main.class.getResource("views/robber.png")).toString());
+        emptyCircle = new Image(Objects.requireNonNull(Main.class.getResource("views/buildings/empty.png")).toString());
 
         // Listen to game-move events
         disposables.add(eventListener.listen(
@@ -265,8 +237,6 @@ public class InGameController extends LoggedInController {
                     gameService.setCurrentGameID(null);
                     app.show(lobbyController.get());
                 }));
-
-        errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
     @Override
@@ -280,140 +250,163 @@ public class InGameController extends LoggedInController {
             e.printStackTrace();
             return null;
         }
-        runTimer();
-
-        resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
-        vpCircles = new Circle[]{vp01, vp02, vp03, vp04, vp05, vp06, vp07, vp08, vp09, vp10};
-
-
-        arrowOnDice.setFitHeight(40.0);
-        arrowOnDice.setFitWidth(40.0);
-        errorService.setErrorCodesGameMembersPost();
-
-        disposables.add(gameMemberService.getMember(userID)
+        MapController controller = mapController;
+        disposables.add(pioneerService.getMap()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(member -> {
-                    Color colour = member.color();
-                    String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                    String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
-                    rollButton.setStyle(colourString);
-                    leaveGameButton.setStyle(colourString);
-                    finishMoveButton.setStyle(colourString);
-                    tradeButton.setStyle(colourString);
-                    diceImage1.setStyle(colourString);
-                    diceImage2.setStyle(colourString);
-                    try {
-                        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                        arrowOnDice.setImage(arrowIcon);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-                }, errorService::handleError));
+                .subscribe(map -> {
+                            if (controller != null) {
+                                controller.init();
+                                controller.setInGameController(this);
+                                controller.setGameMap(map);
+                                controller.setMapRadius(gameService.getMapRadius());
+                                ingamePane.setCenter(controller.render());
+                                mainPane = controller.getMainPane();
+                                roadAndCrossingPane = controller.getRoadAndCrossingPane();
+                                roadPane = controller.getRoadPane();
+                                crossingPane = controller.getCrossingPane();
+                                robberPane = controller.getRobberPane();
+                                vpCircles = new ArrayList<>();
+                                for (Node vpCircle : controller.getVpBox().getChildren()) {
+                                    vpCircles.add((Circle) vpCircle);
+                                }
+                                timeLabel = controller.getTimeLabel();
 
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(buildingEventDto -> {
-                            if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-                                //listen to new and updatedbuildings, and load the image
-                                Building b = buildingEventDto.data();
-                                Player builder = pioneerService.getPlayer(b.owner()).blockingFirst();
-                                buildService.setPlayer(builder);
-                                buildService.setBuildingType(b.type());
-                                ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                                buildService.setSelectedField(position);
-                                buildService.loadBuildingImage(b._id());
-                                if (b.owner().equals(userID)) {
-                                    if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                        gainVP(1);
-                                    }
-                                }
-                                if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                    position.setVisible(true);
-                                    roadAndCrossingPane.getChildren().add(position);
-                                }
-                                if (soundImage.getImage() == muteImage) {
-                                    GameSounds buildSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
-                                    if (buildSound != null) {
-                                        buildSound.play();
-                                    }
-                                }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
-                                    GameSounds roadSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
-                                    if (roadSound != null) {
-                                        roadSound.play();
-                                    }
-                                }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
-                                    GameSounds settlementSound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
-                                    if (settlementSound != null) {
-                                        settlementSound.play();
-                                    }
-                                }
-                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
-                                    GameSounds citySound = soundService
-                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
-                                    if (citySound != null) {
-                                        citySound.play();
-                                    }
-                                }
+                                //put robber on desert tile
+                                desertTileId = controller.getDesertTileId();
+                                String desertRobberImageId = desertTileId.replace("hexagon", "robber");
+                                moveRobber(desertRobberImageId);
+
+                                runTimer();
                             }
+
+                            resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
+
+                            arrowOnDice.setFitHeight(40.0);
+                            arrowOnDice.setFitWidth(40.0);
+                            errorService.setErrorCodesGameMembersPost();
+
+                            disposables.add(gameMemberService.getMember(userID)
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(member -> {
+                                        Color colour = member.color();
+                                        String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                                        String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
+                                        rollButton.setStyle(colourString);
+                                        leaveGameButton.setStyle(colourString);
+                                        finishMoveButton.setStyle(colourString);
+                                        tradeButton.setStyle(colourString);
+                                        diceImage1.setStyle(colourString);
+                                        diceImage2.setStyle(colourString);
+                                        try {
+                                            Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                                            arrowOnDice.setImage(arrowIcon);
+                                        } catch (NullPointerException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }, errorService::handleError));
+
+                            disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(buildingEventDto -> {
+                                        if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                            //listen to new and updatedbuildings, and load the image
+                                            Building b = buildingEventDto.data();
+                                            buildService.setPlayerId(b.owner());
+                                                    buildService.setBuildingType(b.type());
+                                                    ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                                    buildService.setSelectedField(position);
+                                                    buildService.loadBuildingImage(b._id());
+                                                    if (b.owner().equals(userID)) {
+                                                        if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                                            gainVP(1);
+                                                        }
+                                                    }
+                                                    if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                                        position.setVisible(true);
+                                                        roadAndCrossingPane.getChildren().add(position);
+                                                    }
+                                                    if (soundImage.getImage() == muteImage) {
+                                                        GameSounds buildSound = soundService
+                                                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+                                                        if (buildSound != null) {
+                                                            buildSound.play();
+                                                        }
+                                                    }
+                                                    if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
+                                                        GameSounds roadSound = soundService
+                                                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
+                                                        if (roadSound != null) {
+                                                            roadSound.play();
+                                                        }
+                                                    }
+                                                    if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                                        GameSounds settlementSound = soundService
+                                                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
+                                                        if (settlementSound != null) {
+                                                            settlementSound.play();
+                                                        }
+                                                    }
+                                                    if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
+                                                        GameSounds citySound = soundService
+                                                                .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
+                                                        if (citySound != null) {
+                                                            citySound.play();
+                                                        }
+                                                    }
+                                                }
+                                            }, errorService::handleError
+                                    ));
+
+                            diceImage1.setImage(dice1);
+                            diceImage2.setImage(dice1);
+                            this.soundImage.setImage(muteImage);
+
+                            disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(state -> {
+                                        //update class variables
+                                        stateService.updateState(state);
+                                        currentPlayerID = stateService.getCurrentPlayerID();
+                                        currentAction = stateService.getCurrentAction();
+                                        buildService.setCurrentAction(currentAction);
+                                        playerResourceListController.setCurrentPlayerID(currentPlayerID);
+                                        updateVisuals();
+                                    }, throwable -> System.out.println(throwable.toString() + "| error on state update")));
+
+                            disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(this::onPlayerUpdated));
+
+                            errorService.setErrorCodesPioneersPost();
+
+                            disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
+                                    .observeOn(FX_SCHEDULER)
+                                    .subscribe(move -> {
+                                    }, errorService::handleError));
+
+                            currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
+                            arrowOnDice.setFitHeight(40.0);
+                            arrowOnDice.setFitWidth(40.0);
+                            yourTurnLabel.setVisible(false);
+
+                            if (currentPlayerID.equals(userID)) {
+                                arrowOnDice.setVisible(true);
+                                yourTurnLabel.setVisible(true);
+                                updateFields(false, roadPane);
+                                updateFields(true, crossingPane);
+                            } else {
+                                arrowOnDice.setVisible(false);
+                                yourTurnLabel.setVisible(false);
+                                updateFields(false, crossingPane, roadPane);
+                            }
+
+                            soundImage.setImage(muteImage);
+                            loadChat();
+                            playerResourceListController.init(playerList, currentPlayerID);
+                            finishMoveButton.setDisable(true);
+                            tradeButton.setDisable(true);
                         }, errorService::handleError
                 ));
-
-        diceImage1.setImage(dice1);
-        diceImage2.setImage(dice1);
-        this.soundImage.setImage(muteImage);
-
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(state -> {
-                    //update class variables
-                    stateService.updateState(state);
-                    currentPlayerID = stateService.getCurrentPlayerID();
-                    currentAction = stateService.getCurrentAction();
-                    buildService.setCurrentAction(currentAction);
-                    playerResourceListController.setCurrentPlayerID(currentPlayerID);
-                    player = stateService.getUpdatedPlayer();
-                    playerResourceListController.setPlayer(player);
-                    updateVisuals();
-                }, this::handleError));
-
-        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(this::onPlayerUpdated));
-
-        errorService.setErrorCodesPioneersPost();
-
-        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                }, errorService::handleError));
-
-        currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
-        arrowOnDice.setFitHeight(40.0);
-        arrowOnDice.setFitWidth(40.0);
-        yourTurnLabel.setVisible(false);
-
-        if (currentPlayerID.equals(userID)) {
-            arrowOnDice.setVisible(true);
-            yourTurnLabel.setVisible(true);
-            updateFields(false, roadPane);
-            updateFields(true, crossingPane);
-        } else {
-            arrowOnDice.setVisible(false);
-            yourTurnLabel.setVisible(false);
-            updateFields(false, crossingPane, roadPane);
-        }
-
-        soundImage.setImage(muteImage);
-        loadChat();
-        playerResourceListController.init(playerList, currentPlayerID);
-        finishMoveButton.setDisable(true);
-        tradeButton.setDisable(true);
-        buildMap();
 
         return parent;
     }
@@ -528,13 +521,12 @@ public class InGameController extends LoggedInController {
 
     private ImageView getView(int x, int y, int z, int side) {
         //create building id
-        String location = "building" + x + y + z + side;
+        String location = "buildingX" + x + "Y" + y + "Z" + z + "R" + side;
         location = location.replace("-", "_");
         return getNodeByID(location);
     }
 
     private ImageView getNodeByID(String id) {
-        //search for Node in road and crossingpane
         ImageView view = null;
         if (currentAction.startsWith("founding")) {
             for (Node n : crossingPane.getChildren()) {
@@ -616,7 +608,10 @@ public class InGameController extends LoggedInController {
                         rollButton.setDisable(true);
                         showDropWindow();
                     }
-                    case MOVE_ROB -> skipRobber();
+                    case MOVE_ROB -> {
+                        rollButton.setDisable(true);
+                        enableRobberFields();
+                    }
                 }
             }
         } else {
@@ -628,32 +623,15 @@ public class InGameController extends LoggedInController {
             updateFields(false, crossingPane, roadPane);
             roadAndCrossingPane.setDisable(true);
             freeFieldVisibility(false);
-        }
-    }
 
-    public void buildMap() {
-        errorService.setErrorCodesPioneersGet();
-        disposables.add(pioneerService.getMap()
-                .observeOn(FX_SCHEDULER)
-                .subscribe(map -> {
-                    List<Tile> tiles = map.tiles();
-                    for (Tile tile : tiles) {
-                        String hexID = "" + tile.x() + tile.y() + tile.z();
-                        hexID = hexID.replace('-', '_');
-                        ImageView tileImage = (ImageView) mainPane.lookup("#hexagon" + hexID);
-                        switch (tile.type()) {
-                            case "desert" -> tileImage.setImage(desert);
-                            case "fields" -> tileImage.setImage(fields);
-                            case "hills" -> tileImage.setImage(hills);
-                            case "mountains" -> tileImage.setImage(mountains);
-                            case "forest" -> tileImage.setImage(forest);
-                            case "pasture" -> tileImage.setImage(pasture);
-                        }
-                        Label tileLabel = (Label) mainPane.lookup("#label" + hexID);
-                        tileLabel.setText("" + tile.numberToken());
-                    }
-                }, errorService::handleError)
-        );
+            //if robber position has changed (another player moved the robber), then update it
+            Point3D point = stateService.getRobberPosition();
+            if (point != null) {
+                String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+                id = id.replace("-", "_");
+                moveRobber(id);
+            }
+        }
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -667,7 +645,6 @@ public class InGameController extends LoggedInController {
     public void build(ActionEvent event) {
         buildService.build();
     }
-
 
     public void loadChat() {
         InGameChatController controller = inGameChatController.get();
@@ -726,7 +703,6 @@ public class InGameController extends LoggedInController {
 
         int side = coordinateHolder.side();
         String sideType;
-
         if (side == 0 || side == 6) {
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
@@ -763,34 +739,6 @@ public class InGameController extends LoggedInController {
 
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
-    }
-
-    //dummy method to skip robber for now
-    //only works when all players in the game have at least one settlement/town at tile (0 0 0) and tile (0 0 2)
-    private void skipRobber() {
-        int x = 0;
-        int y = 0;
-        int z = 0;
-        String target = userID;
-
-        errorService.setErrorCodesPioneersPost();
-        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, target))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                        },
-                        throwable -> {
-                        }
-                ));
-
-        z = 2;
-
-        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(x, y, z, target))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                        },
-                        throwable -> {
-                        }
-                ));
     }
 
     private String coordsToPath(String source) {
@@ -861,21 +809,17 @@ public class InGameController extends LoggedInController {
 
     public void gainVP(int vpGain) {
         memberVP += vpGain;
-        for (int i = 0; i < 10; i++) {
-            if (memberVP > i) {
-                if (vpCircles[i].getFill() != Color.GOLD) {
-                    vpCircles[i].setFill(Color.GOLD);
-                    int finalI = i;
-                    new Thread(() -> {
-                        try {
-                            vpAnimation(finalI);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).start();
-                }
-            } else {
-                vpCircles[i].setFill(Color.GRAY);
+        for (int i = 0; i < memberVP; i++) {
+            if (vpCircles.get(i).getFill() != Color.GOLD) {
+                vpCircles.get(i).setFill(Color.GOLD);
+                int finalI = i;
+                new Thread(() -> {
+                    try {
+                        vpAnimation(finalI);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
             }
         }
     }
@@ -883,7 +827,7 @@ public class InGameController extends LoggedInController {
     public void vpAnimation(int index) throws InterruptedException {
         double radius = 100.0;
         while (radius >= 10.0) {
-            vpCircles[index].setRadius(radius);
+            vpCircles.get(index).setRadius(radius);
             radius -= 10.0;
             TimeUnit.MILLISECONDS.sleep(100);
         }
@@ -976,15 +920,18 @@ public class InGameController extends LoggedInController {
 
     public void freeFieldVisibility(boolean var) {
         for (Node n : roadAndCrossingPane.getChildren()) {
-            ImageView field = (ImageView) n;
-            if (field.getImage().getUrl().endsWith("empty.png") || field.getImage().getUrl().endsWith("emptyRoad.png")) {
-                field.setVisible(var);
+            if (n.getClass().equals(ImageView.class)) {
+                ImageView field = (ImageView) n;
+                if (field.getImage().getUrl().endsWith("empty.png") || field.getImage().getUrl().endsWith("emptyRoad.png")) {
+                    field.setVisible(var);
+                }
             }
         }
     }
 
     private void showDropWindow() {
-        HashMap<String, Integer> resources = stateService.getUpdatedPlayer().resources();
+        Player player = pioneerService.getPlayer(userID).blockingFirst();
+        HashMap<String, Integer> resources = player.resources();
         dropMenuController = new DropMenuController(this, this.pioneerService, this.bundle, resources);
         dropMenu = dropMenuController.render();
 
@@ -998,12 +945,176 @@ public class InGameController extends LoggedInController {
         mainPane.getChildren().add(dropMenu);
     }
 
-    public void handleError(Throwable throwable) {
-        if (throwable instanceof HttpException ex) {
-            ErrorResponse response = errorService.readErrorMessage(ex);
-            String message = errorCodes.get(Integer.toString(response.statusCode()));
-            app.showHttpErrorDialog(response.statusCode(), response.error(), message);
+    /************************************************
+     ************ Robber-related methods ************
+     ************************************************/
+
+    //moves the robber image to the position given by the id
+    private void moveRobber(String id) {
+        ImageView oldRobberView = getCurrentRobberView();
+        ImageView newRobberView = getNewRobberViewPosition(id);
+        if (oldRobberView != null) {
+            oldRobberView.setImage(null);
         }
+        if (newRobberView != null) {
+            newRobberView.setImage(robberView);
+        }
+    }
+
+    //enables all robber fields on the hexagon tiles which are currently empty
+    private void enableRobberFields() {
+        for (Node n : robberPane.getChildren()) {
+            //check that n has no image to prevent overwriting the image on the current robber position
+            if (((ImageView) n).getImage() == null) {
+                n.setDisable(false);
+                ((ImageView) n).setImage(emptyCircle);
+                n.setOnMouseEntered(this::showRobberField);
+                n.setOnMouseExited(this::hideRobberField);
+                n.setOnMouseClicked(this::initiateRobberMove);
+            }
+        }
+    }
+
+    private void showRobberField(MouseEvent mouseEvent) {
+        ((ImageView) mouseEvent.getSource()).setImage(robberView);
+    }
+
+    private void hideRobberField(MouseEvent mouseEvent) {
+        ((ImageView) mouseEvent.getSource()).setImage(emptyCircle);
+    }
+
+    //this method is called when you try to put the robber on a new position by clicking on a free robber field
+    private void initiateRobberMove(MouseEvent mouseEvent) {
+        String robberFieldId = ((Node) mouseEvent.getSource()).getId();
+
+        //after you have clicked on a free robber position, all rob targets (buildings of other players) have to be marked
+        int count = markBuildingsForRob(robberFieldId);
+
+        //if no building is marked, then place the robber without robbing another player
+        if (count == 0) {
+            changeRobberPositionAndRobTarget(robberFieldId, null);
+        }
+        //otherwise enable the player to click on the building images to choose a rob target
+        else {
+            robberPane.setVisible(false);
+            robberPane.setDisable(true);
+            roadAndCrossingPane.setDisable(false);
+        }
+    }
+
+    //marks all buildings of other players at the chosen tile
+    private int markBuildingsForRob(String robberFieldId) {
+        List<String> possibleIds = new ArrayList<>();
+        Point3D p = Point3D.readCoordinatesFromID(robberFieldId);
+
+        //add all building ids from possible buildings around the chosen tile
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y()) + "Z" + (p.z()) + "R0").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y()) + "Z" + (p.z()) + "R6").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x() + 1) + "Y" + (p.y()) + "Z" + (p.z() - 1) + "R6").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y() - 1) + "Z" + (p.z() + 1) + "R0").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x() - 1) + "Y" + (p.y()) + "Z" + (p.z() + 1) + "R0").replace("-", "_"));
+        possibleIds.add(("buildingX" + (p.x()) + "Y" + (p.y() + 1) + "Z" + (p.z() - 1) + "R6").replace("-", "_"));
+
+        int count = 0;
+        for (Node n : roadAndCrossingPane.getChildren()) {
+
+            //split id of n in its parts (coordinates, type, owner)
+            String[] nIdParts = n.getId().split("#");
+
+            //only nodes which are buildings contain three id parts
+            if (nIdParts.length == 3) {
+                //check that the building node is at the correct tile and belongs to another player
+                if (possibleIds.contains(nIdParts[0]) && !(nIdParts[2].equals(userID))) {
+                    n.setOnMouseClicked(this::initiateRob);
+                    n.setDisable(false);
+
+                    /*set the accessible text as it contains the correct new robber coordinates which are needed in the
+                    changeRobberPositionAndRobTarget method*/
+                    n.setAccessibleText(robberFieldId);
+
+                    robTargets.add(n);
+
+                    //temporary implementation, will be changed soon
+                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() + 10);
+                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() + 10);
+
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    //this method is called when you click on a rob target (building of another player)
+    private void initiateRob(MouseEvent mouseEvent) {
+        String robberFieldId = ((Node) mouseEvent.getSource()).getAccessibleText();
+        String target = ((Node) mouseEvent.getSource()).getId().split("#")[2];
+        changeRobberPositionAndRobTarget(robberFieldId, target);
+    }
+
+    //sends a rob move to the server with the new position and the rob target
+    private void changeRobberPositionAndRobTarget(String newRobberPosition, String target) {
+        Point3D p = Point3D.readCoordinatesFromID(newRobberPosition);
+
+        errorService.setErrorCodesPioneersPost();
+        disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(p.x(), p.y(), p.z(), target))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(move -> {
+                            //reset the robberPane to normal and move the robber view to its new position
+                            for (Node n : robberPane.getChildren()) {
+                                n.setDisable(true);
+                                n.setOnMouseEntered(null);
+                                n.setOnMouseExited(null);
+                                n.setOnMouseClicked(null);
+                                if (n.getId().equals(newRobberPosition)) {
+                                    ((ImageView) n).setImage(robberView);
+                                } else {
+                                    ((ImageView) n).setImage(null);
+                                }
+                            }
+                            //reset all changes made to the rob targets (buildings of other players)
+                            for (Node n : robTargets) {
+                                n.setOnMouseClicked(this::onFieldClicked);
+                                n.setDisable(true);
+                                n.setAccessibleText(null);
+
+                                //temporary implementation, will be changed soon
+                                ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() - 10);
+                                ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() - 10);
+
+                            }
+                            robTargets.clear();
+
+                            //reset changes made to the panes
+                            robberPane.setVisible(true);
+                            robberPane.setDisable(false);
+                            roadAndCrossingPane.setDisable(true);
+                        },
+                        errorService::handleError
+                ));
+    }
+
+    //gets the image view of the current robber position
+    private ImageView getCurrentRobberView() {
+        ImageView view = null;
+        for (Node n : robberPane.getChildren()) {
+            if (((ImageView) n).getImage() != null) {
+                view = (ImageView) n;
+            }
+        }
+        return view;
+    }
+
+    //gets the image view of the new robber position given by its id
+    private ImageView getNewRobberViewPosition(String id) {
+        ImageView view = null;
+        for (Node n : robberPane.getChildren()) {
+            String nID = n.getId();
+            if (nID.equals(id)) {
+                view = (ImageView) n;
+            }
+        }
+        return view;
     }
 
     public void trade(ActionEvent actionEvent) {

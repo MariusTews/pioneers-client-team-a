@@ -162,7 +162,7 @@ public class LoginController implements Controller {
                                     String message = errorCodes.get(Integer.toString(response.statusCode()));
                                     Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                                 } else {
-                                    app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                                    app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
                                 }
                             }
                     );
@@ -208,7 +208,7 @@ public class LoginController implements Controller {
                                 String message = errorCodes.get(Integer.toString(response.statusCode()));
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
-                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                                app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
                             }
                         }
 
