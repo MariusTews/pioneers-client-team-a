@@ -43,7 +43,7 @@ public class PlayerResourceListController {
             createPlayerBox(p);
         }
 
-        for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
+for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
             if (m.spectator()) {
                 createSpectatorBox(m);
             }
