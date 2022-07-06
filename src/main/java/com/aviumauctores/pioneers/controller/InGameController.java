@@ -158,6 +158,7 @@ public class InGameController extends LoggedInController {
     private boolean fieldsMovedAlready;
 
     //for tradingController
+    private final TradeService tradeService;
     private HashMap<String, Integer> tradeRessources;
     private String tradePartner;
     private String tradePartnerAvatarUrl;
@@ -173,7 +174,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, Provider<MapController> mapController) {
+                            ErrorService errorService, BuildService buildService, Provider<MapController> mapController, TradeService tradeService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -191,6 +192,7 @@ public class InGameController extends LoggedInController {
         this.errorService = errorService;
         this.buildService = buildService;
         this.mapController = mapController;
+        this.tradeService = tradeService;
         fieldsMovedAlready = false;
     }
 
@@ -1022,7 +1024,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio());
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
@@ -1054,7 +1056,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void viewRequest(ActionEvent actionEvent) {
-        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player);
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");
