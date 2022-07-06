@@ -1123,7 +1123,7 @@ public class InGameController extends LoggedInController {
                             robberPane.setDisable(false);
                             roadAndCrossingPane.setDisable(true);
                         },
-                        throwable -> System.out.println("Error on robber move.")
+                        errorService::handleError
                 ));
     }
 
