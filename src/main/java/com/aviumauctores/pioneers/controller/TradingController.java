@@ -239,7 +239,7 @@ public class TradingController implements Controller {
                     tradeGrain, requestGrain,
                     tradeBrick, requestBrick);
             sendRessources = resources;
-            if (selectedPlayer != null) {
+            if (selectedPlayer != null && !this.checkSpinnersEmpty()) {
                 Player finalSelectedPlayer = selectedPlayer;
                 disposables.add(pioneerService.createMove("build", null, resources, selectedPlayer.userId(), null)
                         .observeOn(FX_SCHEDULER).
@@ -253,6 +253,19 @@ public class TradingController implements Controller {
             }
 
         }
+    }
+
+    private boolean checkSpinnersEmpty() {
+        return tradeLumber.getValueFactory().getValue() == 0
+                && requestLumber.getValueFactory().getValue() == 0
+                && tradeBrick.getValueFactory().getValue() == 0
+                && requestBrick.getValueFactory().getValue() == 0
+                && tradeWool.getValueFactory().getValue() == 0
+                && requestWool.getValueFactory().getValue() == 0
+                && tradeOre.getValueFactory().getValue() == 0
+                && requestOre.getValueFactory().getValue() == 0
+                && tradeGrain.getValueFactory().getValue() == 0
+                && requestGrain.getValueFactory().getValue() == 0;
     }
 
     //change spinners, when user wants to trade with the bank
@@ -470,7 +483,7 @@ public class TradingController implements Controller {
                 Integer value = entry.getValue();
                 if (value > 0) {
                     if (player.resources().getOrDefault(key, -value) < value) {
-                        tradeBrick.setDisable(true);
+                        tradeButton.setDisable(true);
                         break;
                     }
                 }
