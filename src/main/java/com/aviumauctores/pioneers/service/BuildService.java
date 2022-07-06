@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.model.Player;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;
@@ -72,12 +73,19 @@ public class BuildService {
     public void loadBuildingImage(String buildingID) {
         if (selectedField != null) {
             switch (buildingType) {
-                case BUILDING_TYPE_SETTLEMENT -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                        ("views/buildings/settlement.png")).toString()));
-                case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                        ("views/buildings/road.png")).toString()));
-                case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
-                        "views/buildings/town.png")).toString()));
+                case BUILDING_TYPE_SETTLEMENT ->
+                        selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                                ("views/buildings/settlement.png")).toString()));
+                case BUILDING_TYPE_ROAD ->
+                        selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                                ("views/buildings/road.png")).toString()));
+                case BUILDING_TYPE_CITY -> {
+                    selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
+                            "views/buildings/town.png")).toString()));
+                    //increase image view size in case a settlement is upgraded to a city
+                    selectedField.setFitWidth(selectedField.getFitWidth() * 1.2);
+                    selectedField.setFitHeight(selectedField.getFitHeight() * 1.2);
+                }
             }
             if (selectedField.getId().startsWith("building")) {
                 selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);
