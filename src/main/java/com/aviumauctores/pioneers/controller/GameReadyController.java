@@ -452,7 +452,7 @@ public class GameReadyController extends PlayerListController {
                         String message = errorCodes.get(response.statusCode() + "_game");
                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                     } else {
-                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                        app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
                     }
                 }));
     }
@@ -470,7 +470,7 @@ public class GameReadyController extends PlayerListController {
                                 String message = errorCodes.get(response.statusCode() + "_member");
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
-                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                                app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                             }
                         });
 
@@ -499,13 +499,15 @@ public class GameReadyController extends PlayerListController {
             memberAlert.setTitle(bundle.getString("warning"));
             memberAlert.setHeaderText(null);
             Optional<ButtonType> result = memberAlert.showAndWait();
-            if (result.get() == proceedButton) {
-                gameMemberService.deleteMember(userService.getCurrentUserID())
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe();
-            } else {
-                memberAlert.close();
-                return;
+            if (result.isPresent()) {
+                if (result.get() == proceedButton) {
+                    gameMemberService.deleteMember(userService.getCurrentUserID())
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe();
+                } else {
+                    memberAlert.close();
+                    return;
+                }
             }
         }
         gameService.setCurrentGameID(null);
@@ -556,7 +558,7 @@ public class GameReadyController extends PlayerListController {
                                         String message = errorCodes.get(response.statusCode() + "_member");
                                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                                     } else {
-                                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                                        app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                                     }
                                 });
             }
@@ -649,7 +651,7 @@ public class GameReadyController extends PlayerListController {
 
     public void setMapsizeAndVictorypoints(int victoryPoints, int mapSize) {
         if (mapSize >= 0 && mapSize <= 10 && victoryPoints >= 3 && victoryPoints <= 15) {
-            gameService.setUpdateOption(victoryPoints, mapSize).subscribe();
+            gameService.setUpdateOption(mapSize, victoryPoints).subscribe();
         } else {
             ButtonType proceedButton1 = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("failedEntering"), proceedButton1);
