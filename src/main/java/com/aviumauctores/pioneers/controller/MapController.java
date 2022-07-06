@@ -139,8 +139,8 @@ public class MapController implements Controller {
                 createCrossing(position + "R0", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createRoad(position + "R3", offsetMiddleX - offsetWidthRoad, tileY - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 0.0);
-                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
-                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon - offsetHeightRoad, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon - offsetHeightRoad, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
             }
 
             // add remaining crossings and roads
@@ -152,7 +152,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(radius, yIterator, -1 * (radius + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon - offsetHeightRoad, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
             }
             // bottom left (11 o clock)
             for (int xIterator = 0; xIterator >= -1 * radius; xIterator--) {
@@ -175,7 +175,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(xIterator, radius, -1 * (radius + xIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon - offsetHeightRoad, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
             }
             // bottom right (7 o clock)
             for (int yIterator = 0; yIterator < -1 * radius; yIterator++) {
@@ -196,7 +196,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(xIterator, yIterator, -1 * (xIterator + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
+                createRoad(position + "R7", tileX + 0.875 * fitWidthHexagon - offsetHeightRoad, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, -60.0);
             }
             // middle right (6 o clock)
             for (int xIterator = -1 * mapRadius; xIterator <= -1; xIterator++) {
@@ -206,7 +206,7 @@ public class MapController implements Controller {
                 String position = coordinatesToString(xIterator, yIterator, -1 * (xIterator + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
-                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
+                createRoad(position + "R11", tileX + 0.125 * fitWidthHexagon - offsetHeightRoad, tileY + 0.75 * fitHeightHexagon - offsetHeightRoad, fitWidthRoad, fitHeightRoad, 60.0);
             }
 
             // generate harbors
