@@ -182,4 +182,16 @@ public class Constants {
     public static final double WIDTH_HEIGHT_BUILDING = 80.0;
     public static final double HEIGHT_ROAD = 50.0;
     public static final double WIDTH_ROAD = 179.375;
+
+    // achievement-ids
+    public static final String ACHIEVEMENT_SETTLEMENTS = "build-settlements";
+    public static final String ACHIEVEMENT_ROADS = "build-road";
+    public static final String ACHIEVEMENT_CITIES = "build-CITIES";
+    public static final String ACHIEVEMENT_ALL = "all-achievements-completed";
+    public static final String ACHIEVEMENT_WIN = "win-game";
+    public static final String WINSTREAK = "winstreak";
+    public static final String ACHIEVEMENTS_WIN_LONGEST = "win-game-longest-road";
+    public static final String ACHIEVEMENT_RESOURCES = "many-resources";
+    public static final String ACHIEVEMENT_TRADE = "good-trade-offer";
+    public static final String RANKING = "ranking";
 }
