@@ -228,6 +228,7 @@ public class TradeRequestController implements Controller {
         this.makeLabelsInvisible();
         this.showSpinners();
         acceptButton.setText(this.bundle.getString("suggest"));
+        acceptButton.setDisable(false);
 
     }
 

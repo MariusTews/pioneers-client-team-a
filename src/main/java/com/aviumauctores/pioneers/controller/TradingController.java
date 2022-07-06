@@ -147,7 +147,7 @@ public class TradingController implements Controller {
                                 this.enableCancelButton();
                                 tradeButton.setText(bundle.getString("trading"));
                                 cancelTradeButton.setText(bundle.getString("cancel"));
-                                this.showRequestAccepted(partnerID);
+                                this.showRequestDeclined(partnerID);
                                 inGameController.setTradeStarter(false);
                             },
                             error -> {
