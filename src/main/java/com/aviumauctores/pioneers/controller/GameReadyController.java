@@ -430,7 +430,7 @@ public class GameReadyController extends PlayerListController {
                         String message = errorCodes.get(response.statusCode() + "_game");
                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                     } else {
-                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                        app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
                     }
                 }));
     }
@@ -448,7 +448,7 @@ public class GameReadyController extends PlayerListController {
                                 String message = errorCodes.get(response.statusCode() + "_member");
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
-                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                                app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                             }
                         });
 
@@ -536,7 +536,7 @@ public class GameReadyController extends PlayerListController {
                                         String message = errorCodes.get(response.statusCode() + "_member");
                                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                                     } else {
-                                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                                        app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                                     }
                                 });
             }
