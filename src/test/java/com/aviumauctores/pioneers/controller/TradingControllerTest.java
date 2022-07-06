@@ -23,8 +23,7 @@ import java.util.*;
 import static com.aviumauctores.pioneers.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.assertions.api.Assertions.assertThat;
 
@@ -58,6 +57,8 @@ class TradingControllerTest extends ApplicationTest {
     Player player = new Player("1", "2", "#111111", true, 2, myRessources, null, 2, 0);
 
 
+    @Spy
+    TradeService tradeService;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);

@@ -7,8 +7,11 @@ import com.aviumauctores.pioneers.model.Move;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PioneerService;
+import com.aviumauctores.pioneers.service.TradeService;
 import io.reactivex.rxjava3.core.Observable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -24,6 +29,7 @@ import static com.aviumauctores.pioneers.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.testfx.api.FxAssert.verifyThat;
 
 @ExtendWith(MockitoExtension.class)
 public class TradeRequestControllerTest extends ApplicationTest {
@@ -58,6 +64,9 @@ public class TradeRequestControllerTest extends ApplicationTest {
 
     @Mock
     ErrorService errorService;
+
+    @Spy
+    TradeService tradeService;
 
     @Spy
     HashMap<String, Integer> tradeRessources = new HashMap<>();
@@ -105,5 +114,53 @@ public class TradeRequestControllerTest extends ApplicationTest {
         assertEquals(((Label) lookup("#tradeOreLabel").query()).getText(), "2");
         assertEquals(((Label) lookup("#getBrickLabel").query()).getText(), "2");
         assertEquals(((Label) lookup("#tradeGrainLabel").query()).getText(), "3");
+    }
+
+    @Test
+    void testCounterproposal() {
+        clickOn("#counterproposalButton");
+
+        Spinner<Integer> tradeLumber = lookup("#tradeLumber").query();
+        assertEquals(tradeLumber.getValue(), 0);
+        verifyThat("#tradeLumber", NodeMatchers.isVisible());
+
+        Spinner<Integer> requestLumber = lookup("#requestLumber").query();
+        assertEquals(requestLumber.getValue(), 1);
+        verifyThat("#requestLumber", NodeMatchers.isVisible());
+
+        Spinner<Integer> tradeOre = lookup("#tradeOre").query();
+        assertEquals(tradeOre.getValue(), 2);
+        verifyThat("#tradeOre", NodeMatchers.isVisible());
+
+        Spinner<Integer> requestOre = lookup("#requestOre").query();
+        assertEquals(requestOre.getValue(), 0);
+        verifyThat("#requestOre", NodeMatchers.isVisible());
+
+        Spinner<Integer> tradeGrain = lookup("#tradeGrain").query();
+        assertEquals(tradeGrain.getValue(), 3);
+        verifyThat("#tradeGrain", NodeMatchers.isVisible());
+
+        Spinner<Integer> requestGrain = lookup("#requestGrain").query();
+        assertEquals(requestGrain.getValue(), 0);
+        verifyThat("#requestGrain", NodeMatchers.isVisible());
+
+        Spinner<Integer> tradeBrick = lookup("#tradeBrick").query();
+        assertEquals(tradeBrick.getValue(), 0);
+        verifyThat("#tradeBrick", NodeMatchers.isVisible());
+
+        Spinner<Integer> requestBrick = lookup("#requestBrick").query();
+        assertEquals(requestBrick.getValue(), 2);
+        verifyThat("#requestBrick", NodeMatchers.isVisible());
+
+        Spinner<Integer> tradeWool = lookup("#tradeWool").query();
+        assertEquals(tradeWool.getValue(), 1);
+        verifyThat("#tradeWool", NodeMatchers.isVisible());
+
+        Spinner<Integer> requestWool = lookup("#requestWool").query();
+        assertEquals(requestWool.getValue(), 0);
+        verifyThat("#requestWool", NodeMatchers.isVisible());
+
+        assertEquals(((Button) lookup("#acceptButton").query()).getText(), bundle.getString("suggest"));
+        verifyThat("#acceptButton", NodeMatchers.isEnabled());
     }
 }

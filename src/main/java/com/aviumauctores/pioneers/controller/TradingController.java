@@ -77,7 +77,7 @@ public class TradingController implements Controller {
     private boolean bankTrade;
     private int sumRequest;
     private String partnerID;
-    private HashMap<String, Integer> sendRessources;
+    private HashMap<String, Integer> sendResources;
 
     @Inject
     public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService,
@@ -238,7 +238,7 @@ public class TradingController implements Controller {
                     tradeOre, requestOre,
                     tradeGrain, requestGrain,
                     tradeBrick, requestBrick);
-            sendRessources = resources;
+            sendResources = resources;
             if (selectedPlayer != null && !this.checkSpinnersEmpty()) {
                 Player finalSelectedPlayer = selectedPlayer;
                 disposables.add(pioneerService.createMove("build", null, resources, selectedPlayer.userId(), null)
@@ -465,7 +465,7 @@ public class TradingController implements Controller {
 
     //get counterpropasal
     public void handleRequest(HashMap<String, Integer> resources, String userId) {
-        if (resources == sendRessources) {
+        if (resources == sendResources) {
             disposables.add(pioneerService.createMove("accept", null, null, userId, null)
                     .observeOn(FX_SCHEDULER).
                     subscribe(move -> {
