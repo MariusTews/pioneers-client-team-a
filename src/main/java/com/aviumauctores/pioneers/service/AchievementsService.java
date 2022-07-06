@@ -1,0 +1,25 @@
+package com.aviumauctores.pioneers.service;
+
+import com.aviumauctores.pioneers.model.Achievement;
+import com.aviumauctores.pioneers.rest.AchievementsApiService;
+import io.reactivex.rxjava3.core.Observable;
+
+import javax.inject.Inject;
+import java.util.List;
+
+public class AchievementsService {
+
+    private final AchievementsApiService achievementsApiService;
+
+    private final UserService userService;
+
+    @Inject
+    public AchievementsService(AchievementsApiService achievementsApiService, UserService userService) {
+        this.achievementsApiService = achievementsApiService;
+        this.userService = userService;
+    }
+
+    public Observable<List<Achievement>> getUserAchievements() {
+        return achievementsApiService.listUserAchievements(userService.getCurrentUserID());
+    }
+}
