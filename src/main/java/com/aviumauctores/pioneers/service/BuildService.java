@@ -26,7 +26,7 @@ public class BuildService {
     private String currentAction;
     private final String userID;
     private final ResourceBundle bundle;
-    private Player player;
+    private String playerId;
     private String buildingType;
     private String selectedFieldCoordinates;
 
@@ -52,7 +52,7 @@ public class BuildService {
         Building b = Building.readCoordinatesFromID(selectedField.getId());
         if (b != null) {
             pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), null, buildingType,
-                            gameService.getCurrentGameID(), userID),null, null,null)
+                            gameService.getCurrentGameID(), userID), null, null, null)
                     .observeOn(FX_SCHEDULER)
                     .subscribe(move -> {
                             }
@@ -70,18 +70,18 @@ public class BuildService {
 
 
     public void loadBuildingImage(String buildingID) {
-        String color = colorService.getColor(player.color());
-        switch (buildingType) {
-            case BUILDING_TYPE_SETTLEMENT ->
-                    selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                            ("views/House/house_" + color.toLowerCase() + ".png")).toString()));
-            case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                    ("views/Street/street_" + color.toLowerCase() + ".png")).toString()));
-            case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
-                    "views/Town/town_" + color.toLowerCase() + ".png")).toString()));
-        }
-        if (selectedField.getId().startsWith("building")) {
-            selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + player.userId());
+        if (selectedField != null) {
+            switch (buildingType) {
+                case BUILDING_TYPE_SETTLEMENT -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                        ("views/buildings/settlement.png")).toString()));
+                case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                        ("views/buildings/road.png")).toString()));
+                case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
+                        "views/buildings/town.png")).toString()));
+            }
+            if (selectedField.getId().startsWith("building")) {
+                selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);
+            }
         }
     }
 
@@ -98,13 +98,12 @@ public class BuildService {
         selectedField = field;
     }
 
-    public void setPlayer(Player updatedPlayer) {
-        player = updatedPlayer;
+    public void setPlayerId(String id) {
+        playerId = id;
     }
 
 
     public void setSelectedFieldCoordinates(String coordinates) {
         selectedFieldCoordinates = coordinates;
     }
-
 }

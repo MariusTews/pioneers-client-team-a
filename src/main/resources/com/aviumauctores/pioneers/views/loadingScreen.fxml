@@ -11,6 +11,6 @@
    </ImageView>
    <ImageView fitHeight="363.0" fitWidth="384.0" layoutX="118.0" layoutY="19.0" pickOnBounds="true"
               preserveRatio="true">
-      <Image url="@../settlement.png"/>
+      <Image url="@../settlementIcon.png"/>
    </ImageView>
 </Pane>
