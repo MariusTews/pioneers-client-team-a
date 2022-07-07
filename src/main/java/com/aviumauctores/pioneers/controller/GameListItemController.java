@@ -17,6 +17,7 @@ public class GameListItemController implements Controller {
     private BorderPane root;
     private Label gameName;
     private Label numMembersLabel;
+    private Label numMembersTextLabel;
     private Button joinButton;
 
     private final LobbyController parentController;
@@ -48,7 +49,7 @@ public class GameListItemController implements Controller {
         gameName.getStyleClass().add("game-list");
         // Set width so numMembersTextLabel is correct aligned in the ListView
         gameName.setPrefWidth(90.0);
-        Label numMembersTextLabel = new Label(bundle.getString("amount.players") + ":");
+        numMembersTextLabel = new Label(bundle.getString("amount.players") + ":");
         numMembersTextLabel.getStyleClass().add("game-list");
         int numMembers = game.members();
         numMembersLabel = new Label(numMembers + "");
@@ -76,7 +77,11 @@ public class GameListItemController implements Controller {
         numMembersLabel.setText(numMembers + "");
     }
 
-    public Game getGame() {
-        return game;
+    public Button getJoinButton() {
+        return joinButton;
+    }
+
+    public Label getNumMembersTextLabel() {
+        return numMembersTextLabel;
     }
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 
 public abstract class PlayerListController extends LoggedInController {
     protected final ObservableList<Parent> playerItems = FXCollections.observableArrayList();
-    protected Map<String, PlayerListItemController> playerListItemControllers = new HashMap<>();
+    protected final Map<String, PlayerListItemController> playerListItemControllers = new HashMap<>();
 
     protected PlayerListController(LoginService loginService, UserService userService) {
         super(loginService, userService);
@@ -79,9 +79,5 @@ public abstract class PlayerListController extends LoggedInController {
 
     public void onPlayerItemClicked(User selectedUser) {
         // Do nothing at default
-    }
-
-    public void setPlayerListItemControllers(Map<String, PlayerListItemController> playerListItemControllers) {
-        this.playerListItemControllers = playerListItemControllers;
     }
 }
