@@ -113,9 +113,6 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     ErrorService errorService;
 
-    @Mock
-    Boolean spectator;
-
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
@@ -128,6 +125,7 @@ public class InGameControllerTest extends ApplicationTest {
     private PublishSubject<EventDto<State>> stateUpdates;
 
     private PublishSubject<EventDto<Player>> playerUpdates;
+
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -271,4 +269,5 @@ public class InGameControllerTest extends ApplicationTest {
         dropButton = lookup("#dropButton").tryQuery();
         assertThat(dropButton).isNotPresent();
     }
+
 }

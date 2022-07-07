@@ -256,6 +256,8 @@ public class InGameChatController implements Controller {
 
     @Override
     public void destroy(boolean closed) {
-        disposables.dispose();
+        if(disposables!=null){
+            disposables.dispose();
+        }
     }
 }
