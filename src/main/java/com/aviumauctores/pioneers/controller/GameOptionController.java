@@ -62,6 +62,8 @@ public class GameOptionController implements Controller {
             e.printStackTrace();
             return null;
         }
+        // set default values
+        gameReadyController.setMapsizeAndVictorypoints(10, 2);
         // Spinner has maximum and minimum Value
         victoryValue = new SpinnerValueFactory.IntegerSpinnerValueFactory(3, 15, 10);
         this.victoryPoints.setValueFactory(victoryValue);

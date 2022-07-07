@@ -3,7 +3,6 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
-import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.PreferenceService;
@@ -81,7 +80,7 @@ class LoginControllerErrorTest extends ApplicationTest {
         write("1\t");
         type(KeyCode.SPACE);
 
-        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("smth.went.wrong"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(loginService).login("Struppi", "1");
     }
@@ -97,7 +96,7 @@ class LoginControllerErrorTest extends ApplicationTest {
         write("1\t");
 
         //verify popup is visible
-        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("smth.went.wrong"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
 
         verify(userService).updateUser("1", new UpdateUserDto("Mark", "online", "brr", null, null));

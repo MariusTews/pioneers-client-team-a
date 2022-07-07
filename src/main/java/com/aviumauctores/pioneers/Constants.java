@@ -162,7 +162,18 @@ public class Constants {
     public static final String RESOURCE_LUMBER = "lumber";
     public static final String RESOURCE_ORE = "ore";
     public static final String RESOURCE_WOOL = "wool";
+    public static final String RESOURCE_UNKNOWN = "unknown";
 
 
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
+
+
+    // values for smallest map-radius
+    public static final double WIDTH_HEXAGON = 518.75;
+    public static final double HEIGHT_HEXAGON = 446.875;
+    public static final double MAIN_PAIN_MIDDLE_X = 291.5;
+    public static final double MAIN_PAIN_MIDDLE_Y = 290.0;
+    public static final double WIDTH_HEIGHT_BUILDING = 90.0;
+    public static final double HEIGHT_ROAD = 50.0;
+    public static final double WIDTH_ROAD = 179.375;
 }

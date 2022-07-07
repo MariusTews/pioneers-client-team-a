@@ -55,6 +55,10 @@ public abstract class PlayerListController extends LoggedInController {
     protected void addPlayerToList(User user, Member gameMember) {
         PlayerListItemController controller = new PlayerListItemController(this, user, gameMember, playerItems);
         playerListItemControllers.put(user._id(), controller);
+        addPlayerItem(controller);
+    }
+
+    protected void addPlayerItem(PlayerListItemController controller) {
         playerItems.add(controller.render());
     }
 
