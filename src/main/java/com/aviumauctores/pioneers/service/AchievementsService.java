@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.service;
 
+import static com.aviumauctores.pioneers.Constants.*;
 import com.aviumauctores.pioneers.dto.achievements.CreateAchievementDto;
 import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.model.Achievement;
@@ -7,6 +8,10 @@ import com.aviumauctores.pioneers.rest.AchievementsApiService;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 public class AchievementsService {
@@ -15,6 +20,13 @@ public class AchievementsService {
 
     private final UserService userService;
 
+    private HashMap<String, Integer> achievementsProgress = new HashMap<>();
+
+    private final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+    private
+    Calendar calender = Calendar.getInstance();
+
     @Inject
     public AchievementsService(AchievementsApiService achievementsApiService, UserService userService) {
         this.achievementsApiService = achievementsApiService;
@@ -22,17 +34,41 @@ public class AchievementsService {
     }
 
     public Observable<List<Achievement>> getUserAchievements() {
-        return achievementsApiService.listUserAchievements(userService.getCurrentUserID());
+        Observable<List<Achievement>> achievementList = achievementsApiService.listUserAchievements(userService.getCurrentUserID());
+        achievementList.observeOn(FX_SCHEDULER)
+                .subscribe(achievements -> {
+                    for (Achievement achievement: achievements) {
+                        achievementsProgress.put(
+                                achievement.id(),
+                                achievement.progress()
+                        );
+                    }
+                });
+        return achievementList;
     }
 
-    public Observable<Achievement> putAchievement(String id, String unlocked, int progress) {
+    public Observable<Achievement> putAchievement(String id, int progress) {
+        String unlocked = null;
+        if (achievementsProgress.get(id) != null) {
+            progress += achievementsProgress.get(id);
+        }
+        if (progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
+            unlocked = dateFormat.format(calender.getTime());
+        }
         return achievementsApiService.putAchievement(
                 userService.getCurrentUserID(),
                 id,
                 new CreateAchievementDto(unlocked, progress));
     }
 
-    public Observable<Achievement> updateAchievement(String id, String unlocked, int progress) {
+    public Observable<Achievement> updateAchievement(String id, int progress) {
+        String unlocked = null;
+        if (achievementsProgress.get(id) != null) {
+            progress += achievementsProgress.get(id);
+        }
+        if (progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
+            unlocked = dateFormat.format(calender.getTime());
+        }
         return achievementsApiService.updateAchievement(
                 userService.getCurrentUserID(),
                 id,

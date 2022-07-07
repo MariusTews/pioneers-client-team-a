@@ -4,6 +4,8 @@ import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import javafx.application.Platform;
 
+import java.util.HashMap;
+
 public class Constants {
 
     public static final int SCREEN_WIDTH = 640;
@@ -194,4 +196,15 @@ public class Constants {
     public static final String ACHIEVEMENT_RESOURCES = "many-resources";
     public static final String ACHIEVEMENT_TRADE = "good-trade-offer";
     public static final String RANKING = "ranking";
+    public static final HashMap<String, Integer> ACHIEVEMENT_UNLOCK_VALUES = new HashMap<>();
+    static {
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_SETTLEMENTS, 100);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_ROADS, 100);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_CITIES, 100);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_ALL, 7);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_WIN, 3);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENTS_WIN_LONGEST, 1);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_RESOURCES, 20);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_TRADE, 5);
+    }
 }
