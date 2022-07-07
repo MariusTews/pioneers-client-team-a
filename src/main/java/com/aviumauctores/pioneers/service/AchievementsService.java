@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.rest.AchievementsApiService;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 import javax.inject.Inject;
 import java.text.DateFormat;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AchievementsService {
+
+    protected CompositeDisposable disposables;
 
     private final AchievementsApiService achievementsApiService;
 
@@ -49,11 +52,13 @@ public class AchievementsService {
 
     public Observable<Achievement> putAchievement(String id, int progress) {
         String unlocked = null;
-        if (achievementsProgress.get(id) != null) {
+        if (achievementsProgress.get(id) != null || id.equals(ACHIEVEMENT_RESOURCES)) {
             progress += achievementsProgress.get(id);
         }
-        if (progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
+        if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
             unlocked = dateFormat.format(calender.getTime());
+            achievementsProgress.replace(id, progress);
+            disposables.add(putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe());
         }
         return achievementsApiService.putAchievement(
                 userService.getCurrentUserID(),

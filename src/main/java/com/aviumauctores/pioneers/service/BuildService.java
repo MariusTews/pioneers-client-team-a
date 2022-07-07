@@ -2,11 +2,11 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Building;
-import com.aviumauctores.pioneers.model.Player;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import retrofit2.HttpException;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 import javax.inject.Inject;
 import java.util.Objects;
@@ -16,9 +16,13 @@ import static com.aviumauctores.pioneers.Constants.*;
 
 public class BuildService {
 
+    protected CompositeDisposable disposables;
+
     private final PioneerService pioneerService;
     private final GameMemberService gameMemberService;
     private final GameService gameService;
+
+    private final AchievementsService achievementsService;
     private final ErrorService errorService;
     private final UserService userService;
     private final ColorService colorService;
@@ -31,12 +35,13 @@ public class BuildService {
     private String selectedFieldCoordinates;
 
     @Inject
-    public BuildService(PioneerService pioneerService, GameMemberService gameMemberService, GameService gameService, ErrorService errorService,
+    public BuildService(PioneerService pioneerService, GameMemberService gameMemberService, GameService gameService, AchievementsService achievementsService, ErrorService errorService,
                         UserService userService, ColorService colorService, ResourceBundle bundle) {
 
         this.pioneerService = pioneerService;
         this.gameMemberService = gameMemberService;
         this.gameService = gameService;
+        this.achievementsService = achievementsService;
         this.errorService = errorService;
         this.userService = userService;
         this.colorService = colorService;
@@ -72,12 +77,21 @@ public class BuildService {
     public void loadBuildingImage(String buildingID) {
         if (selectedField != null) {
             switch (buildingType) {
-                case BUILDING_TYPE_SETTLEMENT -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                case BUILDING_TYPE_SETTLEMENT -> {
+                    selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
                         ("views/buildings/settlement.png")).toString()));
-                case BUILDING_TYPE_ROAD -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                        ("views/buildings/road.png")).toString()));
-                case BUILDING_TYPE_CITY -> selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
-                        "views/buildings/town.png")).toString()));
+                    disposables.add(achievementsService.putAchievement(ACHIEVEMENT_SETTLEMENTS, 1).observeOn(FX_SCHEDULER).subscribe());
+                }
+                case BUILDING_TYPE_ROAD -> {
+                    selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
+                            ("views/buildings/road.png")).toString()));
+                    disposables.add(achievementsService.putAchievement(ACHIEVEMENT_ROADS, 1).observeOn(FX_SCHEDULER).subscribe());
+                }
+                case BUILDING_TYPE_CITY -> {
+                    selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
+                            "views/buildings/town.png")).toString()));
+                    disposables.add(achievementsService.putAchievement(ACHIEVEMENT_CITIES, 1).observeOn(FX_SCHEDULER).subscribe());
+                }
             }
             if (selectedField.getId().startsWith("building")) {
                 selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);

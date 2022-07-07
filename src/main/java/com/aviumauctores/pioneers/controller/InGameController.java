@@ -151,6 +151,7 @@ public class InGameController extends LoggedInController {
 
     private final ErrorService errorService;
     private final BuildService buildService;
+    private final AchievementsService achievementsService;
     private final MapController mapController;
 
     private boolean fieldsMovedAlready;
@@ -169,7 +170,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, MapController mapController) {
+                            ErrorService errorService, BuildService buildService, AchievementsService achievementsService, MapController mapController) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -186,6 +187,7 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
+        this.achievementsService = achievementsService;
         this.mapController = mapController;
         fieldsMovedAlready = false;
     }
@@ -237,6 +239,7 @@ public class InGameController extends LoggedInController {
                     gameService.setCurrentGameID(null);
                     app.show(lobbyController.get());
                 }));
+        disposables.add(achievementsService.getUserAchievements().observeOn(FX_SCHEDULER).subscribe());
     }
 
     @Override
@@ -443,6 +446,8 @@ public class InGameController extends LoggedInController {
             int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
+            int resourceSum = amountBrick + amountLumber + amountWool + amountGrain + amountOre;
+            disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
