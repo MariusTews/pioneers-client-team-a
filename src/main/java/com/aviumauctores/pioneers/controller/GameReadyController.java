@@ -112,6 +112,8 @@ public class GameReadyController extends PlayerListController {
 
     private Color chosenColour;
 
+    private boolean comingFromIngame = false;
+
 
     @Inject
     public GameReadyController(App app,
@@ -375,7 +377,23 @@ public class GameReadyController extends PlayerListController {
 
         gameService.setUpdateOption(2, 10);
 
+        if (comingFromIngame) {
+            startGameButton.setText(bundle.getString("join"));
+            startGameButton.setOnAction(this::rejoinIngame);
+            gameReadyButton.setDisable(true);
+            pickColourMenu.setDisable(true);
+            gameOptionButton.setDisable(true);
+            offButton.setDisable(true);
+            onButton.setDisable(true);
+        }
+
         return parent;
+    }
+
+    private void rejoinIngame(ActionEvent actionEvent) {
+        InGameController controller = inGameController.get();
+        controller.setRejoin(true);
+        app.show(controller);
     }
 
     void updateComboBox() {
@@ -636,6 +654,9 @@ public class GameReadyController extends PlayerListController {
             alert.setTitle(bundle.getString("Entering failed"));
             alert.setHeaderText(null);
         }
+    }
 
+    public void setComingFromIngame(boolean comingFromIngame) {
+        this.comingFromIngame = comingFromIngame;
     }
 }
