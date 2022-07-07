@@ -133,8 +133,14 @@ public class PlayerResourceListItemController {
     }
 
     public void updateResources() {
-        int num = getResource(RESOURCE_BRICK) + getResource(RESOURCE_ORE) + getResource(RESOURCE_GRAIN)
-                + getResource(RESOURCE_LUMBER) + getResource(RESOURCE_WOOL);
+        int num;
+        if (id.equals(userService.getCurrentUserID())) {
+            num = getResource(RESOURCE_BRICK) + getResource(RESOURCE_ORE) + getResource(RESOURCE_GRAIN)
+                    + getResource(RESOURCE_LUMBER) + getResource(RESOURCE_WOOL);
+        }
+        else {
+            num = getResource(RESOURCE_UNKNOWN);
+        }
         resourceLabel.setText(num + " " + bundle.getString("resources"));
     }
 
