@@ -228,6 +228,7 @@ public class TradingController implements Controller {
                 String getPlayer = userService.getUserName(p.userId()).blockingFirst();
                 if (Objects.equals(playerName, getPlayer)) {
                     selectedPlayer = p;
+                    break;
                 }
             }
 
@@ -465,7 +466,7 @@ public class TradingController implements Controller {
 
     //get counterpropasal
     public void handleRequest(HashMap<String, Integer> resources, String userId) {
-        if (resources == sendResources) {
+        if (Objects.equals(resources, sendResources)) {
             disposables.add(pioneerService.createMove("accept", null, null, userId, null)
                     .observeOn(FX_SCHEDULER).
                     subscribe(move -> {
@@ -478,6 +479,12 @@ public class TradingController implements Controller {
                     }));
         }
         else {
+            partnerID = userId;
+            this.showRequest(userId);
+            this.fillSpinnersAndDisable(resources);
+            tradeButton.setText(bundle.getString("accept"));
+            cancelTradeButton.setText(bundle.getString("decline"));
+            this.enableButtons();
             for (Map.Entry<String, Integer> entry : resources.entrySet()) {
                 String key = entry.getKey();
                 Integer value = entry.getValue();
@@ -488,12 +495,6 @@ public class TradingController implements Controller {
                     }
                 }
             }
-            partnerID = userId;
-            this.showRequest(userId);
-            this.fillSpinnersAndDisable(resources);
-            tradeButton.setText(bundle.getString("accept"));
-            cancelTradeButton.setText(bundle.getString("decline"));
-            this.enableButtons();
         }
 
     }

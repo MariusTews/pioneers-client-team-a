@@ -306,7 +306,7 @@ public class InGameController extends LoggedInController {
                     leaveGameButton.setStyle(colourString);
                     finishMoveButton.setStyle(colourString);
                     tradeButton.setStyle(colourString);
-                    tradeButton.setStyle(colourString);diceImage1.setStyle(colourString);
+                    diceImage1.setStyle(colourString);
                     diceImage2.setStyle(colourString);
                     try {
                         Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
