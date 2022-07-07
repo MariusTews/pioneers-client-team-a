@@ -436,7 +436,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void gameReady(ActionEvent actionEvent) {
-        gameMemberService.updateMember(userService.getCurrentUserID()) //maybe null is not correct
+        disposables.add(gameMemberService.updateMember(userService.getCurrentUserID()) //maybe null is not correct
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
                             String buttonText = member.ready() ? bundle.getString("ready") : bundle.getString("not.ready");
@@ -450,7 +450,7 @@ public class GameReadyController extends PlayerListController {
                             } else {
                                 app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                             }
-                        });
+                        }));
 
     }
 
@@ -503,14 +503,14 @@ public class GameReadyController extends PlayerListController {
             return;
         }
         messageTextField.clear();
-        messageService.sendGameMessage(message, gameService.getCurrentGameID())
+        disposables.add(messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     ownMessageIds.add(result._id());
                     Label msgLabel = createMessageLabel(result);
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
-                });
+                }));
     }
 
     public void changeColour(ActionEvent actionEvent) {
@@ -526,7 +526,7 @@ public class GameReadyController extends PlayerListController {
                 // the hexcode is created
                 String colour = "#" + pickColourMenu.getValue().toString().substring(2, 8);
                 // send to the server
-                gameMemberService.updateColour(userService.getCurrentUserID(), colour)
+                disposables.add(gameMemberService.updateColour(userService.getCurrentUserID(), colour)
                         .observeOn(FX_SCHEDULER)
                         .subscribe(member -> {
                                     // and stored locally
@@ -540,18 +540,18 @@ public class GameReadyController extends PlayerListController {
                                     } else {
                                         app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                                     }
-                                });
+                                }));
             }
         }
     }
 
     public Label createMessageLabel(Message message) {
         Label msgLabel = new Label();
-        userService.getUserName(message.sender())
+        disposables.add(userService.getUserName(message.sender())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> msgLabel.setText(result + ": " + message.body())
-                );
+                ));
         msgLabel.setOnMouseClicked(this::onMessageClicked);
         msgLabel.setId(message._id());
         return msgLabel;

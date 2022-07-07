@@ -153,14 +153,14 @@ public class InGameChatController implements Controller {
             return;
         }
         messageTextField.clear();
-        messageService.sendGameMessage(message, gameService.getCurrentGameID())
+        disposables.add(messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     ownMessageIds.add(result._id());
                     HBox msgLabel = createMessageLabel(result);
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
     public HBox createMessageLabel(Message message) {
@@ -170,7 +170,7 @@ public class InGameChatController implements Controller {
         avatarView.setFitHeight(20.0);
 
         errorService.setErrorCodesUsers();
-        userService.getUserByID(message.sender())
+        disposables.add(userService.getUserByID(message.sender())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> {
@@ -179,7 +179,7 @@ public class InGameChatController implements Controller {
                             Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
                             avatarView.setImage(avatar);
                         }, errorService::handleError
-                );
+                ));
 
         HBox playerBox = new HBox(5, avatarView, msgLabel);
         playerBox.setOnMouseClicked(this::onMessageClicked);
@@ -211,10 +211,10 @@ public class InGameChatController implements Controller {
     }
 
     public void delete(String messageId) {
-        messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
+        disposables.add(messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
     @Override
