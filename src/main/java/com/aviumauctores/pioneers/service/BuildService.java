@@ -78,22 +78,9 @@ public class BuildService {
     public void loadBuildingImage(String buildingID) {
         if (selectedField != null) {
             switch (buildingType) {
-                case BUILDING_TYPE_SETTLEMENT ->
-                        selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                                ("views/buildings/settlement.png")).toString()));
-                case BUILDING_TYPE_ROAD ->
-                        selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                                ("views/buildings/road.png")).toString()));
-                case BUILDING_TYPE_CITY -> {
-                    selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
-                            "views/buildings/town.png")).toString()));
-                    //increase image view size in case a settlement is upgraded to a city
-                    selectedField.setFitWidth(selectedField.getFitWidth() * 1.2);
-                    selectedField.setFitHeight(selectedField.getFitHeight() * 1.2);
-                }
                 case BUILDING_TYPE_SETTLEMENT -> {
                     selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource
-                        ("views/buildings/settlement.png")).toString()));
+                            ("views/buildings/settlement.png")).toString()));
                     disposables.add(achievementsService.putAchievement(ACHIEVEMENT_SETTLEMENTS, 1).observeOn(FX_SCHEDULER).subscribe());
                 }
                 case BUILDING_TYPE_ROAD -> {
@@ -104,6 +91,9 @@ public class BuildService {
                 case BUILDING_TYPE_CITY -> {
                     selectedField.setImage(new Image(Objects.requireNonNull(Main.class.getResource(
                             "views/buildings/town.png")).toString()));
+                    //increase image view size in case a settlement is upgraded to a city
+                    selectedField.setFitWidth(selectedField.getFitWidth() * 1.2);
+                    selectedField.setFitHeight(selectedField.getFitHeight() * 1.2);
                     disposables.add(achievementsService.putAchievement(ACHIEVEMENT_CITIES, 1).observeOn(FX_SCHEDULER).subscribe());
                 }
             }
