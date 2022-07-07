@@ -144,6 +144,8 @@ public class InGameController extends LoggedInController {
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
+    private boolean tradeStarter = false;
+
 
     // These are the Sound-Icons
 
@@ -158,12 +160,18 @@ public class InGameController extends LoggedInController {
     private final MapController mapController;
 
     private boolean fieldsMovedAlready;
-    private String desertTileId;
     private final List<Node> robTargets = new ArrayList<>();
+
+    //for tradingController
+    private final TradeService tradeService;
+    private String desertTileId;
     private HashMap<String, Integer> tradeRessources;
     private String tradePartner;
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
+
+    private HashMap<String, List<String>> nextHarbors;
+    private Player player;
 
 
     @Inject
@@ -173,7 +181,7 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, MapController mapController) {
+                            ErrorService errorService, BuildService buildService, MapController mapController, TradeService tradeService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -191,6 +199,7 @@ public class InGameController extends LoggedInController {
         this.errorService = errorService;
         this.buildService = buildService;
         this.mapController = mapController;
+        this.tradeService = tradeService;
         fieldsMovedAlready = false;
     }
 
@@ -282,57 +291,57 @@ public class InGameController extends LoggedInController {
                             }
 
                             resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
+        arrowOnDice.setFitHeight(40.0);
+        arrowOnDice.setFitWidth(40.0);
+        errorService.setErrorCodesGameMembersPost();
+        nextHarbors = Objects.requireNonNull(controller).getHarborCrossings();
 
-                            arrowOnDice.setFitHeight(40.0);
-                            arrowOnDice.setFitWidth(40.0);
-                            errorService.setErrorCodesGameMembersPost();
-                            disposables.add(gameMemberService.getMember(userID)
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(member -> {
-                                        Color colour = member.color();
-                                        String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                                        String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
-                                        rollButton.setStyle(colourString);
-                                        leaveGameButton.setStyle(colourString);
-                                        finishMoveButton.setStyle(colourString);
-                                        tradeButton.setStyle(colourString);
-                                        diceImage1.setStyle(colourString);
-                                        diceImage2.setStyle(colourString);
-                                        try {
-                                            Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                                            arrowOnDice.setImage(arrowIcon);
-                                        } catch (NullPointerException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }, errorService::handleError));
-                            disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(buildingEventDto -> {
-                                        if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-                                            //listen to new and updatedbuildings, and load the image
-                                            Building b = buildingEventDto.data();
-                                            buildService.setPlayerId(b.owner());
-                                            buildService.setBuildingType(b.type());
-                                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                                            buildService.setSelectedField(position);
-                                            buildService.loadBuildingImage(b._id());
-                                            String buildingImageId = position.getId().split("#")[0];
+        disposables.add(gameMemberService.getMember(userID)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(member -> {
+                    Color colour = member.color();
+                    String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
+                    String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
+                    rollButton.setStyle(colourString);
+                    leaveGameButton.setStyle(colourString);
+                    finishMoveButton.setStyle(colourString);
+                    tradeButton.setStyle(colourString);
+                    diceImage1.setStyle(colourString);
+                    diceImage2.setStyle(colourString);
+                    try {
+                        Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
+                        arrowOnDice.setImage(arrowIcon);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                }, errorService::handleError));
+
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(buildingEventDto -> {
+                            if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                //listen to new and updatedbuildings, and load the image
+                                Building b = buildingEventDto.data();
+                                buildService.setPlayerId(b.owner());
+                                buildService.setBuildingType(b.type());
+                                ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                buildService.setSelectedField(position);
+                                buildService.loadBuildingImage(b._id());String buildingImageId = position.getId().split("#")[0];
                                             enableBuildingColor(buildingImageId, b.owner(), b.type());
-                                            if (b.owner().equals(userID)) {
-                                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                                                    gainVP(1);
-                                                }
-                                            }
-                                            if (!roadAndCrossingPane.getChildren().contains(position)) {
-                                                position.setVisible(true);
-                                                roadAndCrossingPane.getChildren().add(position);
-                                            }
-                                            if (soundImage.getImage() == muteImage) {
-                                                GameSounds buildSound = soundService
-                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
-                                                if (buildSound != null) {
-                                                    buildSound.play();
-                                                }
+                                if (b.owner().equals(userID)) {
+                                    if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                        gainVP(1);
+                                    }
+                                }
+                                if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                    position.setVisible(true);
+                                    roadAndCrossingPane.getChildren().add(position);
+                                }
+                                if (soundImage.getImage() == muteImage) {
+                                    GameSounds buildSound = soundService
+                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+                                    if (buildSound != null) {
+                                        buildSound.play();}
                                             }
                                             if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
                                                 GameSounds roadSound = soundService
@@ -353,10 +362,31 @@ public class InGameController extends LoggedInController {
                                                         .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
                                                 if (citySound != null) {
                                                     citySound.play();
-                                                }
-                                            }
-                                        }
-                                    }, errorService::handleError));
+                                    }
+                                }
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
+                                    GameSounds roadSound = soundService
+                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
+                                    if (roadSound != null) {
+                                        roadSound.play();
+                                    }
+                                }
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                    GameSounds settlementSound = soundService
+                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
+                                    if (settlementSound != null) {
+                                        settlementSound.play();
+                                    }
+                                }
+                                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
+                                    GameSounds citySound = soundService
+                                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
+                                    if (citySound != null) {
+                                        citySound.play();
+                                    }
+                                }
+                            }
+                        }, errorService::handleError));
 
                             diceImage1.setImage(dice1);
                             diceImage2.setImage(dice1);
@@ -374,34 +404,38 @@ public class InGameController extends LoggedInController {
                                         updateVisuals();
                                     }, throwable -> System.out.println(throwable.toString() + "| error on state update")));
 
-                            disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(this::onPlayerUpdated));
-                            errorService.setErrorCodesPioneersPost();
-                            disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(move -> {
-                                    }, errorService::handleError));
-                            currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
-                            arrowOnDice.setFitHeight(40.0);
-                            arrowOnDice.setFitWidth(40.0);
-                            yourTurnLabel.setVisible(false);
-                            if (currentPlayerID.equals(userID)) {
-                                arrowOnDice.setVisible(true);
-                                yourTurnLabel.setVisible(true);
-                                updateFields(false, roadPane);
-                                updateFields(true, crossingPane);
-                            } else {
-                                arrowOnDice.setVisible(false);
-                                yourTurnLabel.setVisible(false);
-                                updateFields(false, crossingPane, roadPane);
-                            }
+        disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(this::onPlayerUpdated));
 
-                            soundImage.setImage(muteImage);
-                            loadChat();
-                            playerResourceListController.init(playerList, currentPlayerID);
-                            finishMoveButton.setDisable(true);
-                            tradeButton.setDisable(true);
+        errorService.setErrorCodesPioneersPost();
+
+        disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(move -> {
+                }, errorService::handleError));
+
+        currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
+        arrowOnDice.setFitHeight(40.0);
+        arrowOnDice.setFitWidth(40.0);
+        yourTurnLabel.setVisible(false);
+
+        if (currentPlayerID.equals(userID)) {
+            arrowOnDice.setVisible(true);
+            yourTurnLabel.setVisible(true);
+            updateFields(false, roadPane);
+            updateFields(true, crossingPane);
+        } else {
+            arrowOnDice.setVisible(false);
+            yourTurnLabel.setVisible(false);
+            updateFields(false, crossingPane, roadPane);
+        }
+
+        soundImage.setImage(muteImage);
+        loadChat();
+        playerResourceListController.init(playerList, currentPlayerID);
+        finishMoveButton.setDisable(true);
+        tradeButton.setDisable(true);
                         }, errorService::handleError
                 ));
 
@@ -421,32 +455,38 @@ public class InGameController extends LoggedInController {
             }).start();
             rollSum.setText(" " + rolled + " ");
         }
+        //show trade request if a player wants to trade with you
         if (move.partner() != null) {
             if (move.action().equals("build") && move.partner().equals(userID)) {
-                this.showTradeRequest(move.resources(), move.userId());
+                this.showTradeRequest(move.resources(), move.userId());}
+        }
+
+        //accepted trade
+        errorService.setErrorCodesTrading();
+        if (move.resources() != null) {
+            if (move.action().equals("offer") && this.tradingController != null) {
+                this.tradingController.handleRequest(move.resources(), move.userId());
             }
         }
-    }
 
-    private void onPlayerUpdated(EventDto<Player> playerEventDto) {
-        Player updatedPlayer = playerEventDto.data();
-        if (updatedPlayer.userId().equals(userID)) {
-            playerResourceListController.setPlayer(updatedPlayer);
-            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
-
-            HashMap<String, Integer> resources = updatedPlayer.resources();
-            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
-            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
-            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
-            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
-            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
-
-            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
-            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
-            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
-
+        //declined trade
+        if (move.resources() == null) {
+            if (move.action().equals("offer") && this.tradingController != null) {
+                disposables.add(pioneerService.createMove("accept", null, null, null, null)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(success -> {
+                                    tradingController.enableCancelButton();
+                                    tradingController.showRequestDeclined(move.userId());
+                                    this.setTradeStarter(false);
+                                },
+                                error -> {
+                                    errorService.handleError(error);
+                                    tradingController.enableCancelButton();
+                                    this.setTradeStarter(false);
+                                }
+                        ));
+            }
         }
-        playerResourceListController.updatePlayerLabel(updatedPlayer);
     }
 
     public void rollAllDice(int rolled) throws InterruptedException {
@@ -631,6 +671,32 @@ public class InGameController extends LoggedInController {
         }
     }
 
+    private void onPlayerUpdated(EventDto<Player> playerEventDto) {
+        Player updatedPlayer = playerEventDto.data();
+        if (updatedPlayer.userId().equals(userID)) {
+            playerResourceListController.setPlayer(updatedPlayer);
+            playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
+            player = updatedPlayer;
+
+            HashMap<String, Integer> resources = updatedPlayer.resources();
+            int amountBrick = playerResourceListController.getResource(resources, RESOURCE_BRICK);
+            int amountLumber = playerResourceListController.getResource(resources, RESOURCE_LUMBER);
+            int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
+            int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
+            int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
+
+
+            enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
+            enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
+            enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
+
+            if (tradingController != null) {
+                tradingController.updatePlayer(updatedPlayer);
+            }
+        }
+        playerResourceListController.updatePlayerLabel(updatedPlayer);
+    }
+
     public void finishMove(ActionEvent actionEvent) {
         errorService.setErrorCodesPioneersPost();
         disposables.add(pioneerService.createMove(MOVE_BUILD, null, null, null, null)
@@ -640,7 +706,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void build(ActionEvent event) {
-        buildService.build();
+        buildService.build(nextHarbors);
     }
 
     //enables the circle/rectangle behind buildings and fills it with color
@@ -752,13 +818,13 @@ public class InGameController extends LoggedInController {
         buildService.setBuildingType(sideType);
         if (currentAction != null) {
             if (currentAction.startsWith("founding")) {
-                buildService.build();
+                buildService.build(nextHarbors);
                 return;
             }
 
         }
 
-        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType);
+        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -1151,7 +1217,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService);
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
@@ -1170,17 +1236,20 @@ public class InGameController extends LoggedInController {
         tradeRessources = resources;
         viewRequestButton.setDisable(false);
         tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
+        viewRequestButton.setStyle("-fx-background-color: " + player.color());
+
         User user = userService.getUserByID(partner).blockingFirst();
-        Player partnerPlayer = pioneerService.getPlayer(partner).blockingFirst();
         tradePartnerAvatarUrl = user.avatar();
         tradePartner = user.name();
+
+        Player partnerPlayer = pioneerService.getPlayer(partner).blockingFirst();
         tradePartnerColor = colorService.getColor(partnerPlayer.color());
-        playerWantTradeLabel.setText(tradePartner + bundle.getString("player.want.trade"));
+        playerWantTradeLabel.setText(tradePartner + " " + bundle.getString("player.want.trade"));
         tradeRequestPopup.setVisible(true);
     }
 
     public void viewRequest(ActionEvent actionEvent) {
-        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor);
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");
@@ -1213,5 +1282,13 @@ public class InGameController extends LoggedInController {
         if (tradeRequestPopup.isVisible()) {
             tradeRequestPopup.setVisible(false);
         }
+    }
+
+    public boolean isTradeStarter() {
+        return tradeStarter;
+    }
+
+    public void setTradeStarter(boolean tradeStarter) {
+        this.tradeStarter = tradeStarter;
     }
 }
