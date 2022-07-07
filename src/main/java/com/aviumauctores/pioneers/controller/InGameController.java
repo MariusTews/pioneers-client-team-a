@@ -53,6 +53,7 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
+    private Player player;
 
     private final EventListener eventListener;
     private final SoundService soundService;
@@ -150,7 +151,7 @@ public class InGameController extends LoggedInController {
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
 
-    private Boolean spectator;
+    private boolean spectator;
 
 
     @Inject

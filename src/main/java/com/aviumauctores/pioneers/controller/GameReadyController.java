@@ -421,7 +421,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void startGame(ActionEvent actionEvent) {
-        onlyspectator=getOnlySpectator();
+        onlyspectator = getOnlySpectator();
         if (readyMembers != allMembers) {
             app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready"));
             return;
@@ -432,12 +432,7 @@ public class GameReadyController extends PlayerListController {
             return;
         }
 
-        if (gameMemberService.listCurrentGameMembers().blockingFirst().size() < 2) {
-            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.enough.players"));
-            return;
-        }
-
-        if (gameMemberService.listCurrentGameMembers().blockingFirst().size() >= 2 && onlyspectator) {
+        if (onlyspectator) {
             app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.enough.players"));
             return;
         }
@@ -662,7 +657,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public boolean getOnlySpectator() {
-        onlyspectator=true;
+        onlyspectator = true;
         for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
             if (!m.spectator()) {
                 onlyspectator = false;

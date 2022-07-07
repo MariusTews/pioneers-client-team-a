@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers;
 
+import com.aviumauctores.pioneers.controller.InGameController;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -23,6 +24,7 @@ class AppTest extends ApplicationTest {
         MainComponent testComponent = DaggerTestComponent.builder().mainApp(app).build();
         app.start(stage);
         app.show(testComponent.loginController());
+
     }
 
     @Override
@@ -120,7 +122,14 @@ class AppTest extends ApplicationTest {
 
         screenAsserts.assertGameReadyScreen();
         clickOn("#gameReadyButton");
+        clickOn("#pickColourMenu");
+        type(KeyCode.KP_DOWN);
+        sleep(200);
+        type(KeyCode.ESCAPE);
         clickOn("#startGameButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        sleep(500);
+
 
         screenAsserts.assertIngameScreen();
         // Go back to game ready screen
