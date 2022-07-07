@@ -387,6 +387,10 @@ public class GameReadyController extends PlayerListController {
             onButton.setDisable(true);
         }
 
+        if (!(gameService.getOwnerID().equals(userService.getCurrentUserID()))) {
+            gameOptionButton.setDisable(true);
+        }
+
         return parent;
     }
 
