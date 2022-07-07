@@ -52,7 +52,7 @@ public class ErrorService {
             String message = errorCodes.get(Integer.toString(response.statusCode()));
             Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
         } else {
-            app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+            app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
         }
     }
 
@@ -148,8 +148,10 @@ public class ErrorService {
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
-    public void setErrorCodesTradeController() {
+    public void setErrorCodesTrading() {
         errorCodes.put("403" , bundle.getString("trade.error"));
+        errorCodes.put("404", bundle.getString("not.found"));
+        errorCodes.put("400", bundle.getString("bad.request"));
     }
 
 }

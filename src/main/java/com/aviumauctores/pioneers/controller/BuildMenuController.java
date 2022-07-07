@@ -9,6 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class BuildMenuController implements Controller {
@@ -17,16 +19,17 @@ public class BuildMenuController implements Controller {
     private final String buildingType;
 
     private final Boolean enableButton;
+    private final HashMap<String, List<String>> nextHarbors;
 
     @FXML
     private Button buildButton;
 
-    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType) {
+    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, HashMap<String, List<String>> nextHarbors, InGameController inGameController) {
         this.buildService = buildService;
         this.bundle = bundle;
         this.buildingType = buildingType;
         this.enableButton = enableButton;
-
+        this.nextHarbors = nextHarbors;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class BuildMenuController implements Controller {
 
     public void build(ActionEvent actionEvent) {
         buildService.setCurrentAction("build");
-        buildService.build();
+        buildService.build(nextHarbors);
         buildButton.setDisable(true);
     }
 }

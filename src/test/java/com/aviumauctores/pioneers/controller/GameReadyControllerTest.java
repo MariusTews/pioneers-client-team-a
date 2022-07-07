@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.inject.Provider;
 import java.util.List;
@@ -115,6 +116,9 @@ class GameReadyControllerTest extends ApplicationTest {
         // create a member
         Member createdMember = new Member ("", "", "12", "42", true, null, false);
         memberUpdates.onNext (new EventDto<> ("created", createdMember));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
         // The list should now have 2 items: one existing member from REST and one new member
         verifyThat (playerList, hasItems (2));
     }
