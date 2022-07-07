@@ -4,10 +4,8 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.service.GameService;
-import com.aviumauctores.pioneers.service.ErrorService;
-import com.aviumauctores.pioneers.service.LoginService;
-import com.aviumauctores.pioneers.service.UserService;
+import com.aviumauctores.pioneers.model.Member;
+import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
@@ -39,6 +37,7 @@ public class JoinGameController extends LoggedInController {
     private final App app;
     private final GameService gameService;
     private final ErrorService errorService;
+    private final GameMemberService gameMemberService;
     private final EventListener eventListener;
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
@@ -73,6 +72,7 @@ public class JoinGameController extends LoggedInController {
     public JoinGameController(App app,
                               LoginService loginService, UserService userService,
                               GameService gameService, ErrorService errorService,
+                              GameMemberService gameMemberService,
                               EventListener eventListener,
                               ResourceBundle bundle,
                               Provider<LobbyController> lobbyController,
@@ -81,6 +81,7 @@ public class JoinGameController extends LoggedInController {
         this.app = app;
         this.gameService = gameService;
         this.errorService = errorService;
+        this.gameMemberService = gameMemberService;
         this.eventListener = eventListener;
         this.bundle = bundle;
         this.lobbyController = lobbyController;
@@ -89,6 +90,20 @@ public class JoinGameController extends LoggedInController {
 
     public void init() {
         disposables = new CompositeDisposable();
+
+        disposables.add(gameMemberService.listCurrentGameMembers()
+                .observeOn(FX_SCHEDULER)
+                .subscribe(members -> {
+                    for (Member m : members) {
+                        if (m.userId().equals(userService.getCurrentUserID())) {
+                            GameReadyController controller = gameReadyController.get();
+                            controller.setComingFromIngame(true);
+                            app.show(controller);
+                        }
+                    }
+                })
+        );
+
         show = new Image(Objects.requireNonNull(Main.class.getResource("views/showPassword.png")).toString());
         hide = new Image(Objects.requireNonNull(Main.class.getResource("views/notShowPassword.png")).toString());
         disposables.add(gameService.getCurrentGame()

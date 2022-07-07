@@ -338,7 +338,13 @@ public class GameReadyController extends PlayerListController {
 
         disposables.add(gameService.getCurrentGame()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(game -> gameNameLabel.setText(game.name())));
+                .subscribe(game -> {
+                    gameNameLabel.setText(game.name());
+                    gameService.setOwnerID(game.owner());
+                    if (!(gameService.getOwnerID().equals(userService.getCurrentUserID()))) {
+                        gameOptionButton.setDisable(true);
+                    }
+                }));
 
         disposables.add(userService.getUserName(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
@@ -385,10 +391,6 @@ public class GameReadyController extends PlayerListController {
             gameOptionButton.setDisable(true);
             offButton.setDisable(true);
             onButton.setDisable(true);
-        }
-
-        if (!(gameService.getOwnerID().equals(userService.getCurrentUserID()))) {
-            gameOptionButton.setDisable(true);
         }
 
         return parent;
