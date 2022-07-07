@@ -464,7 +464,7 @@ public class TradingController implements Controller {
         }
     }
 
-    //get counterpropasal
+    //get counter-proposal
     public void handleRequest(HashMap<String, Integer> resources, String userId) {
         if (Objects.equals(resources, sendResources)) {
             disposables.add(pioneerService.createMove("accept", null, null, userId, null)

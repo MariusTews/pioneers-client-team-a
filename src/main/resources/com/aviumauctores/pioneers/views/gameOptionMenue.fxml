@@ -9,9 +9,9 @@
 <Pane fx:id="paneOption" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.GameOptionController">
-   <Button fx:id="cancelButton" layoutX="40.0" layoutY="255.0" mnemonicParsing="false" onAction="#leaveOption"
+   <Button layoutX="40.0" layoutY="255.0" mnemonicParsing="false" onAction="#leaveOption"
            prefHeight="29.0" prefWidth="95.0" text="%cancel"/>
-   <Button fx:id="takeOverButton" layoutX="172.0" layoutY="255.0" mnemonicParsing="false" onAction="#takeOverOption"
+   <Button layoutX="172.0" layoutY="255.0" mnemonicParsing="false" onAction="#takeOverOption"
            prefHeight="29.0" prefWidth="95.0" text="%takeOver">
       <opaqueInsets>
          <Insets/>

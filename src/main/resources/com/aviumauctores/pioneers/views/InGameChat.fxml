@@ -10,37 +10,28 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="254.0" prefWidth="254.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
-    <children>
-        <VBox spacing="10.0">
-         <children>
-            <TabPane fx:id="tabPane" prefHeight="194.0" prefWidth="252.0" tabClosingPolicy="UNAVAILABLE">
-               <tabs>
-                  <Tab fx:id="allChatTab" text="%all">
-                     <content>
-                        <ScrollPane fx:id="chatPane" prefHeight="165.0" prefWidth="260.0">
-                           <content>
-                              <VBox />
-                           </content>
-                        </ScrollPane>
-                     </content>
-                  </Tab>
-               </tabs>
-            </TabPane>
-            <HBox prefHeight="38.0" prefWidth="251.0">
-               <children>
-                  <TextField fx:id="messageTextField" prefHeight="31.0" prefWidth="137.0" promptText="%message">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <Button fx:id="sendMessageButton" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="70.0" text="%send" />
-               </children>
-               <padding>
-                  <Insets top="10.0" />
-               </padding>
-            </HBox>
-         </children>
-        </VBox>
-    </children>
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="254.0" prefWidth="254.0" xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.aviumauctores.pioneers.controller.InGameChatController">
+   <VBox spacing="10.0">
+      <TabPane fx:id="tabPane" prefHeight="194.0" prefWidth="252.0" tabClosingPolicy="UNAVAILABLE">
+         <Tab fx:id="allChatTab" text="%all">
+            <ScrollPane prefHeight="165.0" prefWidth="260.0">
+               <VBox/>
+            </ScrollPane>
+         </Tab>
+      </TabPane>
+      <HBox prefHeight="38.0" prefWidth="251.0">
+         <padding>
+            <Insets top="10.0"/>
+         </padding>
+         <TextField fx:id="messageTextField" prefHeight="31.0" prefWidth="137.0" promptText="%message">
+            <HBox.margin>
+               <Insets right="10.0"/>
+            </HBox.margin>
+         </TextField>
+         <Button fx:id="sendMessageButton" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0"
+                 prefWidth="70.0" text="%send"/>
+      </HBox>
+   </VBox>
 </AnchorPane>

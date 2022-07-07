@@ -47,8 +47,6 @@ public class InGameChatController implements Controller {
     @FXML
     public Tab allChatTab;
     @FXML
-    public ScrollPane chatPane;
-    @FXML
     public Button sendMessageButton;
 
 

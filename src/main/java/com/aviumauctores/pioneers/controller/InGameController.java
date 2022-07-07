@@ -721,7 +721,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         Player player = pioneerService.getPlayer(owner).blockingFirst();
-        //cirles are behind settlements and cities
+        // circles are behind settlements and cities
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
                 circle.setFill(Color.web(player.color()));
@@ -1093,7 +1093,7 @@ public class InGameController extends LoggedInController {
         if (count == 0) {
             changeRobberPositionAndRobTarget(robberFieldId, null);
         }
-        //otherwise enable the player to click on the building images to choose a rob target
+        //otherwise enable the player to click on the building images to choose a target to rob
         else {
             robberPane.setVisible(false);
             robberPane.setDisable(true);
@@ -1144,14 +1144,14 @@ public class InGameController extends LoggedInController {
         return count;
     }
 
-    //this method is called when you click on a rob target (building of another player)
+    // this method is called when you click on a robbing-target (building of another player)
     private void initiateRob(MouseEvent mouseEvent) {
         String robberFieldId = ((Node) mouseEvent.getSource()).getAccessibleText();
         String target = ((Node) mouseEvent.getSource()).getId().split("#")[2];
         changeRobberPositionAndRobTarget(robberFieldId, target);
     }
 
-    //sends a rob move to the server with the new position and the rob target
+    // sends a robbing-move to the server with the new position and the robbing-target
     private void changeRobberPositionAndRobTarget(String newRobberPosition, String target) {
         Point3D p = Point3D.readCoordinatesFromID(newRobberPosition);
 
@@ -1171,7 +1171,7 @@ public class InGameController extends LoggedInController {
                                     ((ImageView) n).setImage(null);
                                 }
                             }
-                            //reset all changes made to the rob targets (buildings of other players)
+                            //reset all changes made to the robbing-targets (buildings of other players)
                             for (Node n : robTargets) {
                                 n.setOnMouseClicked(this::onFieldClicked);
                                 n.setDisable(true);

@@ -88,7 +88,6 @@ public class PlayerRequestsListController implements Controller {
     public void destroy(boolean closed) {
         for (PlayerRequestsItemController items : listItems.values()) {
             items.destroy(closed);
-            items = null;
         }
 
     }
