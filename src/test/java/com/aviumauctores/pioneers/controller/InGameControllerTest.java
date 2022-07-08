@@ -269,4 +269,5 @@ public class InGameControllerTest extends ApplicationTest {
         dropButton = lookup("#dropButton").tryQuery();
         assertThat(dropButton).isNotPresent();
     }
+
 }
