@@ -654,22 +654,30 @@ public class InGameController extends LoggedInController {
                     }
 
                     case MOVE_ROLL -> {
+                        freeFieldVisibility(false);
                         rollButton.setDisable(false);
                         arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
                         tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
-                        freeFieldVisibility(false);
                     }
                     case MOVE_DROP -> {
+                        freeFieldVisibility(false);
                         rollButton.setDisable(true);
+                        arrowOnDice.setVisible(false);
+                        finishMoveButton.setDisable(true);
+                        tradeButton.setDisable(true);
+                        roadAndCrossingPane.setDisable(true);
                         showDropWindow();
                     }
                     case MOVE_ROB -> {
+                        updateFields(true, roadAndCrossingPane);
                         freeFieldVisibility(false);
-                        //TODO
-                        //updateFields(false, roadAndCrossingPane);
                         rollButton.setDisable(true);
+                        arrowOnDice.setVisible(false);
+                        finishMoveButton.setDisable(true);
+                        tradeButton.setDisable(true);
+                        roadAndCrossingPane.setDisable(true);
                         enableRobberFields();
                     }
                 }
@@ -1088,6 +1096,7 @@ public class InGameController extends LoggedInController {
 
     //enables all robber fields on the hexagon tiles which are currently empty
     private void enableRobberFields() {
+        robberPane.setDisable(false);
         for (Node n : robberPane.getChildren()) {
             //check that n has no image to prevent overwriting the image on the current robber position
             if (((ImageView) n).getImage() == null) {
