@@ -42,7 +42,6 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class InGameController extends LoggedInController {
     private final App app;
     private final ResourceBundle bundle;
-
     private final ColorService colorService;
     private final PlayerResourceListController playerResourceListController;
     private final GameMemberService gameMemberService;
@@ -53,14 +52,12 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
+    private Player player;
 
     private final EventListener eventListener;
     private final SoundService soundService;
-
     private String[] resourceNames;
-
     private Timer timer;
-
     private Label[] resourceLabels;
 
     @FXML
@@ -68,10 +65,8 @@ public class InGameController extends LoggedInController {
 
     @FXML
     public ImageView arrowOnDice;
-
     @FXML
     public Label yourTurnLabel;
-
     @FXML
     Label timeLabel;
 
@@ -100,14 +95,11 @@ public class InGameController extends LoggedInController {
     private String currentPlayerID;
     private String userID;
     private String currentAction;
-
     private final Provider<InGameChatController> inGameChatController;
     private final StateService stateService;
     private final Provider<LobbyController> lobbyController;
     private final Provider<GameReadyController> gameReadyController;
-
     private TradingController tradingController;
-
     @FXML
     private Slider soundSlider;
 
@@ -115,10 +107,8 @@ public class InGameController extends LoggedInController {
     public List<Circle> vpCircles;
 
     public int memberVP;
-
     @FXML
     public Label rollSum;
-
     @FXML
     public ImageView diceImage1;
     @FXML
@@ -136,7 +126,6 @@ public class InGameController extends LoggedInController {
     private DropMenuController dropMenuController;
     private Parent buildMenu;
     private Parent dropMenu;
-
     private Parent tradingMenu;
     private TradeRequestController tradeRequestController;
     private Parent requestMenu;
@@ -147,7 +136,6 @@ public class InGameController extends LoggedInController {
 
 
     // These are the Sound-Icons
-
     Image muteImage;
     Image unmuteImage;
 
@@ -157,7 +145,6 @@ public class InGameController extends LoggedInController {
     private final ErrorService errorService;
     private final BuildService buildService;
     private final MapController mapController;
-
     private boolean fieldsMovedAlready;
     private final List<Node> robTargets = new ArrayList<>();
 
@@ -169,8 +156,9 @@ public class InGameController extends LoggedInController {
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
 
+    private boolean spectator;
+
     private HashMap<String, List<String>> nextHarbors;
-    private Player player;
     private boolean rejoin = false;
     private final HashMap<String, String> playerColors = new HashMap<>();
 
@@ -204,6 +192,13 @@ public class InGameController extends LoggedInController {
         fieldsMovedAlready = false;
     }
 
+    public void setSpectator(Boolean spectator) {
+        this.spectator = (spectator);
+    }
+
+    public boolean getSpectator() {
+        return this.spectator;
+    }
 
     @Override
     public void init() {
@@ -217,6 +212,11 @@ public class InGameController extends LoggedInController {
 
         userID = userService.getCurrentUserID();
 
+        try {
+            player = pioneerService.getPlayer(userID).blockingFirst();
+        } catch (Exception ignored) {
+
+        }
         //get player colors
         disposables.add(this.pioneerService.listPlayers()
                 .observeOn(FX_SCHEDULER)
@@ -343,7 +343,7 @@ public class InGameController extends LoggedInController {
 
                             errorService.setErrorCodesPioneersPost();
 
-                            if (!rejoin) {
+                            if (!rejoin && !spectator) {
                                 disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
                                         .observeOn(FX_SCHEDULER)
                                         .subscribe(move -> {
@@ -356,23 +356,6 @@ public class InGameController extends LoggedInController {
 
                             arrowOnDice.setFitHeight(40.0);
                             arrowOnDice.setFitWidth(40.0);
-
-                            //TODO
-                            /*if (currentPlayerID.equals(userID)) {
-                                arrowOnDice.setVisible(true);
-                                yourTurnLabel.setVisible(true);
-                                updateFields(false, roadPane);
-                                updateFields(true, crossingPane);
-                            } else {
-                                arrowOnDice.setVisible(false);
-                                yourTurnLabel.setVisible(false);
-                                updateFields(false, crossingPane, roadPane);
-                            }
-                            finishMoveButton.setDisable(true);
-                            tradeButton.setDisable(true);
-                            yourTurnLabel.setVisible(false);
-                            */
-
                             soundImage.setImage(muteImage);
                             loadChat();
                             playerResourceListController.init(playerList, currentPlayerID);
@@ -923,7 +906,6 @@ public class InGameController extends LoggedInController {
         app.show(controller);
     }
 
-
     public void soundOnOff(MouseEvent mouseEvent) {
         if (gameSound.isRunning()) {
             soundImage.setImage(unmuteImage);
@@ -982,7 +964,6 @@ public class InGameController extends LoggedInController {
     }
 
     private int i = 0;
-
 
     private void runTimer() {
         timer = new Timer();

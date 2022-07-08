@@ -1,5 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
+import javafx.scene.paint.Color;
+
 import javax.inject.Inject;
 import java.util.HashMap;
 
@@ -37,5 +39,14 @@ public class ColorService {
             }
         }
         return "COLOR NOT FOUND";
+    }
+
+    public String getColor(Color color) {
+        String colorFormat = String.format("#%02x%02x%02x",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
+
+        return colors.get(colorFormat);
     }
 }

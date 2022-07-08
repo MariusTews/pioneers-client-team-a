@@ -115,6 +115,9 @@ public class GameReadyController extends PlayerListController {
     private boolean comingFromIngame = false;
     private boolean rejoinFromLobby = false;
 
+    private boolean onlyspectator;
+    private boolean spectator;
+
 
     @Inject
     public GameReadyController(App app,
@@ -165,7 +168,9 @@ public class GameReadyController extends PlayerListController {
                     if (event.endsWith("created") || event.endsWith("updated")) {
                         allMembers = game.members();
                         if (game.started()) {
-                            app.show(inGameController.get());
+                            InGameController controller = inGameController.get();
+                            controller.setSpectator(spectator);
+                            app.show(controller);
                         }
                     }
                 }));
@@ -252,6 +257,10 @@ public class GameReadyController extends PlayerListController {
         Member member = eventDto.data();
         String memberID = member.userId();
         Color memberColor = member.color();
+
+        if (memberID.equals(userService.getCurrentUserID())) {
+            spectator = member.spectator();
+        }
         // if the colour is valid
         if (colourIsTaken.get(memberColor) != null) {
             // check all colours
@@ -440,6 +449,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void startGame(ActionEvent actionEvent) {
+        onlyspectator = getOnlySpectator();
         if (readyMembers != allMembers) {
             app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready"));
             return;
@@ -449,6 +459,12 @@ public class GameReadyController extends PlayerListController {
             app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.coloured"));
             return;
         }
+
+        if (onlyspectator) {
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.enough.players"));
+            return;
+        }
+
         disposables.add(gameService.startGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> {
@@ -683,5 +699,16 @@ public class GameReadyController extends PlayerListController {
         gameOptionButton.setDisable(true);
         offButton.setDisable(true);
         onButton.setDisable(true);
+    }
+
+    public boolean getOnlySpectator() {
+        onlyspectator = true;
+        for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
+            if (!m.spectator()) {
+                onlyspectator = false;
+                break;
+            }
+        }
+        return onlyspectator;
     }
 }
