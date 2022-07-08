@@ -53,10 +53,9 @@
                </TextField>
                <Button fx:id="showPasswordButton" layoutX="154.0" layoutY="17.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="18.0" prefWidth="37.0">
                   <graphic>
-                     <ImageView fx:id="viewPassword" accessibleRole="BUTTON" fitHeight="23.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                           <Image url="@showPassword.png" />
-                        </image>
+                     <ImageView fx:id="viewPassword" accessibleRole="BUTTON" fitHeight="23.0" fitWidth="25.0"
+                                pickOnBounds="true" preserveRatio="true">
+                        <Image url="@showPassword.png"/>
                      </ImageView>
                   </graphic>
                </Button>

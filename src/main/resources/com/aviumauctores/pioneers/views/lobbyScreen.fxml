@@ -12,24 +12,20 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LobbyController">
    <HBox prefHeight="32.0" prefWidth="600.0">
-      <children>
-         <ImageView id="britishFlag" fitHeight="28.0" fitWidth="38.0" onMouseClicked="#setEnglish" pickOnBounds="true" preserveRatio="true">
-            <image>
-               <Image url="@../en.png" />
-            </image>
-            <HBox.margin>
-               <Insets left="500.0" top="5.0" />
-            </HBox.margin>
-         </ImageView>
-         <ImageView id="germanFlag" fitHeight="30.0" fitWidth="40.0" onMouseClicked="#setGerman" pickOnBounds="true" preserveRatio="true">
-            <image>
-               <Image url="@../de.png" />
-            </image>
-            <HBox.margin>
-               <Insets left="10.0" top="5.0" />
-            </HBox.margin>
-         </ImageView>
-      </children>
+      <ImageView id="britishFlag" fitHeight="28.0" fitWidth="38.0" onMouseClicked="#setEnglish" pickOnBounds="true"
+                 preserveRatio="true">
+         <HBox.margin>
+            <Insets left="500.0" top="5.0"/>
+         </HBox.margin>
+         <Image url="@../en.png"/>
+      </ImageView>
+      <ImageView id="germanFlag" fitHeight="30.0" fitWidth="40.0" onMouseClicked="#setGerman" pickOnBounds="true"
+                 preserveRatio="true">
+         <HBox.margin>
+            <Insets left="10.0" top="5.0"/>
+         </HBox.margin>
+         <Image url="@../de.png"/>
+      </ImageView>
    </HBox>
    <HBox alignment="CENTER_LEFT" prefHeight="350.0" prefWidth="600.0" spacing="70.0">
       <VBox.margin>
@@ -72,9 +68,7 @@
          <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#toSettings" style="-fx-background-color: transparent;">
             <graphic>
                <ImageView fitHeight="40.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
-                  <image>
-                     <Image url="@ProfileSettings.png" />
-                  </image>
+                  <Image url="@ProfileSettings.png"/>
                </ImageView>
             </graphic>
          </Button>
