@@ -412,32 +412,6 @@ public class InGameController extends LoggedInController {
 
                             errorService.setErrorCodesPioneersPost();
 
-                            disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(move -> {
-                                    }, errorService::handleError));
-
-                            currentPlayerID = pioneerService.getState().blockingFirst().expectedMoves().get(0).players().get(0);
-                            arrowOnDice.setFitHeight(40.0);
-                            arrowOnDice.setFitWidth(40.0);
-                            yourTurnLabel.setVisible(false);
-
-                            if (currentPlayerID.equals(userID)) {
-                                arrowOnDice.setVisible(true);
-                                yourTurnLabel.setVisible(true);
-                                updateFields(false, roadPane);
-                                updateFields(true, crossingPane);
-                            } else {
-                                arrowOnDice.setVisible(false);
-                                yourTurnLabel.setVisible(false);
-                                updateFields(false, crossingPane, roadPane);
-                            }
-                            disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".players.*.updated", Player.class)
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(this::onPlayerUpdated));
-
-                            errorService.setErrorCodesPioneersPost();
-
 
                             if (!spectator) {
                                 disposables.add(pioneerService.createMove(MOVE_FOUNDING_ROLL, null, null, null, null)
