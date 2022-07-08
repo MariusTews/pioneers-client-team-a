@@ -79,7 +79,7 @@ public class PlayerRequestsItemController implements Controller {
     }
 
     public void showRequestOpen() {
-        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/Loading.png")).toString());
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/hourglass.png")).toString());
         requestView.setImage(requestStatus);
         requestView.setVisible(true);
     }

@@ -144,9 +144,6 @@ public class InGameController extends LoggedInController {
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
 
-    private boolean tradeStarter = false;
-
-
     // These are the Sound-Icons
 
     Image muteImage;
@@ -172,6 +169,8 @@ public class InGameController extends LoggedInController {
 
     private HashMap<String, List<String>> nextHarbors;
     private Player player;
+
+    private boolean longestRoad;
 
 
     @Inject
@@ -208,6 +207,7 @@ public class InGameController extends LoggedInController {
     public void init() {
         disposables = new CompositeDisposable();
         memberVP = 0;
+        longestRoad = false;
         resourceNames = new String[]{RESOURCE_BRICK, RESOURCE_GRAIN, RESOURCE_LUMBER, RESOURCE_ORE, RESOURCE_WOOL};
         enableButtons.put(BUILDING_TYPE_CITY, false);
         enableButtons.put(BUILDING_TYPE_SETTLEMENT, false);
@@ -477,12 +477,10 @@ public class InGameController extends LoggedInController {
                         subscribe(success -> {
                                     tradingController.enableCancelButton();
                                     tradingController.showRequestDeclined(move.userId());
-                                    this.setTradeStarter(false);
                                 },
                                 error -> {
                                     errorService.handleError(error);
                                     tradingController.enableCancelButton();
-                                    this.setTradeStarter(false);
                                 }
                         ));
             }
@@ -694,7 +692,29 @@ public class InGameController extends LoggedInController {
                 tradingController.updatePlayer(updatedPlayer);
             }
         }
+        if (updatedPlayer.longestRoad() != 0) {
+            playerResourceListController.setLongestRoad(updatedPlayer);
+            if (longestRoad && !Objects.equals(updatedPlayer.userId(), userID)) {
+                longestRoad = false;
+                this.deleteVP(2);
+            } else if (!longestRoad && Objects.equals(updatedPlayer.userId(), userID)){
+                longestRoad = true;
+                this.gainVP(1);
+                this.gainVP(1);
+            }
+        }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
+    }
+
+    private void deleteVP(int vpLoss) {
+        memberVP -= vpLoss;
+        for (int i = memberVP-1; i > memberVP-vpLoss-1; i--) {
+            if (vpCircles.get(i).getFill() == Color.GOLD) {
+                vpCircles.get(i).setFill(null);
+            }
+        }
+
+
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -1282,13 +1302,5 @@ public class InGameController extends LoggedInController {
         if (tradeRequestPopup.isVisible()) {
             tradeRequestPopup.setVisible(false);
         }
-    }
-
-    public boolean isTradeStarter() {
-        return tradeStarter;
-    }
-
-    public void setTradeStarter(boolean tradeStarter) {
-        this.tradeStarter = tradeStarter;
     }
 }

@@ -8,6 +8,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.*;
 
 public class PlayerResourceListController {
@@ -24,14 +25,18 @@ public class PlayerResourceListController {
     private String currentPlayerID;
     private final HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
     private Player player;
+    private Player longestRoadPlayer;
+
+    private final Provider<InGameController> inGameController;
 
     @Inject
-    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService) {
+    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService, Provider<InGameController> inGameController) {
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.bundle = bundle;
         this.errorService = errorService;
+        this.inGameController = inGameController;
     }
 
     public void init(ListView<HBox> node, String startingPlayer) {
@@ -47,7 +52,7 @@ public class PlayerResourceListController {
         String playerID = player.userId();
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
-        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
+        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle, inGameController.get());
         listItems.put(playerID, controller);
         playerList.getItems().add(playerList.getItems().size(), controller.createBox());
         //  playerList.getItems ().add (playerList.getItems ().size (), controller.createSpectatorBox ());
@@ -105,6 +110,14 @@ public class PlayerResourceListController {
 
     public int getResource(HashMap<String, Integer> resources, String resourceName) {
         return resources.getOrDefault(resourceName, 0);
+    }
+
+    public void setLongestRoad(Player player) {
+        if (longestRoadPlayer != null) {
+            listItems.get(longestRoadPlayer.userId()).setLongestRoadViewInvisible();
+        }
+        listItems.get(player.userId()).setLongestRoadViewVisible();
+        longestRoadPlayer = player;
     }
 }
 
