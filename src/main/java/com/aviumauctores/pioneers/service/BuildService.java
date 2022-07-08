@@ -2,11 +2,9 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Building;
-import com.aviumauctores.pioneers.model.Player;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Circle;
 import retrofit2.HttpException;
 
 import javax.inject.Inject;

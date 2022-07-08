@@ -423,7 +423,7 @@ public class GameReadyController extends PlayerListController {
         disposables.add(gameService.startGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> {
-                    // do nothing, the switch to ingame screen happens with the websocket event
+                    // do nothing, the switch to in-game-screen happens with the websocket event
                 }, throwable -> {
                     if (throwable instanceof HttpException ex) {
                         ErrorResponse response = errorService.readErrorMessage(ex);
@@ -523,7 +523,7 @@ public class GameReadyController extends PlayerListController {
                 pickColourMenu.setValue(chosenColour);
                 // ...and free
             } else {
-                // the hexcode is created
+                // the hex-code is created
                 String colour = "#" + pickColourMenu.getValue().toString().substring(2, 8);
                 // send to the server
                 disposables.add(gameMemberService.updateColour(userService.getCurrentUserID(), colour)
@@ -620,9 +620,9 @@ public class GameReadyController extends PlayerListController {
 
     }
 
-    public void closeGameOptionMenu(boolean menueClosed) {
+    public void closeGameOptionMenu(boolean menuClosed) {
         if (gameOptionController != null) {
-            gameOptionController.destroy(menueClosed);
+            gameOptionController.destroy(menuClosed);
             gameOptionController = null;
         }
         if (gameOption != null) {

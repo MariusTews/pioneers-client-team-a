@@ -14,7 +14,7 @@ public class CryptoService {
     public CryptoService() {
         try {
             cipher = Cipher.getInstance("AES");
-            String key = "fgd5j0kkBar1A4j5"; // 128 bit key
+            String key = "fgd5j0kkBar1A4j5"; // 128-bit key
             secretKey = new SecretKeySpec(key.getBytes(), "AES");
         } catch (Exception e) {
             e.printStackTrace();

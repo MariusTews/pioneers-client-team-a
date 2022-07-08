@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import retrofit2.HttpException;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -30,6 +31,8 @@ import java.util.ResourceBundle;
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class SettingsController implements Controller {
+
+    protected CompositeDisposable disposables;
 
     private final ResourceBundle bundle;
 
@@ -89,7 +92,7 @@ public class SettingsController implements Controller {
 
 
     public void init() {
-        userService.getUserByID(userService.getCurrentUserID()).observeOn(FX_SCHEDULER).subscribe(res -> {
+        disposables.add(userService.getUserByID(userService.getCurrentUserID()).observeOn(FX_SCHEDULER).subscribe(res -> {
             currentUser = res;
             currentNameLabel.setText(res.name());
             String avatarUrl = currentUser.avatar();
@@ -99,7 +102,7 @@ public class SettingsController implements Controller {
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
-        });
+        }));
         errorService.setErrorCodesUsers();
     }
 
@@ -187,19 +190,19 @@ public class SettingsController implements Controller {
             return;
         }
         errorService.setErrorCodesUsers();
-        userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null))
+        disposables.add(userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
                     currentNameLabel.setText(r.name());
                     currentUser = r;
                     closeWindow();
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
     public void changePassword(ActionEvent event) {
         //check the old password with a login
         String oldPassword = oldPasswordField.getText();
-        loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
+        disposables.add(loginService.checkPasswordLogin(currentUser.name(), oldPassword).observeOn(FX_SCHEDULER).subscribe(res -> {
             //this only happens, if the login was successful
             //change the password to the new Parameter
             PasswordField newPasswordField = (PasswordField) changeWindowVBox.getChildren().get(2);
@@ -211,7 +214,7 @@ public class SettingsController implements Controller {
             if (newPassword.isBlank()) {
                 return;
             }
-            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null))
+            disposables.add(userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null))
                     .observeOn(FX_SCHEDULER)
                     .subscribe(r -> {
                         closeWindow();
@@ -219,18 +222,18 @@ public class SettingsController implements Controller {
                     }, throwable -> {
                         errorService.setErrorCodesUsers();
                         errorService.handleError(throwable);
-                    });
+                    }));
         }, throwable -> {
             errorService.setErrorCodesLogin();
             errorService.handleError(throwable);
-        });
+        }));
     }
 
     public void changeAvatar(ActionEvent event) {
         //change the avatar to the new Parameter
         String avatarUrl = newParameterField.getText();
         errorService.setErrorCodesUsers();
-        userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
+        disposables.add(userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
                     try {
@@ -241,7 +244,7 @@ public class SettingsController implements Controller {
                     }
                     currentUser = r;
                     closeWindow();
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
     public void closeWindow() {

@@ -16,16 +16,16 @@
     <Pane fx:id="roadPane" prefHeight="580.0" prefWidth="583.0">
     </Pane>
     <HBox fx:id="vpBox" alignment="CENTER" prefHeight="77.0" prefWidth="628.0">
-        <Circle fx:id="vp01" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp02" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp03" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp04" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp05" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp06" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp07" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp08" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp09" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp10" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
     </HBox>
     <Label fx:id="timeLabel" layoutX="238.0" layoutY="608.0" prefHeight="17.0" prefWidth="143.0" text="Label" />
 </Pane>
