@@ -145,6 +145,8 @@ public class BuildService {
             if (selectedField.getId().startsWith("building")) {
                 selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);
             }
+            //necessary because of runtime issues on rejoin
+            selectedField.setVisible(true);
         }
     }
 

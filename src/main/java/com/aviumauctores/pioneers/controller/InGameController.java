@@ -671,7 +671,6 @@ public class InGameController extends LoggedInController {
                         showDropWindow();
                     }
                     case MOVE_ROB -> {
-                        updateFields(true, roadAndCrossingPane);
                         freeFieldVisibility(false);
                         rollButton.setDisable(true);
                         arrowOnDice.setVisible(false);
