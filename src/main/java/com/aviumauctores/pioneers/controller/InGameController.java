@@ -28,7 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -169,8 +168,8 @@ public class InGameController extends LoggedInController {
 
     private HashMap<String, List<String>> nextHarbors;
     private Player player;
-
     private boolean longestRoad;
+    private HashMap<String, Integer> resourceRatio;
 
 
     @Inject
@@ -216,6 +215,14 @@ public class InGameController extends LoggedInController {
 
         // Initialize these objects here because else the tests would fail
         userID = userService.getCurrentUserID();
+
+        // init resourceRatio Hashmap
+        resourceRatio = new HashMap<>();
+        resourceRatio.put(RESOURCE_LUMBER, 4);
+        resourceRatio.put(RESOURCE_BRICK, 4);
+        resourceRatio.put(RESOURCE_GRAIN, 4);
+        resourceRatio.put(RESOURCE_ORE, 4);
+        resourceRatio.put(RESOURCE_WOOL, 4);
 
 
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
@@ -332,6 +339,10 @@ public class InGameController extends LoggedInController {
                                     if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
                                         gainVP(1);
                                     }
+                                    if (b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                        String field = "building" + "X" + b.x() + "Y" + b.y() + "Z" + b.z() + "R" + b.side();
+                                        this.checkNewResourceRatio(nextHarbors, field);
+                                    }
                                 }
                                 if (!roadAndCrossingPane.getChildren().contains(position)) {
                                     position.setVisible(true);
@@ -440,6 +451,46 @@ public class InGameController extends LoggedInController {
                 ));
 
         return parent;
+    }
+
+    private void checkNewResourceRatio(HashMap<String, List<String>> harborCrossings, String field) {
+        for (String crossing : harborCrossings.get(null)) {
+            if (Objects.equals(crossing, field)) {
+                if (resourceRatio.get(RESOURCE_BRICK) > 3) {
+                    resourceRatio.put(RESOURCE_BRICK, 3);
+                }
+                if (resourceRatio.get(RESOURCE_ORE) > 3) {
+                    resourceRatio.put(RESOURCE_ORE, 3);
+                }
+                if (resourceRatio.get(RESOURCE_GRAIN) > 3) {
+                    resourceRatio.put(RESOURCE_GRAIN, 3);
+                }
+                if (resourceRatio.get(RESOURCE_LUMBER) > 3) {
+                    resourceRatio.put(RESOURCE_LUMBER, 3);
+                }
+                if (resourceRatio.get(RESOURCE_WOOL) > 3) {
+                    resourceRatio.put(RESOURCE_WOOL, 3);
+                }
+                break;
+            }
+        }
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_BRICK, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_GRAIN, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_LUMBER, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_ORE, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_WOOL, field);
+
+    }
+
+    private void checkTradingRatioTwotoOne(HashMap<String, List<String>> harborCrossings, String resource, String field) {
+        for (String crossing : harborCrossings.get(resource)) {
+            if (Objects.equals(crossing, field)) {
+                if (resourceRatio.get(resource) > 2) {
+                    resourceRatio.put(resource, 2);
+                    break;
+                }
+            }
+        }
     }
 
     protected void onMoveEvent(EventDto<Move> eventDto) {
@@ -726,7 +777,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void build(ActionEvent event) {
-        buildService.build(nextHarbors);
+        buildService.build();
     }
 
     //enables the circle/rectangle behind buildings and fills it with color
@@ -838,13 +889,13 @@ public class InGameController extends LoggedInController {
         buildService.setBuildingType(sideType);
         if (currentAction != null) {
             if (currentAction.startsWith("founding")) {
-                buildService.build(nextHarbors);
+                buildService.build();
                 return;
             }
 
         }
 
-        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
+        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
@@ -1237,7 +1288,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
+        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, resourceRatio, tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
