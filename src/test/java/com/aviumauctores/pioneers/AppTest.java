@@ -1,6 +1,5 @@
 package com.aviumauctores.pioneers;
 
-import com.aviumauctores.pioneers.controller.InGameController;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -103,22 +102,7 @@ class AppTest extends ApplicationTest {
         // Wait for CI
         WaitForAsyncUtils.waitForFxEvents();
 
-        screenAsserts.assertJoinGameScreen();
-        // Back to lobby
-        type(KeyCode.ESCAPE);
-
-        screenAsserts.assertLobbyScreen();
-        // Join again
-        clickOn("Join");
-        // Wait for CI
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Longer password so CI has more time for screen change
-        clickOn("#passwordTextField");
-        write("12345678");
-        screenAsserts.assertJoinGameScreen();
-        // Join game
-        clickOn("#joinGameButton");
+        //you join the game directly because you are already a member of the game
 
         screenAsserts.assertGameReadyScreen();
         clickOn("#gameReadyButton");

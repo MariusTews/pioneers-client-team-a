@@ -75,6 +75,7 @@ class GameReadyChatControllerTest extends ApplicationTest {
         when(eventListener.listen("users.1.*", User.class)).thenReturn(Observable.just(new EventDto<>("", user)));
         when(userService.getUserByID(anyString())).thenReturn(Observable.just(user));
         when(userService.getUserName(anyString())).thenReturn(Observable.just("Struppi"));
+        when(gameService.getOwnerID()).thenReturn("1");
         new App(gameReadyController).start(stage);
     }
 
