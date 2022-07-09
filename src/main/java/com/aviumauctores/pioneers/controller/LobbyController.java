@@ -13,24 +13,27 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class LobbyController extends PlayerListController {
 
     private final App app;
+    public VBox mainVbox;
 
     private User user = null;
     private final GameService gameService;
@@ -49,6 +52,9 @@ public class LobbyController extends PlayerListController {
 
     @FXML
     public Label gameLabel;
+
+    @FXML
+    public Button friendsButton;
 
     @FXML
     public ListView<Parent> gameListView;
@@ -248,5 +254,29 @@ public class LobbyController extends PlayerListController {
     public void setEnglish(MouseEvent event) {
         preferenceService.setLocale(Locale.ENGLISH);
         app.show(this.lobbyController.get());
+    }
+
+    public void showFriends(ActionEvent actionEvent) {
+        ListView<HBox> listView = new ListView<>();
+        HBox hBox1 = new HBox(new Label("Jannis"), new Label("5 Rankingpoints"));
+        hBox1.setSpacing(5);
+
+        User myUser = userService.getUserByID(user._id()).blockingFirst();
+        List<String> friends = myUser.friends();
+
+        System.out.println(friends);
+
+        HBox hBox2 = new HBox(new Label("Paul"), new Label("10 Rankingpoints"));
+        hBox2.setSpacing(5);
+
+        listView.getItems().addAll(hBox1, hBox2);
+
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        Scene dialogScene = new Scene(listView, 300, 200);
+        dialog.setScene(dialogScene);
+        dialog.show();
+
+
     }
 }
