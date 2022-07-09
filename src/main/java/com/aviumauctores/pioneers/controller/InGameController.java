@@ -371,9 +371,13 @@ public class InGameController extends LoggedInController {
                                             rejoin = false;
                                         }, throwable -> System.out.println(throwable.toString() + "| error on list buildings")));
 
-                                disposables.add(this.pioneerService.getPlayer(userID)
+                                disposables.add(this.pioneerService.listPlayers()
                                         .observeOn(FX_SCHEDULER)
-                                        .subscribe(player -> onPlayerUpdated(new EventDto<>(".updated", player)))
+                                        .subscribe(players -> {
+                                            for (Player p : players) {
+                                                onPlayerUpdated(new EventDto<>(".updated", p));
+                                            }
+                                        })
                                 );
                             }
 
