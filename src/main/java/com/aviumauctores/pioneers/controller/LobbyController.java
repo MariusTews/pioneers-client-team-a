@@ -257,23 +257,20 @@ public class LobbyController extends PlayerListController {
     }
 
     public void showFriends(ActionEvent actionEvent) {
-        ListView<HBox> listView = new ListView<>();
-        HBox hBox1 = new HBox(new Label("Jannis"), new Label("5 Rankingpoints"));
-        hBox1.setSpacing(5);
+        ListView<HBox> friendsList = new ListView<>();
 
-        User myUser = userService.getUserByID(user._id()).blockingFirst();
+        User myUser = userService.getUserByID(userService.getCurrentUserID()).blockingFirst();
         List<String> friends = myUser.friends();
 
-        System.out.println(friends);
-
-        HBox hBox2 = new HBox(new Label("Paul"), new Label("10 Rankingpoints"));
-        hBox2.setSpacing(5);
-
-        listView.getItems().addAll(hBox1, hBox2);
+        for (String friend : friends) {
+            String name = userService.getUserName(friend).blockingFirst();
+            HBox friendsHbox = new HBox(new Label(name));
+            friendsList.getItems().add(friendsHbox);
+        }
 
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
-        Scene dialogScene = new Scene(listView, 300, 200);
+        Scene dialogScene = new Scene(friendsList, 300, 200);
         dialog.setScene(dialogScene);
         dialog.show();
 

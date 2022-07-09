@@ -222,9 +222,8 @@ public class InGameController extends LoggedInController {
         User myUser = userService.getUserByID(userID).blockingFirst();
         List<String> actFriends = myUser.friends();
         for (Player newPlayers : newFriends) {
-            String potNewFriend = userService.getUserName(newPlayers.userId()).blockingFirst();
-            if (!actFriends.contains(potNewFriend)) {
-                actFriends.add(potNewFriend);
+            if (!actFriends.contains(newPlayers.userId()) && !newPlayers.userId().equals(myUser._id())) {
+                actFriends.add(newPlayers.userId());
             }
         }
         errorService.setErrorCodesUsers();
