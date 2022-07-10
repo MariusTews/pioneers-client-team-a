@@ -692,6 +692,7 @@ public class InGameController extends LoggedInController {
             int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
+            int resourceSum = amountBrick + amountLumber + amountWool + amountGrain + amountOre;
             disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
 
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
