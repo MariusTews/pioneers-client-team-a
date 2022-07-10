@@ -302,21 +302,21 @@ public class TestModule {
             @Override
             public Observable<List<Member>> listMembers(String gameId) {
                 return Observable.just(List.of(
-                        new Member("", "", "101", "1", true, Color.GREEN, true)
+                        new Member("", "", "101", "1", true, Color.GREEN, false)
                 ));
             }
 
             @Override
             public Observable<Member> createMember(String gameId, CreateMemberDto createMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, "1", createMemberDto.ready(), null, true
+                        "", "", gameId, "1", createMemberDto.ready(), null, createMemberDto.spectator()
                 ));
             }
 
             @Override
             public Observable<Member> getMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false, null, true
+                        "", "", gameId, userId, false, null, false
                 ));
             }
 
@@ -421,7 +421,7 @@ public class TestModule {
                                 new ExpectedMove("founding-settlement-2", List.of("1")),
                                 new ExpectedMove("founding-road-2", List.of("1")),
                                 new ExpectedMove("roll", List.of("1"))
-                        ),      new Point3D(1, 1, 1))
+                        ), new Point3D(1, 1, 1))
                 );
             }
 

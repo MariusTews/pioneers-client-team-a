@@ -18,7 +18,7 @@
             <opaqueInsets>
                <Insets left="70.0" />
             </opaqueInsets>
-            <Pane prefHeight="17.0" prefWidth="21.0" />
+            <Pane prefHeight="19.0" prefWidth="50.0" />
             <Label text="%trade" />
             <Label text="%request">
                <HBox.margin>
@@ -30,34 +30,39 @@
             <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@Wood_icon.png" />
             </ImageView>
-            <Spinner fx:id="tradeWood" prefHeight="25.0" prefWidth="60.0" />
-            <Spinner fx:id="requestWood" prefHeight="25.0" prefWidth="60.0" />
+            <Pane prefHeight="55.0" prefWidth="2.0" />
+            <Spinner fx:id="tradeLumber" prefHeight="25.0" prefWidth="60.0" />
+            <Spinner fx:id="requestLumber" prefHeight="25.0" prefWidth="60.0" />
          </HBox>
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
             <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@Bread_icon.png" />
             </ImageView>
-            <Spinner fx:id="tradeBread" prefHeight="25.0" prefWidth="60.0" />
-            <Spinner fx:id="requestBread" prefHeight="25.0" prefWidth="60.0" />
+            <Pane prefHeight="55.0" prefWidth="3.0" />
+            <Spinner fx:id="tradeGrain" prefHeight="25.0" prefWidth="60.0" />
+            <Spinner fx:id="requestGrain" prefHeight="25.0" prefWidth="60.0" />
          </HBox>
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
             <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@Bricks_icon.png" />
             </ImageView>
-            <Spinner fx:id="tradeClay" prefHeight="25.0" prefWidth="60.0" />
-            <Spinner fx:id="requestClay" prefWidth="60.0" />
+            <Pane prefHeight="53.0" prefWidth="0.0" />
+            <Spinner fx:id="tradeBrick" prefHeight="25.0" prefWidth="60.0" />
+            <Spinner fx:id="requestBrick" prefWidth="60.0" />
          </HBox>
          <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-            <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="55.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@Metal_icon.png" />
             </ImageView>
-            <Spinner fx:id="tradeStone" prefWidth="60.0" />
-            <Spinner fx:id="requestStone" prefWidth="60.0" />
+            <Pane prefHeight="48.0" prefWidth="3.0" />
+            <Spinner fx:id="tradeOre" prefWidth="60.0" />
+            <Spinner fx:id="requestOre" prefWidth="60.0" />
          </HBox>
          <HBox alignment="CENTER" prefHeight="2.0" prefWidth="336.0" spacing="20.0">
-            <ImageView fitHeight="55.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@Sheep_icon.png" />
             </ImageView>
+            <Pane prefHeight="60.0" prefWidth="6.0" />
             <Spinner fx:id="tradeWool" prefWidth="60.0" />
             <Spinner fx:id="requestWool" prefWidth="60.0" />
          </HBox>
@@ -70,29 +75,29 @@
             <opaqueInsets>
                <Insets />
             </opaqueInsets>
-            <VBox fx:id="bankWood" alignment="TOP_CENTER" onMouseClicked="#enterWoodVariables" prefHeight="200.0" prefWidth="100.0">
+            <VBox fx:id="bankLumber" alignment="TOP_CENTER" onMouseClicked="#enterLumberVariables" prefHeight="200.0" prefWidth="100.0">
                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                   <Image url="@Wood_icon.png" />
                </ImageView>
-               <Label fx:id="woodLabel" text="4:1" />
+               <Label fx:id="lumberLabel" text="4:1" />
             </VBox>
-            <VBox fx:id="bankBread" alignment="TOP_CENTER" onMouseClicked="#enterBreadVariables" prefHeight="200.0" prefWidth="100.0">
+            <VBox fx:id="bankGrain" alignment="TOP_CENTER" onMouseClicked="#enterGrainVariables" prefHeight="200.0" prefWidth="100.0">
                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                   <Image url="@Bread_icon.png" />
                </ImageView>
-               <Label fx:id="breadLabel" text="4:1" />
+               <Label fx:id="grainLabel" text="4:1" />
             </VBox>
-            <VBox fx:id="bankClay" alignment="TOP_CENTER" onMouseClicked="#enterClayVariables" prefHeight="200.0" prefWidth="100.0">
+            <VBox fx:id="bankBrick" alignment="TOP_CENTER" onMouseClicked="#enterBrickVariables" prefHeight="200.0" prefWidth="100.0">
                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                   <Image url="@Bricks_icon.png" />
                </ImageView>
-               <Label fx:id="clayLabel" text="4:1" />
+               <Label fx:id="brickLabel" text="4:1" />
             </VBox>
-            <VBox fx:id="bankStone" alignment="TOP_CENTER" onMouseClicked="#enterStoneVariables" prefHeight="200.0" prefWidth="100.0">
+            <VBox fx:id="bankOre" alignment="TOP_CENTER" onMouseClicked="#enterOreVariables" prefHeight="200.0" prefWidth="100.0">
                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                   <Image url="@Metal_icon.png" />
                </ImageView>
-               <Label fx:id="stoneLabel" text="4:1" />
+               <Label fx:id="oreLabel" text="4:1" />
             </VBox>
             <VBox fx:id="bankWool" alignment="TOP_CENTER" onMouseClicked="#enterWoolVariables" prefHeight="200.0" prefWidth="100.0">
                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">

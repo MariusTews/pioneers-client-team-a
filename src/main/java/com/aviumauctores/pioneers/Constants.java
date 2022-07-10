@@ -171,6 +171,7 @@ public class Constants {
     public static final String RESOURCE_LUMBER = "lumber";
     public static final String RESOURCE_ORE = "ore";
     public static final String RESOURCE_WOOL = "wool";
+    public static final String RESOURCE_UNKNOWN = "unknown";
 
 
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);

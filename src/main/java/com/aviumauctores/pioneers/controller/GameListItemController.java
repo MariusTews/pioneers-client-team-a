@@ -17,6 +17,7 @@ public class GameListItemController implements Controller {
     private BorderPane root;
     private Label gameName;
     private Label numMembersLabel;
+    private Label numMembersTextLabel;
     private Button joinButton;
 
     private final LobbyController parentController;
@@ -48,15 +49,13 @@ public class GameListItemController implements Controller {
         gameName.getStyleClass().add("game-list");
         // Set width so numMembersTextLabel is correct aligned in the ListView
         gameName.setPrefWidth(90.0);
-        Label numMembersTextLabel = new Label(bundle.getString("amount.players") + ":");
+        numMembersTextLabel = new Label(bundle.getString("amount.players") + ":");
         numMembersTextLabel.getStyleClass().add("game-list");
         int numMembers = game.members();
         numMembersLabel = new Label(numMembers + "");
         joinButton = new Button(bundle.getString("join"));
         joinButton.getStyleClass().add("game-list");
         joinButton.setOnAction(this::onJoinButtonPressed);
-        // Don't let more than four players join
-        joinButton.setDisable(numMembers >= 4);
         HBox rightHBox = new HBox(8.0, numMembersLabel, joinButton);
         rightHBox.setAlignment(Pos.CENTER);
         root = new BorderPane(numMembersTextLabel, null, rightHBox, null, gameName);
@@ -76,5 +75,13 @@ public class GameListItemController implements Controller {
         gameName.setText(game.name());
         int numMembers = game.members();
         numMembersLabel.setText(numMembers + "");
+    }
+
+    public Button getJoinButton() {
+        return joinButton;
+    }
+
+    public Label getNumMembersTextLabel() {
+        return numMembersTextLabel;
     }
 }
