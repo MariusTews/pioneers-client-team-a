@@ -98,6 +98,7 @@ public class InGameChatController implements Controller {
                     if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
                         HBox msgLabel = createMessageLabel(event.data());
                         chatBox.getChildren().add(msgLabel);
+                        ((ScrollPane) this.allChatTab.getContent()).setVvalue(1.0);
                         if (inGameController.getSoundImage() == inGameController.muteImage) {
                             GameSounds soundMessage = soundService
                                     .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Nachricht.mp3")));
@@ -171,6 +172,7 @@ public class InGameChatController implements Controller {
                     HBox msgLabel = createMessageLabel(result);
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
+                    ((ScrollPane) this.allChatTab.getContent()).setVvalue(1.0);
                 }, errorService::handleError);
     }
 

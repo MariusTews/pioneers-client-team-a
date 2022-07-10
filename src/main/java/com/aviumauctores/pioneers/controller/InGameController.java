@@ -348,6 +348,9 @@ public class InGameController extends LoggedInController {
                                             buildService.setPlayerId(b.owner());
                                             buildService.setBuildingType(b.type());
                                             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                            if (position == null) {
+                                                position = getView(b.x(), b.y(), b.z(), b.side());
+                                            }
                                             buildService.setSelectedField(position);
                                             buildService.loadBuildingImage(b._id());
                                             String buildingImageId = position.getId().split("#")[0];
@@ -658,6 +661,12 @@ public class InGameController extends LoggedInController {
     }
 
     private void updateVisuals() {
+        if (!fieldsMovedAlready) {
+            if (!currentAction.startsWith("founding")) {
+                fieldsIntoOnePane();
+                fieldsMovedAlready = true;
+            }
+        }
         //check if current player has changed
         if (stateService.getNewPlayer()) {
             playerResourceListController.hideArrow(stateService.getOldPlayerID());
@@ -684,14 +693,7 @@ public class InGameController extends LoggedInController {
                 }
             } else {
                 updateFields(false, crossingPane, roadPane);
-                if (stateService.getOldAction() != null) {
-                    if (!fieldsMovedAlready) {
-                        if (!currentAction.startsWith("founding")) {
-                            fieldsIntoOnePane();
-                            fieldsMovedAlready = true;
-                        }
-                    }
-                }
+
                 switch (currentAction) {
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
