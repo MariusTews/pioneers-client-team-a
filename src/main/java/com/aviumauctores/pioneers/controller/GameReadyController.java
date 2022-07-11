@@ -509,8 +509,8 @@ public class GameReadyController extends PlayerListController {
                     ownMessageIds.add(result._id());
                     Label msgLabel = createMessageLabel(result);
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
-                    ((ScrollPane) this.allChatTab.getContent()).setVvalue(1.0);
                     chatBox.getChildren().add(msgLabel);
+                    ((ScrollPane) this.allChatTab.getContent()).setVvalue(1.0);
                 });
     }
 

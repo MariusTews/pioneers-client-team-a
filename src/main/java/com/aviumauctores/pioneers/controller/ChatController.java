@@ -138,7 +138,8 @@ public class ChatController extends PlayerListController {
                         Label msgLabel = createMessageLabel(event.data());
                         ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()
                                 .add(msgLabel);
-                        scrollPane.setVvalue(1.0);
+                        ScrollPane pane = (ScrollPane) this.allTab.getContent();
+                        pane.setVvalue(1.0);
                     } else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
                         for (Node l : ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()) {
@@ -281,6 +282,8 @@ public class ChatController extends PlayerListController {
                                     Label msgLabel = createMessageLabel(event.data());
                                     ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()
                                             .add(msgLabel);
+                                    ScrollPane pane = (ScrollPane) tab.getContent();
+                                    pane.setVvalue(1.0);
                                 } else if (event.event().endsWith(".deleted")) {
                                     //search for the Label of the which will be deleted
                                     for (Node l : ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()) {
@@ -291,8 +294,6 @@ public class ChatController extends PlayerListController {
                                     ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()
                                             .remove(this.deleteLabel);
                                 }
-                                ScrollPane pane = (ScrollPane) tab.getContent();
-                                pane.setVvalue(1.0);
                             }));
                     Tab tab = createTab(group._id(), selectedUser);
                     chatTabPane.getTabs().add(tab);

@@ -348,9 +348,6 @@ public class InGameController extends LoggedInController {
                                             buildService.setPlayerId(b.owner());
                                             buildService.setBuildingType(b.type());
                                             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-                                            if (position == null) {
-                                                position = getView(b.x(), b.y(), b.z(), b.side());
-                                            }
                                             buildService.setSelectedField(position);
                                             buildService.loadBuildingImage(b._id());
                                             String buildingImageId = position.getId().split("#")[0];
@@ -771,8 +768,8 @@ public class InGameController extends LoggedInController {
                 this.deleteVP(2);
             } else if (!longestRoad && Objects.equals(updatedPlayer.userId(), userID)) {
                 longestRoad = true;
-                this.gainVP(1);
-                this.gainVP(1);
+                this.gainVP(2);
+
             }
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
