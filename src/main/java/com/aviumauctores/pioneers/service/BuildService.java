@@ -125,7 +125,7 @@ public class BuildService {
     }
 
 
-    public void loadBuildingImage(String buildingID) {
+    public void loadBuildingImage() {
         if (selectedField != null) {
             switch (buildingType) {
                 case BUILDING_TYPE_SETTLEMENT ->

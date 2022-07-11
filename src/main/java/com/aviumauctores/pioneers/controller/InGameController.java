@@ -332,6 +332,7 @@ public class InGameController extends LoggedInController {
                             diceImage1.setImage(dice1);
                             diceImage2.setImage(dice1);
                             this.soundImage.setImage(muteImage);
+                            playerResourceListController.init(playerList, currentPlayerID);
 
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                                     .observeOn(FX_SCHEDULER)
@@ -358,7 +359,6 @@ public class InGameController extends LoggedInController {
                             arrowOnDice.setFitWidth(40.0);
                             soundImage.setImage(muteImage);
                             loadChat();
-                            playerResourceListController.init(playerList, currentPlayerID);
 
                             if (rejoin) {
                                 disposables.add(this.pioneerService.listBuildings()
@@ -405,7 +405,7 @@ public class InGameController extends LoggedInController {
             buildService.setBuildingType(b.type());
             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
             buildService.setSelectedField(position);
-            buildService.loadBuildingImage(b._id());
+            buildService.loadBuildingImage();
             String buildingImageId = position.getId().split("#")[0];
             enableBuildingColor(buildingImageId, b.owner(), b.type());
             if (b.owner().equals(userID)) {
@@ -599,6 +599,12 @@ public class InGameController extends LoggedInController {
     }
 
     private void updateVisuals() {
+        if (!fieldsMovedAlready) {
+            if (!currentAction.startsWith("founding")) {
+                fieldsIntoOnePane();
+                fieldsMovedAlready = true;
+            }
+        }
         //check if current player has changed
         if (stateService.getNewPlayer()) {
             playerResourceListController.hideArrow(stateService.getOldPlayerID());
@@ -625,12 +631,6 @@ public class InGameController extends LoggedInController {
                 }
             } else {
                 updateFields(false, crossingPane, roadPane);
-                if (!fieldsMovedAlready) {
-                    if (!currentAction.startsWith("founding")) {
-                        fieldsIntoOnePane();
-                        fieldsMovedAlready = true;
-                    }
-                }
                 switch (currentAction) {
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
