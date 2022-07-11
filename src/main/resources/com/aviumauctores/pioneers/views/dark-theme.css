@@ -1,6 +1,6 @@
 
 .root {
-    -fx-background-color: rgb(0, 1, 17);
+    -fx-background-color: #00331a;
     -fx-text-fill: #eee;
 }
 
@@ -12,7 +12,7 @@
 .text-field {
     -fx-font-size: 14;
     -fx-background-radius: 8px;
-    -fx-background-color: #545454;
+    -fx-background-color: #333333;
     -fx-text-fill: #eee;
 }
 
@@ -41,23 +41,23 @@
 #nameLabel {
     -fx-font-size: 12;
     -fx-background-radius: 8px;
-    -fx-background-color: #545454;
+    -fx-background-color: #333333;
     -fx-text-fill: #eee;
 }
 
 .button {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-text-fill: #ffffff;
     -fx-background-radius: 15px;
     -fx-font-size: 14;
 }
 
 .button:hover {
-    -fx-background-color: #005f91;
+    -fx-background-color: #aee58f;
 }
 
 .scroll-bar {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 15px;
 }
 
@@ -75,7 +75,7 @@
 }
 
 .list-cell:selected {
-    -fx-background-color: #494949;
+    -fx-background-color: #333333;
     -fx-background-radius: 8 8 8 8;
 }
 
@@ -111,12 +111,12 @@
 }
 
 .tab-header-background {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 8 8 0 0;
 }
 
 .scroll-bar {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 15px;
     -fx-progress-color: #c4c4c4;
 }
@@ -140,7 +140,7 @@
 }
 
 .titled-pane > .title {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 8 8 0 0;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .combo-box-base {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
 }
 
 .build-menu {
@@ -169,7 +169,7 @@
 }
 
 #ingamePane {
-    -fx-background-color: #00233B;
+    -fx-background-color: #00331a;
 }
 
 #soundSliderLabelLeft {
@@ -194,11 +194,11 @@
 
 #paneOption {
     -fx-background-color: rgb(0, 1, 17);
-    -fx-border-color: #00496c;
+    -fx-border-color: #97d077;
     -fx-border-width: 5;
 }
 
 .spinner .increment-arrow-button,
 .spinner .decrement-arrow-button {
-    -fx-body-color: #00496c;
+    -fx-body-color: #97d077;
 }

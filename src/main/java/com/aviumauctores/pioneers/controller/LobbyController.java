@@ -39,8 +39,9 @@ public class LobbyController extends PlayerListController {
     private final Provider<ChatController> chatController;
     private final Provider<CreateGameController> createGameController;
     private final Provider<JoinGameController> joinGameController;
-
     private final Provider<SettingsController> settingsController;
+
+    private final Provider<AchievementsController> achievementsController;
 
     @FXML
     public Label gameLabel;
@@ -66,6 +67,8 @@ public class LobbyController extends PlayerListController {
     @FXML
     public Button settingsButton;
 
+    @FXML
+
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
     private final HashMap<String, GameListItemController> gameListItemControllers = new HashMap<>();
 
@@ -80,7 +83,8 @@ public class LobbyController extends PlayerListController {
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
                            Provider<JoinGameController> joinGameController,
-                           Provider<SettingsController> settingsController) {
+                           Provider<SettingsController> settingsController,
+                           Provider<AchievementsController> achievementsController) {
         super(loginService, userService);
         this.app = app;
         this.gameService = gameService;
@@ -93,6 +97,7 @@ public class LobbyController extends PlayerListController {
         this.createGameController = createGameController;
         this.joinGameController = joinGameController;
         this.settingsController = settingsController;
+        this.achievementsController = achievementsController;
     }
 
 
@@ -265,5 +270,10 @@ public class LobbyController extends PlayerListController {
 
     private ResourceBundle getNewResourceBundle() {
         return ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", preferenceService.getLocale());
+    }
+
+    public void inToAchievement(MouseEvent mouseEvent) {
+        final AchievementsController controller = achievementsController.get();
+        app.show(controller);
     }
 }
