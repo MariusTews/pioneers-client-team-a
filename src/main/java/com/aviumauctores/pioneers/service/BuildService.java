@@ -125,7 +125,7 @@ public class BuildService {
     }
 
 
-    public void loadBuildingImage(String buildingID) {
+    public void loadBuildingImage() {
         if (selectedField != null) {
             switch (buildingType) {
                 case BUILDING_TYPE_SETTLEMENT ->
@@ -145,6 +145,8 @@ public class BuildService {
             if (selectedField.getId().startsWith("building")) {
                 selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);
             }
+            //necessary because of runtime issues on rejoin
+            selectedField.setVisible(true);
         }
     }
 

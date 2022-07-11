@@ -146,6 +146,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "lumber", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
         when(gameService.getMapRadius()).thenReturn(0);
+        when(pioneerService.listPlayers()).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
     }
 
@@ -167,6 +168,10 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onFieldClicked() {
+        when(stateService.getCurrentPlayerID()).thenReturn("1");
+        when(stateService.getCurrentAction()).thenReturn(MOVE_BUILD);
+        stateUpdates.onNext(new EventDto<>("created", new State("", "12",
+                List.of(new ExpectedMove("founding-settlement-1", List.of("1"))), new Point3D(1, 3, 4))));
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
         // Open the build menu
@@ -177,6 +182,10 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onMainPaneClicked() {
+        when(stateService.getCurrentPlayerID()).thenReturn("1");
+        when(stateService.getCurrentAction()).thenReturn(MOVE_BUILD);
+        stateUpdates.onNext(new EventDto<>("created", new State("", "12",
+                List.of(new ExpectedMove("founding-settlement-1", List.of("1"))), new Point3D(1, 3, 4))));
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
         clickOn("#buildingX0Y0Z0R0");

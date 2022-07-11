@@ -86,6 +86,7 @@ class GameReadyControllerTest extends ApplicationTest {
         memberUpdates = PublishSubject.create ();
         when (eventListener.listen (anyString (), any ())).thenReturn (Observable.empty ());
         when (eventListener.listen ("games.12.members.*.*", Member.class)).thenReturn (memberUpdates);
+        when(gameService.getOwnerID()).thenReturn("1");
         new App (gameReadyController).start (stage);
     }
 
