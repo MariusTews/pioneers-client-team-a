@@ -12,7 +12,7 @@
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
    <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@House/house_green.png" />
+      <Image url="@buildings/settlementImage.png" />
    </ImageView>
    <Label text="%settlement" />
    <Label text="1">

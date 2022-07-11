@@ -28,7 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -62,17 +61,18 @@ public class InGameController extends LoggedInController {
     private Label[] resourceLabels;
 
     @FXML
+    public Label timeLabel;
+    @FXML
     public Label numSheepLabel;
-
     @FXML
     public ImageView arrowOnDice;
     @FXML
     public Label yourTurnLabel;
-    @FXML
-    Label timeLabel;
 
     @FXML
     public BorderPane ingamePane;
+
+    @FXML public Pane centerPane;
 
     public Pane mainPane;
     public Pane crossingPane;
@@ -272,9 +272,8 @@ public class InGameController extends LoggedInController {
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
                                 controller.setMapRadius(gameService.getMapRadius());
-                                Parent pane = controller.render();
-                                ingamePane.setCenter(pane);
-                                //ingamePane.getCenter().toBack();
+                                Pane pane = (Pane) controller.render();
+                                centerPane.getChildren().add(pane);
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
                                 roadPane = controller.getRoadPane();
@@ -284,7 +283,6 @@ public class InGameController extends LoggedInController {
                                 for (Node vpCircle : controller.getVpBox().getChildren()) {
                                     vpCircles.add((Circle) vpCircle);
                                 }
-                                timeLabel = controller.getTimeLabel();
                                 //put robber on desert tile
                                 desertTileId = controller.getDesertTileId();
                                 String desertRobberImageId = desertTileId.replace("hexagon", "robber");
@@ -834,11 +832,11 @@ public class InGameController extends LoggedInController {
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-            buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
-            buildMenu.setLayoutY(Math.min(source.getLayoutY(), mainPane.getHeight() - newValue.getHeight()));
+            buildMenu.setLayoutX(Math.min(source.getX(), centerPane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutY(Math.min(source.getY(), centerPane.getHeight() - newValue.getHeight()));
         });
 
-        mainPane.getChildren().add(buildMenu);
+        centerPane.getChildren().add(buildMenu);
 
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
@@ -863,13 +861,13 @@ public class InGameController extends LoggedInController {
         }
     }
 
-    private void closeBuildMenu(boolean appClosed) {
+    public void closeBuildMenu(boolean appClosed) {
         if (buildMenuController != null) {
             buildMenuController.destroy(appClosed);
             buildMenuController = null;
         }
         if (buildMenu != null) {
-            mainPane.getChildren().remove(buildMenu);
+            centerPane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
     }
@@ -1226,9 +1224,9 @@ public class InGameController extends LoggedInController {
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
-        tradingMenu.setLayoutX(0);
-        tradingMenu.setLayoutY(0);
-        ingamePane.getChildren().add(tradingMenu);
+        tradingMenu.setLayoutX(15);
+        tradingMenu.setLayoutY(120);
+        centerPane.getChildren().add(tradingMenu);
 
         // Prevent the event handler from ingame pane to close the build menu immediately after this
         actionEvent.consume();
@@ -1257,9 +1255,9 @@ public class InGameController extends LoggedInController {
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");
-        requestMenu.setLayoutX(0);
-        requestMenu.setLayoutY(0);
-        ingamePane.getChildren().add(requestMenu);
+        requestMenu.setLayoutX(50);
+        requestMenu.setLayoutY(50);
+        centerPane.getChildren().add(requestMenu);
 
     }
 
@@ -1269,7 +1267,7 @@ public class InGameController extends LoggedInController {
             tradingController = null;
         }
         if (tradingMenu != null) {
-            ingamePane.getChildren().remove(tradingMenu);
+            centerPane.getChildren().remove(tradingMenu);
             tradingMenu = null;
         }
     }
@@ -1280,7 +1278,7 @@ public class InGameController extends LoggedInController {
             tradeRequestController = null;
         }
         if (requestMenu != null) {
-            ingamePane.getChildren().remove(requestMenu);
+            centerPane.getChildren().remove(requestMenu);
             requestMenu = null;
         }
         if (tradeRequestPopup.isVisible()) {

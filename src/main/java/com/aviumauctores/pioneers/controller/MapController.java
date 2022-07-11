@@ -46,8 +46,6 @@ public class MapController implements Controller {
     public Pane roadPane;
     @FXML
     public HBox vpBox;
-    @FXML
-    public Label timeLabel;
     Image desert;
     Image fields;
     Image hills;
@@ -274,13 +272,17 @@ public class MapController implements Controller {
             }
         }
 
+        //use pannable canvas as top level element to support zooming
         PannableCanvas canvas = new PannableCanvas();
         canvas.getChildren().add(parent);
 
+        //add event filter to enable zooming
         SceneGestures sceneGestures = new SceneGestures(canvas);
         canvas.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
-        canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
-        canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+
+        //map dragging is disabled for now as it is not fully compatible with zooming at the moment
+        //canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+        //canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
 
         return canvas;
     }
@@ -414,10 +416,6 @@ public class MapController implements Controller {
 
     public void setGameMap(Map gameMap) {
         this.gameMap = gameMap;
-    }
-
-    public Label getTimeLabel() {
-        return timeLabel;
     }
 
     public void onFieldClicked(MouseEvent mouseEvent) {
