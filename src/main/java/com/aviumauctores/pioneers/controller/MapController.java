@@ -275,6 +275,8 @@ public class MapController implements Controller {
         //use pannable canvas as top level element to support zooming
         PannableCanvas canvas = new PannableCanvas();
         canvas.getChildren().add(parent);
+        canvas.setPrefWidth(600);
+        canvas.setPrefHeight(600);
 
         //add event filter to enable zooming
         SceneGestures sceneGestures = new SceneGestures(canvas);
