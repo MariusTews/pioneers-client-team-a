@@ -203,8 +203,6 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
-        // this is required, because the button does not trigger its onClick-event in this test
-        inGameController.rollButton.fire();
         verify(pioneerService).createMove("roll", null, null, null, null);
     }
 
