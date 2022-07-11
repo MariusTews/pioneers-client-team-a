@@ -272,7 +272,9 @@ public class InGameController extends LoggedInController {
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
                                 controller.setMapRadius(gameService.getMapRadius());
-                                ingamePane.setCenter(controller.render());
+                                Parent pane = controller.render();
+                                ingamePane.setCenter(pane);
+                                //ingamePane.getCenter().toBack();
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
                                 roadPane = controller.getRoadPane();
@@ -878,7 +880,7 @@ public class InGameController extends LoggedInController {
             dropMenuController = null;
         }
         if (dropMenu != null) {
-            mainPane.getChildren().remove(dropMenu);
+            ingamePane.getChildren().remove(dropMenu);
             dropMenu = null;
         }
     }
@@ -1038,13 +1040,13 @@ public class InGameController extends LoggedInController {
         dropMenu = dropMenuController.render();
 
         //maybe change that later to a dynamic value
-        int layoutX = 400;
+        int layoutX = 600;
         int layoutY = 250;
 
         dropMenu.setLayoutX(layoutX);
         dropMenu.setLayoutY(layoutY);
 
-        mainPane.getChildren().add(dropMenu);
+        ingamePane.getChildren().add(dropMenu);
     }
 
     /************************************************
@@ -1226,10 +1228,9 @@ public class InGameController extends LoggedInController {
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
         tradingMenu.setLayoutX(0);
         tradingMenu.setLayoutY(0);
-        mainPane.getChildren().add(tradingMenu);
+        ingamePane.getChildren().add(tradingMenu);
 
-
-        // Prevent the event handler from main pane to close the build menu immediately after this
+        // Prevent the event handler from ingame pane to close the build menu immediately after this
         actionEvent.consume();
     }
 
@@ -1258,7 +1259,7 @@ public class InGameController extends LoggedInController {
         requestMenu.setStyle("-fx-background-color: #ffffff;");
         requestMenu.setLayoutX(0);
         requestMenu.setLayoutY(0);
-        mainPane.getChildren().add(requestMenu);
+        ingamePane.getChildren().add(requestMenu);
 
     }
 
@@ -1268,7 +1269,7 @@ public class InGameController extends LoggedInController {
             tradingController = null;
         }
         if (tradingMenu != null) {
-            mainPane.getChildren().remove(tradingMenu);
+            ingamePane.getChildren().remove(tradingMenu);
             tradingMenu = null;
         }
     }
@@ -1279,7 +1280,7 @@ public class InGameController extends LoggedInController {
             tradeRequestController = null;
         }
         if (requestMenu != null) {
-            mainPane.getChildren().remove(requestMenu);
+            ingamePane.getChildren().remove(requestMenu);
             requestMenu = null;
         }
         if (tradeRequestPopup.isVisible()) {
