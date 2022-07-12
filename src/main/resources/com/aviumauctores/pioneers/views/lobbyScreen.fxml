@@ -70,6 +70,14 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="260.0" spacing="30.0">
          <Button fx:id="friendsButton" mnemonicParsing="false" onAction="#showFriends" prefHeight="25.0" prefWidth="95.0" text="%friends" />
+         <ImageView fitHeight="32.0" fitWidth="36.0" onMouseClicked="#inToAchievement" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@achievementIcon.png" />
+            </image>
+            <HBox.margin>
+               <Insets left="15.0" />
+            </HBox.margin>
+         </ImageView>
          <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#toSettings" style="-fx-background-color: transparent;">
             <graphic>
                <ImageView fitHeight="40.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
