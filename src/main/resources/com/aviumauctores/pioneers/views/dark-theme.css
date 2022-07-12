@@ -1,6 +1,12 @@
+@font-face {
+    font-family: 'VT323';
+    font-weight: 400;
+    src: url('../fonts/VT323-Regular.TTF') format('truetype');
+}
 
 .root {
     -fx-background-color: #00331a;
+    -fx-font-family: "VT323";
     -fx-text-fill: #eee;
 }
 
@@ -14,6 +20,108 @@
     -fx-background-radius: 8px;
     -fx-background-color: #333333;
     -fx-text-fill: #eee;
+}
+
+#aM1 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 3;
+}
+
+#aM2 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM3 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM4 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 1.5 1.5;
+}
+
+#aM5 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM6 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM7 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;;
+}
+
+#aM8 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 3 3 1.5;
+}
+
+#aM11 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 1.5 3 3 3;
+}
+
+#settlementsALabel {
+    -fx-text-fill: black;
+}
+
+#cityMasterLabel {
+    -fx-text-fill: black;
+}
+
+#roadMasterLabel {
+    -fx-text-fill: black;
+}
+
+#workaholicLabel {
+    -fx-text-fill: black;
+}
+
+#longestRoadLabel {
+    -fx-text-fill: black;
+}
+
+#marcoPolo {
+    -fx-text-fill: black;
+}
+
+#winnerLabel {
+    -fx-text-fill: black;
+}
+
+#capitalistLabel {
+    -fx-text-fill: black;
+}
+
+.tooltip {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16;
+    -fx-background-color: #97d077
+}
+
+#rankingPointsLabel {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 24;
+}
+
+#playerLabel2 {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 24;
 }
 
 #msgSpectatorLabel {
@@ -202,3 +310,4 @@
 .spinner .decrement-arrow-button {
     -fx-body-color: #97d077;
 }
+

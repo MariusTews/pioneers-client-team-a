@@ -18,10 +18,9 @@
     -fx-font-size: 24;
 }
 
-#achievementsLabel{
+#achievementsLabel {
     -fx-font-size: 20;
 }
-
 
 
 #rankingPointsLabel {
@@ -42,43 +41,36 @@
     -fx-background-color: #ffffff;
     -fx-border-color: black;
     -fx-border-width: 3 1.5 3 3;
-
 }
 
 #aM2 {
     -fx-background-color: #ffffff;
     -fx-border-color: black;
     -fx-border-width: 3 1.5 3 1.5;
-
 }
 
 #aM3 {
     -fx-background-color: #ffffff;
     -fx-border-color: black;
     -fx-border-width: 3 1.5 3 1.5;
-
 }
 
 #aM4 {
     -fx-background-color: #ffffff;
     -fx-border-color: black;
     -fx-border-width: 3 1.5 1.5 1.5;
-
 }
 
 #aM5 {
     -fx-background-color: #ffffff;
     -fx-border-color: black;
     -fx-border-width: 3 1.5 3 1.5;
-
 }
 
 #aM6 {
     -fx-background-color: #ffffff;
     -fx-border-color: black;
     -fx-border-width: 3 1.5 3 1.5;
-
-
 }
 
 #aM7 {
@@ -132,10 +124,6 @@
 .button:hover {
     -fx-background-color: #3fbd3f;
 }
-
-
-
-
 
 .scroll-bar {
     -fx-background-color: #006600;
@@ -249,5 +237,11 @@
     -fx-background-color: rgba(202, 229, 231, 255);
     -fx-border-color: #006600;
     -fx-border-width: 5;
+}
+
+.tooltip {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16;
+    -fx-background-color: #006600
 }
 
