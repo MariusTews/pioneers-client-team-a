@@ -96,8 +96,6 @@ public class GameReadyController extends PlayerListController {
     private int readyMembers;
     private int allMembers;
 
-    private boolean spectator;
-
     private GameOptionController gameOptionController;
 
     private Parent gameOption;
@@ -114,7 +112,11 @@ public class GameReadyController extends PlayerListController {
 
     private Color chosenColour;
 
+    private boolean comingFromIngame = false;
+    private boolean rejoinFromLobby = false;
+
     private boolean onlyspectator;
+    private boolean spectator;
 
 
     @Inject
@@ -333,7 +335,6 @@ public class GameReadyController extends PlayerListController {
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
-
             parent = loader.load();
             chatPane.setId("chatpane");
         } catch (IOException e) {
@@ -346,7 +347,13 @@ public class GameReadyController extends PlayerListController {
 
         disposables.add(gameService.getCurrentGame()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(game -> gameNameLabel.setText(game.name())));
+                .subscribe(game -> {
+                    gameNameLabel.setText(game.name());
+                    gameService.setOwnerID(game.owner());
+                    if (!(gameService.getOwnerID().equals(userService.getCurrentUserID()))) {
+                        gameOptionButton.setDisable(true);
+                    }
+                }));
 
         disposables.add(userService.getUserName(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
@@ -385,7 +392,28 @@ public class GameReadyController extends PlayerListController {
 
         gameService.setUpdateOption(2, 10);
 
+        if (comingFromIngame) {
+            updateVisualsOnRejoin();
+        }
+
+        if (rejoinFromLobby) {
+            disposables.add(gameService.getCurrentGame()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(game -> {
+                        if (game.started()) {
+                            updateVisualsOnRejoin();
+                        }
+                    })
+            );
+        }
+
         return parent;
+    }
+
+    private void rejoinIngame(ActionEvent actionEvent) {
+        InGameController controller = inGameController.get();
+        controller.setRejoin(true);
+        app.show(controller);
     }
 
     void updateComboBox() {
@@ -653,7 +681,24 @@ public class GameReadyController extends PlayerListController {
             alert.setTitle(bundle.getString("Entering failed"));
             alert.setHeaderText(null);
         }
+    }
 
+    public void setComingFromIngame(boolean comingFromIngame) {
+        this.comingFromIngame = comingFromIngame;
+    }
+
+    public void setRejoinFromLobby(boolean rejoinFromLobby) {
+        this.rejoinFromLobby = rejoinFromLobby;
+    }
+
+    private void updateVisualsOnRejoin() {
+        startGameButton.setText(bundle.getString("join"));
+        startGameButton.setOnAction(this::rejoinIngame);
+        gameReadyButton.setDisable(true);
+        pickColourMenu.setDisable(true);
+        gameOptionButton.setDisable(true);
+        offButton.setDisable(true);
+        onButton.setDisable(true);
     }
 
     public boolean getOnlySpectator() {

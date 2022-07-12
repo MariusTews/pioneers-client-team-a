@@ -17,7 +17,6 @@ public class PlayerResourceListController {
     private final PioneerService pioneerService;
     private final ColorService colorService;
     private final ResourceBundle bundle;
-    private final ErrorService errorService;
     private final GameMemberService gameMemberService;
     public ListView<HBox> playerList;
     private String currentPlayerID;
@@ -27,12 +26,11 @@ public class PlayerResourceListController {
     private Member member;
 
     @Inject
-    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, ErrorService errorService, GameMemberService gameMemberService) {
+    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, GameMemberService gameMemberService) {
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.bundle = bundle;
-        this.errorService = errorService;
         this.gameMemberService = gameMemberService;
     }
 
@@ -43,7 +41,7 @@ public class PlayerResourceListController {
             createPlayerBox(p);
         }
 
-for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
+        for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
             if (m.spectator()) {
                 createSpectatorBox(m);
             }
