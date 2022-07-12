@@ -127,7 +127,7 @@ public class AchievementsController extends PlayerListController {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }
+        };
         friendsButton.setOnAction(this::onFriends);
 
         disposables.add(userService.getUserName(userService.getCurrentUserID())
