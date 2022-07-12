@@ -18,8 +18,9 @@
     -fx-background-radius: 8px;
 }
 
-
-
+#msgSpectatorLabel{
+    -fx-text-fill: gray;
+}
 #gameNameLabel{
     -fx-font-size: 24;
     -fx-background-radius: 8px;

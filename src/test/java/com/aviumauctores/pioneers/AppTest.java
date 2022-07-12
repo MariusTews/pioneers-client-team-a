@@ -23,6 +23,7 @@ class AppTest extends ApplicationTest {
         MainComponent testComponent = DaggerTestComponent.builder().mainApp(app).build();
         app.start(stage);
         app.show(testComponent.loginController());
+
     }
 
     @Override
@@ -101,26 +102,18 @@ class AppTest extends ApplicationTest {
         // Wait for CI
         WaitForAsyncUtils.waitForFxEvents();
 
-        screenAsserts.assertJoinGameScreen();
-        // Back to lobby
-        type(KeyCode.ESCAPE);
-
-        screenAsserts.assertLobbyScreen();
-        // Join again
-        clickOn("Join");
-        // Wait for CI
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Longer password so CI has more time for screen change
-        clickOn("#passwordTextField");
-        write("12345678");
-        screenAsserts.assertJoinGameScreen();
-        // Join game
-        clickOn("#joinGameButton");
+        //you join the game directly because you are already a member of the game
 
         screenAsserts.assertGameReadyScreen();
         clickOn("#gameReadyButton");
+        clickOn("#pickColourMenu");
+        type(KeyCode.KP_DOWN);
+        sleep(200);
+        type(KeyCode.ESCAPE);
         clickOn("#startGameButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        sleep(500);
+
 
         screenAsserts.assertIngameScreen();
         // Go back to game ready screen

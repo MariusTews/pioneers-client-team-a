@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.GameSettings;
 import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.ws.EventListener;
@@ -50,6 +51,9 @@ class JoinGameControllerTest extends ApplicationTest {
     @Mock
     ErrorService errorService;
 
+    @Mock
+    GameMemberService gameMemberService;
+
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
@@ -63,6 +67,7 @@ class JoinGameControllerTest extends ApplicationTest {
         when(gameService.getCurrentGameID()).thenReturn("1");
         when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "1", "testgame", "42", false, 1, new GameSettings(2, 10))));
         when(eventListener.listen("games.1.*", Game.class)).thenReturn(Observable.empty());
+        when(gameMemberService.listCurrentGameMembers()).thenReturn(Observable.empty());
         new App(joinGameController).start(stage);
     }
 
