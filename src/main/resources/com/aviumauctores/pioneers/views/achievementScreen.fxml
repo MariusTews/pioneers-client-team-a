@@ -8,37 +8,34 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-      prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.aviumauctores.pioneers.controller.AchievementsController">
+<Pane fx:id="achievementsPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onAchievementsPaneClicked" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.AchievementsController">
     <VBox layoutX="-1.0" layoutY="-1.0" prefHeight="400.0" prefWidth="600.0">
         <HBox prefHeight="100.0">
             <VBox prefHeight="100.0" prefWidth="291.0">
                 <Label fx:id="playerLabel2" text="playerLabel">
                     <VBox.margin>
-                        <Insets left="30.0" top="30.0"/>
+                        <Insets left="30.0" top="30.0" />
                     </VBox.margin>
                     <font>
-                        <Font size="24.0"/>
+                        <Font size="24.0" />
                     </font>
                 </Label>
             </VBox>
             <VBox alignment="CENTER_LEFT" nodeOrientation="RIGHT_TO_LEFT" prefHeight="100.0" prefWidth="310.0">
                 <HBox.margin>
-                    <Insets right="30.0"/>
+                    <Insets right="30.0" />
                 </HBox.margin>
                 <Label fx:id="rankingPointsLabel" contentDisplay="RIGHT" text="0 Ranking Points">
                     <VBox.margin>
-                        <Insets top="30.0"/>
+                        <Insets top="30.0" />
                     </VBox.margin>
                     <font>
-                        <Font size="24.0"/>
+                        <Font size="24.0" />
                     </font>
                 </Label>
-                <Button fx:id="friendsButton" alignment="CENTER" contentDisplay="TOP"
-                        mnemonicParsing="false" onAction="#onFriends" text="%friends">
+                <Button fx:id="friendsButton" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onFriends" text="%friends">
                     <VBox.margin>
-                        <Insets top="5.0"/>
+                        <Insets top="5.0" />
                     </VBox.margin>
                 </Button>
             </VBox>
@@ -46,141 +43,116 @@
         <HBox prefHeight="33.0" prefWidth="600.0">
             <Label fx:id="achievementsLabel" text="Achievements:">
                 <HBox.margin>
-                    <Insets left="30.0"/>
+                    <Insets left="30.0" />
                 </HBox.margin>
                 <font>
-                    <Font size="20.0"/>
+                    <Font size="20.0" />
                 </font>
             </Label>
         </HBox>
         <HBox prefHeight="267.0" prefWidth="600.0">
             <VBox prefHeight="252.0" prefWidth="580.0">
                 <HBox.margin>
-                    <Insets bottom="15.0" left="25.0" right="25.0"/>
+                    <Insets bottom="15.0" left="25.0" right="25.0" />
                 </HBox.margin>
                 <HBox prefHeight="100.0" prefWidth="210.0">
-                    <VBox fx:id="aM1" onMouseEntered="#halloaM1" onMouseExited="#byeaM1"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="settlementsALabel" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0"
-                               text="Siedlungs-&#10;Meister&#10;&#10;">
+                    <VBox fx:id="aM1" onMouseEntered="#halloaM1" onMouseExited="#byeaM1" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="settlementsALabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Siedlungs-&#10;Meister&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM2" onMouseEntered="#halloaM2" onMouseExited="#byeaM2"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="roadMasterLabel" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0"
-                               text="Straßen-&#10;Meister&#10;&#10;&#10;">
+                    <VBox fx:id="aM2" onMouseEntered="#halloaM2" onMouseExited="#byeaM2" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="roadMasterLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Straßen-&#10;Meister&#10;&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM3" onMouseEntered="#halloaM3" onMouseExited="#byeaM3"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="cityMasterLabel" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0"
-                               text="Stadt-&#10;Meister&#10;&#10;">
+                    <VBox fx:id="aM3" onMouseEntered="#halloaM3" onMouseExited="#byeaM3" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="cityMasterLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Stadt-&#10;Meister&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM4" onMouseEntered="#halloaM4" onMouseExited="#byeaM4"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="workaholicLabel" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0" text="Workaholic&#10;&#10;">
+                    <VBox fx:id="aM4" onMouseEntered="#halloaM4" onMouseExited="#byeaM4" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="workaholicLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Workaholic&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM5" onMouseEntered="#halloaM5" onMouseExited="#byeaM5"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="winnerLabel" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0" text="Siegertyp&#10;&#10;">
+                    <VBox fx:id="aM5" onMouseEntered="#halloaM5" onMouseExited="#byeaM5" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="winnerLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Siegertyp&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM6" onMouseEntered="#halloaM6" onMouseExited="#byeaM6"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="longestRoadLabel" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0" text="Carretera ">
+                    <VBox fx:id="aM6" onMouseEntered="#halloaM6" onMouseExited="#byeaM6" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="longestRoadLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Carretera ">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM7" onMouseEntered="#halloaM7" onMouseExited="#byeaM7"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="marcoPolo" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0" text="Marco-&#10;Polo&#10;&#10;">
+                    <VBox fx:id="aM7" onMouseEntered="#halloaM7" onMouseExited="#byeaM7" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="marcoPolo" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Marco-&#10;Polo&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
                 </HBox>
                 <HBox prefHeight="100.0" prefWidth="210.0">
                     <VBox fx:id="aM8" prefHeight="200.0" prefWidth="100.0" visible="false">
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0"
-                               prefWidth="78.0" text="Minen-&#10;schürfer&#10;&#10;&#10;">
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Minen-&#10;schürfer&#10;&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
                     <VBox fx:id="aM9" prefHeight="200.0" prefWidth="100.0">
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0"
-                               prefWidth="78.0" text="Farmer&#10;&#10;" visible="false">
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Farmer&#10;&#10;" visible="false">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
                     <VBox fx:id="aM10" prefHeight="200.0" prefWidth="100.0">
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0"
-                               prefWidth="78.0" text="Hirte&#10;&#10;" visible="false">
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Hirte&#10;&#10;" visible="false">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM11" onMouseEntered="#halloaM11" onMouseExited="#byeaM11"
-                          prefHeight="200.0" prefWidth="100.0">
-                        <Label fx:id="capitalistLabel" alignment="CENTER" contentDisplay="CENTER"
-                               prefHeight="83.0" prefWidth="78.0" text="Kapitalist&#10;&#10;">
+                    <VBox fx:id="aM11" onMouseEntered="#halloaM11" onMouseExited="#byeaM11" prefHeight="200.0" prefWidth="100.0">
+                        <Label fx:id="capitalistLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Kapitalist&#10;&#10;">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
                     <VBox fx:id="aM12" prefHeight="200.0" prefWidth="100.0">
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0"
-                               prefWidth="78.0" text="Glückspilz&#10;&#10;" visible="false">
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Glückspilz&#10;&#10;" visible="false">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
                     <VBox fx:id="aM13" prefHeight="200.0" prefWidth="100.0">
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0"
-                               prefWidth="78.0" text="Seemann&#10;&#10;" visible="false">
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Seemann&#10;&#10;" visible="false">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
                     <VBox fx:id="aM14" prefHeight="200.0" prefWidth="100.0">
-                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0"
-                               prefWidth="78.0" text="Imperator&#10;&#10;" visible="false">
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="83.0" prefWidth="78.0" text="Imperator&#10;&#10;" visible="false">
                             <font>
-                                <Font size="15.0"/>
+                                <Font size="15.0" />
                             </font>
                         </Label>
                     </VBox>
@@ -188,14 +160,12 @@
                 <HBox prefHeight="100.0" prefWidth="210.0">
                     <VBox fx:id="aM15" alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                         <opaqueInsets>
-                            <Insets/>
+                            <Insets />
                         </opaqueInsets>
                         <HBox.margin>
-                            <Insets left="225.0"/>
+                            <Insets left="225.0" />
                         </HBox.margin>
-                        <Button fx:id="leaveButton" alignment="CENTER" contentDisplay="CENTER"
-                                mnemonicParsing="false" onMouseClicked="#leaveAchievments"
-                                text="%cancel2"/>
+                        <Button fx:id="leaveButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#leaveAchievments" text="%cancel2" />
                     </VBox>
                 </HBox>
             </VBox>

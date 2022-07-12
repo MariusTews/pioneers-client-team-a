@@ -44,11 +44,11 @@ public class PlayerResourceListItemController {
 
     private final Label spectatorLabel = new Label();
     private HashMap<String, Integer> resources = new HashMap<>();
-    private final Tooltip tooltip;
+    private Tooltip tooltip;
     private Label longestRoadViewLabel;
 
 
-    public PlayerResourceListItemController(Player player, String name, String color, UserService userService, ResourceBundle bundle, InGameController inGameController) {
+    public PlayerResourceListItemController(Player player, String name, String color, UserService userService, ResourceBundle bundle) {
         this.player = player;
         this.name = name;
         this.id = player.userId();

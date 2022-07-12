@@ -69,7 +69,6 @@
          </Button>
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="260.0" spacing="30.0">
-         <Button fx:id="friendsButton" mnemonicParsing="false" onAction="#showFriends" prefHeight="25.0" prefWidth="95.0" text="%friends" />
          <ImageView fitHeight="32.0" fitWidth="36.0" onMouseClicked="#inToAchievement" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@achievementIcon.png" />

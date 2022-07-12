@@ -281,27 +281,6 @@ public class LobbyController extends PlayerListController {
         return ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", preferenceService.getLocale());
     }
 
-    public void showFriends(ActionEvent actionEvent) {
-        ListView<HBox> friendsList = new ListView<>();
-
-        User myUser = userService.getUserByID(userService.getCurrentUserID()).blockingFirst();
-        List<String> friends = myUser.friends();
-
-        for (String friend : friends) {
-            String name = userService.getUserName(friend).blockingFirst();
-            HBox friendsHbox = new HBox(new Label(name));
-            friendsList.getItems().add(friendsHbox);
-        }
-
-        final Stage dialog = new Stage();
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        Scene dialogScene = new Scene(friendsList, 300, 200);
-        dialog.setScene(dialogScene);
-        dialog.show();
-
-
-    }
-
     public void inToAchievement(MouseEvent mouseEvent) {
         final AchievementsController controller = achievementsController.get();
         app.show(controller);

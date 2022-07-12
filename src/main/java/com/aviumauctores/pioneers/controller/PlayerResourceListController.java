@@ -54,7 +54,7 @@ public class PlayerResourceListController {
         String playerID = player.userId();
         String playerName = userService.getUserName(playerID).blockingFirst();
         String colorName = colorService.getColor(player.color());
-        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle, inGameController.get());
+        PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
         listItems.put(playerID, controller);
         playerList.getItems().add(playerList.getItems().size(), controller.createBox());
 

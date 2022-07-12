@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -11,12 +12,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -24,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -86,11 +86,13 @@ public class AchievementsController extends PlayerListController {
     public VBox aM13;
     public VBox aM14;
     public VBox aM15;
+    public Pane achievementsPane;
 
 
     private Color hoverColor;
 
     private final Color defaultColor;
+    private ListView<HBox> friendsList;
 
     @Inject
     public AchievementsController(App app,
@@ -156,6 +158,31 @@ public class AchievementsController extends PlayerListController {
     }
 
     public void onFriends(ActionEvent actionEvent) {
+        // init friendsList
+        friendsList = new ListView<>();
+        friendsList.setMaxSize(200, 300);
+
+        // setup header
+        HBox headerHbox = new HBox();
+        Label headerLabel = new Label(bundle.getString("friends"));
+        headerLabel.setStyle("-fx-font-size: 20px");
+        headerHbox.getChildren().add(headerLabel);
+        HBox empty = new HBox(new Label());
+        friendsList.getItems().addAll(headerHbox, empty);
+
+        // add friends
+        User myUser = userService.getUserByID(userService.getCurrentUserID()).blockingFirst();
+        List<String> friends = myUser.friends();
+        for (String friend : friends) {
+            String name = userService.getUserName(friend).blockingFirst();
+            HBox friendsHbox = new HBox(new Label(name));
+            friendsList.getItems().add(friendsHbox);
+        }
+        friendsList.setLayoutX(friendsButton.getLayoutX()+270);
+        friendsList.setLayoutY(friendsButton.getLayoutY());
+
+        achievementsPane.getChildren().add(friendsList);
+
     }
 
     public void leaveAchievments(MouseEvent mouseEvent) {
@@ -265,5 +292,12 @@ public class AchievementsController extends PlayerListController {
 
     public void deleteTooltip(Label achievmentsLabel) {
         achievmentsLabel.setTooltip(null);
+    }
+
+    public void onAchievementsPaneClicked(MouseEvent mouseEvent) {
+        if (friendsList != null) {
+            achievementsPane.getChildren().remove(friendsList);
+            friendsList = null;
+        }
     }
 }
