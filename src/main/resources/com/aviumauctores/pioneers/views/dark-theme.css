@@ -306,3 +306,15 @@
     -fx-body-color: #97d077;
 }
 
+#loginLabel {
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+}
+
+#usernameInput {
+    -fx-font-family: "VT323";
+}
+
+#hintLabel {
+    -fx-font-size: 12;
+}

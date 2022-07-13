@@ -8,7 +8,8 @@
 }
 
 .label {
-    -fx-font-size: 15;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
 }
 
 #playerLabel2 {
@@ -241,4 +242,17 @@
     -fx-font-size: 16;
     -fx-background-color: #006600
 }
+#loginLabel{
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+}
+
+#usernameInput{
+    -fx-font-family: "VT323";
+}
+
+#hintLabel{
+    -fx-font-size: 12;
+}
+
 
