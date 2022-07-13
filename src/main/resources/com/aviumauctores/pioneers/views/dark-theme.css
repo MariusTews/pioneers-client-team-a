@@ -152,7 +152,6 @@
 .button {
     -fx-background-color: #97d077;
     -fx-text-fill: #ffffff;
-    -fx-background-radius: 15px;
     -fx-font-size: 14;
 }
 
