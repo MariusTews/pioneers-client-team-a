@@ -110,6 +110,8 @@ class AppTest extends ApplicationTest {
         type(KeyCode.KP_DOWN);
         sleep(200);
         type(KeyCode.ESCAPE);
+        clickOn("#onButton");
+        clickOn("#offButton");
         clickOn("#startGameButton");
         WaitForAsyncUtils.waitForFxEvents();
         sleep(500);
