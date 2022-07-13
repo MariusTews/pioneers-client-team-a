@@ -131,6 +131,7 @@ public class InGameController extends LoggedInController {
     private Parent requestMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
+    private int requiredPoints;
 
     private boolean tradeStarter = false;
 
@@ -144,6 +145,9 @@ public class InGameController extends LoggedInController {
 
     private final ErrorService errorService;
     private final BuildService buildService;
+    private final Provider<PostGameController> postGameController;
+    private final StatService statService;
+
     private final AchievementsService achievementsService;
     private final MapController mapController;
     private boolean fieldsMovedAlready;
@@ -171,7 +175,8 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, AchievementsService achievementsService, MapController mapController, TradeService tradeService) {
+                            ErrorService errorService, BuildService buildService, AchievementsService achievementsService, MapController mapController, TradeService tradeService,
+                            Provider<PostGameController> postGameController, StatService statService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -191,6 +196,8 @@ public class InGameController extends LoggedInController {
         this.achievementsService = achievementsService;
         this.mapController = mapController;
         this.tradeService = tradeService;
+        this.postGameController = postGameController;
+        this.statService = statService;
         fieldsMovedAlready = false;
     }
 
@@ -404,6 +411,7 @@ public class InGameController extends LoggedInController {
         if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
             //listen to new and updated buildings, and load the image
             Building b = buildingEventDto.data();
+            statService.onBuildingBuilt(b.owner(), b.type());
             buildService.setPlayerId(b.owner());
             buildService.setBuildingType(b.type());
             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
@@ -465,6 +473,8 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
+        }else if(move.rob() != null){
+            statService.playerRobbed(move.rob().target());
         }
         //show trade request if a player wants to trade with you
         if (move.partner() != null) {
@@ -693,6 +703,10 @@ public class InGameController extends LoggedInController {
 
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
+        if (updatedPlayer.victoryPoints() >= requiredPoints){
+            app.show(postGameController.get());
+            return;
+        }
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
@@ -716,6 +730,7 @@ public class InGameController extends LoggedInController {
             }
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
+        statService.updatePlayerStats(updatedPlayer);
     }
 
     public void finishMove(ActionEvent actionEvent) {
