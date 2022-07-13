@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-      prefWidth="600.0" xmlns="http://javafx.com/javafx/17">
-   <ImageView fitHeight="81.0" fitWidth="58.0" layoutX="528.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@Loading.png"/>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+   <ImageView fitHeight="86.0" fitWidth="82.0" layoutX="504.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@hourglass.png" />
    </ImageView>
-   <ImageView fitHeight="363.0" fitWidth="384.0" layoutX="118.0" layoutY="19.0" pickOnBounds="true"
-              preserveRatio="true">
-      <Image url="@../settlementIcon.png"/>
+   <ImageView fitHeight="363.0" fitWidth="384.0" layoutX="118.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@../appIcon.png" />
    </ImageView>
 </Pane>
