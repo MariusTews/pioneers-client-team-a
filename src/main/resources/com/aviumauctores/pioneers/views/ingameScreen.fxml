@@ -19,8 +19,6 @@
 
 <BorderPane fx:id="ingamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
    <center>
-      <Pane fx:id="centerPane">
-      </Pane>
    </center>
    <right>
       <BorderPane onMouseClicked="#onMainPaneClicked" prefHeight="680.0" prefWidth="230.0" BorderPane.alignment="CENTER">

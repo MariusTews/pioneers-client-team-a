@@ -89,11 +89,8 @@ public class SceneGestures {
 
             double f = (scale / oldScale) - 1;
 
-            //before it was event.getSceneX/Y, but then it does not zoom at the position of the mouse pointer
-            //with event.getX/Y though it does not zoom to the mouse pointer anymore when the map is dragged
-            //to a different position, so I disabled dragging
-            double dx = (event.getX() - (canvas.getBoundsInParent().getWidth() / 2 + canvas.getBoundsInParent().getMinX()));
-            double dy = (event.getY() - (canvas.getBoundsInParent().getHeight() / 2 + canvas.getBoundsInParent().getMinY()));
+            double dx = (event.getSceneX() - (canvas.getBoundsInParent().getWidth() / 2 + canvas.getBoundsInParent().getMinX()));
+            double dy = (event.getSceneY() - (canvas.getBoundsInParent().getHeight() / 2 + canvas.getBoundsInParent().getMinY()));
 
             canvas.setScale(scale);
 

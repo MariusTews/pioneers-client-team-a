@@ -72,8 +72,6 @@ public class InGameController extends LoggedInController {
     @FXML
     public BorderPane ingamePane;
 
-    @FXML public Pane centerPane;
-
     public Pane mainPane;
     public Pane crossingPane;
     public Pane roadPane;
@@ -283,7 +281,11 @@ public class InGameController extends LoggedInController {
                                 controller.setGameMap(map);
                                 controller.setMapRadius(gameService.getMapRadius());
                                 Pane pane = (Pane) controller.render();
-                                centerPane.getChildren().add(pane);
+                                ingamePane.setCenter(pane);
+                                ingamePane.getRight().toFront();
+                                ingamePane.getLeft().toFront();
+                                ingamePane.getBottom().toFront();
+                                pane.setTranslateX(240);
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
                                 roadPane = controller.getRoadPane();
@@ -845,11 +847,11 @@ public class InGameController extends LoggedInController {
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-            buildMenu.setLayoutX(Math.min(source.getX(), centerPane.getWidth() - newValue.getWidth()));
-            buildMenu.setLayoutY(Math.min(source.getY(), centerPane.getHeight() - newValue.getHeight()));
+            buildMenu.setLayoutX(Math.min(source.getX(), ingamePane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutY(Math.min(source.getY(), ingamePane.getHeight() - newValue.getHeight()));
         });
 
-        centerPane.getChildren().add(buildMenu);
+        ingamePane.getChildren().add(buildMenu);
 
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
@@ -880,7 +882,7 @@ public class InGameController extends LoggedInController {
             buildMenuController = null;
         }
         if (buildMenu != null) {
-            centerPane.getChildren().remove(buildMenu);
+            ingamePane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
     }
@@ -1241,9 +1243,9 @@ public class InGameController extends LoggedInController {
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");
-        tradingMenu.setLayoutX(15);
+        tradingMenu.setLayoutX(255);
         tradingMenu.setLayoutY(120);
-        centerPane.getChildren().add(tradingMenu);
+        ingamePane.getChildren().add(tradingMenu);
 
         // Prevent the event handler from ingame pane to close the build menu immediately after this
         actionEvent.consume();
@@ -1272,9 +1274,9 @@ public class InGameController extends LoggedInController {
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");
-        requestMenu.setLayoutX(50);
-        requestMenu.setLayoutY(50);
-        centerPane.getChildren().add(requestMenu);
+        requestMenu.setLayoutX(255);
+        requestMenu.setLayoutY(120);
+        ingamePane.getChildren().add(requestMenu);
 
     }
 
@@ -1284,7 +1286,7 @@ public class InGameController extends LoggedInController {
             tradingController = null;
         }
         if (tradingMenu != null) {
-            centerPane.getChildren().remove(tradingMenu);
+            ingamePane.getChildren().remove(tradingMenu);
             tradingMenu = null;
         }
     }
@@ -1295,7 +1297,7 @@ public class InGameController extends LoggedInController {
             tradeRequestController = null;
         }
         if (requestMenu != null) {
-            centerPane.getChildren().remove(requestMenu);
+            ingamePane.getChildren().remove(requestMenu);
             requestMenu = null;
         }
         if (tradeRequestPopup.isVisible()) {

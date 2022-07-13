@@ -282,9 +282,9 @@ public class MapController implements Controller {
         SceneGestures sceneGestures = new SceneGestures(canvas);
         canvas.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
 
-        //map dragging is disabled for now as it is not fully compatible with zooming at the moment
-        //canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
-        //canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+        //add event filter to enable dragging (both needed)
+        canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+        canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
 
         return canvas;
     }
