@@ -10,9 +10,11 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -31,11 +33,19 @@ public class DropMenuController implements Controller {
     private final ResourceBundle bundle;
     private final HashMap<String, Integer> resources;
     private final Set<String> keys;
+    @FXML
     public Button dropButton;
+    @FXML
+    public Label dropTextLabel;
+    @FXML
     public Spinner<Integer> woolSpinner;
+    @FXML
     public Spinner<Integer> grainSpinner;
+    @FXML
     public Spinner<Integer> oreSpinner;
+    @FXML
     public Spinner<Integer> brickSpinner;
+    @FXML
     public Spinner<Integer> lumberSpinner;
     public final SimpleIntegerProperty currentAmountProperty = new SimpleIntegerProperty();
     ChangeListener<Integer> listener = this::computeAmount;
@@ -116,6 +126,7 @@ public class DropMenuController implements Controller {
                         currentAmountProperty.get() != dropLimit, currentAmountProperty)
         );
 
+        dropTextLabel.setText(String.format(bundle.getString("drop.resources.text"), dropLimit));
 
         canvas.getChildren().add(parent);
         canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
