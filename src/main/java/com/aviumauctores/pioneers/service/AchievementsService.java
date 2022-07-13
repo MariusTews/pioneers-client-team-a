@@ -41,9 +41,11 @@ public class AchievementsService {
         achievementList.observeOn(FX_SCHEDULER)
                 .subscribe(achievements -> {
                     for (Achievement achievement: achievements) {
+                        int achievementProgress = 0;
+                        if (achievementProgress < achievement.progress()) {achievementProgress = achievement.progress();}
                         achievementsProgress.put(
                                 achievement.id(),
-                                achievement.progress()
+                                achievementProgress
                         );
                     }
                 });
@@ -52,13 +54,13 @@ public class AchievementsService {
 
     public Observable<Achievement> putAchievement(String id, int progress) {
         String unlocked = null;
-        if (achievementsProgress.get(id) != null || id.equals(ACHIEVEMENT_RESOURCES)) {
+        if (achievementsProgress.containsKey(id)) {
             progress += achievementsProgress.get(id);
-        }
-        if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
-            unlocked = dateFormat.format(calender.getTime());
-            achievementsProgress.replace(id, progress);
-            disposables.add(putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe());
+            if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
+                unlocked = dateFormat.format(calender.getTime());
+                achievementsProgress.replace(id, progress);
+                disposables.add(putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe());
+            }
         }
         return achievementsApiService.putAchievement(
                 userService.getCurrentUserID(),

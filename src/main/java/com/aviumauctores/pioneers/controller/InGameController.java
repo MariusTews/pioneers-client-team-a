@@ -269,6 +269,8 @@ public class InGameController extends LoggedInController {
                     app.show(lobbyController.get());
                 }));
         disposables.add(achievementsService.getUserAchievements().observeOn(FX_SCHEDULER).subscribe());
+
+        requiredPoints = gameService.getVictoryPoints();
     }
 
     @Override
@@ -1255,7 +1257,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
+        tradingController = new TradingController(this, bundle, achievementsService, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setStyle("-fx-background-color: #ffffff;");

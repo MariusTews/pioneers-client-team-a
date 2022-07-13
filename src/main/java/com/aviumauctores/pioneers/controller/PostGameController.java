@@ -18,8 +18,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.ResourceBundle;
+import static com.aviumauctores.pioneers.Constants.*;
 
 public class PostGameController extends  LoggedInController {
 
@@ -30,6 +30,7 @@ public class PostGameController extends  LoggedInController {
     private final GameService gameService;
     private final GameMemberService gameMemberService;
     private final Provider<StatController> statController;
+    private final AchievementsService achievementsService;
     public Label winnerHeader;
     public Label winnerName;
     public HBox secondPlayerContainer;
@@ -46,7 +47,8 @@ public class PostGameController extends  LoggedInController {
     @Inject
     public PostGameController(App app, LoginService loginService, UserService userService, ResourceBundle bundle,
                               Provider<LobbyController> lobbyController, RankingService rankingService,
-                              GameService gameService, GameMemberService gameMemberService, Provider<StatController> statController){
+                              GameService gameService, GameMemberService gameMemberService, Provider<StatController> statController,
+                              AchievementsService achievementsService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -55,6 +57,7 @@ public class PostGameController extends  LoggedInController {
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
         this.statController = statController;
+        this.achievementsService = achievementsService;
     }
 
     @Override
@@ -73,6 +76,7 @@ public class PostGameController extends  LoggedInController {
             return null;
         }
         Node[] container = new Node[]{winnerContainer, secondPlayerContainer, thirdPlayerContainer, fourthPlayerContainer};
+        String ownName = userService.getUserName(userService.getCurrentUserID()).toString();
         Label[] labels = new Label[]{winnerName, secondPlayerName, thirdPlayerName, fourthPlayerName};
         HashMap<Integer, Player> ranking = rankingService.createRanking();
         int numPlayers = ranking.size();
@@ -81,6 +85,17 @@ public class PostGameController extends  LoggedInController {
                 container[i].setVisible(false);
             }else {
                 String playerID = ranking.get(i).userId();
+                if (playerID == ownName) {
+                    disposables.add(achievementsService.putAchievement(RANKING, 100 - i * 25)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe());
+                    disposables.add(achievementsService.putAchievement(WINSTREAK, 1)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe());
+                    disposables.add(achievementsService.putAchievement(ACHIEVEMENT_WIN, 1)
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe());
+                }
                 labels[i].setText(userService.getUserName(playerID).blockingFirst());
             }
         }

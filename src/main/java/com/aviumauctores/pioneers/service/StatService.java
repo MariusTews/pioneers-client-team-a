@@ -57,9 +57,9 @@ public class StatService {
     }
 
     private void setLongestRoad(String id, int length){
-        System.out.println("later");
-        System.out.println(id + " " + playerServices);
-        playerServices.get(id).setStat(STAT_LONGEST_ROAD, length);
+        if (playerServices.containsKey(id)) {
+            playerServices.get(id).setStat(STAT_LONGEST_ROAD, length);
+        }
     }
 
     public void onBuildingBuilt(String owner, String type) {
