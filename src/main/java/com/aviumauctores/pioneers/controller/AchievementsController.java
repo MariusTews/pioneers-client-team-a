@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.AchievementsService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -27,11 +28,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+import static com.aviumauctores.pioneers.Constants.RANKING;
 
 public class AchievementsController extends PlayerListController {
 
     private final App app;
     private final ResourceBundle bundle;
+    private AchievementsService achievementsService;
 
     @FXML
     public Button friendsButton;
@@ -99,11 +102,12 @@ public class AchievementsController extends PlayerListController {
                                   Provider<LobbyController> lobbyController,
                                   ResourceBundle bundle,
                                   LoginService loginService,
-                                  UserService userService) {
+                                  UserService userService, AchievementsService achievementsService) {
         super(loginService, userService);
         this.lobbyController = lobbyController;
         this.app = app;
         this.bundle = bundle;
+        this.achievementsService = achievementsService;
 
         defaultColor = Color.rgb(255, 255, 255);
     }
@@ -174,8 +178,14 @@ public class AchievementsController extends PlayerListController {
         User myUser = userService.getUserByID(userService.getCurrentUserID()).blockingFirst();
         List<String> friends = myUser.friends();
         for (String friend : friends) {
-            String name = userService.getUserName(friend).blockingFirst();
-            HBox friendsHbox = new HBox(new Label(name));
+            StringBuilder name = new StringBuilder(userService.getUserName(friend).blockingFirst());
+            int length = name.length();
+            name.append(" ".repeat(Math.max(0, 24 - length)));
+            HBox friendsHbox = new HBox(new Label(name.toString()));
+            disposables.add(achievementsService.getUserAchievement(friend, RANKING)
+                    .observeOn(FX_SCHEDULER).
+                    subscribe(success -> {
+                    }, error -> friendsHbox.getChildren().add(new Label(" RP: 0"))));
             friendsList.getItems().add(friendsHbox);
         }
         friendsList.setLayoutX(friendsButton.getLayoutX()+270);

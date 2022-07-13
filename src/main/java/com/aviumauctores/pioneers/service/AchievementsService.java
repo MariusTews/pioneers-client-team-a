@@ -50,6 +50,10 @@ public class AchievementsService {
         return achievementList;
     }
 
+    public Observable<List<Achievement>> getUserAchievement(String userId, String achievementId) {
+        return achievementsApiService.getUserAchievement(userId, achievementId);
+    }
+
     public Observable<Achievement> putAchievement(String id, int progress) {
         String unlocked = null;
         if (achievementsProgress.get(id) != null || id.equals(ACHIEVEMENT_RESOURCES)) {
