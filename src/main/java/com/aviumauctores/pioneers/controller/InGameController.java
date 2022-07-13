@@ -123,10 +123,10 @@ public class InGameController extends LoggedInController {
 
     private BuildMenuController buildMenuController;
     private DropMenuController dropMenuController;
+    private TradeRequestController tradeRequestController;
     private Parent buildMenu;
     private Parent dropMenu;
     private Parent tradingMenu;
-    private TradeRequestController tradeRequestController;
     private Parent requestMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
@@ -741,7 +741,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         String color = playerColors.get(owner);
-        //cirles are behind settlements and cities
+        //circles are behind settlements and cities
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
                 circle.setFill(Color.web(color));
@@ -847,7 +847,7 @@ public class InGameController extends LoggedInController {
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-            buildMenu.setLayoutX(Math.min(source.getX(), ingamePane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutX(Math.min(source.getX() + 236, ingamePane.getWidth() - newValue.getWidth()));
             buildMenu.setLayoutY(Math.min(source.getY(), ingamePane.getHeight() - newValue.getHeight()));
         });
 
@@ -1242,7 +1242,6 @@ public class InGameController extends LoggedInController {
         tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
-        tradingMenu.setStyle("-fx-background-color: #ffffff;");
         tradingMenu.setLayoutX(255);
         tradingMenu.setLayoutY(120);
         ingamePane.getChildren().add(tradingMenu);
@@ -1273,7 +1272,6 @@ public class InGameController extends LoggedInController {
         tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
-        requestMenu.setStyle("-fx-background-color: #ffffff;");
         requestMenu.setLayoutX(255);
         requestMenu.setLayoutY(120);
         ingamePane.getChildren().add(requestMenu);

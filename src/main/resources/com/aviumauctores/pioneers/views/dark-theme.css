@@ -168,6 +168,10 @@
     -fx-background-color: #333333;
 }
 
+.trade-menu {
+    -fx-background-color: #333333;
+}
+
 #ingamePane {
     -fx-background-color: #00233B;
 }

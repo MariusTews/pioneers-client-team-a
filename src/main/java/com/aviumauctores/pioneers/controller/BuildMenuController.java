@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.BuildService;
+import com.aviumauctores.pioneers.util.PannableCanvas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -61,7 +62,10 @@ public class BuildMenuController implements Controller {
 
         buildButton.setDisable(!enableButton);
 
-        return parent;
+        PannableCanvas canvas = new PannableCanvas();
+        canvas.getChildren().add(parent);
+
+        return canvas;
     }
 
 
