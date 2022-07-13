@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Circle?>
+
+<Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.MapController">
+    <Pane fx:id="tilePane" prefHeight="580.0" prefWidth="583.0" />
+    <Pane fx:id="tileLabelPane" prefHeight="580.0" prefWidth="583.0" />
+    <Pane fx:id="robberPane" prefHeight="580.0" prefWidth="583.0" />
+    <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="580.0" prefWidth="579.0" />
+    <Pane fx:id="crossingPane" prefHeight="580.0" prefWidth="583.0">
+    </Pane>
+    <Pane fx:id="roadPane" prefHeight="580.0" prefWidth="583.0">
+    </Pane>
+    <HBox fx:id="vpBox" alignment="CENTER" prefHeight="77.0" prefWidth="628.0">
+        <Circle fx:id="vp01" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp02" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp03" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp04" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp05" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp06" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp07" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp08" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp09" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fx:id="vp10" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+    </HBox>
+    <Label fx:id="timeLabel" layoutX="238.0" layoutY="608.0" prefHeight="17.0" prefWidth="143.0" text="Label" />
+</Pane>

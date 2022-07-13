@@ -16,21 +16,29 @@
     -fx-text-fill: #eee;
 }
 
-#passwordErrorLabel{
+#msgSpectatorLabel {
+    -fx-text-fill: gray;
+}
+
+#spectatorText {
     -fx-font-size: 11;
 }
 
-#usernameErrorLabel{
+#passwordErrorLabel {
     -fx-font-size: 11;
 }
 
-#gameNameLabel{
+#usernameErrorLabel {
+    -fx-font-size: 11;
+}
+
+#gameNameLabel {
     -fx-font-size: 24;
     -fx-background-radius: 8px;
     -fx-text-fill: #eee;
 }
 
-#nameLabel{
+#nameLabel {
     -fx-font-size: 12;
     -fx-background-radius: 8px;
     -fx-background-color: #545454;
@@ -76,7 +84,7 @@
 }
 
 .list-view .corner {
-    -fx-background-color: transparent ;
+    -fx-background-color: transparent;
 }
 
 .text {
@@ -105,7 +113,6 @@
 .tab-header-background {
     -fx-background-color: #00496c;
     -fx-background-radius: 8 8 0 0;
-
 }
 
 .scroll-bar {
@@ -157,6 +164,10 @@
     -fx-background-color: #333333;
 }
 
+.drop-menu {
+    -fx-background-color: #333333;
+}
+
 #ingamePane {
     -fx-background-color: #00233B;
 }
@@ -179,4 +190,15 @@
 #changeWindowVBox {
     -fx-background-color: #333333;
     -fx-background-radius: 8px;
+}
+
+#paneOption {
+    -fx-background-color: rgb(0, 1, 17);
+    -fx-border-color: #00496c;
+    -fx-border-width: 5;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-body-color: #00496c;
 }

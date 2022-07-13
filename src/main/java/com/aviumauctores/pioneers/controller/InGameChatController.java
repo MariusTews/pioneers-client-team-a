@@ -63,7 +63,7 @@ public class InGameChatController implements Controller {
     private InGameController inGameController;
 
     private CompositeDisposable disposables;
-private String userID;
+    private String userID;
 
     @Inject
     public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
@@ -176,26 +176,54 @@ private String userID;
 
     public HBox createMessageLabel(Message message) {
         Label msgLabel = new Label();
+
+        Label msgSpectatorLabel = new Label();
+        msgSpectatorLabel.setId("msgSpectatorLabel");
         ImageView avatarView = new ImageView();
         avatarView.setFitWidth(20.0);
         avatarView.setFitHeight(20.0);
+        HBox playerBox =new HBox(5, avatarView);
 
-        errorService.setErrorCodesUsers();
-        userService.getUserByID(message.sender())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(
-                        result -> {
-                            msgLabel.setText(result.name() + ": " + message.body());
-                            String avatarUrl = result.avatar();
-                            Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
-                            avatarView.setImage(avatar);
-                        }, errorService::handleError
-                );
+       gameMemberService.getMember(message.sender()).observeOn(FX_SCHEDULER).subscribe(
+               member->{
+                  if(member.spectator()){
+                      errorService.setErrorCodesUsers();
+                      userService.getUserByID(message.sender())
+                              .observeOn(FX_SCHEDULER)
+                              .subscribe(
+                                      result -> {
+                                          msgSpectatorLabel.setText(result.name() + ": " + message.body());
+                                          String avatarUrl = result.avatar();
+                                          Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+                                          avatarView.setImage(avatar);
+                                      }, errorService::handleError
+                              );
+                      playerBox.getChildren().add(msgSpectatorLabel);
+                      playerBox.setOnMouseClicked(this::onMessageClicked);
+                      playerBox.setId(message._id());
 
-        HBox playerBox = new HBox(5, avatarView, msgLabel);
-        playerBox.setOnMouseClicked(this::onMessageClicked);
-        playerBox.setId(message._id());
-        return playerBox;
+
+                  }else{
+                      errorService.setErrorCodesUsers();
+                      userService.getUserByID(message.sender())
+                              .observeOn(FX_SCHEDULER)
+                              .subscribe(
+                                      result -> {
+                                          msgLabel.setText(result.name() + ": " + message.body());
+                                          String avatarUrl = result.avatar();
+                                          Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+                                          avatarView.setImage(avatar);
+                                      }, errorService::handleError
+                              );
+
+                      playerBox.getChildren().add(msgLabel);
+                      playerBox.setOnMouseClicked(this::onMessageClicked);
+                      playerBox.setId(message._id());
+                  }
+               });
+
+
+         return playerBox;
     }
 
     public void onMessageClicked(MouseEvent event) {
@@ -222,11 +250,14 @@ private String userID;
     public void delete(String messageId) {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
-                .subscribe(r -> {}, errorService::handleError);
+                .subscribe(r -> {
+                }, errorService::handleError);
     }
 
     @Override
     public void destroy(boolean closed) {
-        disposables.dispose();
+        if(disposables!=null){
+            disposables.dispose();
+        }
     }
 }

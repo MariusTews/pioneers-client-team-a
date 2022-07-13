@@ -1,12 +1,8 @@
 package com.aviumauctores.pioneers.controller;
-
+import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.model.GameSettings;
-import com.aviumauctores.pioneers.model.Member;
-import com.aviumauctores.pioneers.model.User;
-import com.aviumauctores.pioneers.service.ErrorService;
+import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.GameMemberService;
 import com.aviumauctores.pioneers.service.GameService;
 import com.aviumauctores.pioneers.service.UserService;
@@ -24,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.inject.Provider;
 import java.util.List;
@@ -60,10 +57,13 @@ class GameReadyControllerTest extends ApplicationTest {
     Provider<LobbyController> lobbyController;
 
     @Mock
+    Provider<GameOptionController> gameOptionController;
+
+    @Mock
     ErrorService errorService;
 
     @Spy
-    ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
+    ResourceBundle bundle = ResourceBundle.getBundle ("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
     @InjectMocks
     GameReadyController gameReadyController;
@@ -73,20 +73,21 @@ class GameReadyControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Member existingMember = new Member("", "", "12", "1", true, null, false);
+        Member existingMember = new Member ("", "", "12", "1", true, null, false);
 
-        when(userService.getUserByID("1")).thenReturn(
-                Observable.just(new User("1", "Player1", "online", null, null)));
-        when(userService.getUserName(anyString())).thenReturn(Observable.just("Player1"));
-        when(userService.getCurrentUserID()).thenReturn("1");
-        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("1", "2", "12", "name", "42", false, 1, new GameSettings(2, 10))));
-        when(gameService.getCurrentGameID()).thenReturn("12");
-        existingMembers = Observable.just(List.of(existingMember));
-        when(gameMemberService.listCurrentGameMembers()).thenReturn(existingMembers);
-        memberUpdates = PublishSubject.create();
-        when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
-        when(eventListener.listen("games.12.members.*.*", Member.class)).thenReturn(memberUpdates);
-        new App(gameReadyController).start(stage);
+        when (userService.getUserByID ("1")).thenReturn (
+                Observable.just (new User ("1", "Player1", "online", null, null)));
+        when (userService.getUserName (anyString ())).thenReturn (Observable.just ("Player1"));
+        when (userService.getCurrentUserID ()).thenReturn ("1");
+        when (gameService.getCurrentGame ()).thenReturn (Observable.just (new Game ("1", "2", "12", "name", "42", false, 1, new GameSettings (2, 10))));
+        when (gameService.getCurrentGameID ()).thenReturn ("12");
+        existingMembers = Observable.just (List.of (existingMember));
+        when (gameMemberService.listCurrentGameMembers ()).thenReturn (existingMembers);
+        memberUpdates = PublishSubject.create ();
+        when (eventListener.listen (anyString (), any ())).thenReturn (Observable.empty ());
+        when (eventListener.listen ("games.12.members.*.*", Member.class)).thenReturn (memberUpdates);
+        when(gameService.getOwnerID()).thenReturn("1");
+        new App (gameReadyController).start (stage);
     }
 
     @Override
@@ -102,83 +103,97 @@ class GameReadyControllerTest extends ApplicationTest {
         this.lobbyController = null;
         this.memberUpdates = null;
         this.userService = null;
+        this.gameOptionController = null;
     }
 
     @Test
     void gameMemberListUpdates() {
-        when(userService.getUserByID("42")).thenReturn(
-                Observable.just(new User("42", "Player42", "online", null, null)));
+        when (userService.getUserByID ("42")).thenReturn (
+                Observable.just (new User ("42", "Player42", "online", null, null)));
 
-        final ListView<Parent> playerList = lookup("#playerList").queryListView();
+        final ListView<Parent> playerList = lookup ("#playerList").queryListView ();
         // Get existing members
-        List<Member> exMembersList = existingMembers.blockingFirst();
+        List<Member> exMembersList = existingMembers.blockingFirst ();
         // create a member
-        Member createdMember = new Member("", "", "12", "42", true, null, false);
-        memberUpdates.onNext(new EventDto<>("created", createdMember));
+        Member createdMember = new Member ("", "", "12", "42", true, null, false);
+        memberUpdates.onNext (new EventDto<> ("created", createdMember));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
         // The list should now have 2 items: one existing member from REST and one new member
-        verifyThat(playerList, hasItems(2));
+        verifyThat (playerList, hasItems (2));
     }
 
     @Test
     void gameReady() {
-        when(gameMemberService.updateMember(anyString())).thenReturn(Observable.just(new Member("", "", "12", "1", false, null, false)));
-        when(userService.getCurrentUserID()).thenReturn("1");
-        clickOn("#gameReadyButton");
+        when (gameMemberService.updateMember (anyString ())).thenReturn (Observable.just (new Member ("", "", "12", "1", false, null, false)));
+        when (userService.getCurrentUserID ()).thenReturn ("1");
+        clickOn ("#gameReadyButton");
 
-        verify(gameMemberService).updateMember("1");
+        verify (gameMemberService).updateMember ("1");
     }
 
     @Test
     void leaveGame() {
-        when(userService.getCurrentUserID()).thenReturn("42");
-        when(gameMemberService.deleteMember(anyString())).thenReturn(Observable.just(new Member("", "", null, "1", false, null, false)));
-        clickOn("#leaveGameButton");
-        clickOn("OK");
-        verify(gameMemberService).updateID();
-        verify(gameMemberService).deleteMember("42");
-        verify(gameService).setCurrentGameID(null);
+        when (userService.getCurrentUserID ()).thenReturn ("42");
+        when (gameMemberService.deleteMember (anyString ())).thenReturn (Observable.just (new Member ("", "", null, "1", false, null, false)));
+        clickOn ("#leaveGameButton");
+        clickOn ("OK");
+        verify (gameMemberService).updateID ();
+        verify (gameMemberService).deleteMember ("42");
+        verify (gameService).setCurrentGameID (null);
     }
 
     @Test
     void deleteGame() {
-        when(userService.getCurrentUserID()).thenReturn("1");
-        when(gameService.getOwnerID()).thenReturn("1");
-        when(gameService.deleteGame()).thenReturn(Observable.just(new Game("", "", null, "name", "1", false, 0, new GameSettings(2, 10))));
-        clickOn("#leaveGameButton");
-        clickOn("OK");
-        verify(gameService).deleteGame();
-        verify(gameService).setCurrentGameID(null);
+        when (userService.getCurrentUserID ()).thenReturn ("1");
+        when (gameService.getOwnerID ()).thenReturn ("1");
+        when (gameService.deleteGame ()).thenReturn (Observable.just (new Game ("", "", null, "name", "1", false, 0, new GameSettings (2, 10))));
+        clickOn ("#leaveGameButton");
+        clickOn ("OK");
+        verify (gameService).deleteGame ();
+        verify (gameService).setCurrentGameID (null);
     }
 
     @Test
     void startGameFailedColors() {
-        clickOn("#startGameButton");
+        clickOn ("#startGameButton");
 
         // Both players shouldn't have a set color by default, so this error message is expected
-        verify(app).showErrorDialog(
-                bundle.getString("cannot.start.game"), bundle.getString("not.all.members.coloured")
+        verify (app).showErrorDialog (
+                bundle.getString ("cannot.start.game"), bundle.getString ("not.all.members.coloured")
         );
     }
 
     @Test
     void startGameFailedMembersNotReady() {
-        memberUpdates.onNext(new EventDto<>("updated",
-                new Member("", "", "12", "1", false, null, false)));
+        memberUpdates.onNext (new EventDto<> ("updated",
+                new Member ("", "", "12", "1", false, null, false)));
 
-        clickOn("#startGameButton");
+        clickOn ("#startGameButton");
 
-        verify(app).showErrorDialog(
-                bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready")
+        verify (app).showErrorDialog (
+                bundle.getString ("cannot.start.game"), bundle.getString ("not.all.members.ready")
         );
     }
 
     @Test
     void testColour() {
-        when(userService.getCurrentUserID()).thenReturn("1");
-        String colourHexBlue = "#" + Color.BLUE.toString().substring(2, 8);
-        when(gameMemberService.updateColour("1", colourHexBlue)).thenReturn(Observable.just(new Member("", "", "12", "1", false, Color.BLUE, false)));
-        clickOn("#pickColourMenu");
-        clickOn("#item_" + Color.BLUE);
-        verify(gameMemberService).updateColour("1", colourHexBlue);
+        when (userService.getCurrentUserID ()).thenReturn ("1");
+        String colourHexBlue = "#" + Color.BLUE.toString ().substring (2, 8);
+        when (gameMemberService.updateColour ("1", colourHexBlue)).thenReturn (Observable.just (new Member ("", "", "12", "1", false, Color.BLUE, false)));
+        clickOn ("#pickColourMenu");
+        clickOn ("#item_" + Color.BLUE);
+        verify (gameMemberService).updateColour ("1", colourHexBlue);
     }
+
+    @Test
+    void testSpectator() {
+        when (userService.getCurrentUserID ()).thenReturn ("1");
+        when (gameMemberService.setSpectator ("1", true)).thenReturn (Observable.just (new Member ("", "", "12", "1", false, Color.BLUE, true)));
+        clickOn ("#onButton");
+        verify (gameMemberService).setSpectator ("1", true);
+
+    }
+
 }

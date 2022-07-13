@@ -12,7 +12,9 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -25,10 +27,12 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.inject.Provider;
 import java.util.*;
 
+import static com.aviumauctores.pioneers.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,7 +45,7 @@ public class InGameControllerTest extends ApplicationTest {
     @Mock
     UserService userService;
 
-    @Mock
+    @Spy
     ColorService colorService;
 
     @Mock
@@ -112,10 +116,15 @@ public class InGameControllerTest extends ApplicationTest {
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", Locale.ROOT);
 
+    @Spy
+    MapController mapController = new MapController(bundle);
+
     @InjectMocks
     InGameController inGameController;
 
     private PublishSubject<EventDto<State>> stateUpdates;
+
+    private PublishSubject<EventDto<Player>> playerUpdates;
 
 
     @Override
@@ -125,17 +134,19 @@ public class InGameControllerTest extends ApplicationTest {
         when(gameService.getCurrentGameID()).thenReturn("12");
         Player player = new Player("12", "1", "#008000", true,
                 2, new HashMap<>(), new HashMap<>(), 0, 0);
-        when(pioneerService.getPlayer("1")).thenReturn(Observable.just(player));
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))), new Point3D(1, 3, 4))));
 
         when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
         stateUpdates = PublishSubject.create();
+        playerUpdates = PublishSubject.create();
         when(eventListener.listen(anyString(), any())).thenReturn(Observable.empty());
-        when(pioneerService.createMove("founding-roll", null, null, null)).thenReturn(Observable.just(new Move("69",
+        when(pioneerService.createMove("founding-roll", null, null, null, null)).thenReturn(Observable.just(new Move("69",
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
-        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("101", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(1, 1, 1, "dessert", 0)))));
+        when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "lumber", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
+        when(gameService.getMapRadius()).thenReturn(0);
+        when(pioneerService.listPlayers()).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
     }
 
@@ -157,19 +168,27 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onFieldClicked() {
+        when(stateService.getCurrentPlayerID()).thenReturn("1");
+        when(stateService.getCurrentAction()).thenReturn(MOVE_BUILD);
+        stateUpdates.onNext(new EventDto<>("created", new State("", "12",
+                List.of(new ExpectedMove("founding-settlement-1", List.of("1"))), new Point3D(1, 3, 4))));
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
         // Open the build menu
-        clickOn("#building01_10");
+        clickOn("#buildingX0Y0Z0R0");
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
         assertThat(settlementLabel).isPresent();
     }
 
     @Test
     void onMainPaneClicked() {
+        when(stateService.getCurrentPlayerID()).thenReturn("1");
+        when(stateService.getCurrentAction()).thenReturn(MOVE_BUILD);
+        stateUpdates.onNext(new EventDto<>("created", new State("", "12",
+                List.of(new ExpectedMove("founding-settlement-1", List.of("1"))), new Point3D(1, 3, 4))));
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
-        clickOn("#building01_10");
+        clickOn("#buildingX0Y0Z0R0");
         // Click on main pane to close the build menu
         clickOn("#mainPane");
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
@@ -178,10 +197,15 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Test
     void onRollClicked() {
-        when(pioneerService.createMove("roll", null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
+        when(stateService.getCurrentPlayerID()).thenReturn("1");
+        when(stateService.getCurrentAction()).thenReturn(MOVE_ROLL);
+        stateUpdates.onNext(new EventDto<>("created", new State("2", "12", List.of(new ExpectedMove("roll", List.of("1"))), null)));
+        when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
-        verify(pioneerService).createMove("roll", null, null, null);
+        // this is required, because the button does not trigger its onClick-event in this test
+        inGameController.rollButton.fire();
+        verify(pioneerService).createMove("roll", null, null, null, null);
     }
 
     @Test
@@ -207,4 +231,52 @@ public class InGameControllerTest extends ApplicationTest {
         assertThat(arrow.isVisible()).isTrue();
         assertThat(yourTurn.isVisible()).isTrue();
     }
+
+    @Test
+    void dropResources() {
+        HashMap<String, Integer> resources = new HashMap<>();
+        resources.put(RESOURCE_ORE, 8);
+
+        HashMap<String, Integer> droppedResources = new HashMap<>();
+        droppedResources.put(RESOURCE_ORE, -4);
+
+        String userID = userService.getCurrentUserID();
+
+        Player player = new Player(gameService.getCurrentGameID(), userID, "#008000",
+                true, 2, resources, null, 0, 0);
+
+        when(pioneerService.getPlayer(userID)).thenReturn(Observable.just(player));
+        when(stateService.getCurrentPlayerID()).thenReturn(userID);
+        when(stateService.getCurrentAction()).thenReturn(MOVE_DROP);
+        when(pioneerService.createMove(MOVE_DROP, null, droppedResources, null, null))
+                .thenReturn(Observable.just(new Move(null, null, null, null, null,
+                        0, null, null, null, null)));
+
+        //create a state in which the current player has to drop some resources
+        stateUpdates.onNext(new EventDto<>("created",
+                new State("", gameService.getCurrentGameID(),
+                        List.of(new ExpectedMove(MOVE_DROP, List.of(userService.getCurrentUserID()))), null)));
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        //check that the drop menu opens
+        Optional<Node> dropButton = lookup("#dropButton").tryQuery();
+        assertThat(dropButton).isPresent();
+
+        Spinner<Integer> spinner = lookup("#oreSpinner").query();
+        Button button = (Button) dropButton.get();
+
+        //increment ore spinner by 2 and check that it is not possible to drop
+        spinner.increment(2);
+        clickOn(button);
+        dropButton = lookup("#dropButton").tryQuery();
+        assertThat(dropButton).isPresent();
+
+        //increment ore spinner again by 2 and check that it is now possible to drop (4 is the drop limit)
+        spinner.increment(2);
+        clickOn(button);
+        dropButton = lookup("#dropButton").tryQuery();
+        assertThat(dropButton).isNotPresent();
+    }
+
 }

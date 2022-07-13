@@ -134,10 +134,11 @@ class LobbyControllerTest extends ApplicationTest {
 
     @Test
     void changeLanguage() {
-
+        when(preferenceService.getLocale()).thenReturn(Locale.ENGLISH);
         clickOn("#britishFlag");
         verify(preferenceService).setLocale(Locale.ENGLISH);
 
+        when(preferenceService.getLocale()).thenReturn(Locale.GERMAN);
         clickOn("#germanFlag");
         verify(preferenceService).setLocale(Locale.GERMAN);
     }

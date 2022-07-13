@@ -21,13 +21,11 @@ import javax.inject.Provider;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static com.aviumauctores.pioneers.Constants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.util.NodeQueryUtils.hasText;
 
 @ExtendWith(MockitoExtension.class)
 public class RegisterControllerErrorTest extends ApplicationTest {
@@ -73,7 +71,7 @@ public class RegisterControllerErrorTest extends ApplicationTest {
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("smth.went.wrong"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
     }
@@ -85,7 +83,7 @@ public class RegisterControllerErrorTest extends ApplicationTest {
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("smth.went.wrong"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
 
@@ -98,7 +96,7 @@ public class RegisterControllerErrorTest extends ApplicationTest {
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("smth.went.wrong"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
 
@@ -111,7 +109,7 @@ public class RegisterControllerErrorTest extends ApplicationTest {
         write("1234\t");
         write("\t");
         type(KeyCode.SPACE);
-        verifyThat(bundle.getString("connection.failed"), NodeMatchers.isVisible());
+        verifyThat(bundle.getString("smth.went.wrong"), NodeMatchers.isVisible());
         verifyThat(bundle.getString("try.again"), NodeMatchers.isVisible());
         verify(userService).register("Jannis", "1234");
     }

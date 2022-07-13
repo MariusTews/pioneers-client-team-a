@@ -21,6 +21,8 @@ public class GameMemberService {
     private String gameID;
 
 
+
+
     @Inject
     public GameMemberService(GameService gameService, GameMembersApiService gameMembersApiService) {
         this.gameService = gameService;
@@ -29,7 +31,7 @@ public class GameMemberService {
     }
 
     public Observable<Member> createMember() {
-        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, null, gameService.password,false));
+        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, null, gameService.password, false));
     }
 
     public Observable<List<Member>> listCurrentGameMembers() {
@@ -41,16 +43,15 @@ public class GameMemberService {
 
     }
 
-
     public Observable<Member> updateMember(String memberID) {
         Observable<Member> member = getMember(memberID);
         boolean status = !(member.blockingFirst().ready());
-        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status, null,false));
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(status, null, false));
     }
 
     public Observable<Member> updateColour(String memberID, String colour) {
         Observable<Member> member = getMember(memberID);
-        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(member.blockingFirst().ready(), colour,false));
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(member.blockingFirst().ready(), colour,null));
     }
 
     public Observable<Member> getMember(String memberID) {
@@ -64,4 +65,10 @@ public class GameMemberService {
     public void setGameID(String id) {
         this.gameID = id;
     }
+
+    public Observable<Member> setSpectator(String memberID, boolean spectator) {
+        return gameMembersApiService.updateMember(gameService.getCurrentGameID(), memberID, new UpdateMemberDto(true, null, spectator));
+    }
+
+
 }

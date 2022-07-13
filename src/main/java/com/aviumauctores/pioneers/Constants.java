@@ -153,17 +153,16 @@ public class Constants {
     public static final String MOVE_FOUNDING_ROLL = "founding-roll";
     public static final String MOVE_ROLL = "roll";
     public static final String MOVE_BUILD = "build";
+    public static final String MOVE_DROP = "drop";
+    public static final String MOVE_ROB = "rob";
 
     //Resources
-
     public static final String RESOURCE_BRICK = "brick";
     public static final String RESOURCE_GRAIN = "grain";
-
     public static final String RESOURCE_LUMBER = "lumber";
-
     public static final String RESOURCE_ORE = "ore";
-
     public static final String RESOURCE_WOOL = "wool";
+    public static final String RESOURCE_UNKNOWN = "unknown";
 
     //Stats
     public static final String STAT_RESOURCES_GAINED = "resources.gained";
@@ -175,4 +174,14 @@ public class Constants {
     public static final String[] ALL_STAT_NAMES = new String[]{STAT_RESOURCES_GAINED, STAT_RESOURCES_LOST, STAT_LONGEST_ROAD,
         STAT_CITIES_BUILT, STAT_SETTLEMENTS_BUILT, STAT_ROADS_BUILT};
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
+
+
+    // values for smallest map-radius
+    public static final double WIDTH_HEXAGON = 518.75;
+    public static final double HEIGHT_HEXAGON = 446.875;
+    public static final double MAIN_PAIN_MIDDLE_X = 291.5;
+    public static final double MAIN_PAIN_MIDDLE_Y = 290.0;
+    public static final double WIDTH_HEIGHT_BUILDING = 90.0;
+    public static final double HEIGHT_ROAD = 50.0;
+    public static final double WIDTH_ROAD = 179.375;
 }

@@ -87,7 +87,6 @@ public class App extends Application {
         stage.getScene().heightProperty().addListener(sizeListener);
     }
 
-
     public void setWindow(Pane contentPane) {
         final double newWidth = stage.getScene().getWidth();
         final double newHeight = stage.getScene().getHeight();
@@ -135,7 +134,7 @@ public class App extends Application {
     }
 
     private void setAppIcon(Stage stage) {
-        final Image image = new Image(Objects.requireNonNull(getClass().getResource("settlement.png")).toString());
+        final Image image = new Image(Objects.requireNonNull(getClass().getResource("settlementIcon.png")).toString());
         stage.getIcons().add(image);
     }
 
@@ -145,7 +144,7 @@ public class App extends Application {
         }
         try {
             final Taskbar taskbar = Taskbar.getTaskbar();
-            final java.awt.Image image = ImageIO.read(Objects.requireNonNull(Main.class.getResource("settlement.png")));
+            final java.awt.Image image = ImageIO.read(Objects.requireNonNull(Main.class.getResource("settlementIcon.png")));
             taskbar.setIconImage(image);
         } catch (Exception ignored) {
 

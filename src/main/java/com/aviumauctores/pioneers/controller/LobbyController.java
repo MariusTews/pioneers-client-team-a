@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.model.Game;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
@@ -18,15 +17,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import retrofit2.HttpException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
@@ -39,18 +34,13 @@ public class LobbyController extends PlayerListController {
     private final ErrorService errorService;
     private final PreferenceService preferenceService;
     private final EventListener eventListener;
-    private final ResourceBundle bundle;
+    private ResourceBundle bundle;
     private final Provider<LoginController> loginController;
     private final Provider<ChatController> chatController;
     private final Provider<CreateGameController> createGameController;
     private final Provider<JoinGameController> joinGameController;
 
     private final Provider<SettingsController> settingsController;
-
-    private final Provider<LobbyController> lobbyController;
-
-
-    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @FXML
     public Label gameLabel;
@@ -77,7 +67,7 @@ public class LobbyController extends PlayerListController {
     public Button settingsButton;
 
     private final ObservableList<Parent> gameItems = FXCollections.observableArrayList();
-    private final Map<String, GameListItemController> gameListItemControllers = new HashMap<>();
+    private final HashMap<String, GameListItemController> gameListItemControllers = new HashMap<>();
 
     @Inject
     public LobbyController(App app,
@@ -90,8 +80,7 @@ public class LobbyController extends PlayerListController {
                            Provider<ChatController> chatController,
                            Provider<CreateGameController> createGameController,
                            Provider<JoinGameController> joinGameController,
-                           Provider<SettingsController> settingsController,
-                           Provider<LobbyController> lobbyController) {
+                           Provider<SettingsController> settingsController) {
         super(loginService, userService);
         this.app = app;
         this.gameService = gameService;
@@ -104,13 +93,12 @@ public class LobbyController extends PlayerListController {
         this.createGameController = createGameController;
         this.joinGameController = joinGameController;
         this.settingsController = settingsController;
-        this.lobbyController = lobbyController;
-
     }
 
 
     public void init() {
         disposables = new CompositeDisposable();
+
         // Get games via REST
         disposables.add(gameService.listGames()
                 .observeOn(FX_SCHEDULER)
@@ -121,6 +109,7 @@ public class LobbyController extends PlayerListController {
                         updateGameLabel();
                     }
                 }));
+
         // Get users via REST
         disposables.add(userService.listOnlineUsers()
                 .observeOn(FX_SCHEDULER)
@@ -130,6 +119,7 @@ public class LobbyController extends PlayerListController {
                         updatePlayerLabel();
                     }
                 }));
+
         // Listen to game updates
         disposables.add(eventListener.listen("games.*.*", Game.class)
                 .observeOn(FX_SCHEDULER)
@@ -155,16 +145,15 @@ public class LobbyController extends PlayerListController {
         disposables.add(eventListener.listen("users.*.*", User.class)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(this::onUserEvent));
-
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("invalid.token"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
-
     }
 
     private void addGameToList(Game game) {
         GameListItemController controller = new GameListItemController(this, game, gameItems, bundle);
         gameListItemControllers.put(game._id(), controller);
+        addGameItem(controller);
+    }
+
+    private void addGameItem(GameListItemController controller) {
         gameItems.add(controller.render());
     }
 
@@ -239,10 +228,10 @@ public class LobbyController extends PlayerListController {
         disposables.add(loginService.logout()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(() -> {
-                            preferenceService.setRememberMe(false);
-                            preferenceService.setRefreshToken("");
-                            app.show(loginController.get());
-                        }, errorService::handleError));
+                    preferenceService.setRememberMe(false);
+                    preferenceService.setRefreshToken("");
+                    app.show(loginController.get());
+                }, errorService::handleError));
     }
 
     public void toSettings(ActionEvent event) {
@@ -252,11 +241,29 @@ public class LobbyController extends PlayerListController {
 
     public void setGerman(MouseEvent event) {
         preferenceService.setLocale(Locale.GERMAN);
-        app.show(this.lobbyController.get());
+        changeLanguage();
     }
 
     public void setEnglish(MouseEvent event) {
         preferenceService.setLocale(Locale.ENGLISH);
-        app.show(this.lobbyController.get());
+        changeLanguage();
+    }
+
+    private void changeLanguage() {
+        this.bundle = getNewResourceBundle();
+        updateGameLabel();
+        updatePlayerLabel();
+        quitButton.setText(bundle.getString("sign.out"));
+        createGameButton.setText(bundle.getString("create.game"));
+        gameListItemControllers.values().forEach(this::changeGameListItemLanguage);
+    }
+
+    private void changeGameListItemLanguage(GameListItemController controller) {
+        controller.getJoinButton().setText(bundle.getString("join"));
+        controller.getNumMembersTextLabel().setText(bundle.getString("amount.players") + ":");
+    }
+
+    private ResourceBundle getNewResourceBundle() {
+        return ResourceBundle.getBundle("com/aviumauctores/pioneers/lang", preferenceService.getLocale());
     }
 }

@@ -4,10 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.error.ErrorResponse;
 import com.aviumauctores.pioneers.dto.events.EventDto;
-import com.aviumauctores.pioneers.model.Game;
-import com.aviumauctores.pioneers.model.Member;
-import com.aviumauctores.pioneers.model.Message;
-import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -22,6 +19,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -47,6 +45,7 @@ public class GameReadyController extends PlayerListController {
     private final ResourceBundle bundle;
     private final Provider<LobbyController> lobbyController;
     private final Provider<InGameController> inGameController;
+    public Label spectatorText;
 
     private Label deleteLabel;
 
@@ -85,8 +84,24 @@ public class GameReadyController extends PlayerListController {
     @FXML
     public ComboBox<Color> pickColourMenu;
 
+    @FXML
+    public Button gameOptionButton;
+
+    @FXML
+    public ToggleButton onButton;
+
+    @FXML
+    public ToggleButton offButton;
+
     private int readyMembers;
     private int allMembers;
+
+    private GameOptionController gameOptionController;
+
+    private Parent gameOption;
+
+    @FXML
+    public Pane paneOption;
 
     //list for storing message IDs of own messages to check whether a message can be deleted or not
     private final ArrayList<String> ownMessageIds = new ArrayList<>();
@@ -96,6 +111,13 @@ public class GameReadyController extends PlayerListController {
     private final HashMap<Color, String> colourIsTaken = new HashMap<>();
 
     private Color chosenColour;
+
+    private boolean comingFromIngame = false;
+    private boolean rejoinFromLobby = false;
+
+    private boolean onlyspectator;
+    private boolean spectator;
+
 
     @Inject
     public GameReadyController(App app,
@@ -146,7 +168,9 @@ public class GameReadyController extends PlayerListController {
                     if (event.endsWith("created") || event.endsWith("updated")) {
                         allMembers = game.members();
                         if (game.started()) {
-                            app.show(inGameController.get());
+                            InGameController controller = inGameController.get();
+                            controller.setSpectator(spectator);
+                            app.show(controller);
                         }
                     }
                 }));
@@ -233,6 +257,10 @@ public class GameReadyController extends PlayerListController {
         Member member = eventDto.data();
         String memberID = member.userId();
         Color memberColor = member.color();
+
+        if (memberID.equals(userService.getCurrentUserID())) {
+            spectator = member.spectator();
+        }
         // if the colour is valid
         if (colourIsTaken.get(memberColor) != null) {
             // check all colours
@@ -307,7 +335,6 @@ public class GameReadyController extends PlayerListController {
         loader.setControllerFactory(c -> this);
         final Parent parent;
         try {
-
             parent = loader.load();
             chatPane.setId("chatpane");
         } catch (IOException e) {
@@ -315,9 +342,18 @@ public class GameReadyController extends PlayerListController {
             return null;
         }
 
+        offButton.setStyle("-fx-base: red ");
+
+
         disposables.add(gameService.getCurrentGame()
                 .observeOn(FX_SCHEDULER)
-                .subscribe(game -> gameNameLabel.setText(game.name())));
+                .subscribe(game -> {
+                    gameNameLabel.setText(game.name());
+                    gameService.setOwnerID(game.owner());
+                    if (!(gameService.getOwnerID().equals(userService.getCurrentUserID()))) {
+                        gameOptionButton.setDisable(true);
+                    }
+                }));
 
         disposables.add(userService.getUserName(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
@@ -354,7 +390,30 @@ public class GameReadyController extends PlayerListController {
                 Color.CHOCOLATE);
         updateComboBox();
 
+        gameService.setUpdateOption(2, 10);
+
+        if (comingFromIngame) {
+            updateVisualsOnRejoin();
+        }
+
+        if (rejoinFromLobby) {
+            disposables.add(gameService.getCurrentGame()
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(game -> {
+                        if (game.started()) {
+                            updateVisualsOnRejoin();
+                        }
+                    })
+            );
+        }
+
         return parent;
+    }
+
+    private void rejoinIngame(ActionEvent actionEvent) {
+        InGameController controller = inGameController.get();
+        controller.setRejoin(true);
+        app.show(controller);
     }
 
     void updateComboBox() {
@@ -390,6 +449,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void startGame(ActionEvent actionEvent) {
+        onlyspectator = getOnlySpectator();
         if (readyMembers != allMembers) {
             app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.ready"));
             return;
@@ -399,6 +459,12 @@ public class GameReadyController extends PlayerListController {
             app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.all.members.coloured"));
             return;
         }
+
+        if (onlyspectator) {
+            app.showErrorDialog(bundle.getString("cannot.start.game"), bundle.getString("not.enough.players"));
+            return;
+        }
+
         disposables.add(gameService.startGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> {
@@ -409,7 +475,7 @@ public class GameReadyController extends PlayerListController {
                         String message = errorCodes.get(response.statusCode() + "_game");
                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                     } else {
-                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("try.again"));
+                        app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
                     }
                 }));
     }
@@ -427,7 +493,7 @@ public class GameReadyController extends PlayerListController {
                                 String message = errorCodes.get(response.statusCode() + "_member");
                                 Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                             } else {
-                                app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                                app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                             }
                         });
 
@@ -456,13 +522,15 @@ public class GameReadyController extends PlayerListController {
             memberAlert.setTitle(bundle.getString("warning"));
             memberAlert.setHeaderText(null);
             Optional<ButtonType> result = memberAlert.showAndWait();
-            if (result.get() == proceedButton) {
-                gameMemberService.deleteMember(userService.getCurrentUserID())
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe();
-            } else {
-                memberAlert.close();
-                return;
+            if (result.isPresent()) {
+                if (result.get() == proceedButton) {
+                    gameMemberService.deleteMember(userService.getCurrentUserID())
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe();
+                } else {
+                    memberAlert.close();
+                    return;
+                }
             }
         }
         gameService.setCurrentGameID(null);
@@ -513,7 +581,7 @@ public class GameReadyController extends PlayerListController {
                                         String message = errorCodes.get(response.statusCode() + "_member");
                                         Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
                                     } else {
-                                        app.showErrorDialog(bundle.getString("connection.failed"), bundle.getString("limit.reached"));
+                                        app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                                     }
                                 });
             }
@@ -555,5 +623,92 @@ public class GameReadyController extends PlayerListController {
         messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe();
+    }
+
+    public void gameOption(ActionEvent actionEvent) {
+        gameOptionController = new GameOptionController(bundle, this);
+        gameOption = gameOptionController.render();
+        paneOption.setVisible(true);
+        paneOption.getChildren().add(gameOption);
+    }
+
+    public void changeOnOff(ActionEvent actionEvent) {
+        if (actionEvent.getSource() == onButton) {
+            if (offButton.isSelected()) {
+                offButton.setSelected(false);
+                offButton.setStyle("-fx-base: lightgray ");
+                onButton.setStyle("-fx-base: lightgreen");
+                disposables.add(gameMemberService.setSpectator(userService.getCurrentUserID(), true)
+                        .subscribe(member -> gameReadyButton.setDisable(true)));
+
+            } else {
+                onButton.setSelected(true);
+            }
+        }
+        if (actionEvent.getSource() == offButton) {
+            if (onButton.isSelected()) {
+                onButton.setSelected(false);
+                onButton.setStyle("-fx-base: lightgray");
+                offButton.setStyle("-fx-base: red");
+                disposables.add(gameMemberService.setSpectator(userService.getCurrentUserID(), false)
+                        .subscribe(member -> gameReadyButton.setDisable(false)));
+
+            } else {
+                offButton.setSelected(true);
+
+            }
+        }
+
+    }
+
+    public void closeGameOptionMenu(boolean menueClosed) {
+        if (gameOptionController != null) {
+            gameOptionController.destroy(menueClosed);
+            gameOptionController = null;
+        }
+        if (gameOption != null) {
+            paneOption.getChildren().remove(gameOption);
+            gameOption = null;
+        }
+    }
+
+    public void setMapsizeAndVictorypoints(int victoryPoints, int mapSize) {
+        if (mapSize >= 0 && mapSize <= 10 && victoryPoints >= 3 && victoryPoints <= 15) {
+            gameService.setUpdateOption(mapSize, victoryPoints).subscribe();
+        } else {
+            ButtonType proceedButton1 = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("failedEntering"), proceedButton1);
+            alert.setTitle(bundle.getString("Entering failed"));
+            alert.setHeaderText(null);
+        }
+    }
+
+    public void setComingFromIngame(boolean comingFromIngame) {
+        this.comingFromIngame = comingFromIngame;
+    }
+
+    public void setRejoinFromLobby(boolean rejoinFromLobby) {
+        this.rejoinFromLobby = rejoinFromLobby;
+    }
+
+    private void updateVisualsOnRejoin() {
+        startGameButton.setText(bundle.getString("join"));
+        startGameButton.setOnAction(this::rejoinIngame);
+        gameReadyButton.setDisable(true);
+        pickColourMenu.setDisable(true);
+        gameOptionButton.setDisable(true);
+        offButton.setDisable(true);
+        onButton.setDisable(true);
+    }
+
+    public boolean getOnlySpectator() {
+        onlyspectator = true;
+        for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
+            if (!m.spectator()) {
+                onlyspectator = false;
+                break;
+            }
+        }
+        return onlyspectator;
     }
 }
