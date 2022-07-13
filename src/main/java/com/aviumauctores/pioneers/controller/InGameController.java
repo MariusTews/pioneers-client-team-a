@@ -785,7 +785,6 @@ public class InGameController extends LoggedInController {
     }
 
     public void rollDice(ActionEvent actionEvent) {
-        app.show(postGameController.get());
         if (soundImage.getImage() == muteImage) {
             GameSounds diceSound = soundService
                     .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Wuerfel.mp3")));
