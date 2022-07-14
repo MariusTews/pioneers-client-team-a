@@ -13,9 +13,8 @@
 
 .text-field {
     -fx-font-size: 14;
-    -fx-background-radius: 8px;
-    -fx-background-color: #333333;
-    -fx-text-fill: #eee;
+    -fx-text-fill: black;
+    -fx-background-color: white;
 }
 
 #aM1 {
@@ -143,9 +142,7 @@
 }
 
 #nameLabel {
-    -fx-font-size: 12;
-    -fx-background-radius: 8px;
-    -fx-background-color: #333333;
+    -fx-font-size: 18;
     -fx-text-fill: #eee;
 }
 
@@ -296,9 +293,10 @@
 }
 
 #paneOption {
-    -fx-background-color: rgb(0, 1, 17);
+    -fx-background-color: #333333;
     -fx-border-color: #97d077;
-    -fx-border-width: 5;
+    -fx-border-width: 5;;
+    -fx-text-fill: black;
 }
 
 .spinner .increment-arrow-button,
@@ -311,10 +309,33 @@
     -fx-font-weight: bold;
 }
 
-#usernameInput {
-    -fx-font-family: "VT323";
-}
-
 #hintLabel {
     -fx-font-size: 12;
 }
+
+#mapsize.titled-pane {
+    -fx-text-fill: black;
+    -fx-background-color: white
+}
+
+#createGame {
+    -fx-font-size: 32;
+}
+
+#usernameInput, #passwordInput, #gameNameInput, #messageTextField, #chatTextField, #gamePasswordInput,
+#gamePasswordText, #textfieldUsername, #textfieldPassword, #textfieldPassword_show {
+    -fx-font-family: "VT323";
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+#register {
+    -fx-font-size: 32;
+    -fx-text-fill: white;
+}
+
+
+
+
+
+

@@ -16,48 +16,63 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.GameReadyController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.aviumauctores.pioneers.controller.GameReadyController">
     <Pane prefHeight="408.0" prefWidth="600.0">
-        <TitledPane fx:id="playerListPane" animated="false" collapsible="false" layoutX="372.0" layoutY="75.0" prefHeight="234.0" prefWidth="202.0" text="%players">
-            <ListView fx:id="playerList" prefHeight="200.0" prefWidth="200.0" />
+        <TitledPane fx:id="playerListPane" animated="false" collapsible="false" layoutX="372.0" layoutY="75.0"
+                    prefHeight="234.0" prefWidth="202.0" text="%players">
+            <ListView fx:id="playerList" prefHeight="200.0" prefWidth="200.0"/>
         </TitledPane>
         <TabPane layoutX="37.0" layoutY="82.0" prefHeight="194.0" prefWidth="218.0" tabClosingPolicy="UNAVAILABLE">
             <Tab fx:id="allChatTab" text="%all">
                 <ScrollPane fx:id="chatPane" prefHeight="200.0" prefWidth="200.0">
-                    <VBox />
+                    <VBox/>
                 </ScrollPane>
             </Tab>
         </TabPane>
-        <TextField fx:id="messageTextField" layoutX="37.0" layoutY="280.0" prefHeight="31.0" prefWidth="145.0" promptText="%message" />
-        <Button fx:id="sendMessageButton" layoutX="185.0" layoutY="280.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="70.0" text="%send" />
-        <Label fx:id="gameNameLabel" alignment="CENTER" layoutX="205.0" layoutY="25.0" prefHeight="26.0" prefWidth="200.0" text="%game">
+        <TextField fx:id="messageTextField" layoutX="37.0" layoutY="280.0" prefHeight="31.0" prefWidth="145.0"
+                   promptText="%message"/>
+        <Button fx:id="sendMessageButton" layoutX="185.0" layoutY="280.0" mnemonicParsing="false"
+                onAction="#sendMessage" prefHeight="31.0" prefWidth="70.0" text="%send"/>
+        <Label fx:id="gameNameLabel" alignment="CENTER" layoutX="205.0" layoutY="25.0" prefHeight="26.0"
+               prefWidth="200.0" text="%game">
             <font>
-                <Font name="System Bold" size="30.0" />
+                <Font name="System Bold" size="30.0"/>
             </font>
         </Label>
-        <Button fx:id="leaveGameButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#leaveGame" prefHeight="39.0" prefWidth="100.0" text="%leave" />
-        <Button fx:id="gameReadyButton" layoutX="262.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameReady" prefHeight="39.0" prefWidth="100.0" text="%ready" />
-        <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame" prefHeight="39.0" prefWidth="100.0" text="%start.game" />
-        <ComboBox fx:id="pickColourMenu" layoutX="458.0" layoutY="27.0" onAction="#changeColour" prefHeight="25.0" prefWidth="116.0" promptText="%pick.colour">
+        <Button fx:id="leaveGameButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#leaveGame"
+                prefHeight="39.0" prefWidth="100.0" text="%leave"/>
+        <Button fx:id="gameReadyButton" layoutX="262.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameReady"
+                prefHeight="39.0" prefWidth="100.0" text="%ready"/>
+        <Button fx:id="startGameButton" layoutX="476.0" layoutY="346.0" mnemonicParsing="false" onAction="#startGame"
+                prefHeight="39.0" prefWidth="100.0" text="%start.game"/>
+        <ComboBox fx:id="pickColourMenu" layoutX="458.0" layoutY="27.0" onAction="#changeColour" prefHeight="25.0"
+                  prefWidth="116.0" promptText="%pick.colour">
         </ComboBox>
         <HBox layoutY="33.0" prefHeight="39.0" prefWidth="200.0">
             <Label fx:id="nameLabel" prefHeight="45.0" prefWidth="165.0" text="Label">
                 <font>
-                    <Font size="30.0" />
+                    <Font size="30.0"/>
                 </font>
                 <HBox.margin>
-                    <Insets left="35.0" />
+                    <Insets left="35.0"/>
                 </HBox.margin>
             </Label>
         </HBox>
-      <Button fx:id="gameOptionButton" layoutX="146.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameOption" prefHeight="39.0" prefWidth="100.0" text="%option" />
-      <ToggleButton fx:id="onButton" layoutX="372.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeOnOff" prefHeight="25.0" prefWidth="41.0" text="%on" />
-      <ToggleButton fx:id="offButton" layoutX="413.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeOnOff" prefHeight="25.0" prefWidth="41.0" selected="true" snapToPixel="false" text="%off" />
-      <Label fx:id="spectatorText" layoutX="372.0" layoutY="-1.0" prefHeight="31.0" prefWidth="106.0" text="%spectator" />
+        <Button fx:id="gameOptionButton" layoutX="146.0" layoutY="346.0" mnemonicParsing="false" onAction="#gameOption"
+                prefHeight="39.0" prefWidth="100.0" text="%option"/>
+        <ToggleButton fx:id="onButton" layoutX="372.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeOnOff"
+                      prefHeight="25.0" prefWidth="41.0" text="%on"/>
+        <ToggleButton fx:id="offButton" layoutX="413.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeOnOff"
+                      prefHeight="25.0" prefWidth="41.0" selected="true" snapToPixel="false" text="%off"/>
+        <Label fx:id="spectatorText" layoutX="372.0" layoutY="-1.0" prefHeight="31.0" prefWidth="106.0"
+               text="%spectator"/>
     </Pane>
-   <Pane fx:id="paneOption" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" visible="false">
-      <VBox.margin>
-         <Insets bottom="50.0" left="150.0" right="150.0" top="50.0" />
-      </VBox.margin>
-   </Pane>
+    <Pane fx:id="paneOption" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+          prefHeight="300.0" prefWidth="300.0" visible="false">
+        <VBox.margin>
+            <Insets bottom="50.0" left="150.0" right="150.0" top="50.0"/>
+        </VBox.margin>
+    </Pane>
 </VBox>

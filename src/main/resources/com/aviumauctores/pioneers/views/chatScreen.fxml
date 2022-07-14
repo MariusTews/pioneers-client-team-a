@@ -13,64 +13,66 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="400.0" maxWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.ChatController">
+<Pane maxHeight="400.0" maxWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.ChatController">
     <VBox prefHeight="400.0" prefWidth="600.0">
         <HBox>
             <VBox prefHeight="317.0" prefWidth="379.0">
                 <TabPane fx:id="chatTabPane" prefHeight="325.0" prefWidth="369.0" tabClosingPolicy="UNAVAILABLE">
                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </VBox.margin>
                     <Tab fx:id="allTab" closable="false" text="%all">
                         <ScrollPane fx:id="scrollPane">
-                            <VBox fx:id="allChatVBox" />
+                            <VBox fx:id="allChatVBox"/>
                         </ScrollPane>
                     </Tab>
                 </TabPane>
             </VBox>
             <VBox prefHeight="100.0" prefWidth="222.0">
-                <Label fx:id="onlinePlayerLabel" alignment="CENTER" prefHeight="35.0" prefWidth="200.0" text="%online.players" textAlignment="CENTER">
+                <Label fx:id="onlinePlayerLabel" alignment="CENTER" prefHeight="35.0" prefWidth="200.0"
+                       text="%online.players" textAlignment="CENTER">
                     <font>
-                        <Font size="20.0" />
+                        <Font size="20.0"/>
                     </font>
                 </Label>
                 <ListView fx:id="onlinePlayerList" prefHeight="264.0" prefWidth="212.0">
                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </VBox.margin>
                 </ListView>
             </VBox>
         </HBox>
         <HBox prefHeight="59.0" prefWidth="600.0">
             <VBox.margin>
-                <Insets top="20.0" />
+                <Insets top="20.0"/>
             </VBox.margin>
             <Label fx:id="hintLabel" text="%delete.hint">
                 <HBox.margin>
-                    <Insets left="5.0" top="5.0" />
+                    <Insets left="5.0" top="5.0"/>
                 </HBox.margin>
             </Label>
         </HBox>
         <HBox prefHeight="47.0" prefWidth="600.0">
             <TextField fx:id="chatTextField" prefHeight="35.0" prefWidth="232.0">
                 <HBox.margin>
-                    <Insets left="5.0" top="5.0" />
+                    <Insets left="5.0" top="5.0"/>
                 </HBox.margin>
             </TextField>
             <Button fx:id="sendButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="76.0" text="%send">
                 <font>
-                    <Font size="16.0" />
+                    <Font size="16.0"/>
                 </font>
                 <HBox.margin>
-                    <Insets bottom="5.0" left="5.0" top="5.0" />
+                    <Insets bottom="5.0" left="5.0" top="5.0"/>
                 </HBox.margin>
             </Button>
             <Button fx:id="leaveButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="76.0" text="%leave">
                 <font>
-                    <Font size="17.0" />
+                    <Font size="17.0"/>
                 </font>
                 <HBox.margin>
-                    <Insets left="200.0" right="5.0" top="5.0" />
+                    <Insets left="200.0" right="5.0" top="5.0"/>
                 </HBox.margin>
             </Button>
         </HBox>

@@ -10,83 +10,87 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.LobbyController">
-   <HBox prefHeight="32.0" prefWidth="600.0">
-      <ImageView id="britishFlag" fitHeight="28.0" fitWidth="38.0" onMouseClicked="#setEnglish" pickOnBounds="true"
-                 preserveRatio="true">
-         <HBox.margin>
-            <Insets left="500.0" top="5.0"/>
-         </HBox.margin>
-         <Image url="@../en.png"/>
-      </ImageView>
-      <ImageView id="germanFlag" fitHeight="30.0" fitWidth="40.0" onMouseClicked="#setGerman" pickOnBounds="true"
-                 preserveRatio="true">
-         <HBox.margin>
-            <Insets left="10.0" top="5.0"/>
-         </HBox.margin>
-         <Image url="@../de.png"/>
-      </ImageView>
-   </HBox>
-   <HBox alignment="CENTER_LEFT" prefHeight="350.0" prefWidth="600.0" spacing="70.0">
-      <VBox.margin>
-         <Insets left="20.0" right="20.0" top="10.0" />
-      </VBox.margin>
-      <VBox alignment="CENTER" prefHeight="315.0" prefWidth="300.0">
-         <Label fx:id="gameLabel" text="%games">
-            <font>
-               <Font size="16.0" />
-            </font>
-         </Label>
-         <ListView fx:id="gameListView" />
-      </VBox>
-      <VBox alignment="CENTER" prefHeight="315.0" prefWidth="190.0">
-         <Label fx:id="playerLabel" text="%online.players">
-            <font>
-               <Font size="16.0" />
-            </font>
-         </Label>
-         <ListView fx:id="playerListView" />
-      </VBox>
-   </HBox>
-   <HBox prefHeight="100.0" prefWidth="200.0">
-      <VBox.margin>
-         <Insets left="20.0" right="20.0" />
-      </VBox.margin>
-      <HBox alignment="CENTER" prefHeight="75.0" prefWidth="300.0" spacing="30.0">
-         <Button fx:id="createGameButton" mnemonicParsing="false" onAction="#toCreateGame" prefWidth="140.0" text="%create.game">
-            <font>
-               <Font size="18.0" />
-            </font>
-         </Button>
-         <Button fx:id="chatButton" mnemonicParsing="false" onAction="#toChat" prefWidth="140.0" text="%chat">
-            <font>
-               <Font size="18.0" />
-            </font>
-         </Button>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="260.0" spacing="30.0">
-         <ImageView fitHeight="31.0" fitWidth="33.0" onMouseClicked="#inToAchievement" pickOnBounds="true"
-                    preserveRatio="true">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.aviumauctores.pioneers.controller.LobbyController">
+    <HBox prefHeight="32.0" prefWidth="600.0">
+        <ImageView id="britishFlag" fitHeight="28.0" fitWidth="38.0" onMouseClicked="#setEnglish" pickOnBounds="true"
+                   preserveRatio="true">
             <HBox.margin>
-               <Insets left="15.0"/>
+                <Insets left="500.0" top="5.0"/>
             </HBox.margin>
-            <Image url="@Achievements.png"/>
-         </ImageView>
-         <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#toSettings" style="-fx-background-color: transparent;">
-            <graphic>
-               <ImageView fitHeight="31.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-                  <Image url="@settings.png"/>
-               </ImageView>
-            </graphic>
+            <Image url="@../en.png"/>
+        </ImageView>
+        <ImageView id="germanFlag" fitHeight="30.0" fitWidth="40.0" onMouseClicked="#setGerman" pickOnBounds="true"
+                   preserveRatio="true">
             <HBox.margin>
-               <Insets />
+                <Insets left="10.0" top="5.0"/>
             </HBox.margin>
-         </Button>
-         <Button fx:id="quitButton" mnemonicParsing="false" onAction="#quit" text="%sign.out">
-            <font>
-               <Font size="18.0" />
-            </font>
-         </Button>
-      </HBox>
-   </HBox>
+            <Image url="@../de.png"/>
+        </ImageView>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" prefHeight="350.0" prefWidth="600.0" spacing="70.0">
+        <VBox.margin>
+            <Insets left="20.0" right="20.0" top="10.0"/>
+        </VBox.margin>
+        <VBox alignment="CENTER" prefHeight="315.0" prefWidth="300.0">
+            <Label fx:id="gameLabel" text="%games">
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Label>
+            <ListView fx:id="gameListView"/>
+        </VBox>
+        <VBox alignment="CENTER" prefHeight="315.0" prefWidth="190.0">
+            <Label fx:id="playerLabel" text="%online.players">
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Label>
+            <ListView fx:id="playerListView"/>
+        </VBox>
+    </HBox>
+    <HBox prefHeight="100.0" prefWidth="200.0">
+        <VBox.margin>
+            <Insets left="20.0" right="20.0"/>
+        </VBox.margin>
+        <HBox alignment="CENTER" prefHeight="75.0" prefWidth="300.0" spacing="30.0">
+            <Button fx:id="createGameButton" mnemonicParsing="false" onAction="#toCreateGame" prefWidth="140.0"
+                    text="%create.game">
+                <font>
+                    <Font size="18.0"/>
+                </font>
+            </Button>
+            <Button fx:id="chatButton" mnemonicParsing="false" onAction="#toChat" prefWidth="140.0" text="%chat">
+                <font>
+                    <Font size="18.0"/>
+                </font>
+            </Button>
+        </HBox>
+        <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="260.0" spacing="30.0">
+            <ImageView fitHeight="31.0" fitWidth="33.0" onMouseClicked="#inToAchievement" pickOnBounds="true"
+                       preserveRatio="true">
+                <HBox.margin>
+                    <Insets left="15.0"/>
+                </HBox.margin>
+                <Image url="@Achievements.png"/>
+            </ImageView>
+            <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#toSettings"
+                    style="-fx-background-color: transparent;">
+                <graphic>
+                    <ImageView fitHeight="31.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@settings.png"/>
+                    </ImageView>
+                </graphic>
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+            </Button>
+            <Button fx:id="quitButton" mnemonicParsing="false" onAction="#quit" text="%sign.out">
+                <font>
+                    <Font size="18.0"/>
+                </font>
+            </Button>
+        </HBox>
+    </HBox>
 </VBox>

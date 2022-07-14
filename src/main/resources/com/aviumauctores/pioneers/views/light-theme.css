@@ -1,6 +1,4 @@
-
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-
 
 .root {
     -fx-font-family: "VT323";
@@ -19,7 +17,6 @@
 #achievementsLabel {
     -fx-font-size: 20;
 }
-
 
 #rankingPointsLabel {
     -fx-text-fill: #006600;
@@ -109,8 +106,8 @@
 }
 
 #nameLabel {
-    -fx-font-size: 12;
-    -fx-background-radius: 8px;
+    -fx-font-size: 18;
+
 }
 
 .button {
@@ -132,7 +129,6 @@
     -fx-background-radius: 8px;
     -fx-background-color: #FFFFFF;
 }
-
 
 .list-view > .viewport {
     -fx-background-color: transparent;
@@ -232,7 +228,7 @@
 }
 
 #paneOption {
-    -fx-background-color: rgba(202, 229, 231, 255);
+    -fx-background-color: #ffffff;
     -fx-border-color: #006600;
     -fx-border-width: 5;
 }
@@ -242,17 +238,27 @@
     -fx-font-size: 16;
     -fx-background-color: #006600
 }
-#loginLabel{
+
+#loginLabel {
     -fx-font-size: 40;
     -fx-font-weight: bold;
 }
 
-#usernameInput{
+#usernameInput, #textfieldUsername, #textfieldPassword_show {
     -fx-font-family: "VT323";
 }
 
-#hintLabel{
+#hintLabel {
     -fx-font-size: 12;
 }
+
+#createGame {
+    -fx-font-size: 32;
+}
+
+#register {
+    -fx-font-size: 32;
+}
+
 
 

@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -52,6 +53,7 @@ public class RegisterController implements Controller {
     private final Provider<LoginController> loginController;
     private final ResourceBundle bundle;
     public TextField textfieldPassword_show;
+    public Label register;
 
     private Disposable disposable;
 
@@ -117,12 +119,7 @@ public class RegisterController implements Controller {
         }
 
         //disable createAccountButton when one or both textfields are empty
-        createAccountButton.disableProperty().bind(
-                Bindings.createBooleanBinding(() ->
-                                textfieldUsername.getText().trim().isEmpty(), textfieldUsername.textProperty())
-                        .or(Bindings.createBooleanBinding(() ->
-                                textfieldPassword.getText().trim().isEmpty(), textfieldPassword.textProperty()))
-        );
+        createAccountButton.disableProperty().bind(Bindings.createBooleanBinding(() -> textfieldUsername.getText().trim().isEmpty(), textfieldUsername.textProperty()).or(Bindings.createBooleanBinding(() -> textfieldPassword.getText().trim().isEmpty(), textfieldPassword.textProperty())));
 
         return parent;
     }
@@ -156,23 +153,19 @@ public class RegisterController implements Controller {
 
     public void createAccount(ActionEvent event) {
         // send username and password to server
-        disposable = userService.register(textfieldUsername.getText(), textfieldPassword.getText())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(
-                        result -> {
-                            final LoginController controller = loginController.get();
-                            app.show(controller);
-                        },
-                        throwable -> {
-                            if (throwable instanceof HttpException ex) {
-                                ErrorResponse response = errorService.readErrorMessage(ex);
-                                String message = errorCodes.get(Integer.toString(response.statusCode()));
-                                Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
-                            } else {
-                                app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
-                            }
-                        }
+        disposable = userService.register(textfieldUsername.getText(), textfieldPassword.getText()).observeOn(FX_SCHEDULER).subscribe(result -> {
+                    final LoginController controller = loginController.get();
+                    app.show(controller);
+                }, throwable -> {
+                    if (throwable instanceof HttpException ex) {
+                        ErrorResponse response = errorService.readErrorMessage(ex);
+                        String message = errorCodes.get(Integer.toString(response.statusCode()));
+                        Platform.runLater(() -> app.showHttpErrorDialog(response.statusCode(), response.error(), message));
+                    } else {
+                        app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("try.again"));
+                    }
+                }
 
-                );
+        );
     }
 }
