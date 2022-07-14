@@ -4,6 +4,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.layout.Pane;
 
+// original code taken from https://stackoverflow.com/questions/29506156/javafx-8-zooming-relative-to-mouse-pointer
+
 public class PannableCanvas extends Pane {
 
     DoubleProperty myScale = new SimpleDoubleProperty(1.0);

@@ -4,12 +4,14 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
+// original code taken from https://stackoverflow.com/questions/29506156/javafx-8-zooming-relative-to-mouse-pointer
+
 /**
  * Listeners for making the scene's canvas draggable and zoomable
  */
 public class SceneGestures {
 
-    private static final double MAX_SCALE = 5.0d;
+    private static final double MAX_SCALE = 4.8d;
     private static final double MIN_SCALE = 1.0d;
 
     private final DragContext sceneDragContext = new DragContext();

@@ -279,7 +279,7 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(gameService.getMapRadius());
+                                controller.setMapRadius(gameService.getCurrentGame().blockingFirst().settings().mapRadius());
                                 Pane pane = (Pane) controller.render();
                                 ingamePane.setCenter(pane);
                                 ingamePane.getRight().toFront();
@@ -847,7 +847,7 @@ public class InGameController extends LoggedInController {
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-            buildMenu.setLayoutX(Math.min(source.getX() + 236, ingamePane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutX(Math.min(source.getX() + 240, ingamePane.getWidth() - newValue.getWidth()));
             buildMenu.setLayoutY(Math.min(source.getY(), ingamePane.getHeight() - newValue.getHeight()));
         });
 
@@ -871,6 +871,9 @@ public class InGameController extends LoggedInController {
         closeBuildMenu(closed);
         closeTradingMenu(closed);
         closeDropMenu(closed);
+        if (mapController != null) {
+            mapController.destroy(closed);
+        }
         if (timer != null) {
             timer.cancel();
         }
