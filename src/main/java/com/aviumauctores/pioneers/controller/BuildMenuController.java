@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.BuildService;
+import com.aviumauctores.pioneers.util.PannableCanvas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class BuildMenuController implements Controller {
+    private final InGameController inGameController;
     private final BuildService buildService;
     private final ResourceBundle bundle;
     private final String buildingType;
@@ -22,11 +24,12 @@ public class BuildMenuController implements Controller {
     @FXML
     private Button buildButton;
 
-    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType) {
+    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, HashMap<String, List<String>> nextHarbors, InGameController inGameController) {
         this.buildService = buildService;
         this.bundle = bundle;
         this.buildingType = buildingType;
         this.enableButton = enableButton;
+        this.inGameController = inGameController;
     }
 
     @Override
@@ -56,7 +59,10 @@ public class BuildMenuController implements Controller {
 
         buildButton.setDisable(!enableButton);
 
-        return parent;
+        PannableCanvas canvas = new PannableCanvas();
+        canvas.getChildren().add(parent);
+
+        return canvas;
     }
 
 
@@ -64,5 +70,6 @@ public class BuildMenuController implements Controller {
         buildService.setCurrentAction("build");
         buildService.build();
         buildButton.setDisable(true);
+        inGameController.closeBuildMenu(false);
     }
 }

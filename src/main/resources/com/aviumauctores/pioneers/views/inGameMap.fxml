@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.MapController">
-    <Pane fx:id="tilePane" prefHeight="580.0" prefWidth="583.0" />
-    <Pane fx:id="tileLabelPane" prefHeight="580.0" prefWidth="583.0" />
-    <Pane fx:id="robberPane" prefHeight="580.0" prefWidth="583.0" />
-    <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="580.0" prefWidth="579.0" />
-    <Pane fx:id="crossingPane" prefHeight="580.0" prefWidth="583.0">
+<Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.MapController">
+    <Pane fx:id="tilePane" />
+    <Pane fx:id="tileLabelPane" />
+    <Pane fx:id="robberPane" />
+    <Pane fx:id="roadAndCrossingPane" disable="true" />
+    <Pane fx:id="crossingPane">
     </Pane>
-    <Pane fx:id="roadPane" prefHeight="580.0" prefWidth="583.0">
+    <Pane fx:id="roadPane">
     </Pane>
-    <Label fx:id="timeLabel" layoutX="238.0" layoutY="608.0" prefHeight="17.0" prefWidth="143.0" text="Label" />
 </Pane>

@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.util.PannableCanvas;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -131,7 +132,11 @@ public class TradingController implements Controller {
 
         tradeButton.setStyle("-fx-background-color: " + player.color());
         cancelTradeButton.setStyle("-fx-background-color: " + player.color());
-        return parent;
+
+        PannableCanvas canvas = new PannableCanvas();
+        canvas.getChildren().add(parent);
+
+        return canvas;
     }
 
     public void updatePlayer(Player player) {

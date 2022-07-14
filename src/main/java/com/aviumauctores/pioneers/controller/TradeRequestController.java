@@ -5,6 +5,7 @@ import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.ErrorService;
 import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.TradeService;
+import com.aviumauctores.pioneers.util.PannableCanvas;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -164,7 +165,11 @@ public class TradeRequestController implements Controller {
             }
         }
         counterproposalButton.setStyle("-fx-background-color: " + color);
-        return parent;
+
+        PannableCanvas canvas = new PannableCanvas();
+        canvas.getChildren().add(parent);
+
+        return canvas;
     }
 
     private void fillLabels() {
