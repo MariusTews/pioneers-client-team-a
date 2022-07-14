@@ -34,8 +34,7 @@ import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,6 +79,12 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Mock
     Provider<GameReadyController> gameReadyController;
+
+    @Mock
+    AchievementsService achievementsService;
+
+    @Mock
+    StatService statService;
 
     // For some reason Mockito doesn't want a lambda expression
     @SuppressWarnings("Convert2Lambda")
@@ -136,7 +141,7 @@ public class InGameControllerTest extends ApplicationTest {
                 2, new HashMap<>(), new HashMap<>(), 0, 0);
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
                 List.of(new ExpectedMove("roll", List.of("1"))), new Point3D(1, 3, 4))));
-
+        when(gameService.getCurrentGame()).thenReturn(Observable.just(new Game("", "", "12", "", "1", true, 1, new GameSettings(0, 10))));
         when(soundService.createGameMusic(any())).thenReturn(new GameMusic());
         stateUpdates = PublishSubject.create();
         playerUpdates = PublishSubject.create();
@@ -145,8 +150,8 @@ public class InGameControllerTest extends ApplicationTest {
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "lumber", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
-        when(gameService.getMapRadius()).thenReturn(0);
         when(pioneerService.listPlayers()).thenReturn(Observable.empty());
+        when(achievementsService.getUserAchievements()).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
     }
 
@@ -203,8 +208,6 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
         when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
-        // this is required, because the button does not trigger its onClick-event in this test
-        inGameController.rollButton.fire();
         verify(pioneerService).createMove("roll", null, null, null, null);
     }
 

@@ -1,9 +1,6 @@
 package com.aviumauctores.pioneers;
 
-import com.aviumauctores.pioneers.controller.Controller;
-import com.aviumauctores.pioneers.controller.InGameController;
-import com.aviumauctores.pioneers.controller.GameReadyController;
-import com.aviumauctores.pioneers.controller.LoginController;
+import com.aviumauctores.pioneers.controller.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -184,7 +181,7 @@ public class App extends Application {
         else {
             controller.init();
             stage.getScene().setRoot(controller.render());
-            if (controller instanceof InGameController) {
+            if (controller instanceof InGameController || controller instanceof LobbyController) {
                 stage.sizeToScene();
             } else {
                 Pane root = (Pane) stage.getScene().getRoot();

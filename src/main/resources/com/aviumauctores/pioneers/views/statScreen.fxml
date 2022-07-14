@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.StatController">
+   <children>
+      <Line endX="499.0" layoutX="101.0" layoutY="70.0" startX="-100.0" />
+      <Line endX="12.5" endY="323.0" layoutX="115.0" layoutY="40.0" startX="12.5" startY="-8.0" />
+      <Line endX="489.0" layoutX="111.0" layoutY="120.0" startX="-111.0" />
+      <Line endX="489.0" layoutX="111.0" layoutY="170.0" startX="-111.0" />
+      <Line endX="489.0" layoutX="111.0" layoutY="220.0" startX="-111.0" />
+      <Line endX="489.0" layoutX="111.0" layoutY="270.0" startX="-111.0" />
+      <Line endX="489.0" layoutX="111.0" layoutY="320.0" startX="-111.0" />
+      <HBox layoutX="1.0" layoutY="32.0" prefHeight="325.0" prefWidth="600.0" spacing="15.0">
+         <children>
+            <VBox fx:id="statNameContainer" prefHeight="200.0" prefWidth="127.0">
+               <children>
+                  <Label prefHeight="39.0" prefWidth="129.0" />
+                  <Label prefHeight="50.0" prefWidth="128.0" text="%resources.gained" />
+                  <Label prefHeight="50.0" prefWidth="128.0" text="%resources.lost" />
+                  <Label prefHeight="50.0" prefWidth="128.0" text="%longest.road" />
+                  <Label prefHeight="50.0" prefWidth="128.0" text="%cities.built" />
+                  <Label prefHeight="50.0" prefWidth="128.0" text="%settlements.built" />
+                  <Label prefHeight="38.0" prefWidth="126.0" text="%roads.built" />
+               </children>
+            </VBox>
+            <VBox fx:id="playerContainer1" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName1" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="39.0" prefWidth="100.0" />
+               </children>
+            </VBox>
+            <VBox fx:id="playerContainer2" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName2" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="39.0" prefWidth="100.0" />
+               </children>
+            </VBox>
+            <VBox fx:id="playerContainer3" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName3" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="39.0" prefWidth="100.0" />
+               </children>
+            </VBox>
+            <VBox fx:id="playerContainer4" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName4" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="51.0" prefWidth="103.0" />
+                  <Label prefHeight="39.0" prefWidth="100.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <Button fx:id="leaveButton" layoutX="495.0" layoutY="357.0" mnemonicParsing="false" onAction="#leave" prefHeight="36.0" prefWidth="106.0" text="%leave" />
+      <Button fx:id="goLeftButton" layoutX="128.0" layoutY="3.0" mnemonicParsing="false" onAction="#toLeft" style="-fx-background-color: transparent;">
+         <graphic>
+            <ImageView fitHeight="28.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icons/button_left.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button fx:id="goRightButton" layoutX="548.0" layoutY="3.0" mnemonicParsing="false" onAction="#goRight" style="-fx-background-color: transparent;">
+         <graphic>
+            <ImageView fitHeight="28.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icons/button_right.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+   </children>
+</Pane>

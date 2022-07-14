@@ -4,6 +4,8 @@ import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import javafx.application.Platform;
 
+import java.util.HashMap;
+
 public class Constants {
 
     public static final int SCREEN_WIDTH = 640;
@@ -76,6 +78,13 @@ public class Constants {
     public static final String GET_GAME_URL = "games/{id}";
     public static final String UPDATE_GAME_URL = "games/{id}";
     public static final String DELETE_GAME_URL = "games/{id}";
+
+    // Achievements API Service
+
+    public static final String ACHIEVEMENTS_URL = "achievements";
+    public static final String ACHIEVEMENTS_BY_ID_URL = ACHIEVEMENTS_URL + "/{id}";
+    public static final String USER_ACHIEVEMENTS_URL = "users/{userId}/" + ACHIEVEMENTS_URL;
+    public static final String USER_ACHIEVEMENTS_BY_ID_URL = USER_ACHIEVEMENTS_URL + "/{id}";
 
     // API Pioneers URL
 
@@ -164,7 +173,15 @@ public class Constants {
     public static final String RESOURCE_WOOL = "wool";
     public static final String RESOURCE_UNKNOWN = "unknown";
 
-
+    //Stats
+    public static final String STAT_RESOURCES_GAINED = "resources.gained";
+    public static final String STAT_RESOURCES_LOST = "resources.lost";
+    public static final String STAT_LONGEST_ROAD = "longest.road";
+    public static final String STAT_CITIES_BUILT = "cities.built";
+    public static final String STAT_SETTLEMENTS_BUILT = "settlements.built";
+    public static final String STAT_ROADS_BUILT = "road.built";
+    public static final String[] ALL_STAT_NAMES = new String[]{STAT_RESOURCES_GAINED, STAT_RESOURCES_LOST, STAT_LONGEST_ROAD,
+        STAT_CITIES_BUILT, STAT_SETTLEMENTS_BUILT, STAT_ROADS_BUILT};
     public static final Scheduler FX_SCHEDULER = Schedulers.from(Platform::runLater);
 
 
@@ -176,4 +193,27 @@ public class Constants {
     public static final double WIDTH_HEIGHT_BUILDING = 90.0;
     public static final double HEIGHT_ROAD = 50.0;
     public static final double WIDTH_ROAD = 179.375;
+
+    // achievement-ids
+    public static final String ACHIEVEMENT_SETTLEMENTS = "build-settlements";
+    public static final String ACHIEVEMENT_ROADS = "build-road";
+    public static final String ACHIEVEMENT_CITIES = "build-CITIES";
+    public static final String ACHIEVEMENT_ALL = "all-achievements-completed";
+    public static final String ACHIEVEMENT_WIN = "win-game";
+    public static final String WINSTREAK = "winstreak";
+    public static final String ACHIEVEMENTS_WIN_LONGEST = "win-game-longest-road";
+    public static final String ACHIEVEMENT_RESOURCES = "many-resources";
+    public static final String ACHIEVEMENT_TRADE = "good-trade-offer";
+    public static final String RANKING = "ranking";
+    public static final HashMap<String, Integer> ACHIEVEMENT_UNLOCK_VALUES = new HashMap<>();
+    static {
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_SETTLEMENTS, 100);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_ROADS, 100);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_CITIES, 100);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_ALL, 7);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_WIN, 10);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENTS_WIN_LONGEST, 3);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_RESOURCES, 25);
+        ACHIEVEMENT_UNLOCK_VALUES.put(ACHIEVEMENT_TRADE, 5);
+    }
 }
