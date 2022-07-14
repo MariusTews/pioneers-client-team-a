@@ -50,6 +50,10 @@ public class BuildService {
         this.bundle = bundle;
     }
 
+    public void init() {
+        disposables = new CompositeDisposable();
+    }
+
 
     public void build() {
         if (selectedField == null) {

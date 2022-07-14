@@ -98,6 +98,6 @@ public class HttpModule {
 
     @Provides
     @Singleton
-    AchievementsApiService achievementsApiService(Retrofit retrofit) {return  retrofit.create(AchievementsApiService.class);}
+    AchievementsApiService achievementsApiService(Retrofit retrofit) {return retrofit.create(AchievementsApiService.class);}
 }
 

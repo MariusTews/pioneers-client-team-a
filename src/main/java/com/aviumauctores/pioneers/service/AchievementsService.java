@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers.service;
 
 import static com.aviumauctores.pioneers.Constants.*;
+
 import com.aviumauctores.pioneers.dto.achievements.CreateAchievementDto;
 import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.model.Achievement;
@@ -40,10 +41,14 @@ public class AchievementsService {
         Observable<List<Achievement>> achievementList = achievementsApiService.listUserAchievements(userService.getCurrentUserID());
         achievementList.observeOn(FX_SCHEDULER)
                 .subscribe(achievements -> {
-                    for (Achievement achievement: achievements) {
+                    for (Achievement achievement : achievements) {
+                        int achievementProgress = 0;
+                        if (achievementProgress < achievement.progress()) {
+                            achievementProgress = achievement.progress();
+                        }
                         achievementsProgress.put(
                                 achievement.id(),
-                                achievement.progress()
+                                achievementProgress
                         );
                     }
                 });
@@ -56,13 +61,15 @@ public class AchievementsService {
 
     public Observable<Achievement> putAchievement(String id, int progress) {
         String unlocked = null;
-        if (achievementsProgress.get(id) != null || id.equals(ACHIEVEMENT_RESOURCES)) {
-            progress += achievementsProgress.get(id);
-        }
-        if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
-            unlocked = dateFormat.format(calender.getTime());
+        if (achievementsProgress.containsKey(id)) {
+            if (!id.equals(ACHIEVEMENT_RESOURCES)) {
+                progress += achievementsProgress.get(id);
+            }
+            if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
+                unlocked = dateFormat.format(calender.getTime());
+                disposables.add(putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe());
+            }
             achievementsProgress.replace(id, progress);
-            disposables.add(putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe());
         }
         return achievementsApiService.putAchievement(
                 userService.getCurrentUserID(),

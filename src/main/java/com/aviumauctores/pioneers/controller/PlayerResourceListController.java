@@ -10,8 +10,11 @@ import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.*;
 
+
+@Singleton
 public class PlayerResourceListController {
 
     private final UserService userService;
@@ -135,6 +138,18 @@ public class PlayerResourceListController {
         }
         listItems.get(player.userId()).setLongestRoadViewVisible();
         longestRoadPlayer = player;
+    }
+
+    public int getResources(String playerId){
+        return listItems.get(playerId).getAllResources();
+    }
+
+    public int getPreviousResources(String playerId){
+        return listItems.get(playerId).getPreviousResources();
+    }
+
+    public int getLastGain(String id) {
+        return  0;
     }
 }
 

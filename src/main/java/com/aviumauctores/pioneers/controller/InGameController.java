@@ -105,6 +105,7 @@ public class InGameController extends LoggedInController {
     private Slider soundSlider;
 
 
+    private int previousResourceSum = 0;
     public List<Circle> vpCircles;
 
     public int memberVP;
@@ -132,6 +133,7 @@ public class InGameController extends LoggedInController {
     private Parent requestMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
+    private int requiredPoints;
 
     // These are the Sound-Icons
     Image muteImage;
@@ -142,6 +144,9 @@ public class InGameController extends LoggedInController {
 
     private final ErrorService errorService;
     private final BuildService buildService;
+    private final Provider<PostGameController> postGameController;
+    private final StatService statService;
+
     private final AchievementsService achievementsService;
     private final MapController mapController;
     private boolean fieldsMovedAlready;
@@ -171,7 +176,8 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, AchievementsService achievementsService, MapController mapController, TradeService tradeService) {
+                            ErrorService errorService, BuildService buildService, AchievementsService achievementsService, MapController mapController, TradeService tradeService,
+                            Provider<PostGameController> postGameController, StatService statService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -191,6 +197,8 @@ public class InGameController extends LoggedInController {
         this.achievementsService = achievementsService;
         this.mapController = mapController;
         this.tradeService = tradeService;
+        this.postGameController = postGameController;
+        this.statService = statService;
         fieldsMovedAlready = false;
     }
 
@@ -286,6 +294,10 @@ public class InGameController extends LoggedInController {
                     app.show(lobbyController.get());
                 }));
         disposables.add(achievementsService.getUserAchievements().observeOn(FX_SCHEDULER).subscribe());
+
+        requiredPoints = gameService.getVictoryPoints();
+        statService.init();
+        buildService.init();
     }
 
     @Override
@@ -438,7 +450,7 @@ public class InGameController extends LoggedInController {
                                         if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
                                             //listen to new and updatedbuildings, and load the image
                                             Building b = buildingEventDto.data();
-                                            buildService.setPlayerId(b.owner());
+                                            statService.onBuildingBuilt(b.owner(), b.type());buildService.setPlayerId(b.owner());
                                             buildService.setBuildingType(b.type());
                                             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
                                             buildService.setSelectedField(position);
@@ -543,6 +555,8 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
+        } else if (move.rob() != null) {
+            statService.playerRobbed(move.rob().target());
         }
         //show trade request if a player wants to trade with you
         if (move.partner() != null) {
@@ -768,6 +782,10 @@ public class InGameController extends LoggedInController {
 
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
+        if (updatedPlayer.victoryPoints() >= requiredPoints) {
+            app.show(postGameController.get());
+            return;
+        }
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
@@ -780,10 +798,10 @@ public class InGameController extends LoggedInController {
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
             int resourceSum = amountBrick + amountLumber + amountWool + amountGrain + amountOre;
-
-            disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
-
-
+            if (resourceSum >= previousResourceSum) {
+                previousResourceSum = resourceSum;
+                disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
+            }
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
             enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
@@ -804,6 +822,7 @@ public class InGameController extends LoggedInController {
             }
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
+        statService.updatePlayerStats(updatedPlayer);
     }
 
     private void deleteVP(int vpLoss) {
@@ -1342,7 +1361,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, resourceRatio, tradeService);
+        tradingController = new TradingController(this, bundle, achievementsService, userService, pioneerService, colorService, errorService, player, resourceRatio, tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setLayoutX(255);

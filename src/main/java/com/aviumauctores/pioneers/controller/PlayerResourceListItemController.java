@@ -22,6 +22,8 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class PlayerResourceListItemController {
 
     private Player player;
+    private int allResources = 0;
+    private int oldResources;
 
     private Member member;
 
@@ -185,4 +187,11 @@ public class PlayerResourceListItemController {
         longestRoadViewLabel.setTooltip(null);
     }
 
+    public int getAllResources() {
+        return allResources;
+    }
+
+    public int getPreviousResources() {
+        return oldResources;
+    }
 }
