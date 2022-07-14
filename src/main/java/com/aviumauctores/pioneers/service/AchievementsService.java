@@ -69,6 +69,8 @@ public class AchievementsService {
         if (achievementsProgress.containsKey(id)) {
             if (!id.equals(ACHIEVEMENT_RESOURCES)) {
                 progress += achievementsProgress.get(id);
+            } else if (progress < achievementsProgress.get(id)) {
+                progress = achievementsProgress.get(id);
             }
             if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
                 unlocked = dateFormat.format(calender.getTime());
