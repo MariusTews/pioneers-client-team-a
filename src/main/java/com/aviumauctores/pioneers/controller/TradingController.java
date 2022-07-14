@@ -183,6 +183,7 @@ public class TradingController implements Controller {
         disposables.add(pioneerService.createMove("build", null, resources, "684072366f72202b72406465", null)
                 .observeOn(FX_SCHEDULER).
                 subscribe(move -> {
+                    tradeButton.setDisable(true);
                 }, errorService::handleError));
     }
 

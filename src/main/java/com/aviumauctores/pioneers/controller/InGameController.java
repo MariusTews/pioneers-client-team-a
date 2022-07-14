@@ -54,6 +54,7 @@ public class InGameController extends LoggedInController {
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
     public HBox vpHbox;
+    public Pane vpPane;
     private Player player;
 
     private final EventListener eventListener;
@@ -341,6 +342,7 @@ public class InGameController extends LoggedInController {
                                     vpCircles.add(vpCircle);
                                     vpHbox.getChildren().add(vpCircle);
                                 }
+                                vpPane.toFront();
                                 //put robber on desert tile
                                 desertTileId = controller.getDesertTileId();
                                 String desertRobberImageId = desertTileId.replace("hexagon", "robber");

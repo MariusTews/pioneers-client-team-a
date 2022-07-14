@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
+import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.AchievementsService;
 import com.aviumauctores.pioneers.service.LoginService;
@@ -25,6 +26,7 @@ import javax.inject.Provider;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
@@ -185,6 +187,11 @@ public class AchievementsController extends PlayerListController {
             disposables.add(achievementsService.getUserAchievement(friend, RANKING)
                     .observeOn(FX_SCHEDULER).
                     subscribe(success -> {
+                        for (Achievement achievement : success) {
+                            if (Objects.equals(achievement.id(), RANKING)) {
+                                friendsHbox.getChildren().add(new Label(" RP: " + achievement.progress()));
+                            }
+                        }
                     }, error -> friendsHbox.getChildren().add(new Label(" RP: 0"))));
             friendsList.getItems().add(friendsHbox);
         }

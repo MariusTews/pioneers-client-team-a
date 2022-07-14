@@ -154,8 +154,8 @@
       <Button fx:id="tradeButton" mnemonicParsing="false" onAction="#trade" text="%trading" BorderPane.alignment="CENTER" />
    </bottom>
    <top>
-      <Pane prefHeight="26.0" prefWidth="1080.0" BorderPane.alignment="CENTER">
-         <HBox fx:id="vpHbox" alignment="CENTER" prefHeight="25.0" prefWidth="1080.0"/>
+      <Pane fx:id="vpPane" prefHeight="26.0" prefWidth="1080.0" BorderPane.alignment="CENTER">
+         <HBox fx:id="vpHbox" alignment="CENTER" prefHeight="25.0" prefWidth="1080.0" />
       </Pane>
    </top>
 </BorderPane>
