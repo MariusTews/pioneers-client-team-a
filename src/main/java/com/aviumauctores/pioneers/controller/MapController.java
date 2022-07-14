@@ -119,7 +119,7 @@ public class MapController implements Controller {
             double offsetCrossing = 0.5 * fitSizeCrossing;
             double offsetWidthRoad = 0.5 * fitWidthRoad;
             double offsetHeightRoad = 0.5 * fitHeightRoad;
-            String labelFontSize = String.valueOf(40 / (mapRadius+1));
+            String labelFontSize = String.valueOf(55 / (mapRadius+1));
 
             // creates the tiles
             for (Tile tile : gameMap.tiles()) {
