@@ -1160,7 +1160,7 @@ public class InGameController extends LoggedInController {
             //only nodes which are buildings contain three id parts
             if (nIdParts.length == 3) {
                 //check that the building node is at the correct tile and belongs to another player
-                if (possibleIds.contains(nIdParts[0]) /*&& !(nIdParts[2].equals(userID))*/) {
+                if (possibleIds.contains(nIdParts[0]) && !(nIdParts[2].equals(userID))) {
                     n.setOnMouseClicked(this::initiateRob);
                     n.setDisable(false);
 
