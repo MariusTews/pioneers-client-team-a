@@ -58,9 +58,9 @@ public class AchievementsService {
             progress += achievementsProgress.get(id);
             if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
                 unlocked = dateFormat.format(calender.getTime());
-                achievementsProgress.replace(id, progress);
                 disposables.add(putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe());
             }
+            achievementsProgress.replace(id, progress);
         }
         return achievementsApiService.putAchievement(
                 userService.getCurrentUserID(),
