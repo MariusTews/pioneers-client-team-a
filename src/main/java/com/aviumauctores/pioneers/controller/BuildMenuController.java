@@ -24,7 +24,7 @@ public class BuildMenuController implements Controller {
     @FXML
     private Button buildButton;
 
-    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, HashMap<String, List<String>> nextHarbors, InGameController inGameController) {
+    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, InGameController inGameController) {
         this.buildService = buildService;
         this.bundle = bundle;
         this.buildingType = buildingType;
