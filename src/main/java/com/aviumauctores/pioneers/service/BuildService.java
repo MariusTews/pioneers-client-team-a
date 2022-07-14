@@ -143,7 +143,12 @@ public class BuildService {
                 }
             }
             if (selectedField.getId().startsWith("building")) {
-                selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);
+                if (buildingType.equals(BUILDING_TYPE_CITY)) {
+                    selectedField.setId(selectedField.getId().replace(BUILDING_TYPE_SETTLEMENT, BUILDING_TYPE_CITY));
+                }
+                else {
+                    selectedField.setId(selectedField.getId() + "#" + buildingType + "#" + playerId);
+                }
             }
             //necessary because of runtime issues on rejoin
             selectedField.setVisible(true);

@@ -7,21 +7,25 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.aviumauctores.pioneers.controller.TradeRequestController" styleClass="trade-menu">
-    <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true">
+<AnchorPane prefHeight="350.0" prefWidth="600.0" styleClass="trade-menu" xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.aviumauctores.pioneers.controller.TradeRequestController">
+    <ImageView fitHeight="21" fitWidth="20" layoutX="36.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.topAnchor="60.0">
         <Image url="@Wood_icon.png"/>
     </ImageView>
-    <ImageView fitHeight="57.0" fitWidth="40.0" layoutX="35.0" layoutY="221.0" pickOnBounds="true" preserveRatio="true">
-        <Image url="@Sheep_icon.png"/>
+    <ImageView fitHeight="20" fitWidth="21" layoutX="36.0" layoutY="237.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@Wool_icon.png"/>
     </ImageView>
-    <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="35.0" layoutY="136.0" pickOnBounds="true" preserveRatio="true">
+    <ImageView fitHeight="23" fitWidth="24" layoutX="36.0" layoutY="144.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.topAnchor="144.0">
         <Image url="@Bricks_icon.png"/>
     </ImageView>
-    <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
+    <ImageView fitHeight="27" fitWidth="24" layoutX="36.0" layoutY="101.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.topAnchor="101.0">
         <Image url="@Bread_icon.png"/>
     </ImageView>
-    <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="35.0" layoutY="181.0" pickOnBounds="true" preserveRatio="true">
+    <ImageView fitHeight="25" fitWidth="25" layoutX="34.0" layoutY="188.0" pickOnBounds="true" preserveRatio="true">
         <Image url="@Metal_icon.png"/>
     </ImageView>
     <Label layoutX="133.0" layoutY="15.0" prefHeight="30.0" prefWidth="77.0" text="%trade"/>

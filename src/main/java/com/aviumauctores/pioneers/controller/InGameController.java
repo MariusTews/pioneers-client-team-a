@@ -820,6 +820,9 @@ public class InGameController extends LoggedInController {
         int side = coordinateHolder.side();
         String sideType;
         if (side == 0 || side == 6) {
+            if (Objects.equals(buildingType, BUILDING_TYPE_CITY)) {
+                return;
+            }
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
                     sideType = BUILDING_TYPE_CITY;
