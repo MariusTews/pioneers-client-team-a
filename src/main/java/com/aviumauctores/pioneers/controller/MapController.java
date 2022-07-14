@@ -86,9 +86,11 @@ public class MapController implements Controller {
 
     @Override
     public void destroy(boolean closed) {
-        canvas.removeEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
-        canvas.removeEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
-        canvas.removeEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+        if (canvas != null && sceneGestures != null) {
+            canvas.removeEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
+            canvas.removeEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+            canvas.removeEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+        }
     }
 
     @Override
@@ -117,7 +119,7 @@ public class MapController implements Controller {
             double offsetCrossing = 0.5 * fitSizeCrossing;
             double offsetWidthRoad = 0.5 * fitWidthRoad;
             double offsetHeightRoad = 0.5 * fitHeightRoad;
-            String labelFontSize = String.valueOf(40 / mapRadius);
+            String labelFontSize = String.valueOf(40 / (mapRadius+1));
 
             // creates the tiles
             for (Tile tile : gameMap.tiles()) {
