@@ -34,8 +34,7 @@ import java.util.*;
 
 import static com.aviumauctores.pioneers.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,6 +79,12 @@ public class InGameControllerTest extends ApplicationTest {
 
     @Mock
     Provider<GameReadyController> gameReadyController;
+
+    @Mock
+    AchievementsService achievementsService;
+
+    @Mock
+    StatService statService;
 
     // For some reason Mockito doesn't want a lambda expression
     @SuppressWarnings("Convert2Lambda")
@@ -146,6 +151,7 @@ public class InGameControllerTest extends ApplicationTest {
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "lumber", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
         when(pioneerService.listPlayers()).thenReturn(Observable.empty());
+        when(achievementsService.getUserAchievements()).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
     }
 

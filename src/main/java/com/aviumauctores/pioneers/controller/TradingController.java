@@ -28,6 +28,7 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class TradingController implements Controller {
     private final InGameController inGameController;
     private final ResourceBundle bundle;
+    private final AchievementsService achievementsService;
     @FXML
     public Spinner<Integer> tradeLumber;
     @FXML
@@ -81,10 +82,11 @@ public class TradingController implements Controller {
     private HashMap<String, Integer> sendResources;
 
     @Inject
-    public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService,
+    public TradingController(InGameController inGameController, ResourceBundle bundle, AchievementsService achievementsService, UserService userService,
                              PioneerService pioneerService, ColorService colorService, ErrorService errorService, Player player, HashMap<String, Integer> resourceRatio, TradeService tradeService) {
         this.inGameController = inGameController;
         this.bundle = bundle;
+        this.achievementsService = achievementsService;
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
@@ -471,7 +473,12 @@ public class TradingController implements Controller {
 
     //get counterpropasal
     public void handleRequest(HashMap<String, Integer> resources, String userId) {
-        if (Objects.equals(resources, sendResources)) {
+        HashMap<String, Integer> sendResourcesInverse = sendResources;
+        for (Map.Entry<String, Integer> entry : sendResourcesInverse.entrySet()) {
+            entry.setValue(-entry.getValue());
+        }
+        int ressourceSum = 0;
+        if (Objects.equals(resources, sendResourcesInverse)) {
             disposables.add(pioneerService.createMove("accept", null, null, userId, null)
                     .observeOn(FX_SCHEDULER).
                     subscribe(move -> {
@@ -482,6 +489,9 @@ public class TradingController implements Controller {
                         this.enableCancelButton();
                         inGameController.setTradeStarter(false);
                     }));
+            for (String key: sendResourcesInverse.keySet()) {
+                ressourceSum += sendResourcesInverse.get(key);
+            }
         }
         else {
             partnerID = userId;
@@ -502,6 +512,11 @@ public class TradingController implements Controller {
             }
         }
 
+        if (ressourceSum >= 5) {
+            disposables.add(achievementsService.putAchievement(ACHIEVEMENT_TRADE, 1)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe());
+        }
     }
     //getter and setter
 

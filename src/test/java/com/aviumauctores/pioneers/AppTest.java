@@ -86,6 +86,7 @@ class AppTest extends ApplicationTest {
 
         screenAsserts.assertChatScreen();
         // Go back to lobby
+        WaitForAsyncUtils.waitForFxEvents();
         clickOn("#leaveButton");
 
         screenAsserts.assertLobbyScreen();
