@@ -27,8 +27,6 @@ public class GameService {
 
     public String password;
 
-    private int radius;
-
     private int victoryPoints;
 
 
@@ -88,17 +86,12 @@ public class GameService {
     }
 
     public Observable<Game> setUpdateOption(int radius, int victoryPoints) {
-        this.radius = radius;
         this.victoryPoints = victoryPoints;
 
         if (radius >= 0 && radius <= 10 && victoryPoints >= 3 && victoryPoints <= 15) {
             return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, false, new GameSettings(radius, victoryPoints), password));
         }
         return gamesApiService.updateGame(currentGameID, new UpdateGameDto(name, ownerID, false, new GameSettings(2, 10), password));
-    }
-
-    public int getMapRadius() {
-        return this.radius;
     }
 
     public int getVictoryPoints() {

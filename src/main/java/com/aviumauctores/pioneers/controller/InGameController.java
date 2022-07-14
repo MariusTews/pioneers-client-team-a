@@ -61,14 +61,13 @@ public class InGameController extends LoggedInController {
     private Label[] resourceLabels;
 
     @FXML
+    public Label timeLabel;
+    @FXML
     public Label numSheepLabel;
-
     @FXML
     public ImageView arrowOnDice;
     @FXML
     public Label yourTurnLabel;
-    @FXML
-    Label timeLabel;
 
     @FXML
     public BorderPane ingamePane;
@@ -125,10 +124,10 @@ public class InGameController extends LoggedInController {
 
     private BuildMenuController buildMenuController;
     private DropMenuController dropMenuController;
+    private TradeRequestController tradeRequestController;
     private Parent buildMenu;
     private Parent dropMenu;
     private Parent tradingMenu;
-    private TradeRequestController tradeRequestController;
     private Parent requestMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
@@ -297,8 +296,13 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(gameService.getMapRadius());
-                                ingamePane.setCenter(controller.render());
+                                controller.setMapRadius(gameService.getCurrentGame().blockingFirst().settings().mapRadius());
+                                Pane pane = (Pane) controller.render();
+                                ingamePane.setCenter(pane);
+                                ingamePane.getRight().toFront();
+                                ingamePane.getLeft().toFront();
+                                ingamePane.getBottom().toFront();
+                                pane.setTranslateX(240);
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
                                 roadPane = controller.getRoadPane();
@@ -308,7 +312,6 @@ public class InGameController extends LoggedInController {
                                 for (Node vpCircle : controller.getVpBox().getChildren()) {
                                     vpCircles.add((Circle) vpCircle);
                                 }
-                                timeLabel = controller.getTimeLabel();
                                 //put robber on desert tile
                                 desertTileId = controller.getDesertTileId();
                                 String desertRobberImageId = desertTileId.replace("hexagon", "robber");
@@ -766,7 +769,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         String color = playerColors.get(owner);
-        //cirles are behind settlements and cities
+        //circles are behind settlements and cities
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
                 circle.setFill(Color.web(color));
@@ -872,11 +875,11 @@ public class InGameController extends LoggedInController {
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-            buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
-            buildMenu.setLayoutY(Math.min(source.getLayoutY(), mainPane.getHeight() - newValue.getHeight()));
+            buildMenu.setLayoutX(Math.min(source.getX() + 240, ingamePane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutY(Math.min(source.getY(), ingamePane.getHeight() - newValue.getHeight()));
         });
 
-        mainPane.getChildren().add(buildMenu);
+        ingamePane.getChildren().add(buildMenu);
 
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
@@ -896,19 +899,22 @@ public class InGameController extends LoggedInController {
         closeBuildMenu(closed);
         closeTradingMenu(closed);
         closeDropMenu(closed);
+        if (mapController != null) {
+            mapController.destroy(closed);
+        }
         if (timer != null) {
             timer.cancel();
         }
         achievementsService.dispose();
     }
 
-    private void closeBuildMenu(boolean appClosed) {
+    public void closeBuildMenu(boolean appClosed) {
         if (buildMenuController != null) {
             buildMenuController.destroy(appClosed);
             buildMenuController = null;
         }
         if (buildMenu != null) {
-            mainPane.getChildren().remove(buildMenu);
+            ingamePane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
     }
@@ -919,7 +925,7 @@ public class InGameController extends LoggedInController {
             dropMenuController = null;
         }
         if (dropMenu != null) {
-            mainPane.getChildren().remove(dropMenu);
+            ingamePane.getChildren().remove(dropMenu);
             dropMenu = null;
         }
     }
@@ -1082,13 +1088,13 @@ public class InGameController extends LoggedInController {
         dropMenu = dropMenuController.render();
 
         //maybe change that later to a dynamic value
-        int layoutX = 400;
+        int layoutX = 600;
         int layoutY = 250;
 
         dropMenu.setLayoutX(layoutX);
         dropMenu.setLayoutY(layoutY);
 
-        mainPane.getChildren().add(dropMenu);
+        ingamePane.getChildren().add(dropMenu);
     }
 
     /************************************************
@@ -1268,13 +1274,11 @@ public class InGameController extends LoggedInController {
         tradingController = new TradingController(this, bundle, achievementsService, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
-        tradingMenu.setStyle("-fx-background-color: #ffffff;");
-        tradingMenu.setLayoutX(0);
-        tradingMenu.setLayoutY(0);
-        mainPane.getChildren().add(tradingMenu);
+        tradingMenu.setLayoutX(255);
+        tradingMenu.setLayoutY(120);
+        ingamePane.getChildren().add(tradingMenu);
 
-
-        // Prevent the event handler from main pane to close the build menu immediately after this
+        // Prevent the event handler from ingame pane to close the build menu immediately after this
         actionEvent.consume();
     }
 
@@ -1300,10 +1304,9 @@ public class InGameController extends LoggedInController {
         tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
-        requestMenu.setStyle("-fx-background-color: #ffffff;");
-        requestMenu.setLayoutX(0);
-        requestMenu.setLayoutY(0);
-        mainPane.getChildren().add(requestMenu);
+        requestMenu.setLayoutX(255);
+        requestMenu.setLayoutY(120);
+        ingamePane.getChildren().add(requestMenu);
 
     }
 
@@ -1313,7 +1316,7 @@ public class InGameController extends LoggedInController {
             tradingController = null;
         }
         if (tradingMenu != null) {
-            mainPane.getChildren().remove(tradingMenu);
+            ingamePane.getChildren().remove(tradingMenu);
             tradingMenu = null;
         }
     }
@@ -1324,7 +1327,7 @@ public class InGameController extends LoggedInController {
             tradeRequestController = null;
         }
         if (requestMenu != null) {
-            mainPane.getChildren().remove(requestMenu);
+            ingamePane.getChildren().remove(requestMenu);
             requestMenu = null;
         }
         if (tradeRequestPopup.isVisible()) {
