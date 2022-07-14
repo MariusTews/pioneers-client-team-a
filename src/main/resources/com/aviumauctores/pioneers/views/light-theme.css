@@ -93,8 +93,8 @@
 }
 
 #gameNameLabel {
-    -fx-font-size: 24;
-    -fx-background-radius: 8px;
+    -fx-font-size: 30;
+   -fx-text-fill: black;
 }
 
 #passwordErrorLabel {
@@ -104,12 +104,6 @@
 #usernameErrorLabel {
     -fx-font-size: 11;
 }
-
-#nameLabel {
-    -fx-font-size: 18;
-
-}
-
 .button {
     -fx-background-color: #006600;
     -fx-text-fill: #ffffff;

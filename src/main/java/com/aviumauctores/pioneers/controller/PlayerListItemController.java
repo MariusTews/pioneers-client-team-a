@@ -16,9 +16,9 @@ import javafx.scene.layout.HBox;
 import java.util.Objects;
 
 public class PlayerListItemController implements Controller {
-    public static final String READY_SRC = "views/ready.png";
-    public static final String NOT_READY_SRC = "views/notReady.png";
-    public static final String SPECTATOR_IMAGE_SOURCE = "views/spectator.png";
+    public static final String READY_SRC = "views/ready2.png";
+    public static final String NOT_READY_SRC = "views/notReady2.png";
+    public static final String SPECTATOR_IMAGE_SOURCE = "views/spectator2.png";
 
     private HBox root;
     private ImageView avatarView;

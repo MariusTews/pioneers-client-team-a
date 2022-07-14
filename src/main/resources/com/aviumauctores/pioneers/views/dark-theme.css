@@ -136,13 +136,8 @@
 }
 
 #gameNameLabel {
-    -fx-font-size: 24;
+    -fx-font-size: 30;
     -fx-background-radius: 8px;
-    -fx-text-fill: #eee;
-}
-
-#nameLabel {
-    -fx-font-size: 18;
     -fx-text-fill: #eee;
 }
 
