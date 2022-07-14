@@ -242,9 +242,12 @@ public class InGameController extends LoggedInController {
         List<Player> newFriends = pioneerService.listPlayers().blockingFirst();
         User myUser = userService.getUserByID(userID).blockingFirst();
         List<String> actFriends = myUser.friends();
-        for (Player newPlayers : newFriends) {
-            if (!actFriends.contains(newPlayers.userId()) && !newPlayers.userId().equals(myUser._id())) {
-                actFriends.add(newPlayers.userId());
+        //check != null for the test
+        if (actFriends != null) {
+            for (Player newPlayers : newFriends) {
+                if (!actFriends.contains(newPlayers.userId()) && !newPlayers.userId().equals(myUser._id())) {
+                    actFriends.add(newPlayers.userId());
+                }
             }
         }
         errorService.setErrorCodesUsers();
