@@ -74,6 +74,7 @@ public class AchievementsService {
             }
             if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
                 unlocked = dateFormat.format(calender.getTime());
+                achievementsProgress.replace(id, progress);
                 putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe();
             }
             achievementsProgress.replace(id, progress);
