@@ -60,6 +60,10 @@ public class BuildService {
         resourceRatio.put(RESOURCE_WOOL, 4);
     }
 
+    public void init() {
+        disposables = new CompositeDisposable();
+    }
+
 
     public void build(HashMap<String, List<String>> harborCrossings) {
         String field = selectedField.getId().replace("_", "-");

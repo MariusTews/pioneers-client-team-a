@@ -29,7 +29,6 @@ public class StatService {
             PlayerStatService service = new PlayerStatService();
             playerServices.put(playerID, service);
         }
-        System.out.println(playerServices);
     }
 
     public HashMap<String, Integer> getStats(String playerID){

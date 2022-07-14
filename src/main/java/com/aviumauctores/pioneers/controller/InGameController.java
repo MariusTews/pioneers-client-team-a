@@ -104,6 +104,7 @@ public class InGameController extends LoggedInController {
     private Slider soundSlider;
 
 
+    private int previousResourceSum = 0;
     public List<Circle> vpCircles;
 
     public int memberVP;
@@ -271,6 +272,8 @@ public class InGameController extends LoggedInController {
         disposables.add(achievementsService.getUserAchievements().observeOn(FX_SCHEDULER).subscribe());
 
         requiredPoints = gameService.getVictoryPoints();
+        statService.init();
+        buildService.init();
     }
 
     @Override
@@ -475,7 +478,7 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
-        }else if(move.rob() != null){
+        } else if (move.rob() != null) {
             statService.playerRobbed(move.rob().target());
         }
         //show trade request if a player wants to trade with you
@@ -705,7 +708,7 @@ public class InGameController extends LoggedInController {
 
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
-        if (updatedPlayer.victoryPoints() >= requiredPoints){
+        if (updatedPlayer.victoryPoints() >= requiredPoints) {
             app.show(postGameController.get());
             return;
         }
@@ -721,8 +724,10 @@ public class InGameController extends LoggedInController {
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
             int resourceSum = amountBrick + amountLumber + amountWool + amountGrain + amountOre;
-            disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
-
+            if (resourceSum >= previousResourceSum) {
+                previousResourceSum = resourceSum;
+                disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
+            }
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
             enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
