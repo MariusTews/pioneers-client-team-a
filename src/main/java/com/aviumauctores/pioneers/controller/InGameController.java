@@ -146,6 +146,7 @@ public class InGameController extends LoggedInController {
     private final MapController mapController;
     private boolean fieldsMovedAlready;
     private final List<Node> robTargets = new ArrayList<>();
+    private String selectedRobberFieldId = "";
 
     //for tradingController
     private final TradeService tradeService;
@@ -602,6 +603,14 @@ public class InGameController extends LoggedInController {
     }
 
     private void updateVisuals() {
+        if (rejoin) {
+            Point3D point = stateService.getRobberPosition();
+            if (point != null) {
+                String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+                id = id.replace("-", "_");
+                moveRobber(id);
+            }
+        }
         if (!fieldsMovedAlready) {
             if (!currentAction.startsWith("founding")) {
                 fieldsIntoOnePane();
@@ -667,7 +676,9 @@ public class InGameController extends LoggedInController {
                         finishMoveButton.setDisable(true);
                         tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
-                        enableRobberFields();
+                        if (!(stateService.getOldAction().equals(MOVE_ROB))) {
+                            enableRobberFields();
+                        }
                     }
                 }
             }
@@ -1113,6 +1124,7 @@ public class InGameController extends LoggedInController {
     //this method is called when you try to put the robber on a new position by clicking on a free robber field
     private void initiateRobberMove(MouseEvent mouseEvent) {
         String robberFieldId = ((Node) mouseEvent.getSource()).getId();
+        selectedRobberFieldId = robberFieldId;
 
         //after you have clicked on a free robber position, all rob targets (buildings of other players) have to be marked
         int count = markBuildingsForRob(robberFieldId);
@@ -1123,10 +1135,10 @@ public class InGameController extends LoggedInController {
         }
         //otherwise enable the player to click on the building images to choose a rob target
         else {
-            robberPane.setVisible(false);
             robberPane.setDisable(true);
             roadAndCrossingPane.setDisable(false);
         }
+        resetRobberPaneAndMoveRobber(selectedRobberFieldId);
     }
 
     //marks all buildings of other players at the chosen tile
@@ -1155,15 +1167,13 @@ public class InGameController extends LoggedInController {
                     n.setOnMouseClicked(this::initiateRob);
                     n.setDisable(false);
 
-                    /*set the accessible text as it contains the correct new robber coordinates which are needed in the
-                    changeRobberPositionAndRobTarget method*/
-                    n.setAccessibleText(robberFieldId);
-
                     robTargets.add(n);
 
-                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() * 1.1);
-                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() * 1.1);
-                    n.setEffect(new Glow());
+                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() * 1.2);
+                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() * 1.2);
+                    n.setOnMouseEntered(this::increaseGlow);
+                    n.setOnMouseExited(this::decreaseGlow);
+                    n.setEffect(new Glow(0.7));
 
                     count++;
                 }
@@ -1172,9 +1182,18 @@ public class InGameController extends LoggedInController {
         return count;
     }
 
+    private void increaseGlow(MouseEvent mouseEvent) {
+        ((Node) mouseEvent.getSource()).setEffect(new Glow(1));
+    }
+
+    private void decreaseGlow(MouseEvent mouseEvent) {
+        ((Node) mouseEvent.getSource()).setEffect(new Glow(0.7));
+    }
+
+
     //this method is called when you click on a rob target (building of another player)
     private void initiateRob(MouseEvent mouseEvent) {
-        String robberFieldId = ((Node) mouseEvent.getSource()).getAccessibleText();
+        String robberFieldId = selectedRobberFieldId;
         String target = ((Node) mouseEvent.getSource()).getId().split("#")[2];
         changeRobberPositionAndRobTarget(robberFieldId, target);
     }
@@ -1183,42 +1202,54 @@ public class InGameController extends LoggedInController {
     private void changeRobberPositionAndRobTarget(String newRobberPosition, String target) {
         Point3D p = Point3D.readCoordinatesFromID(newRobberPosition);
 
+        if (target != null) {
+            if (target.equals(userID)) {
+                target = null;
+            }
+        }
+
         errorService.setErrorCodesPioneersPost();
         disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(p.x(), p.y(), p.z(), target))
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                            //reset the robberPane to normal and move the robber view to its new position
-                            for (Node n : robberPane.getChildren()) {
-                                n.setDisable(true);
-                                n.setOnMouseEntered(null);
-                                n.setOnMouseExited(null);
-                                n.setOnMouseClicked(null);
-                                if (n.getId().equals(newRobberPosition)) {
-                                    ((ImageView) n).setImage(robberView);
-                                } else {
-                                    ((ImageView) n).setImage(null);
-                                }
-                            }
-                            //reset all changes made to the rob targets (buildings of other players)
-                            for (Node n : robTargets) {
-                                n.setOnMouseClicked(this::onFieldClicked);
-                                n.setDisable(true);
-                                n.setAccessibleText(null);
-
-                                ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() / 1.1);
-                                ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() / 1.1);
-                                n.setEffect(null);
-
-                            }
-                            robTargets.clear();
-
-                            //reset changes made to the panes
-                            robberPane.setVisible(true);
-                            robberPane.setDisable(false);
-                            roadAndCrossingPane.setDisable(true);
-                        },
+                .subscribe(
+                        move -> cleanupRobberMove(),
                         errorService::handleError
                 ));
+    }
+
+    //this method is called after you clicked on a robber field to already show the robber on this position
+    private void resetRobberPaneAndMoveRobber(String newRobberPosition) {
+        //reset the robberPane to normal and move the robber view to its new position
+        for (Node n : robberPane.getChildren()) {
+            n.setDisable(true);
+            n.setOnMouseEntered(null);
+            n.setOnMouseExited(null);
+            n.setOnMouseClicked(null);
+            if (n.getId().equals(newRobberPosition)) {
+                ((ImageView) n).setImage(robberView);
+            } else {
+                ((ImageView) n).setImage(null);
+                ((ImageView) n).imageProperty().setValue(null);
+            }
+        }
+    }
+
+    //this method is called after a successful rob move for cleaning up
+    private void cleanupRobberMove() {
+        //reset all changes made to the rob targets (buildings of other players)
+        for (Node n : robTargets) {
+            n.setOnMouseClicked(this::onFieldClicked);
+            n.setDisable(true);
+
+            ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() / 1.2);
+            ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() / 1.2);
+            n.setOnMouseEntered(null);
+            n.setOnMouseExited(null);
+            n.setEffect(null);
+
+        }
+        robTargets.clear();
+        roadAndCrossingPane.setDisable(true);
     }
 
     //gets the image view of the current robber position
