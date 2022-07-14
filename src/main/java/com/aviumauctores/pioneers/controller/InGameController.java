@@ -269,11 +269,13 @@ public class InGameController extends LoggedInController {
                     gameService.setCurrentGameID(null);
                     app.show(lobbyController.get());
                 }));
-        disposables.add(achievementsService.getUserAchievements().observeOn(FX_SCHEDULER).subscribe());
 
         requiredPoints = gameService.getVictoryPoints();
+        achievementsService.init();
         statService.init();
         buildService.init();
+
+        disposables.add(achievementsService.getUserAchievements().observeOn(FX_SCHEDULER).subscribe());
     }
 
     @Override
@@ -897,6 +899,7 @@ public class InGameController extends LoggedInController {
         if (timer != null) {
             timer.cancel();
         }
+        achievementsService.dispose();
     }
 
     private void closeBuildMenu(boolean appClosed) {
