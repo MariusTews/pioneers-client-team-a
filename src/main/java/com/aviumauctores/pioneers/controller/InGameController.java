@@ -53,6 +53,7 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
+    public HBox vpHbox;
     private Player player;
 
     private final EventListener eventListener;
@@ -150,7 +151,7 @@ public class InGameController extends LoggedInController {
     //for tradingController
     private final TradeService tradeService;
     private String desertTileId;
-    private HashMap<String, Integer> tradeRessources;
+    private HashMap<String, Integer> tradeResources;
     private String tradePartner;
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
@@ -315,8 +316,14 @@ public class InGameController extends LoggedInController {
                                 crossingPane = controller.getCrossingPane();
                                 robberPane = controller.getRobberPane();
                                 vpCircles = new ArrayList<>();
-                                for (Node vpCircle : controller.getVpBox().getChildren()) {
-                                    vpCircles.add((Circle) vpCircle);
+                                for (int i = 0; i < gameService.getVictoryPoints(); i++) {
+                                    Circle vpCircle = new Circle();
+                                    vpCircle.setRadius(10);
+                                    vpCircle.setFill(Color.GRAY);
+                                    vpCircle.setStroke(Color.BLACK);
+                                    vpCircle.setStrokeWidth(1);
+                                    vpCircles.add(vpCircle);
+                                    vpHbox.getChildren().add(vpCircle);
                                 }
                                 timeLabel = controller.getTimeLabel();
                                 //put robber on desert tile
@@ -770,6 +777,7 @@ public class InGameController extends LoggedInController {
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
             int resourceSum = amountBrick + amountLumber + amountWool + amountGrain + amountOre;
+
             disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
 
 
@@ -1344,7 +1352,7 @@ public class InGameController extends LoggedInController {
 
     // trade with the bank or another player
     public void showTradeRequest(HashMap<String, Integer> resources, String partner) {
-        tradeRessources = resources;
+        tradeResources = resources;
         viewRequestButton.setDisable(false);
         tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
         viewRequestButton.setStyle("-fx-background-color: " + player.color());
@@ -1360,7 +1368,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void viewRequest(ActionEvent actionEvent) {
-        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeResources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setStyle("-fx-background-color: #ffffff;");

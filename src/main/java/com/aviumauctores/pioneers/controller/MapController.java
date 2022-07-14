@@ -42,8 +42,6 @@ public class MapController implements Controller {
     @FXML
     public Pane roadPane;
     @FXML
-    public HBox vpBox;
-    @FXML
     public Label timeLabel;
     Image desert;
     Image fields;
@@ -414,10 +412,6 @@ public class MapController implements Controller {
 
     public void onFieldClicked(MouseEvent mouseEvent) {
         inGameController.onFieldClicked(mouseEvent);
-    }
-
-    public HBox getVpBox() {
-        return vpBox;
     }
 
     public HashMap<String, List<String>> getHarborCrossings() {
