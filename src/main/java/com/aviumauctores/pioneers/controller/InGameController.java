@@ -557,7 +557,7 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
-        } else if (move.rob() != null) {
+        } else if (move.rob() != null && move.rob().target() != null) {
             statService.playerRobbed(move.rob().target());
         }
         //show trade request if a player wants to trade with you
