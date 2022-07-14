@@ -34,7 +34,7 @@
             </VBox>
             <VBox fx:id="playerContainer1" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label prefHeight="39.0" prefWidth="102.0" text="playerName1" />
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName1" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
@@ -45,7 +45,7 @@
             </VBox>
             <VBox fx:id="playerContainer2" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label prefHeight="39.0" prefWidth="102.0" text="playerName2" />
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName2" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
@@ -56,7 +56,7 @@
             </VBox>
             <VBox fx:id="playerContainer3" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label prefHeight="39.0" prefWidth="102.0" text="playerName3" />
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName3" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
@@ -67,7 +67,7 @@
             </VBox>
             <VBox fx:id="playerContainer4" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label prefHeight="39.0" prefWidth="102.0" text="playerName4" />
+                  <Label prefHeight="39.0" prefWidth="102.0" id="playerName4" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
                   <Label prefHeight="51.0" prefWidth="103.0" />
