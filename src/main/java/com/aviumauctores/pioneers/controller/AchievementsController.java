@@ -152,10 +152,10 @@ public class AchievementsController extends PlayerListController {
                     for (Achievement achievement : success) {
 
                         if (Objects.equals(achievement.id(), RANKING)) {
-                            rankingPointsLabel.setText(achievement.progress() + bundle.getString("ranking.points"));
+                            rankingPointsLabel.setText(achievement.progress()+" "+ bundle.getString("ranking.points"));
                         }
                     }
-                }, error -> rankingPointsLabel.setText("0" + bundle.getString("ranking.points"))));
+                }, error -> rankingPointsLabel.setText("0"+ " " + bundle.getString("ranking.points"))));
 
 
     }
