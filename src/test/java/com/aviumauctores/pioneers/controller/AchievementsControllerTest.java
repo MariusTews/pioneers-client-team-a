@@ -2,7 +2,6 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.model.Achievement;
-import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.core.Observable;
@@ -22,7 +21,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.testfx.assertions.api.Assertions.assertThat;
 
@@ -34,9 +32,6 @@ public class AchievementsControllerTest extends ApplicationTest {
 
     @Mock
     UserService userService;
-
-    @Mock
-    LoginService loginService;
 
     @Spy
     ResourceBundle bundle = ResourceBundle.getBundle ("com/aviumauctores/pioneers/lang", Locale.ROOT);
@@ -68,6 +63,7 @@ public class AchievementsControllerTest extends ApplicationTest {
         final Label rankingLabel = lookup("#rankingPointsLabel").query();
         assertThat(rankingLabel).hasText("120"+" "+bundle.getString("ranking.points"));
     }
+
 
     @Override
     public void stop() {
