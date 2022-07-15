@@ -124,7 +124,7 @@ public class StatController extends LoggedInController{
         int k = 0;
         for (Node node : container.getChildren()) {
             Label label = (Label) node;
-            if (label.getId().startsWith("player")) {
+            if (label.getId() != null && label.getId().startsWith("player")) {
                 label.setText(userService.getUserName(playerId).blockingFirst());
                 continue;
             }
