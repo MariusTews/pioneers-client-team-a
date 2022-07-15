@@ -11,7 +11,7 @@
    <padding>
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
-   <Button fx:id="buildButton" mnemonicParsing="false" onAction="#build" prefHeight="47.0" prefWidth="47.0">
+   <Button id="buildButton" fx:id="buildButton" mnemonicParsing="false" onAction="#build" prefHeight="47.0" prefWidth="47.0">
       <graphic>
          <ImageView fitHeight="8.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@buildings/road.png" />

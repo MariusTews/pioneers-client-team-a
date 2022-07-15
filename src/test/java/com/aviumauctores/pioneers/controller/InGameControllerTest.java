@@ -176,13 +176,13 @@ public class InGameControllerTest extends ApplicationTest {
         when(stateService.getCurrentPlayerID()).thenReturn("1");
         when(stateService.getCurrentAction()).thenReturn(MOVE_BUILD);
         stateUpdates.onNext(new EventDto<>("created", new State("", "12",
-                List.of(new ExpectedMove("founding-settlement-1", List.of("1"))), new Point3D(1, 3, 4))));
+                List.of(new ExpectedMove(MOVE_BUILD, List.of("1"))), new Point3D(1, 3, 4))));
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
         // Open the build menu
         clickOn("#buildingX0Y0Z0R0");
-        Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
-        assertThat(settlementLabel).isPresent();
+        Optional<Node> buildButton = lookup("#buildButton").tryQuery();
+        assertThat(buildButton).isPresent();
     }
 
     @Test
@@ -190,14 +190,14 @@ public class InGameControllerTest extends ApplicationTest {
         when(stateService.getCurrentPlayerID()).thenReturn("1");
         when(stateService.getCurrentAction()).thenReturn(MOVE_BUILD);
         stateUpdates.onNext(new EventDto<>("created", new State("", "12",
-                List.of(new ExpectedMove("founding-settlement-1", List.of("1"))), new Point3D(1, 3, 4))));
+                List.of(new ExpectedMove(MOVE_BUILD, List.of("1"))), new Point3D(1, 3, 4))));
         Pane crossingPane = lookup("#crossingPane").query();
         crossingPane.setVisible(true);
         clickOn("#buildingX0Y0Z0R0");
         // Click on main pane to close the build menu
         clickOn("#mainPane");
-        Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
-        assertThat(settlementLabel).isNotPresent();
+        Optional<Node> buildButton = lookup("#buildButton").tryQuery();
+        assertThat(buildButton).isNotPresent();
     }
 
     @Test
