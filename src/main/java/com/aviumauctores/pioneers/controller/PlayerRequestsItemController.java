@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.UserService;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -62,8 +63,8 @@ public class PlayerRequestsItemController implements Controller {
 
         Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/Loading.png")).toString());
         requestView = new ImageView(requestStatus);
-        requestView.setFitHeight(40.0);
-        requestView.setFitWidth(40.0);
+        requestView.setFitHeight(20.0);
+        requestView.setFitWidth(20.0);
         requestView.setVisible(false);
 
         Label playerName = new Label(name.length() > 12 ? name.substring(0, 9) + ".." : name);
@@ -75,22 +76,23 @@ public class PlayerRequestsItemController implements Controller {
 
         playerBox.getChildren().addAll(requestView, playerView, playerInfo);
         playerBox.setSpacing(5.0);
+        playerBox.setAlignment(Pos.CENTER_LEFT);
         return playerBox;
     }
 
     public void showRequestOpen() {
-        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/Loading.png")).toString());
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/hourglass.png")).toString());
         requestView.setImage(requestStatus);
         requestView.setVisible(true);
     }
 
     public void showRequestDeclined() {
-        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/notReady.png")).toString());
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/redX.png")).toString());
         requestView.setImage(requestStatus);
     }
 
     public void showRequestAccepted() {
-        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/ready.png")).toString());
+        Image requestStatus = new Image(Objects.requireNonNull(Main.class.getResource("views/greenHook.png")).toString());
         requestView.setImage(requestStatus);
     }
 

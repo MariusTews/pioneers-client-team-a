@@ -155,12 +155,10 @@ public class TradingController implements Controller {
                                 tradeButton.setText(bundle.getString("trading"));
                                 cancelTradeButton.setText(bundle.getString("cancel"));
                                 this.showRequestDeclined(partnerID);
-                                inGameController.setTradeStarter(false);
                             },
                             error -> {
                                 errorService.handleError(error);
                                 this.enableCancelButton();
-                                inGameController.setTradeStarter(false);
                             }
                     ));
         }
@@ -185,6 +183,8 @@ public class TradingController implements Controller {
         disposables.add(pioneerService.createMove("build", null, resources, "684072366f72202b72406465", null)
                 .observeOn(FX_SCHEDULER).
                 subscribe(move -> {
+                    tradeButton.setDisable(true);
+                    this.setAllBorderColorTransparent();
                 }, errorService::handleError));
     }
 
@@ -209,7 +209,6 @@ public class TradingController implements Controller {
                             cancelTradeButton.setText(bundle.getString("cancel"));
                             tradeButton.setDisable(true);
                             this.showRequestAccepted(partnerID);
-                            inGameController.setTradeStarter(false);
                             this.setTradeSpinnersReady();
                             this.setRequestSpinnersReady();
                         },
@@ -217,7 +216,6 @@ public class TradingController implements Controller {
                             errorService.handleError(error);
                             tradeButton.setDisable(true);
                             this.enableCancelButton();
-                            inGameController.setTradeStarter(false);
                             this.setTradeSpinnersReady();
                             this.setRequestSpinnersReady();
                         }
@@ -255,7 +253,6 @@ public class TradingController implements Controller {
                                     showRequestOpen(finalSelectedPlayer.userId());
                                     tradeButton.setDisable(true);
                                     cancelTradeButton.setDisable(true);
-                                    inGameController.setTradeStarter(true);
                                 }, errorService::handleError
                         ));
             }
@@ -289,38 +286,57 @@ public class TradingController implements Controller {
     }
 
     public void enterLumberVariables(MouseEvent mouseEvent) {
-        this.setupBankTrade();
-        requestLumber.setDisable(true);
-        tradeLumber.getValueFactory().setValue(Integer.parseInt(String.valueOf(lumberLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeWool, tradeOre, tradeBrick, tradeGrain);
+        this.enterBankVariables(lumberLabel, requestLumber, tradeLumber, tradeBrick, tradeOre, tradeGrain, tradeWool);
+        this.setBorderColorTransparent(bankBrick, bankGrain, bankOre, bankWool);
+        bankLumber.setStyle("-fx-border-color: blue");
     }
 
     public void enterGrainVariables(MouseEvent mouseEvent) {
-        this.setupBankTrade();
-        requestGrain.setDisable(true);
-        tradeGrain.getValueFactory().setValue(Integer.parseInt(String.valueOf(grainLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeWool, tradeOre, tradeBrick);
+        this.enterBankVariables(grainLabel, requestGrain, tradeGrain, tradeLumber, tradeOre, tradeWool, tradeBrick);
+        this.setBorderColorTransparent(bankBrick, bankWool, bankOre, bankLumber);
+        bankGrain.setStyle("-fx-border-color: blue");
     }
 
     public void enterBrickVariables(MouseEvent mouseEvent) {
-        this.setupBankTrade();
-        requestBrick.setDisable(true);
-        tradeBrick.getValueFactory().setValue(Integer.parseInt(String.valueOf(brickLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeWool, tradeOre, tradeGrain);
+        this.enterBankVariables(brickLabel, requestBrick, tradeBrick, tradeGrain, tradeLumber, tradeWool, tradeOre);
+        this.setBorderColorTransparent(bankWool, bankGrain, bankOre, bankLumber);
+        bankBrick.setStyle("-fx-border-color: blue");
     }
 
     public void enterOreVariables(MouseEvent mouseEvent) {
-        this.setupBankTrade();
-        requestOre.setDisable(true);
-        tradeOre.getValueFactory().setValue(Integer.parseInt(String.valueOf(oreLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeWool, tradeBrick, tradeGrain);
+        this.enterBankVariables(oreLabel, requestOre, tradeOre, tradeGrain, tradeLumber, tradeBrick, tradeWool);
+        this.setBorderColorTransparent(bankBrick, bankGrain, bankWool, bankLumber);
+        bankOre.setStyle("-fx-border-color: blue");
     }
 
     public void enterWoolVariables(MouseEvent mouseEvent) {
+        this.enterBankVariables(woolLabel, requestWool, tradeWool, tradeGrain, tradeOre, tradeBrick, tradeLumber);
+        this.setBorderColorTransparent(bankBrick, bankGrain, bankOre, bankLumber);
+        bankWool.setStyle("-fx-border-color: blue");
+
+    }
+
+    public void setBorderColorTransparent(VBox bank1, VBox bank2, VBox bank3, VBox bank4) {
+        bank1.setStyle("-fx-border-color: Transparent");
+        bank2.setStyle("-fx-border-color: Transparent");
+        bank3.setStyle("-fx-border-color: Transparent");
+        bank4.setStyle("-fx-border-color: Transparent");
+    }
+
+    public void setAllBorderColorTransparent() {
+        bankGrain.setStyle("-fx-border-color: Transparent");
+        bankLumber.setStyle("-fx-border-color: Transparent");
+        bankBrick.setStyle("-fx-border-color: Transparent");
+        bankWool.setStyle("-fx-border-color: Transparent");
+        bankOre.setStyle("-fx-border-color: Transparent");
+    }
+
+
+    private void enterBankVariables(Label resourceLabel, Spinner<Integer> request, Spinner<Integer> trade, Spinner<Integer> notClicked1, Spinner<Integer> notClicked2, Spinner<Integer> notClicked3, Spinner<Integer> notClicked4) {
         this.setupBankTrade();
-        requestWool.setDisable(true);
-        tradeWool.getValueFactory().setValue(Integer.parseInt(String.valueOf(woolLabel.getText().charAt(0))));
-        this.setTradeSpinnersZeroAndDisable(tradeLumber, tradeOre, tradeBrick, tradeGrain);
+        request.setDisable(true);
+        trade.getValueFactory().setValue(Integer.parseInt(String.valueOf(resourceLabel.getText().charAt(0))));
+        this.setTradeSpinnersZeroAndDisable(notClicked1, notClicked2, notClicked3, notClicked4);
     }
 
 
@@ -483,11 +499,10 @@ public class TradingController implements Controller {
                     .observeOn(FX_SCHEDULER).
                     subscribe(move -> {
                         this.showRequestAccepted(userId);
-                        inGameController.setTradeStarter(false);
+                        this.enableCancelButton();
                     }, error -> {
                         errorService.handleError(error);
                         this.enableCancelButton();
-                        inGameController.setTradeStarter(false);
                     }));
             for (String key: sendResourcesInverse.keySet()) {
                 ressourceSum += sendResourcesInverse.get(key);
@@ -562,5 +577,7 @@ public class TradingController implements Controller {
         playerRequestsController.showRequestDeclined(playerID);
     }
 
-    public void showRequest(String playerID){ playerRequestsController.showRequest(playerID);}
+    public void showRequest(String playerID){
+        playerRequestsController.showRequest(playerID);
+    }
 }

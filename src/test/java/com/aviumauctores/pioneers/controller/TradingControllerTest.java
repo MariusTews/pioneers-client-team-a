@@ -23,25 +23,26 @@ import java.util.*;
 import static com.aviumauctores.pioneers.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.assertions.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class TradingControllerTest extends ApplicationTest {
 
-    HashMap<String, Integer> myRessources = new HashMap<>();
+    HashMap<String, Integer> myResources = new HashMap<>();
 
     {
-        myRessources.put(RESOURCE_LUMBER, 100);
-        myRessources.put(RESOURCE_GRAIN, 100);
-        myRessources.put(RESOURCE_WOOL, 100);
-        myRessources.put(RESOURCE_BRICK, 100);
-        myRessources.put(RESOURCE_ORE, 100);
+        myResources.put(RESOURCE_LUMBER, 100);
+        myResources.put(RESOURCE_GRAIN, 100);
+        myResources.put(RESOURCE_WOOL, 100);
+        myResources.put(RESOURCE_BRICK, 100);
+        myResources.put(RESOURCE_ORE, 100);
     }
 
     @Spy
     HashMap<String, Integer> resourceRatio = new HashMap<>();
+
     {
         resourceRatio.put(RESOURCE_LUMBER, 4);
         resourceRatio.put(RESOURCE_GRAIN, 3);
@@ -54,7 +55,7 @@ class TradingControllerTest extends ApplicationTest {
     InGameController inGameController;
 
     @Spy
-    Player player = new Player("1", "2", "#111111", true, 2, myRessources, null, 2, 0);
+    Player player = new Player("1", "2", "#111111", true, 2, myResources, null, 2, 0);
 
 
     @Spy
@@ -114,7 +115,7 @@ class TradingControllerTest extends ApplicationTest {
         HashMap<String, Integer> resources = new HashMap<>();
         resources.put(RESOURCE_LUMBER, -8);
         resources.put(RESOURCE_WOOL, 2);
-        Move move = new Move("1", "2", "3", "4", "5", 0, "6", new RobDto(1,2,3, "4"), resources, "7");
+        Move move = new Move("1", "2", "3", "4", "5", 0, "6", new RobDto(1, 2, 3, "4"), resources, "7");
         when(pioneerService.createMove("build", null, resources, "684072366f72202b72406465", null)).thenReturn(Observable.just(move));
         clickOn("#bankLumber");
         Spinner<Integer> spinnerRequestWool = lookup("#requestWool").query();
@@ -131,7 +132,7 @@ class TradingControllerTest extends ApplicationTest {
         HashMap<String, Integer> resources = new HashMap<>();
         resources.put(RESOURCE_LUMBER, -1);
         resources.put(RESOURCE_WOOL, 2);
-        Move move = new Move("1", "2", "3", "4", "5", 0, "6", new RobDto(1,2,3, "4"), resources, "7");
+        Move move = new Move("1", "2", "3", "4", "5", 0, "6", new RobDto(1, 2, 3, "4"), resources, "7");
         when(pioneerService.createMove("build", null, resources, null, null)).thenReturn(Observable.just(move));
 
         Spinner<Integer> spinnerRequestWool = lookup("#requestWool").query();
@@ -218,7 +219,7 @@ class TradingControllerTest extends ApplicationTest {
         verifyThat("#tradeGrain", NodeMatchers.isDisabled());
         verifyThat("#requestOre", NodeMatchers.isDisabled());
         Spinner<Integer> spinnerTradeStone = lookup("#tradeOre").query();
-        Spinner<Integer> spinnerRequestBread= lookup("#requestGrain").query();
+        Spinner<Integer> spinnerRequestBread = lookup("#requestGrain").query();
 
         spinnerRequestBread.increment();
         assertEquals(spinnerTradeStone.getValue(), 4);
@@ -250,5 +251,7 @@ class TradingControllerTest extends ApplicationTest {
         spinnerRequestStone.decrement();
         assertEquals(spinnerTradeBread.getValue(), 3);
     }
+
+
 
 }

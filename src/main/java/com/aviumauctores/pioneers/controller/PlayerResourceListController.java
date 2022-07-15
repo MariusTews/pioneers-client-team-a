@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class PlayerResourceListController {
     private String currentPlayerID;
     private final HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
     private Player player;
-
+    private Player longestRoadPlayer;
     private Member member;
 
     @Inject
@@ -129,6 +130,14 @@ public class PlayerResourceListController {
 
     public int getResource(HashMap<String, Integer> resources, String resourceName) {
         return resources.getOrDefault(resourceName, 0);
+    }
+
+    public void setLongestRoad(Player player) {
+        if (longestRoadPlayer != null) {
+            listItems.get(longestRoadPlayer.userId()).setLongestRoadViewInvisible();
+        }
+        listItems.get(player.userId()).setLongestRoadViewVisible();
+        longestRoadPlayer = player;
     }
 
     public int getResources(String playerId){

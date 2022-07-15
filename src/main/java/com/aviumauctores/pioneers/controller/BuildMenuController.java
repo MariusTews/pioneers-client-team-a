@@ -22,17 +22,14 @@ public class BuildMenuController implements Controller {
     private final String buildingType;
 
     private final Boolean enableButton;
-    private final HashMap<String, List<String>> nextHarbors;
-
     @FXML
     private Button buildButton;
 
-    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, HashMap<String, List<String>> nextHarbors, InGameController inGameController, String playerColor) {
+    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, InGameController inGameController, String playerColor) {
         this.buildService = buildService;
         this.bundle = bundle;
         this.buildingType = buildingType;
         this.enableButton = enableButton;
-        this.nextHarbors = nextHarbors;
         this.inGameController = inGameController;
         this.playerColor = playerColor;
     }
@@ -74,7 +71,7 @@ public class BuildMenuController implements Controller {
 
     public void build(ActionEvent actionEvent) {
         buildService.setCurrentAction("build");
-        buildService.build(nextHarbors);
+        buildService.build();
         buildButton.setDisable(true);
         inGameController.closeBuildMenu(false);
     }

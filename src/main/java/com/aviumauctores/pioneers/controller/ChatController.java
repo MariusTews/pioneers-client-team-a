@@ -138,6 +138,8 @@ public class ChatController extends PlayerListController {
                         Label msgLabel = createMessageLabel(event.data());
                         ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()
                                 .add(msgLabel);
+                        ScrollPane pane = (ScrollPane) this.allTab.getContent();
+                        pane.setVvalue(1.0);
                     } else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
                         for (Node l : ((VBox) ((ScrollPane) this.allTab.getContent()).getContent()).getChildren()) {
@@ -182,7 +184,6 @@ public class ChatController extends PlayerListController {
                 leave();
             }
         });
-
         //Tabstructure
         allTab.setId(ALLCHAT_ID);
         allTab.setOnSelectionChanged(event -> {
@@ -281,6 +282,8 @@ public class ChatController extends PlayerListController {
                                     Label msgLabel = createMessageLabel(event.data());
                                     ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()
                                             .add(msgLabel);
+                                    ScrollPane pane = (ScrollPane) tab.getContent();
+                                    pane.setVvalue(1.0);
                                 } else if (event.event().endsWith(".deleted")) {
                                     //search for the Label of the which will be deleted
                                     for (Node l : ((VBox) ((ScrollPane) tab.getContent()).getContent()).getChildren()) {
@@ -297,6 +300,8 @@ public class ChatController extends PlayerListController {
                     chatTabPane.getSelectionModel().select(tab);
                     chatTabsByUserID.put(selectedUser._id(), tab);
                     showOldMessages("groups", tab.getId(), LocalDateTime.now().toString(), 100);
+                    ScrollPane pane = (ScrollPane) tab.getContent();
+                    pane.setVvalue(1.0);;
                 }, errorService::handleError));
     }
 
@@ -337,6 +342,8 @@ public class ChatController extends PlayerListController {
                                     .add(msgLabel);
                         }
                     }
+                    ScrollPane pane = (ScrollPane) this.selectedTab.getContent();
+                    pane.setVvalue(1.0);
                 }, errorService::handleError);
     }
 
