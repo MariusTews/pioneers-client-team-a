@@ -41,6 +41,7 @@ public class CreateGameController extends LoggedInController {
     private final GameService gameService;
     private final ErrorService errorService;
     private final ResourceBundle bundle;
+    public Label createGame;
 
     private boolean hidePassword = true;
 

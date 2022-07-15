@@ -1,57 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 .root {
-    -fx-background-color: rgba(0, 130, 141, 0.21);
+    -fx-font-family: "VT323";
+    -fx-background-color: rgb(213, 232, 212);
 }
 
 .label {
-    -fx-font-size: 15;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
 
+#playerLabel2 {
+    -fx-font-size: 24;
+}
+
+#achievementsLabel {
+    -fx-font-size: 20;
+}
+
+#rankingPointsLabel {
+    -fx-text-fill: #006600;
+    -fx-font-size: 24;
 }
 
 .text-field {
     -fx-font-size: 14;
-    -fx-background-radius: 8px;
 }
 
-#spectatorText{
+#spectatorText {
     -fx-font-size: 11;
     -fx-background-radius: 8px;
 }
 
-#msgSpectatorLabel{
+#aM1 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 3;
+}
+
+#aM2 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM3 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM4 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 1.5 1.5;
+}
+
+#aM5 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM6 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM7 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;;
+
+}
+
+#aM8 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 3 3 1.5;
+
+}
+
+#aM11 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 1.5 3 3 3;
+}
+
+#msgSpectatorLabel {
     -fx-text-fill: gray;
 }
-#gameNameLabel{
-    -fx-font-size: 24;
-    -fx-background-radius: 8px;
+
+#gameNameLabel {
+    -fx-font-size: 30;
+   -fx-text-fill: black;
 }
 
-#passwordErrorLabel{
+#passwordErrorLabel {
     -fx-font-size: 11;
 }
 
-#usernameErrorLabel{
+#usernameErrorLabel {
     -fx-font-size: 11;
 }
-
-#nameLabel{
-    -fx-font-size: 12;
-    -fx-background-radius: 8px;
-}
-
 .button {
-    -fx-background-color: #00496c;
+    -fx-background-color: #006600;
     -fx-text-fill: #ffffff;
-    -fx-background-radius: 15px;
     -fx-font-size: 14;
 }
 
 .button:hover {
-    -fx-background-color: #005f91;
+    -fx-background-color: #3fbd3f;
 }
 
 .scroll-bar {
-    -fx-background-color: #00496c;
+    -fx-background-color: #006600;
     -fx-background-radius: 15px;
 }
 
@@ -59,8 +123,6 @@
     -fx-background-radius: 8px;
     -fx-background-color: #FFFFFF;
 }
-
-
 
 .list-view > .viewport {
     -fx-background-color: transparent;
@@ -99,7 +161,6 @@
     -fx-background-color: #ffffff;
 }
 
-
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
     -fx-background-radius: 0px;
@@ -111,9 +172,8 @@
 }
 
 .tab-header-background {
-    -fx-background-color: #00496c;
+    -fx-background-color: #006600;
     -fx-background-radius: 8 8 0 0;
-
 }
 
 #chatpane {
@@ -123,7 +183,7 @@
 }
 
 .titled-pane > .title {
-    -fx-background-color: #00496c;
+    -fx-background-color: #006600;
     -fx-background-radius: 8 8 0 0;
 }
 
@@ -140,7 +200,7 @@
 }
 
 .combo-box {
-    -fx-background-color: #00496c;
+    -fx-background-color: #006600;
 }
 
 .build-menu {
@@ -162,12 +222,44 @@
 
 .spinner .increment-arrow-button,
 .spinner .decrement-arrow-button {
-    -fx-body-color: #00496c;
+    -fx-body-color: #006600;
 }
 
 #paneOption {
-    -fx-background-color: rgba(202, 229, 231, 255);
-    -fx-border-color: #00496c;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #006600;
     -fx-border-width: 5;
 }
+
+.tooltip {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16;
+    -fx-background-color: #006600
+}
+
+#loginLabel {
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+}
+
+#usernameInput, #textfieldUsername, #textfieldPassword_show {
+    -fx-font-family: "VT323";
+}
+
+#hintLabel {
+    -fx-font-size: 12;
+}
+
+#createGame {
+    -fx-font-size: 32;
+}
+
+#register {
+    -fx-font-size: 32;
+}
+#gridPane{
+    -fx-background-color: white;
+}
+
+
 

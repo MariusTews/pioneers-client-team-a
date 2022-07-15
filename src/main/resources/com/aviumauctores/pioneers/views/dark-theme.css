@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 .root {
-    -fx-background-color: rgb(0, 1, 17);
+    -fx-background-color: #00331a;
+    -fx-font-family: "VT323";
     -fx-text-fill: #eee;
 }
 
@@ -11,9 +13,110 @@
 
 .text-field {
     -fx-font-size: 14;
-    -fx-background-radius: 8px;
-    -fx-background-color: #545454;
-    -fx-text-fill: #eee;
+    -fx-text-fill: black;
+    -fx-background-color: white;
+}
+
+#aM1 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 3;
+}
+
+#aM2 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM3 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM4 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 1.5 1.5;
+}
+
+#aM5 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM6 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;
+}
+
+#aM7 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 1.5 3 1.5;;
+}
+
+#aM8 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 3 3 3 1.5;
+}
+
+#aM11 {
+    -fx-background-color: #ffffff;
+    -fx-border-color: black;
+    -fx-border-width: 1.5 3 3 3;
+}
+
+#settlementsALabel {
+    -fx-text-fill: black;
+}
+
+#cityMasterLabel {
+    -fx-text-fill: black;
+}
+
+#roadMasterLabel {
+    -fx-text-fill: black;
+}
+
+#workaholicLabel {
+    -fx-text-fill: black;
+}
+
+#longestRoadLabel {
+    -fx-text-fill: black;
+}
+
+#marcoPolo {
+    -fx-text-fill: black;
+}
+
+#winnerLabel {
+    -fx-text-fill: black;
+}
+
+#capitalistLabel {
+    -fx-text-fill: black;
+}
+
+.tooltip {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16;
+    -fx-background-color: #97d077
+}
+
+#rankingPointsLabel {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 24;
+}
+
+#playerLabel2 {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 24;
 }
 
 #msgSpectatorLabel {
@@ -33,31 +136,23 @@
 }
 
 #gameNameLabel {
-    -fx-font-size: 24;
+    -fx-font-size: 30;
     -fx-background-radius: 8px;
-    -fx-text-fill: #eee;
-}
-
-#nameLabel {
-    -fx-font-size: 12;
-    -fx-background-radius: 8px;
-    -fx-background-color: #545454;
     -fx-text-fill: #eee;
 }
 
 .button {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-text-fill: #ffffff;
-    -fx-background-radius: 15px;
     -fx-font-size: 14;
 }
 
 .button:hover {
-    -fx-background-color: #005f91;
+    -fx-background-color: #aee58f;
 }
 
 .scroll-bar {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 15px;
 }
 
@@ -75,7 +170,7 @@
 }
 
 .list-cell:selected {
-    -fx-background-color: #494949;
+    -fx-background-color: #333333;
     -fx-background-radius: 8 8 8 8;
 }
 
@@ -111,12 +206,12 @@
 }
 
 .tab-header-background {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 8 8 0 0;
 }
 
 .scroll-bar {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 15px;
     -fx-progress-color: #c4c4c4;
 }
@@ -140,7 +235,7 @@
 }
 
 .titled-pane > .title {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
     -fx-background-radius: 8 8 0 0;
 }
 
@@ -157,7 +252,7 @@
 }
 
 .combo-box-base {
-    -fx-background-color: #00496c;
+    -fx-background-color: #97d077;
 }
 
 .build-menu {
@@ -173,7 +268,7 @@
 }
 
 #ingamePane {
-    -fx-background-color: #00233B;
+    -fx-background-color: #00331a;
 }
 
 #soundSliderLabelLeft {
@@ -197,12 +292,52 @@
 }
 
 #paneOption {
-    -fx-background-color: rgb(0, 1, 17);
-    -fx-border-color: #00496c;
-    -fx-border-width: 5;
+    -fx-background-color: #333333;
+    -fx-border-color: #97d077;
+    -fx-border-width: 5;;
+    -fx-text-fill: black;
 }
 
 .spinner .increment-arrow-button,
 .spinner .decrement-arrow-button {
-    -fx-body-color: #00496c;
+    -fx-body-color: #97d077;
 }
+
+#loginLabel {
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+}
+
+#hintLabel {
+    -fx-font-size: 12;
+}
+
+#mapsize.titled-pane {
+    -fx-text-fill: black;
+    -fx-background-color: white
+}
+
+#createGame {
+    -fx-font-size: 32;
+}
+
+#usernameInput, #passwordInput, #gameNameInput, #messageTextField, #chatTextField, #gamePasswordInput,
+#gamePasswordText, #textfieldUsername, #textfieldPassword, #textfieldPassword_show {
+    -fx-font-family: "VT323";
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+#register {
+    -fx-font-size: 32;
+    -fx-text-fill: white;
+}
+#gridPane{
+    -fx-background-color: #333333;
+}
+
+
+
+
+
+

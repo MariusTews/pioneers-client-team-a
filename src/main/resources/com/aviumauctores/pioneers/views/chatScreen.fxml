@@ -73,6 +73,9 @@
                     <Insets left="200.0" right="5.0" top="5.0" />
                 </HBox.margin>
             </Button>
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
         </HBox>
     </VBox>
 </Pane>
