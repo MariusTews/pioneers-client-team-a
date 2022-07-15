@@ -61,14 +61,13 @@ public class InGameController extends LoggedInController {
     private Label[] resourceLabels;
 
     @FXML
+    public Label timeLabel;
+    @FXML
     public Label numSheepLabel;
-
     @FXML
     public ImageView arrowOnDice;
     @FXML
     public Label yourTurnLabel;
-    @FXML
-    Label timeLabel;
 
     @FXML
     public BorderPane ingamePane;
@@ -104,6 +103,7 @@ public class InGameController extends LoggedInController {
     private Slider soundSlider;
 
 
+    private int previousResourceSum = 0;
     public List<Circle> vpCircles;
 
     public int memberVP;
@@ -124,13 +124,14 @@ public class InGameController extends LoggedInController {
 
     private BuildMenuController buildMenuController;
     private DropMenuController dropMenuController;
+    private TradeRequestController tradeRequestController;
     private Parent buildMenu;
     private Parent dropMenu;
     private Parent tradingMenu;
-    private TradeRequestController tradeRequestController;
     private Parent requestMenu;
 
     private final Map<String, Boolean> enableButtons = new HashMap<>();
+    private int requiredPoints;
 
     private boolean tradeStarter = false;
 
@@ -144,9 +145,14 @@ public class InGameController extends LoggedInController {
 
     private final ErrorService errorService;
     private final BuildService buildService;
+    private final Provider<PostGameController> postGameController;
+    private final StatService statService;
+
+    private final AchievementsService achievementsService;
     private final MapController mapController;
     private boolean fieldsMovedAlready;
     private final List<Node> robTargets = new ArrayList<>();
+    private String selectedRobberFieldId = "";
 
     //for tradingController
     private final TradeService tradeService;
@@ -170,7 +176,8 @@ public class InGameController extends LoggedInController {
                             GameMemberService gameMemberService, GameService gameService, PioneerService pioneerService,
                             SoundService soundService, StateService stateService, Provider<LobbyController> lobbyController,
                             EventListener eventListener, Provider<GameReadyController> gameReadyController, Provider<InGameChatController> inGameChatController,
-                            ErrorService errorService, BuildService buildService, MapController mapController, TradeService tradeService) {
+                            ErrorService errorService, BuildService buildService, AchievementsService achievementsService, MapController mapController, TradeService tradeService,
+                            Provider<PostGameController> postGameController, StatService statService) {
         super(loginService, userService);
         this.app = app;
         this.bundle = bundle;
@@ -187,8 +194,11 @@ public class InGameController extends LoggedInController {
         this.eventListener = eventListener;
         this.errorService = errorService;
         this.buildService = buildService;
+        this.achievementsService = achievementsService;
         this.mapController = mapController;
         this.tradeService = tradeService;
+        this.postGameController = postGameController;
+        this.statService = statService;
         fieldsMovedAlready = false;
     }
 
@@ -259,6 +269,13 @@ public class InGameController extends LoggedInController {
                     gameService.setCurrentGameID(null);
                     app.show(lobbyController.get());
                 }));
+
+        requiredPoints = gameService.getVictoryPoints();
+        achievementsService.init();
+        statService.init();
+        buildService.init();
+
+        disposables.add(achievementsService.getUserAchievements().observeOn(FX_SCHEDULER).subscribe());
     }
 
     @Override
@@ -280,8 +297,13 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(gameService.getMapRadius());
-                                ingamePane.setCenter(controller.render());
+                                controller.setMapRadius(gameService.getCurrentGame().blockingFirst().settings().mapRadius());
+                                Pane pane = (Pane) controller.render();
+                                ingamePane.setCenter(pane);
+                                ingamePane.getRight().toFront();
+                                ingamePane.getLeft().toFront();
+                                ingamePane.getBottom().toFront();
+                                pane.setTranslateX(240);
                                 mainPane = controller.getMainPane();
                                 roadAndCrossingPane = controller.getRoadAndCrossingPane();
                                 roadPane = controller.getRoadPane();
@@ -291,7 +313,6 @@ public class InGameController extends LoggedInController {
                                 for (Node vpCircle : controller.getVpBox().getChildren()) {
                                     vpCircles.add((Circle) vpCircle);
                                 }
-                                timeLabel = controller.getTimeLabel();
                                 //put robber on desert tile
                                 desertTileId = controller.getDesertTileId();
                                 String desertRobberImageId = desertTileId.replace("hexagon", "robber");
@@ -401,6 +422,7 @@ public class InGameController extends LoggedInController {
         if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
             //listen to new and updated buildings, and load the image
             Building b = buildingEventDto.data();
+            statService.onBuildingBuilt(b.owner(), b.type());
             buildService.setPlayerId(b.owner());
             buildService.setBuildingType(b.type());
             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
@@ -462,6 +484,8 @@ public class InGameController extends LoggedInController {
                 }
             }).start();
             rollSum.setText(" " + rolled + " ");
+        } else if (move.rob() != null && move.rob().target() != null) {
+            statService.playerRobbed(move.rob().target());
         }
         //show trade request if a player wants to trade with you
         if (move.partner() != null) {
@@ -599,6 +623,14 @@ public class InGameController extends LoggedInController {
     }
 
     private void updateVisuals() {
+        if (rejoin) {
+            Point3D point = stateService.getRobberPosition();
+            if (point != null) {
+                String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+                id = id.replace("-", "_");
+                moveRobber(id);
+            }
+        }
         if (!fieldsMovedAlready) {
             if (!currentAction.startsWith("founding")) {
                 fieldsIntoOnePane();
@@ -664,7 +696,9 @@ public class InGameController extends LoggedInController {
                         finishMoveButton.setDisable(true);
                         tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
-                        enableRobberFields();
+                        if (!(stateService.getOldAction().equals(MOVE_ROB))) {
+                            enableRobberFields();
+                        }
                     }
                 }
             }
@@ -690,6 +724,10 @@ public class InGameController extends LoggedInController {
 
     private void onPlayerUpdated(EventDto<Player> playerEventDto) {
         Player updatedPlayer = playerEventDto.data();
+        if (updatedPlayer.victoryPoints() >= requiredPoints) {
+            app.show(postGameController.get());
+            return;
+        }
         if (updatedPlayer.userId().equals(userID)) {
             playerResourceListController.setPlayer(updatedPlayer);
             playerResourceListController.updateOwnResources(resourceLabels, resourceNames);
@@ -701,8 +739,11 @@ public class InGameController extends LoggedInController {
             int amountWool = playerResourceListController.getResource(resources, RESOURCE_WOOL);
             int amountGrain = playerResourceListController.getResource(resources, RESOURCE_GRAIN);
             int amountOre = playerResourceListController.getResource(resources, RESOURCE_ORE);
-
-
+            int resourceSum = amountBrick + amountLumber + amountWool + amountGrain + amountOre;
+            if (resourceSum >= previousResourceSum) {
+                previousResourceSum = resourceSum;
+                disposables.add(achievementsService.putAchievement(ACHIEVEMENT_RESOURCES, resourceSum).observeOn(FX_SCHEDULER).subscribe());
+            }
             enableButtons.put(BUILDING_TYPE_ROAD, amountBrick >= 1 && amountLumber >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_ROAD) > 0);
             enableButtons.put(BUILDING_TYPE_SETTLEMENT, (amountBrick >= 1 && amountLumber >= 1 && amountWool >= 1 && amountGrain >= 1 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_SETTLEMENT) > 0));
             enableButtons.put(BUILDING_TYPE_CITY, (amountOre >= 3 && amountGrain >= 2 && updatedPlayer.remainingBuildings().get(BUILDING_TYPE_CITY) > 0));
@@ -712,6 +753,7 @@ public class InGameController extends LoggedInController {
             }
         }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
+        statService.updatePlayerStats(updatedPlayer);
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -738,7 +780,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         String color = playerColors.get(owner);
-        //cirles are behind settlements and cities
+        //circles are behind settlements and cities
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
                 circle.setFill(Color.web(color));
@@ -817,6 +859,9 @@ public class InGameController extends LoggedInController {
         int side = coordinateHolder.side();
         String sideType;
         if (side == 0 || side == 6) {
+            if (Objects.equals(buildingType, BUILDING_TYPE_CITY)) {
+                return;
+            }
             if (Objects.equals(buildingType, BUILDING_TYPE_SETTLEMENT)) {
                 if (userID.equals(buildingOwner)) {
                     sideType = BUILDING_TYPE_CITY;
@@ -844,11 +889,11 @@ public class InGameController extends LoggedInController {
         buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-            buildMenu.setLayoutX(Math.min(source.getLayoutX(), mainPane.getWidth() - newValue.getWidth()));
-            buildMenu.setLayoutY(Math.min(source.getLayoutY(), mainPane.getHeight() - newValue.getHeight()));
+            buildMenu.setLayoutX(Math.min(source.getX() + 240, ingamePane.getWidth() - newValue.getWidth()));
+            buildMenu.setLayoutY(Math.min(source.getY(), ingamePane.getHeight() - newValue.getHeight()));
         });
 
-        mainPane.getChildren().add(buildMenu);
+        ingamePane.getChildren().add(buildMenu);
 
         // Prevent the event handler from main pane to close the build menu immediately after this
         mouseEvent.consume();
@@ -868,18 +913,22 @@ public class InGameController extends LoggedInController {
         closeBuildMenu(closed);
         closeTradingMenu(closed);
         closeDropMenu(closed);
+        if (mapController != null) {
+            mapController.destroy(closed);
+        }
         if (timer != null) {
             timer.cancel();
         }
+        achievementsService.dispose();
     }
 
-    private void closeBuildMenu(boolean appClosed) {
+    public void closeBuildMenu(boolean appClosed) {
         if (buildMenuController != null) {
             buildMenuController.destroy(appClosed);
             buildMenuController = null;
         }
         if (buildMenu != null) {
-            mainPane.getChildren().remove(buildMenu);
+            ingamePane.getChildren().remove(buildMenu);
             buildMenu = null;
         }
     }
@@ -890,7 +939,7 @@ public class InGameController extends LoggedInController {
             dropMenuController = null;
         }
         if (dropMenu != null) {
-            mainPane.getChildren().remove(dropMenu);
+            ingamePane.getChildren().remove(dropMenu);
             dropMenu = null;
         }
     }
@@ -1053,13 +1102,13 @@ public class InGameController extends LoggedInController {
         dropMenu = dropMenuController.render();
 
         //maybe change that later to a dynamic value
-        int layoutX = 400;
+        int layoutX = 600;
         int layoutY = 250;
 
         dropMenu.setLayoutX(layoutX);
         dropMenu.setLayoutY(layoutY);
 
-        mainPane.getChildren().add(dropMenu);
+        ingamePane.getChildren().add(dropMenu);
     }
 
     /************************************************
@@ -1104,6 +1153,7 @@ public class InGameController extends LoggedInController {
     //this method is called when you try to put the robber on a new position by clicking on a free robber field
     private void initiateRobberMove(MouseEvent mouseEvent) {
         String robberFieldId = ((Node) mouseEvent.getSource()).getId();
+        selectedRobberFieldId = robberFieldId;
 
         //after you have clicked on a free robber position, all rob targets (buildings of other players) have to be marked
         int count = markBuildingsForRob(robberFieldId);
@@ -1114,10 +1164,10 @@ public class InGameController extends LoggedInController {
         }
         //otherwise enable the player to click on the building images to choose a rob target
         else {
-            robberPane.setVisible(false);
             robberPane.setDisable(true);
             roadAndCrossingPane.setDisable(false);
         }
+        resetRobberPaneAndMoveRobber(selectedRobberFieldId);
     }
 
     //marks all buildings of other players at the chosen tile
@@ -1146,15 +1196,13 @@ public class InGameController extends LoggedInController {
                     n.setOnMouseClicked(this::initiateRob);
                     n.setDisable(false);
 
-                    /*set the accessible text as it contains the correct new robber coordinates which are needed in the
-                    changeRobberPositionAndRobTarget method*/
-                    n.setAccessibleText(robberFieldId);
-
                     robTargets.add(n);
 
-                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() * 1.1);
-                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() * 1.1);
-                    n.setEffect(new Glow());
+                    ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() * 1.2);
+                    ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() * 1.2);
+                    n.setOnMouseEntered(this::increaseGlow);
+                    n.setOnMouseExited(this::decreaseGlow);
+                    n.setEffect(new Glow(0.7));
 
                     count++;
                 }
@@ -1163,9 +1211,18 @@ public class InGameController extends LoggedInController {
         return count;
     }
 
+    private void increaseGlow(MouseEvent mouseEvent) {
+        ((Node) mouseEvent.getSource()).setEffect(new Glow(1));
+    }
+
+    private void decreaseGlow(MouseEvent mouseEvent) {
+        ((Node) mouseEvent.getSource()).setEffect(new Glow(0.7));
+    }
+
+
     //this method is called when you click on a rob target (building of another player)
     private void initiateRob(MouseEvent mouseEvent) {
-        String robberFieldId = ((Node) mouseEvent.getSource()).getAccessibleText();
+        String robberFieldId = selectedRobberFieldId;
         String target = ((Node) mouseEvent.getSource()).getId().split("#")[2];
         changeRobberPositionAndRobTarget(robberFieldId, target);
     }
@@ -1174,42 +1231,54 @@ public class InGameController extends LoggedInController {
     private void changeRobberPositionAndRobTarget(String newRobberPosition, String target) {
         Point3D p = Point3D.readCoordinatesFromID(newRobberPosition);
 
+        if (target != null) {
+            if (target.equals(userID)) {
+                target = null;
+            }
+        }
+
         errorService.setErrorCodesPioneersPost();
         disposables.add(this.pioneerService.createMove(MOVE_ROB, null, null, null, new RobDto(p.x(), p.y(), p.z(), target))
                 .observeOn(FX_SCHEDULER)
-                .subscribe(move -> {
-                            //reset the robberPane to normal and move the robber view to its new position
-                            for (Node n : robberPane.getChildren()) {
-                                n.setDisable(true);
-                                n.setOnMouseEntered(null);
-                                n.setOnMouseExited(null);
-                                n.setOnMouseClicked(null);
-                                if (n.getId().equals(newRobberPosition)) {
-                                    ((ImageView) n).setImage(robberView);
-                                } else {
-                                    ((ImageView) n).setImage(null);
-                                }
-                            }
-                            //reset all changes made to the rob targets (buildings of other players)
-                            for (Node n : robTargets) {
-                                n.setOnMouseClicked(this::onFieldClicked);
-                                n.setDisable(true);
-                                n.setAccessibleText(null);
-
-                                ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() / 1.1);
-                                ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() / 1.1);
-                                n.setEffect(null);
-
-                            }
-                            robTargets.clear();
-
-                            //reset changes made to the panes
-                            robberPane.setVisible(true);
-                            robberPane.setDisable(false);
-                            roadAndCrossingPane.setDisable(true);
-                        },
+                .subscribe(
+                        move -> cleanupRobberMove(),
                         errorService::handleError
                 ));
+    }
+
+    //this method is called after you clicked on a robber field to already show the robber on this position
+    private void resetRobberPaneAndMoveRobber(String newRobberPosition) {
+        //reset the robberPane to normal and move the robber view to its new position
+        for (Node n : robberPane.getChildren()) {
+            n.setDisable(true);
+            n.setOnMouseEntered(null);
+            n.setOnMouseExited(null);
+            n.setOnMouseClicked(null);
+            if (n.getId().equals(newRobberPosition)) {
+                ((ImageView) n).setImage(robberView);
+            } else {
+                ((ImageView) n).setImage(null);
+                ((ImageView) n).imageProperty().setValue(null);
+            }
+        }
+    }
+
+    //this method is called after a successful rob move for cleaning up
+    private void cleanupRobberMove() {
+        //reset all changes made to the rob targets (buildings of other players)
+        for (Node n : robTargets) {
+            n.setOnMouseClicked(this::onFieldClicked);
+            n.setDisable(true);
+
+            ((ImageView) n).setFitWidth(((ImageView) n).getFitWidth() / 1.2);
+            ((ImageView) n).setFitHeight(((ImageView) n).getFitHeight() / 1.2);
+            n.setOnMouseEntered(null);
+            n.setOnMouseExited(null);
+            n.setEffect(null);
+
+        }
+        robTargets.clear();
+        roadAndCrossingPane.setDisable(true);
     }
 
     //gets the image view of the current robber position
@@ -1236,16 +1305,14 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
+        tradingController = new TradingController(this, bundle, achievementsService, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
-        tradingMenu.setStyle("-fx-background-color: #ffffff;");
-        tradingMenu.setLayoutX(0);
-        tradingMenu.setLayoutY(0);
-        mainPane.getChildren().add(tradingMenu);
+        tradingMenu.setLayoutX(255);
+        tradingMenu.setLayoutY(120);
+        ingamePane.getChildren().add(tradingMenu);
 
-
-        // Prevent the event handler from main pane to close the build menu immediately after this
+        // Prevent the event handler from ingame pane to close the build menu immediately after this
         actionEvent.consume();
     }
 
@@ -1271,10 +1338,9 @@ public class InGameController extends LoggedInController {
         tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
-        requestMenu.setStyle("-fx-background-color: #ffffff;");
-        requestMenu.setLayoutX(0);
-        requestMenu.setLayoutY(0);
-        mainPane.getChildren().add(requestMenu);
+        requestMenu.setLayoutX(255);
+        requestMenu.setLayoutY(120);
+        ingamePane.getChildren().add(requestMenu);
 
     }
 
@@ -1284,7 +1350,7 @@ public class InGameController extends LoggedInController {
             tradingController = null;
         }
         if (tradingMenu != null) {
-            mainPane.getChildren().remove(tradingMenu);
+            ingamePane.getChildren().remove(tradingMenu);
             tradingMenu = null;
         }
     }
@@ -1295,7 +1361,7 @@ public class InGameController extends LoggedInController {
             tradeRequestController = null;
         }
         if (requestMenu != null) {
-            mainPane.getChildren().remove(requestMenu);
+            ingamePane.getChildren().remove(requestMenu);
             requestMenu = null;
         }
         if (tradeRequestPopup.isVisible()) {

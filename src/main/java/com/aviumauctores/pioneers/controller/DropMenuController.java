@@ -2,6 +2,8 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.PioneerService;
+import com.aviumauctores.pioneers.util.PannableCanvas;
+import com.aviumauctores.pioneers.util.SceneGestures;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -15,6 +17,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,8 +48,9 @@ public class DropMenuController implements Controller {
     @FXML
     public Spinner<Integer> lumberSpinner;
     public final SimpleIntegerProperty currentAmountProperty = new SimpleIntegerProperty();
-
     ChangeListener<Integer> listener = this::computeAmount;
+    final PannableCanvas canvas = new PannableCanvas();
+    final SceneGestures sceneGestures = new SceneGestures(canvas);
 
 
     public DropMenuController(InGameController inGameController, PioneerService pioneerService, ResourceBundle bundle,
@@ -68,6 +73,9 @@ public class DropMenuController implements Controller {
         brickSpinner.valueProperty().removeListener(listener);
         oreSpinner.valueProperty().removeListener(listener);
         grainSpinner.valueProperty().removeListener(listener);
+
+        canvas.removeEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+        canvas.removeEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
     }
 
     @Override
@@ -120,7 +128,11 @@ public class DropMenuController implements Controller {
 
         dropTextLabel.setText(String.format(bundle.getString("drop.resources.text"), dropLimit));
 
-        return parent;
+        canvas.getChildren().add(parent);
+        canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+        canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+
+        return canvas;
     }
 
     private void computeAmount(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {

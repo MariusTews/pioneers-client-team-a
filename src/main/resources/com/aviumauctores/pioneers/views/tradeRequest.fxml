@@ -7,50 +7,59 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.TradeRequestController">
-   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@Wood_icon.png" />
-   </ImageView>
-   <ImageView fitHeight="57.0" fitWidth="40.0" layoutX="35.0" layoutY="221.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@Sheep_icon.png" />
-   </ImageView>
-   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="35.0" layoutY="136.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@Bricks_icon.png" />
-   </ImageView>
-   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@Bread_icon.png" />
-   </ImageView>
-   <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="35.0" layoutY="181.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@Metal_icon.png" />
-   </ImageView>
-   <Label layoutX="133.0" layoutY="15.0" prefHeight="30.0" prefWidth="77.0" text="%trade" />
-   <Label layoutX="250.0" layoutY="21.0" text="%you.get" />
-   <Label fx:id="tradeLumberLabel" layoutX="144.0" layoutY="62.0" text="0" />
-   <Label fx:id="tradeGrainLabel" layoutX="144.0" layoutY="107.0" text="0" />
-   <Label fx:id="tradeBrickLabel" layoutX="144.0" layoutY="147.0" text="0" />
-   <Label fx:id="tradeOreLabel" layoutX="144.0" layoutY="192.0" text="0" />
-   <Label fx:id="tradeWoolLabel" layoutX="144.0" layoutY="238.0" text="0" />
-   <Label fx:id="getLumberLabel" layoutX="261.0" layoutY="63.0" text="0" />
-   <Label fx:id="getGrainLabel" layoutX="261.0" layoutY="108.0" text="0" />
-   <Label fx:id="getBrickLabel" layoutX="261.0" layoutY="148.0" text="0" />
-   <Label fx:id="getOreLabel" layoutX="261.0" layoutY="193.0" text="0" />
-   <Label fx:id="getWoolLabel" layoutX="261.0" layoutY="238.0" text="0" />
-   <ImageView fx:id="playerAvatar" fitHeight="30.0" fitWidth="28.0" layoutX="393.0" layoutY="102.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@ProfileSettings.png" />
-   </ImageView>
-   <Label fx:id="playerLabel" layoutX="434.0" layoutY="108.0" text="Player" />
-   <Button fx:id="acceptButton" layoutX="424.0" layoutY="266.0" mnemonicParsing="false" onAction="#acceptRequest" text="%accept" />
-   <Button fx:id="declineButton" layoutX="424.0" layoutY="319.0" mnemonicParsing="false" onAction="#declineRequest" text="%decline" />
-   <Label layoutX="420.0" layoutY="71.0" text="%player" />
-   <Button fx:id="counterproposalButton" layoutX="198.0" layoutY="319.0" mnemonicParsing="false" onAction="#setupCounterproposal" text="%counterproposal" />
-   <Spinner fx:id="tradeLumber" layoutX="121.0" layoutY="59.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="tradeWool" layoutX="121.0" layoutY="234.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="requestWool" layoutX="238.0" layoutY="234.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="requestOre" layoutX="238.0" layoutY="189.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="requestBrick" layoutX="238.0" layoutY="144.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="requestGrain" layoutX="238.0" layoutY="102.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="requestLumber" layoutX="238.0" layoutY="59.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="tradeGrain" layoutX="121.0" layoutY="102.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="tradeBrick" layoutX="121.0" layoutY="144.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
-   <Spinner fx:id="tradeOre" layoutX="121.0" layoutY="189.0" prefHeight="25.0" prefWidth="60.0" visible="false" />
+<AnchorPane prefHeight="350.0" prefWidth="600.0" styleClass="trade-menu" xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.aviumauctores.pioneers.controller.TradeRequestController">
+    <ImageView fitHeight="21" fitWidth="20" layoutX="36.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.topAnchor="60.0">
+        <Image url="@Wood_icon.png"/>
+    </ImageView>
+    <ImageView fitHeight="20" fitWidth="21" layoutX="36.0" layoutY="237.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@Wool_icon.png"/>
+    </ImageView>
+    <ImageView fitHeight="23" fitWidth="24" layoutX="36.0" layoutY="144.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.topAnchor="144.0">
+        <Image url="@Bricks_icon.png"/>
+    </ImageView>
+    <ImageView fitHeight="27" fitWidth="24" layoutX="36.0" layoutY="101.0" pickOnBounds="true" preserveRatio="true"
+               AnchorPane.topAnchor="101.0">
+        <Image url="@Bread_icon.png"/>
+    </ImageView>
+    <ImageView fitHeight="25" fitWidth="25" layoutX="34.0" layoutY="188.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@Metal_icon.png"/>
+    </ImageView>
+    <Label layoutX="133.0" layoutY="15.0" prefHeight="30.0" prefWidth="77.0" text="%trade"/>
+    <Label layoutX="250.0" layoutY="21.0" text="%you.get"/>
+    <Label fx:id="tradeLumberLabel" layoutX="144.0" layoutY="62.0" text="0"/>
+    <Label fx:id="tradeGrainLabel" layoutX="144.0" layoutY="107.0" text="0"/>
+    <Label fx:id="tradeBrickLabel" layoutX="144.0" layoutY="147.0" text="0"/>
+    <Label fx:id="tradeOreLabel" layoutX="144.0" layoutY="192.0" text="0"/>
+    <Label fx:id="tradeWoolLabel" layoutX="144.0" layoutY="238.0" text="0"/>
+    <Label fx:id="getLumberLabel" layoutX="261.0" layoutY="63.0" text="0"/>
+    <Label fx:id="getGrainLabel" layoutX="261.0" layoutY="108.0" text="0"/>
+    <Label fx:id="getBrickLabel" layoutX="261.0" layoutY="148.0" text="0"/>
+    <Label fx:id="getOreLabel" layoutX="261.0" layoutY="193.0" text="0"/>
+    <Label fx:id="getWoolLabel" layoutX="261.0" layoutY="238.0" text="0"/>
+    <ImageView fx:id="playerAvatar" fitHeight="30.0" fitWidth="28.0" layoutX="393.0" layoutY="102.0" pickOnBounds="true"
+               preserveRatio="true">
+        <Image url="@ProfileSettings.png"/>
+    </ImageView>
+    <Label fx:id="playerLabel" layoutX="434.0" layoutY="108.0" text="Player"/>
+    <Button fx:id="acceptButton" layoutX="424.0" layoutY="266.0" mnemonicParsing="false" onAction="#acceptRequest"
+            text="%accept"/>
+    <Button fx:id="declineButton" layoutX="424.0" layoutY="319.0" mnemonicParsing="false" onAction="#declineRequest"
+            text="%decline"/>
+    <Label layoutX="420.0" layoutY="71.0" text="%player"/>
+    <Button fx:id="counterproposalButton" layoutX="198.0" layoutY="319.0" mnemonicParsing="false"
+            onAction="#setupCounterproposal" text="%counterproposal"/>
+    <Spinner fx:id="tradeLumber" layoutX="121.0" layoutY="59.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="tradeWool" layoutX="121.0" layoutY="234.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="requestWool" layoutX="238.0" layoutY="234.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="requestOre" layoutX="238.0" layoutY="189.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="requestBrick" layoutX="238.0" layoutY="144.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="requestGrain" layoutX="238.0" layoutY="102.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="requestLumber" layoutX="238.0" layoutY="59.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="tradeGrain" layoutX="121.0" layoutY="102.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="tradeBrick" layoutX="121.0" layoutY="144.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
+    <Spinner fx:id="tradeOre" layoutX="121.0" layoutY="189.0" prefHeight="25.0" prefWidth="60.0" visible="false"/>
 </AnchorPane>

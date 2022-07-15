@@ -11,20 +11,20 @@
    <padding>
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
-   <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@Street/street_green.png" />
+   <ImageView fitHeight="5" fitWidth="20" pickOnBounds="true" preserveRatio="true">
+      <Image url="@buildings/roadImage.png" />
    </ImageView>
    <Label text="%road" />
    <Label text="1">
       <graphic>
-         <ImageView fitHeight="77.7" fitWidth="54.95" pickOnBounds="true" preserveRatio="true">
+         <ImageView fitHeight="21" fitWidth="20" pickOnBounds="true" preserveRatio="true">
             <Image url="@Wood_icon.png" />
          </ImageView>
       </graphic>
    </Label>
    <Label text="1">
       <graphic>
-         <ImageView fitHeight="77.7" fitWidth="54.95" pickOnBounds="true" preserveRatio="true">
+         <ImageView fitHeight="23" fitWidth="24" pickOnBounds="true" preserveRatio="true">
             <Image url="@Bricks_icon.png" />
          </ImageView>
       </graphic>
