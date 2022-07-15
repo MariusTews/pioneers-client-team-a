@@ -79,7 +79,7 @@
                   <Label fx:id="numBricksLabel" prefHeight="17.0" prefWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <Label fx:id="numOreLabel" prefHeight="17.0" prefWidth="0.0" text="3" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                   <Label fx:id="numWheatLabel" prefHeight="17.0" prefWidth="0.0" text="2" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  <Label fx:id="resourceLabel" text="%your.resources" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
+                  <Label text="%your.resources" GridPane.columnSpan="2" GridPane.halignment="CENTER" />
                </GridPane>
                <VBox fx:id="tradeRequestPopup" alignment="CENTER" prefHeight="98.0" prefWidth="230.0" spacing="5.0" visible="false">
                   <Label fx:id="playerWantTradeLabel" text="%player.want.trade" />
@@ -116,7 +116,7 @@
                </HBox>
                <Label fx:id="yourTurnLabel" prefHeight="24.0" prefWidth="163.0" text="%your.turn" />
                <VBox prefHeight="55.0" prefWidth="142.0">
-                  <Text fx:id="soundSliderLabelTop" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -125,9 +125,9 @@
                      </VBox.margin>
                   </Text>
                   <HBox prefHeight="36.0" prefWidth="131.0" spacing="10.0">
-                     <Text fx:id="soundSliderLabelLeft" strokeType="OUTSIDE" strokeWidth="0.0" text="Min" />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Min" />
                      <Slider fx:id="soundSlider" blockIncrement="0.1" majorTickUnit="1.0" max="1.0" minorTickCount="0" onMouseReleased="#changeVolume" prefHeight="32.0" prefWidth="72.0" showTickMarks="true" />
-                     <Text fx:id="soundSliderLabelRight" strokeType="OUTSIDE" strokeWidth="0.0" text="Max" />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max" />
                   </HBox>
                </VBox>
                <ImageView fx:id="soundImage" fitHeight="25.0" fitWidth="25.0" onMousePressed="#soundOnOff" pickOnBounds="true" preserveRatio="true" />
@@ -142,7 +142,7 @@
                   <ImageView fx:id="diceImage2" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
                </HBox>
                <Label fx:id="rollSum" />
-               <Label fx:id="lastRollPlayerLabelPart2" text="%rolled2" />
+               <Label text="%rolled2" />
             </VBox>
          </center>
          <top>

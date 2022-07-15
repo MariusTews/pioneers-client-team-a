@@ -92,6 +92,7 @@ public class SettingsController implements Controller {
 
 
     public void init() {
+        disposables = new CompositeDisposable();
         disposables.add(userService.getUserByID(userService.getCurrentUserID()).observeOn(FX_SCHEDULER).subscribe(res -> {
             currentUser = res;
             currentNameLabel.setText(res.name());

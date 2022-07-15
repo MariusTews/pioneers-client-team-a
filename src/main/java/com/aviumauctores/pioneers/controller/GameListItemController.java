@@ -53,7 +53,7 @@ public class GameListItemController implements Controller {
         numMembersTextLabel.getStyleClass().add("game-list");
         int numMembers = game.members();
         numMembersLabel = new Label(numMembers + "");
-        Button joinButton = new Button(bundle.getString("join"));
+        joinButton = new Button(bundle.getString("join"));
         joinButton.getStyleClass().add("game-list");
         joinButton.setOnAction(this::onJoinButtonPressed);
         HBox rightHBox = new HBox(8.0, numMembersLabel, joinButton);

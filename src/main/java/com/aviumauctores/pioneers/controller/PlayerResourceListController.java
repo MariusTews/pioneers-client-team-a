@@ -141,9 +141,6 @@ public class PlayerResourceListController {
         return listItems.get(playerId).getPreviousResources();
     }
 
-    public int getLastGain(String id) {
-        return  0;
-    }
 }
 
 

@@ -173,11 +173,11 @@ public class InGameChatController implements Controller {
         avatarView.setFitHeight(20.0);
         HBox playerBox =new HBox(5, avatarView);
 
-       gameMemberService.getMember(message.sender()).observeOn(FX_SCHEDULER).subscribe(
+       disposables.add(gameMemberService.getMember(message.sender()).observeOn(FX_SCHEDULER).subscribe(
                member->{
                   if(member.spectator()){
                       errorService.setErrorCodesUsers();
-                      userService.getUserByID(message.sender())
+                      disposables.add(userService.getUserByID(message.sender())
                               .observeOn(FX_SCHEDULER)
                               .subscribe(
                                       result -> {
@@ -186,7 +186,7 @@ public class InGameChatController implements Controller {
                                           Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
                                           avatarView.setImage(avatar);
                                       }, errorService::handleError
-                              );
+                              ));
                       playerBox.getChildren().add(msgSpectatorLabel);
                       playerBox.setOnMouseClicked(this::onMessageClicked);
                       playerBox.setId(message._id());
@@ -209,7 +209,7 @@ public class InGameChatController implements Controller {
                       playerBox.setOnMouseClicked(this::onMessageClicked);
                       playerBox.setId(message._id());
                   }
-               });
+               }));
 
 
          return playerBox;
