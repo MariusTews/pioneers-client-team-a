@@ -22,7 +22,7 @@ public class RankingService {
         System.out.println(players);
         players.sort(Comparator.comparing(Player::victoryPoints));
         for (int i = players.size() - 1; i >= 0; i--){
-            ranking.put(i, players.get(i));
+            ranking.put(players.size() - i - 1, players.get(i));
         }
         return ranking;
     }
