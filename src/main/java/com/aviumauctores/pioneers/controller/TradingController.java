@@ -155,12 +155,10 @@ public class TradingController implements Controller {
                                 tradeButton.setText(bundle.getString("trading"));
                                 cancelTradeButton.setText(bundle.getString("cancel"));
                                 this.showRequestDeclined(partnerID);
-                                inGameController.setTradeStarter(false);
                             },
                             error -> {
                                 errorService.handleError(error);
                                 this.enableCancelButton();
-                                inGameController.setTradeStarter(false);
                             }
                     ));
         }
@@ -209,7 +207,6 @@ public class TradingController implements Controller {
                             cancelTradeButton.setText(bundle.getString("cancel"));
                             tradeButton.setDisable(true);
                             this.showRequestAccepted(partnerID);
-                            inGameController.setTradeStarter(false);
                             this.setTradeSpinnersReady();
                             this.setRequestSpinnersReady();
                         },
@@ -217,7 +214,6 @@ public class TradingController implements Controller {
                             errorService.handleError(error);
                             tradeButton.setDisable(true);
                             this.enableCancelButton();
-                            inGameController.setTradeStarter(false);
                             this.setTradeSpinnersReady();
                             this.setRequestSpinnersReady();
                         }
@@ -255,7 +251,6 @@ public class TradingController implements Controller {
                                     showRequestOpen(finalSelectedPlayer.userId());
                                     tradeButton.setDisable(true);
                                     cancelTradeButton.setDisable(true);
-                                    inGameController.setTradeStarter(true);
                                 }, errorService::handleError
                         ));
             }
@@ -481,13 +476,9 @@ public class TradingController implements Controller {
         if (Objects.equals(resources, sendResourcesInverse)) {
             disposables.add(pioneerService.createMove("accept", null, null, userId, null)
                     .observeOn(FX_SCHEDULER).
-                    subscribe(move -> {
-                        this.showRequestAccepted(userId);
-                        inGameController.setTradeStarter(false);
-                    }, error -> {
+                    subscribe(move -> this.showRequestAccepted(userId), error -> {
                         errorService.handleError(error);
                         this.enableCancelButton();
-                        inGameController.setTradeStarter(false);
                     }));
             for (String key: sendResourcesInverse.keySet()) {
                 ressourceSum += sendResourcesInverse.get(key);

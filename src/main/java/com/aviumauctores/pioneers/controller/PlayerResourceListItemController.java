@@ -19,7 +19,7 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class PlayerResourceListItemController {
 
     private Player player;
-    private int allResources = 0;
+    private final int allResources = 0;
     private int oldResources;
 
     private Member member;
