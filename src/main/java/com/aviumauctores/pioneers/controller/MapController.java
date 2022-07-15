@@ -361,8 +361,6 @@ public class MapController implements Controller {
         rectangle.setId("building" + position + "Colour");
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setRotate(rotation);
-        rectangle.setArcHeight(5);
-        rectangle.setArcWidth(5);
         roadAndCrossingPane.getChildren().add(rectangle);
         ImageView imageView = new ImageView(emptyRoad);
         imageView.setId("building" + position);
