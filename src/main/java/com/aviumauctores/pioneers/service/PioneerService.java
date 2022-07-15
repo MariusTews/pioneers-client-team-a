@@ -49,8 +49,4 @@ public class PioneerService {
         return pioneersApiService.getMap(gameService.getCurrentGameID());
     }
 
-    public Observable<Building> getBuilding(String buildingID) {
-        return pioneersApiService.getBuilding(gameService.getCurrentGameID(), buildingID);
-    }
-
 }

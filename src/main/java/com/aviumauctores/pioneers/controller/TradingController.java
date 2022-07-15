@@ -577,5 +577,7 @@ public class TradingController implements Controller {
         playerRequestsController.showRequestDeclined(playerID);
     }
 
-    public void showRequest(String playerID){ playerRequestsController.showRequest(playerID);}
+    public void showRequest(String playerID){
+        playerRequestsController.showRequest(playerID);
+    }
 }
