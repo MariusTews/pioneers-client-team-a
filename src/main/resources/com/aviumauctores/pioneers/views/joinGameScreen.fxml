@@ -36,20 +36,18 @@
                     </font>
                 </TextField>
                 <HBox alignment="CENTER" layoutX="412.0" prefHeight="68.0" prefWidth="116.0">
-                    <children>
-                        <Button fx:id="showPasswordButton" mnemonicParsing="false" onAction="#showPassword" prefHeight="18.0" prefWidth="37.0">
-                            <graphic>
-                                <ImageView fx:id="viewPassword" accessibleRole="BUTTON" fitHeight="23.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@showPassword.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                            <HBox.margin>
-                                <Insets right="60.0" />
-                            </HBox.margin>
-                        </Button>
-                    </children>
+                    <Button fx:id="showPasswordButton" mnemonicParsing="false" onAction="#showPassword"
+                            prefHeight="18.0" prefWidth="37.0">
+                        <graphic>
+                            <ImageView fx:id="viewPassword" accessibleRole="BUTTON" fitHeight="23.0" fitWidth="25.0"
+                                       pickOnBounds="true" preserveRatio="true">
+                                <Image url="@showPassword.png"/>
+                            </ImageView>
+                        </graphic>
+                        <HBox.margin>
+                            <Insets right="60.0"/>
+                        </HBox.margin>
+                    </Button>
                 </HBox>
                 <PasswordField fx:id="passwordTextField" layoutX="205.0" layoutY="22.0" prefHeight="30.0" prefWidth="200.0" promptText="%password" />
                 <Button fx:id="joinGameButton" defaultButton="true" disable="true" layoutX="285.0" layoutY="78.0" mnemonicParsing="false" onAction="#joinGame" text="%join" />

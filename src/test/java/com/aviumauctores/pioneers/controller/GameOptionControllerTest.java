@@ -75,6 +75,5 @@ public class GameOptionControllerTest extends ApplicationTest {
         assertThat (victoryValue.getValue ()).isEqualTo (10);
         assertThat (mapValue.getValue ()).isEqualTo (2);
 
-
     }
 }
