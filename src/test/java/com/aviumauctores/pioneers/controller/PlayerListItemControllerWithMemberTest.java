@@ -61,10 +61,10 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
         // The view does contain only to image views, the avatar and the ready icon
         // The avatar has fitHeight set to 40,
         // so when this attribute is less than 40 the image view must be the ready view
-        final ImageView readyView = lookup(typeSafeMatcher(ImageView.class, "Find readyView",
+        final ImageView readyView = lookup(typeSafeMatcher(ImageView.class, "Find readyView2",
                 imageView -> imageView.getFitHeight() < 40.0)).query();
         final Image image1 = readyView.getImage();
-        final Color sampleColor1 = image1.getPixelReader().getColor(16, 0);
+        final Color sampleColor1 = image1.getPixelReader().getColor(2, 3);
         // Ensure an image is shown
         assertNotNull(image1);
 
@@ -73,7 +73,7 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
             int incr = playerListItemController.onGameMemberUpdated(newGameMember);
 
             final Image image2 = readyView.getImage();
-            final Color sampleColor2 = image2.getPixelReader().getColor(16, 0);
+            final Color sampleColor2 = image2.getPixelReader().getColor(2, 3);
             // Check the increment is 1
             assertEquals(incr, 1);
             // Check the color has been changed
@@ -83,10 +83,10 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
 
     @Test
     void onGameMemberUpdatedNoReadyChange() {
-        final ImageView readyView = lookup(typeSafeMatcher(ImageView.class, "Find readyView",
+        final ImageView readyView = lookup(typeSafeMatcher(ImageView.class, "Find readyView2",
                 imageView -> imageView.getFitHeight() < 40.0)).query();
         final Image image1 = readyView.getImage();
-        final Color sampleColor1 = image1.getPixelReader().getColor(16, 0);
+        final Color sampleColor1 = image1.getPixelReader().getColor(2, 3);
         // Ensure an image is shown
         assertNotNull(image1);
 
@@ -95,7 +95,7 @@ public class PlayerListItemControllerWithMemberTest extends ApplicationTest {
             int incr = playerListItemController.onGameMemberUpdated(newGameMember);
 
             final Image image2 = readyView.getImage();
-            final Color sampleColor2 = image2.getPixelReader().getColor(16, 0);
+            final Color sampleColor2 = image2.getPixelReader().getColor(2, 3);
             // Check the increment is 0
             assertEquals(incr, 0);
             // Check the color has not been changed

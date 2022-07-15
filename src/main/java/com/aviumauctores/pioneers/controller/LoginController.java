@@ -54,6 +54,8 @@ public class LoginController implements Controller {
     public Label usernameErrorLabel;
     @FXML
     public Label passwordErrorLabel;
+    @FXML
+    public Label loginLabel;
 
 
     private Disposable loginDisposable;
