@@ -59,7 +59,7 @@
                     <Insets bottom="15.0" left="25.0" right="25.0"/>
                 </HBox.margin>
                 <HBox prefHeight="100.0" prefWidth="210.0">
-                    <VBox fx:id="aM1" onMouseEntered="#halloaM1" onMouseExited="#byeaM1"
+                    <VBox fx:id="aM1" onMouseEntered="#helloaM1" onMouseExited="#byeaM1"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="settlementsALabel" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0"
@@ -69,7 +69,7 @@
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM2" onMouseEntered="#halloaM2" onMouseExited="#byeaM2"
+                    <VBox fx:id="aM2" onMouseEntered="#helloaM2" onMouseExited="#byeaM2"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="roadMasterLabel" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0"
@@ -79,7 +79,7 @@
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM3" onMouseEntered="#halloaM3" onMouseExited="#byeaM3"
+                    <VBox fx:id="aM3" onMouseEntered="#helloaM3" onMouseExited="#byeaM3"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="cityMasterLabel" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0"
@@ -89,7 +89,7 @@
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM4" onMouseEntered="#halloaM4" onMouseExited="#byeaM4"
+                    <VBox fx:id="aM4" onMouseEntered="#helloaM4" onMouseExited="#byeaM4"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="workaholicLabel" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0" text="%workAholic">
@@ -98,7 +98,7 @@
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM5" onMouseEntered="#halloaM5" onMouseExited="#byeaM5"
+                    <VBox fx:id="aM5" onMouseEntered="#helloaM5" onMouseExited="#byeaM5"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="winnerLabel" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0" text="%winnerTyp">
@@ -107,7 +107,7 @@
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM6" onMouseEntered="#halloaM6" onMouseExited="#byeaM6"
+                    <VBox fx:id="aM6" onMouseEntered="#helloaM6" onMouseExited="#byeaM6"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="longestRoadLabel" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0" text="Carretera">
@@ -116,7 +116,7 @@
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM7" onMouseEntered="#halloaM7" onMouseExited="#byeaM7"
+                    <VBox fx:id="aM7" onMouseEntered="#helloaM7" onMouseExited="#byeaM7"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="marcoPolo" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0" text="%marcoPoloLabel">
@@ -151,7 +151,7 @@
                             </font>
                         </Label>
                     </VBox>
-                    <VBox fx:id="aM11" onMouseEntered="#halloaM11" onMouseExited="#byeaM11"
+                    <VBox fx:id="aM11" onMouseEntered="#helloaM11" onMouseExited="#byeaM11"
                           prefHeight="200.0" prefWidth="100.0">
                         <Label fx:id="capitalistLabel" alignment="CENTER" contentDisplay="CENTER"
                                prefHeight="83.0" prefWidth="78.0" text="%capitalistLabel">

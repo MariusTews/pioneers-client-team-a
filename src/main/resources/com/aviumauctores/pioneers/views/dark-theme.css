@@ -332,6 +332,9 @@
     -fx-font-size: 32;
     -fx-text-fill: white;
 }
+#gridPane{
+    -fx-background-color: #333333;
+}
 
 
 

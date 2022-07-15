@@ -257,6 +257,9 @@
 #register {
     -fx-font-size: 32;
 }
+#gridPane{
+    -fx-background-color: white;
+}
 
 
 
