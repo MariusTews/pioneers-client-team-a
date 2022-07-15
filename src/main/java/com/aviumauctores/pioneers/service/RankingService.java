@@ -21,7 +21,7 @@ public class RankingService {
         List<Player> players = pioneerService.listPlayers().blockingFirst();
         System.out.println(players);
         players.sort(Comparator.comparing(Player::victoryPoints));
-        for (int i = 0; i < players.size(); i++){
+        for (int i = players.size() - 1; i >= 0; i--){
             ranking.put(i, players.get(i));
         }
         return ranking;
