@@ -1,5 +1,7 @@
 package com.aviumauctores.pioneers;
 
+import com.aviumauctores.pioneers.dto.achievements.CreateAchievementDto;
+import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.dto.auth.LoginDto;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.auth.RefreshDto;
@@ -33,8 +35,10 @@ import com.aviumauctores.pioneers.ws.EventListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.Observer;
 import javafx.scene.paint.Color;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -302,21 +306,21 @@ public class TestModule {
             @Override
             public Observable<List<Member>> listMembers(String gameId) {
                 return Observable.just(List.of(
-                        new Member("", "", "101", "1", true, Color.GREEN, true)
+                        new Member("", "", "101", "1", true, Color.GREEN, false)
                 ));
             }
 
             @Override
             public Observable<Member> createMember(String gameId, CreateMemberDto createMemberDto) {
                 return Observable.just(new Member(
-                        "", "", gameId, "1", createMemberDto.ready(), null, true
+                        "", "", gameId, "1", createMemberDto.ready(), null, createMemberDto.spectator()
                 ));
             }
 
             @Override
             public Observable<Member> getMember(String gameId, String userId) {
                 return Observable.just(new Member(
-                        "", "", gameId, userId, false, null, true
+                        "", "", gameId, userId, false, null, false
                 ));
             }
 
@@ -421,7 +425,7 @@ public class TestModule {
                                 new ExpectedMove("founding-settlement-2", List.of("1")),
                                 new ExpectedMove("founding-road-2", List.of("1")),
                                 new ExpectedMove("roll", List.of("1"))
-                        ),      new Point3D(1, 1, 1))
+                        ), new Point3D(1, 1, 1))
                 );
             }
 
@@ -452,4 +456,44 @@ public class TestModule {
         };
     }
 
+    @Provides
+    @Singleton
+    AchievementsApiService achievementsApiService() {
+        return new AchievementsApiService() {
+            @Override
+            public Observable<List<AchievementSummary>> listAchievements() {
+                return Observable.just(List.of());
+            }
+
+            @Override
+            public Observable<AchievementSummary> getAchievement(String id) {
+                return Observable.just(new AchievementSummary("test", 0, 0, 0));
+            }
+
+            @Override
+            public Observable<List<Achievement>> listUserAchievements(String id) {
+                return Observable.just(List.of());
+            }
+
+            @Override
+            public Observable<List<Achievement>> getUserAchievement(String userId, String id) {
+                return Observable.just(List.of());
+            }
+
+            @Override
+            public Observable<Achievement> putAchievement(String userId, String id, CreateAchievementDto createAchievementDto) {
+                return Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
+            }
+
+            @Override
+            public Observable<Achievement> updateAchievement(String userId, String id, UpdateAchievementDto updateAchievementDto) {
+                return  Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
+            }
+
+            @Override
+            public Observable<Achievement> deleteAchievement(String userId, String id) {
+                return  Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
+            }
+        };
+    }
 }

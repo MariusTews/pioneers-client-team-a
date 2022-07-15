@@ -18,8 +18,9 @@
     -fx-background-radius: 8px;
 }
 
-
-
+#msgSpectatorLabel{
+    -fx-text-fill: gray;
+}
 #gameNameLabel{
     -fx-font-size: 24;
     -fx-background-radius: 8px;
@@ -147,6 +148,10 @@
 }
 
 .drop-menu {
+    -fx-background-color: #f0f0f0;
+}
+
+.trade-menu {
     -fx-background-color: #f0f0f0;
 }
 

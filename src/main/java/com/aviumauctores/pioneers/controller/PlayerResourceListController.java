@@ -1,5 +1,6 @@
 package com.aviumauctores.pioneers.controller;
 
+import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.*;
 import javafx.geometry.Insets;
@@ -8,8 +9,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.*;
 
+
+@Singleton
 public class PlayerResourceListController {
 
     private final UserService userService;
@@ -18,18 +22,21 @@ public class PlayerResourceListController {
     private final ResourceBundle bundle;
 
 
+    private final GameMemberService gameMemberService;
     public ListView<HBox> playerList;
-
     private String currentPlayerID;
     private final HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
     private Player player;
 
+    private Member member;
+
     @Inject
-    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle) {
+    public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, GameMemberService gameMemberService) {
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
         this.bundle = bundle;
+        this.gameMemberService = gameMemberService;
     }
 
     public void init(ListView<HBox> node, String startingPlayer) {
@@ -37,6 +44,12 @@ public class PlayerResourceListController {
         this.currentPlayerID = startingPlayer;
         for (Player p : pioneerService.listPlayers().blockingFirst()) {
             createPlayerBox(p);
+        }
+
+        for (Member m : gameMemberService.listCurrentGameMembers().blockingFirst()) {
+            if (m.spectator()) {
+                createSpectatorBox(m);
+            }
         }
         playerList.setPadding(new Insets(10, 0, 10, 0));
     }
@@ -48,11 +61,26 @@ public class PlayerResourceListController {
         PlayerResourceListItemController controller = new PlayerResourceListItemController(player, playerName, colorName, userService, bundle);
         listItems.put(playerID, controller);
         playerList.getItems().add(playerList.getItems().size(), controller.createBox());
-        //  playerList.getItems ().add (playerList.getItems ().size (), controller.createSpectatorBox ());
+
         if (playerID.equals(this.currentPlayerID)) {
             controller.showArrow();
         }
+
     }
+
+    public void createSpectatorBox(Member member) {
+        String playerID = member.userId();
+        String playerName = userService.getUserName(playerID).blockingFirst();
+        String colorName = colorService.getColor(member.color());
+
+        PlayerResourceListItemController controller = new PlayerResourceListItemController(member, playerName, colorName, userService, bundle);
+
+        playerList.getItems().add(playerList.getItems().size(), controller.createSpectatorBox());
+
+        listItems.put(playerID, controller);
+
+    }
+
 
     public void updatePlayerLabel(Player player) {
         PlayerResourceListItemController controller = listItems.get(player.userId());
@@ -103,6 +131,18 @@ public class PlayerResourceListController {
 
     public int getResource(HashMap<String, Integer> resources, String resourceName) {
         return resources.getOrDefault(resourceName, 0);
+    }
+
+    public int getResources(String playerId){
+        return listItems.get(playerId).getAllResources();
+    }
+
+    public int getPreviousResources(String playerId){
+        return listItems.get(playerId).getPreviousResources();
+    }
+
+    public int getLastGain(String id) {
+        return  0;
     }
 }
 

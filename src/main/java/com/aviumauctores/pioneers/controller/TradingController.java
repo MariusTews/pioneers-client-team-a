@@ -3,6 +3,7 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.util.PannableCanvas;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,6 +28,7 @@ import static com.aviumauctores.pioneers.Constants.*;
 public class TradingController implements Controller {
     private final InGameController inGameController;
     private final ResourceBundle bundle;
+    private final AchievementsService achievementsService;
     @FXML
     public Spinner<Integer> tradeLumber;
     @FXML
@@ -80,10 +82,11 @@ public class TradingController implements Controller {
     private HashMap<String, Integer> sendResources;
 
     @Inject
-    public TradingController(InGameController inGameController, ResourceBundle bundle, UserService userService,
+    public TradingController(InGameController inGameController, ResourceBundle bundle, AchievementsService achievementsService, UserService userService,
                              PioneerService pioneerService, ColorService colorService, ErrorService errorService, Player player, HashMap<String, Integer> resourceRatio, TradeService tradeService) {
         this.inGameController = inGameController;
         this.bundle = bundle;
+        this.achievementsService = achievementsService;
         this.userService = userService;
         this.pioneerService = pioneerService;
         this.colorService = colorService;
@@ -131,7 +134,11 @@ public class TradingController implements Controller {
 
         tradeButton.setStyle("-fx-background-color: " + player.color());
         cancelTradeButton.setStyle("-fx-background-color: " + player.color());
-        return parent;
+
+        PannableCanvas canvas = new PannableCanvas();
+        canvas.getChildren().add(parent);
+
+        return canvas;
     }
 
     public void updatePlayer(Player player) {
@@ -466,7 +473,12 @@ public class TradingController implements Controller {
 
     //get counter-proposal
     public void handleRequest(HashMap<String, Integer> resources, String userId) {
-        if (Objects.equals(resources, sendResources)) {
+        HashMap<String, Integer> sendResourcesInverse = sendResources;
+        for (Map.Entry<String, Integer> entry : sendResourcesInverse.entrySet()) {
+            entry.setValue(-entry.getValue());
+        }
+        int ressourceSum = 0;
+        if (Objects.equals(resources, sendResourcesInverse)) {
             disposables.add(pioneerService.createMove("accept", null, null, userId, null)
                     .observeOn(FX_SCHEDULER).
                     subscribe(move -> {
@@ -477,6 +489,9 @@ public class TradingController implements Controller {
                         this.enableCancelButton();
                         inGameController.setTradeStarter(false);
                     }));
+            for (String key: sendResourcesInverse.keySet()) {
+                ressourceSum += sendResourcesInverse.get(key);
+            }
         }
         else {
             partnerID = userId;
@@ -497,6 +512,11 @@ public class TradingController implements Controller {
             }
         }
 
+        if (ressourceSum >= 5) {
+            disposables.add(achievementsService.putAchievement(ACHIEVEMENT_TRADE, 1)
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe());
+        }
     }
     //getter and setter
 

@@ -95,5 +95,9 @@ public class HttpModule {
     PioneersApiService pioneersApiService(Retrofit retrofit) {
         return retrofit.create(PioneersApiService.class);
     }
+
+    @Provides
+    @Singleton
+    AchievementsApiService achievementsApiService(Retrofit retrofit) {return retrofit.create(AchievementsApiService.class);}
 }
 

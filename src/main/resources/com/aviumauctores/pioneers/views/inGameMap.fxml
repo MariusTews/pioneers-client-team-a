@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Circle?>
 
-<Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="583.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.MapController">
-    <Pane fx:id="tilePane" prefHeight="580.0" prefWidth="583.0" />
-    <Pane fx:id="tileLabelPane" prefHeight="580.0" prefWidth="583.0" />
-    <Pane fx:id="robberPane" prefHeight="580.0" prefWidth="583.0" />
-    <Pane fx:id="roadAndCrossingPane" disable="true" prefHeight="580.0" prefWidth="579.0" />
-    <Pane fx:id="crossingPane" prefHeight="580.0" prefWidth="583.0">
+<Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.MapController">
+    <Pane fx:id="tilePane" />
+    <Pane fx:id="tileLabelPane" />
+    <Pane fx:id="robberPane" />
+    <Pane fx:id="roadAndCrossingPane" disable="true" />
+    <Pane fx:id="crossingPane">
     </Pane>
-    <Pane fx:id="roadPane" prefHeight="580.0" prefWidth="583.0">
+    <Pane fx:id="roadPane">
     </Pane>
-    <HBox fx:id="vpBox" alignment="CENTER" prefHeight="77.0" prefWidth="628.0">
+    <HBox fx:id="vpBox" alignment="CENTER">
         <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
@@ -26,6 +26,8 @@
         <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+      <padding>
+         <Insets left="150.0" />
+      </padding>
     </HBox>
-    <Label fx:id="timeLabel" layoutX="238.0" layoutY="608.0" prefHeight="17.0" prefWidth="143.0" text="Label" />
 </Pane>

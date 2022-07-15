@@ -4,6 +4,8 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Harbor;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.model.Tile;
+import com.aviumauctores.pioneers.util.PannableCanvas;
+import com.aviumauctores.pioneers.util.SceneGestures;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -43,8 +46,6 @@ public class MapController implements Controller {
     public Pane roadPane;
     @FXML
     public HBox vpBox;
-    @FXML
-    public Label timeLabel;
     Image desert;
     Image fields;
     Image hills;
@@ -61,14 +62,13 @@ public class MapController implements Controller {
     public Map gameMap;
     private String desertTileId;
 
+    PannableCanvas canvas;
+    SceneGestures sceneGestures;
+
 
     @Inject
     public MapController(ResourceBundle bundle) {
         this.bundle = bundle;
-    }
-
-    public MapController() {
-        this.bundle = null;
     }
 
     @Override
@@ -86,7 +86,11 @@ public class MapController implements Controller {
 
     @Override
     public void destroy(boolean closed) {
-
+        if (canvas != null && sceneGestures != null) {
+            canvas.removeEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
+            canvas.removeEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+            canvas.removeEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+        }
     }
 
     @Override
@@ -115,6 +119,7 @@ public class MapController implements Controller {
             double offsetCrossing = 0.5 * fitSizeCrossing;
             double offsetWidthRoad = 0.5 * fitWidthRoad;
             double offsetHeightRoad = 0.5 * fitHeightRoad;
+            String labelFontSize = String.valueOf(55 / (mapRadius+1));
 
             // creates the tiles
             for (Tile tile : gameMap.tiles()) {
@@ -136,7 +141,7 @@ public class MapController implements Controller {
 
                 // creation
                 createTile(position, tileX, tileY, fitWidthHexagon, fitHeightHexagon, tile);
-                createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken());
+                createLabel(offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, "" + tile.numberToken(), labelFontSize);
                 createRobberPosition(position, offsetMiddleX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeRobber);
                 createCrossing(position + "R0", tileX - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
                 createCrossing(position + "R6", tileX + fitWidthHexagon - offsetCrossing, offsetMiddleY - offsetCrossing, fitSizeCrossing);
@@ -225,56 +230,71 @@ public class MapController implements Controller {
                 switch (harbor.side()) {
                     case 1 -> {
                         harborX -= fitSizeCrossing;
-                        createHarborLabels(harborX - 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX - 2 * fitSizeCrossing, harborY, Integer.parseInt(labelFontSize) + 5, harbor.type(), labelFontSize);
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 0));
                         nextCrossings.add("building" + positionToString(harbor.x() + 1, harbor.y(), harbor.z() - 1, 6));
                     }
                     case 3 -> {
                         harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
                         harborY -= 2 * fitSizeCrossing;
-                        createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, Integer.parseInt(labelFontSize) + 5, harbor.type(), labelFontSize);
                         nextCrossings.add("building" + positionToString(harbor.x() + 1, harbor.y(), harbor.z() - 1, 6));
-                        nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()-1,harbor.z()+1,0));
+                        nextCrossings.add("building" + positionToString(harbor.x(), harbor.y() - 1, harbor.z() + 1, 0));
                     }
                     case 5 -> {
                         harborX += fitWidthHexagon - fitSizeCrossing;
-                        createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, Integer.parseInt(labelFontSize) + 5, harbor.type(), labelFontSize);
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 6));
-                        nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()-1,harbor.z()+1,0));
+                        nextCrossings.add("building" + positionToString(harbor.x(), harbor.y() - 1, harbor.z() + 1, 0));
                     }
                     case 7 -> {
                         harborX += fitWidthHexagon - fitSizeCrossing;
                         harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
-                        createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX + 2 * fitSizeCrossing, harborY, Integer.parseInt(labelFontSize) + 5, harbor.type(), labelFontSize);
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 6));
-                        nextCrossings.add("building"+positionToString(harbor.x()-1,harbor.y(),harbor.z()+1,0));
+                        nextCrossings.add("building" + positionToString(harbor.x() - 1, harbor.y(), harbor.z() + 1, 0));
                     }
                     case 9 -> {
                         harborX += 0.5 * fitWidthHexagon - fitSizeCrossing;
                         harborY += fitHeightHexagon;
-                        createHarborLabels(harborX, harborY + 2 * fitSizeCrossing, fitSizeCrossing, harbor.type());
-                        nextCrossings.add("building"+positionToString(harbor.x()-1,harbor.y(),harbor.z()+1,0));
-                        nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()+1,harbor.z()-1,6));
+                        createHarborLabels(harborX, harborY + 2 * fitSizeCrossing, Integer.parseInt(labelFontSize) + 5, harbor.type(), labelFontSize);
+                        nextCrossings.add("building" + positionToString(harbor.x() - 1, harbor.y(), harbor.z() + 1, 0));
+                        nextCrossings.add("building" + positionToString(harbor.x(), harbor.y() + 1, harbor.z() - 1, 6));
                     }
                     case 11 -> {
                         harborX -= fitSizeCrossing;
                         harborY += fitHeightHexagon - 1.5 * fitSizeCrossing;
-                        createHarborLabels(harborX, harborY + 2 * fitSizeCrossing, fitSizeCrossing, harbor.type());
+                        createHarborLabels(harborX, harborY + 2 * fitSizeCrossing, Integer.parseInt(labelFontSize) + 5, harbor.type(), labelFontSize);
                         nextCrossings.add("building" + positionToString(harbor.x(), harbor.y(), harbor.z(), 0));
-                        nextCrossings.add("building"+positionToString(harbor.x(),harbor.y()+1,harbor.z()-1,6));
+                        nextCrossings.add("building" + positionToString(harbor.x(), harbor.y() + 1, harbor.z() - 1, 6));
                     }
                 }
-                if (harborCrossings.get(harbor.type()) == null){
-                    harborCrossings.put(harbor.type(),nextCrossings);
+                if (harborCrossings.get(harbor.type()) == null) {
+                    harborCrossings.put(harbor.type(), nextCrossings);
                 } else {
-                    harborCrossings.replace(harbor.type(),nextCrossings);
+                    harborCrossings.replace(harbor.type(), nextCrossings);
                 }
                 imageView.setX(harborX);
                 imageView.setY(harborY);
                 tilePane.getChildren().add(imageView);
             }
         }
-        return parent;
+
+        //use pannable canvas as top level element to support zooming and dragging
+        canvas = new PannableCanvas();
+        canvas.getChildren().add(parent);
+        canvas.setPrefWidth(600);
+        canvas.setPrefHeight(600);
+
+        //add event filter to enable zooming
+        sceneGestures = new SceneGestures(canvas);
+        canvas.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
+
+        //add event filter to enable dragging (both needed)
+        canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
+        canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
+
+        return canvas;
     }
 
     public void createTile(String position, double coordinateX, double coordinateY, double sizeX, double sizeY, Tile tile) {
@@ -316,10 +336,11 @@ public class MapController implements Controller {
         crossingPane.getChildren().add(imageView);
     }
 
-    public void createLabel(double coordinateX, double coordinateY, String text) {
+    public void createLabel(double coordinateX, double coordinateY, String text, String labelFontSize) {
         Label label = new Label();
         label.setText(text);
-        label.setStyle("-fx-background-color: #f0f0f0; -fx-font-size: 1em; -fx-text-fill: #00000f");
+        String fontSizeStyle = "-fx-font-size: "+ labelFontSize;
+        label.setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #00000f; " + fontSizeStyle);
         label.setLayoutX(coordinateX);
         label.setLayoutY(coordinateY);
         tileLabelPane.getChildren().add(label);
@@ -355,13 +376,13 @@ public class MapController implements Controller {
         roadPane.getChildren().add(imageView);
     }
 
-    public void createHarborLabels(double coordinateX, double coordinateY, double size, String resource) {
+    public void createHarborLabels(double coordinateX, double coordinateY, double size, String resource, String labelFontSize) {
         if (bundle != null) {
             if (resource != null && !resource.equals("")) {
-                createLabel(coordinateX, coordinateY, bundle.getString(resource));
-                createLabel(coordinateX, coordinateY + size, "2:1");
+                createLabel(coordinateX, coordinateY, bundle.getString(resource), labelFontSize);
+                createLabel(coordinateX, coordinateY + size, "2:1", labelFontSize);
             } else {
-                createLabel(coordinateX, coordinateY, "3:1");
+                createLabel(coordinateX, coordinateY, "3:1", labelFontSize);
             }
         }
     }
@@ -410,10 +431,6 @@ public class MapController implements Controller {
         this.gameMap = gameMap;
     }
 
-    public Label getTimeLabel() {
-        return timeLabel;
-    }
-
     public void onFieldClicked(MouseEvent mouseEvent) {
         inGameController.onFieldClicked(mouseEvent);
     }
@@ -430,3 +447,4 @@ public class MapController implements Controller {
         return desertTileId;
     }
 }
+
