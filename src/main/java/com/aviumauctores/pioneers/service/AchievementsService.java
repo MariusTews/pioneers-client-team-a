@@ -3,7 +3,6 @@ package com.aviumauctores.pioneers.service;
 import static com.aviumauctores.pioneers.Constants.*;
 
 import com.aviumauctores.pioneers.dto.achievements.CreateAchievementDto;
-import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.rest.AchievementsApiService;
 import io.reactivex.rxjava3.core.Observable;
@@ -24,12 +23,11 @@ public class AchievementsService {
 
     private final UserService userService;
 
-    private HashMap<String, Integer> achievementsProgress = new HashMap<>();
+    private final HashMap<String, Integer> achievementsProgress = new HashMap<>();
 
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-    private
-    Calendar calender = Calendar.getInstance();
+    private final Calendar calender = Calendar.getInstance();
 
     @Inject
     public AchievementsService(AchievementsApiService achievementsApiService, UserService userService) {
@@ -37,9 +35,14 @@ public class AchievementsService {
         this.userService = userService;
     }
 
+    public void init(){
+        disposables = new CompositeDisposable();
+    }
+
     public Observable<List<Achievement>> getUserAchievements() {
         Observable<List<Achievement>> achievementList = achievementsApiService.listUserAchievements(userService.getCurrentUserID());
-        achievementList.observeOn(FX_SCHEDULER)
+        disposables.add(achievementList
+                .observeOn(FX_SCHEDULER)
                 .subscribe(achievements -> {
                     for (Achievement achievement : achievements) {
                         int achievementProgress = 0;
@@ -51,8 +54,14 @@ public class AchievementsService {
                                 achievementProgress
                         );
                     }
-                });
+                }));
         return achievementList;
+    }
+
+    public void dispose(){
+        if (disposables != null) {
+            disposables.dispose();
+        }
     }
 
     public Observable<List<Achievement>> getUserAchievement(String userId, String achievementId) {
@@ -64,10 +73,13 @@ public class AchievementsService {
         if (achievementsProgress.containsKey(id)) {
             if (!id.equals(ACHIEVEMENT_RESOURCES)) {
                 progress += achievementsProgress.get(id);
+            } else if (progress < achievementsProgress.get(id)) {
+                progress = achievementsProgress.get(id);
             }
             if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
                 unlocked = dateFormat.format(calender.getTime());
-                disposables.add(putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe());
+                achievementsProgress.replace(id, progress);
+                putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe();
             }
             achievementsProgress.replace(id, progress);
         }
@@ -75,20 +87,5 @@ public class AchievementsService {
                 userService.getCurrentUserID(),
                 id,
                 new CreateAchievementDto(unlocked, progress));
-    }
-
-    public Observable<Achievement> updateAchievement(String id, int progress) {
-        String unlocked = null;
-        if (achievementsProgress.get(id) != null) {
-            progress += achievementsProgress.get(id);
-        }
-        if (progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
-            unlocked = dateFormat.format(calender.getTime());
-        }
-        return achievementsApiService.updateAchievement(
-                userService.getCurrentUserID(),
-                id,
-                new UpdateAchievementDto(unlocked, progress)
-        );
     }
 }
