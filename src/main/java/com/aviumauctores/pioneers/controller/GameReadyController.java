@@ -189,6 +189,8 @@ public class GameReadyController extends PlayerListController {
                     if (event.event().endsWith(".created") && !(event.data().sender().equals(userService.getCurrentUserID()))) {
                         Label msgLabel = createMessageLabel(event.data());
                         chatBox.getChildren().add(msgLabel);
+                        ScrollPane content = (ScrollPane) this.allChatTab.getContent();
+                        content.setVvalue(1.0);
                     } else if (event.event().endsWith(".deleted")) {
                         //search for the Label of the which will be deleted
                         for (Node l : chatBox.getChildren()) {
@@ -546,6 +548,7 @@ public class GameReadyController extends PlayerListController {
                     Label msgLabel = createMessageLabel(result);
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
+                    ((ScrollPane) this.allChatTab.getContent()).setVvalue(1.0);
                 });
     }
 
