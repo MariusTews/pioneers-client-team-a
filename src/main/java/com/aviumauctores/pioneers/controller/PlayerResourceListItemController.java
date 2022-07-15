@@ -4,9 +4,12 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.UserService;
+import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -43,6 +46,8 @@ public class PlayerResourceListItemController {
 
     private final Label spectatorLabel = new Label();
     private HashMap<String, Integer> resources = new HashMap<>();
+    private Tooltip tooltip;
+    private Label longestRoadViewLabel;
 
 
     public PlayerResourceListItemController(Player player, String name, String color, UserService userService, ResourceBundle bundle) {
@@ -52,6 +57,8 @@ public class PlayerResourceListItemController {
         this.color = color;
         this.userService = userService;
         this.bundle = bundle;
+        tooltip = new Tooltip(bundle.getString("longest.road"));
+
 
     }
 
@@ -62,7 +69,6 @@ public class PlayerResourceListItemController {
         this.color = color;
         this.userService = userService;
         this.bundle = bundle;
-
     }
 
     public HBox createBox() {
@@ -87,9 +93,21 @@ public class PlayerResourceListItemController {
         arrowView.setFitWidth(40.0);
         arrowView.setVisible(false);
 
-        this.resourceLabel = new Label();
+        Image longestRoadStar = new Image(Objects.requireNonNull(Main.class.getResource("views/longestRoad.png")).toString());
+        ImageView longestRoadView = new ImageView(longestRoadStar);
+        longestRoadView.setFitHeight(20.0);
+        longestRoadView.setFitWidth(20.0);
+
+        longestRoadViewLabel = new Label();
+        longestRoadViewLabel.setGraphic(longestRoadView);
+        longestRoadViewLabel.setVisible(false);
+
+        resourceLabel = new Label();
         updateResources();
-        VBox playerInfo = new VBox(playerName, resourceLabel);
+
+        HBox nameBox = new HBox();
+        nameBox.getChildren().addAll(playerName, longestRoadViewLabel);
+        VBox playerInfo = new VBox(nameBox, resourceLabel);
 
         playerBox.getChildren().addAll(arrowView, playerView, playerInfo);
         playerBox.setSpacing(5.0);
@@ -157,6 +175,16 @@ public class PlayerResourceListItemController {
 
     public HBox getPlayerBox() {
         return this.playerBox;
+    }
+
+    public void setLongestRoadViewVisible() {
+        longestRoadViewLabel.setVisible(true);
+        longestRoadViewLabel.setTooltip(tooltip);
+    }
+
+    public void setLongestRoadViewInvisible() {
+        longestRoadViewLabel.setVisible(false);
+        longestRoadViewLabel.setTooltip(null);
     }
 
     public int getAllResources() {

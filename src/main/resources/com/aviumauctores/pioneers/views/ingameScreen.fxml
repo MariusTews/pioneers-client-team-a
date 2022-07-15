@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -203,4 +204,9 @@
    <bottom>
       <Label fx:id="timeLabel" prefHeight="17.0" prefWidth="143.0" text="Label" BorderPane.alignment="CENTER" />
    </bottom>
+   <top>
+      <Pane fx:id="vpPane" prefHeight="26.0" prefWidth="1080.0" BorderPane.alignment="CENTER">
+         <HBox fx:id="vpHbox" alignment="CENTER" prefHeight="25.0" prefWidth="1080.0" />
+      </Pane>
+   </top>
 </BorderPane>

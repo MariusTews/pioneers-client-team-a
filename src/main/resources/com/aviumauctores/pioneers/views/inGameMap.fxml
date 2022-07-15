@@ -2,9 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Circle?>
 
 <Pane fx:id="mainPane" onMouseClicked="#onMainPaneClicked" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.MapController">
     <Pane fx:id="tilePane" />
@@ -15,19 +13,4 @@
     </Pane>
     <Pane fx:id="roadPane">
     </Pane>
-    <HBox fx:id="vpBox" alignment="CENTER">
-        <Circle fx:id="vp01" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp02" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp03" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp04" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp05" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp06" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp07" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp08" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp09" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Circle fx:id="vp10" fill="GRAY" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-      <padding>
-         <Insets left="150.0" />
-      </padding>
-    </HBox>
 </Pane>
