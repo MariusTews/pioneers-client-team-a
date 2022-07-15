@@ -8,6 +8,8 @@ import com.aviumauctores.pioneers.rest.AchievementsApiService;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
+import java.time.LocalDateTime;
+
 import javax.inject.Inject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -58,6 +60,11 @@ public class AchievementsService {
         return achievementList;
     }
 
+    public Observable<List<Achievement>> listUserAchievements() {
+        Observable<List<Achievement>> achievementList = achievementsApiService.listUserAchievements(userService.getCurrentUserID());
+        return achievementList;
+    }
+
     public void dispose(){
         if (disposables != null) {
             disposables.dispose();
@@ -73,7 +80,7 @@ public class AchievementsService {
                 progress = achievementsProgress.get(id);
             }
             if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
-                unlocked = dateFormat.format(calender.getTime());
+                unlocked =
                 achievementsProgress.replace(id, progress);
                 putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe();
             }
