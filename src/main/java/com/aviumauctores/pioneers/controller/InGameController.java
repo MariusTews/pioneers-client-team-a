@@ -430,6 +430,7 @@ public class InGameController extends LoggedInController {
         if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
             //listen to new and updated buildings, and load the image
             Building b = buildingEventDto.data();
+            statService.onBuildingBuilt(b.owner(), b.type());
             buildService.setPlayerId(b.owner());
             buildService.setBuildingType(b.type());
             ImageView position = getView(b.x(), b.y(), b.z(), b.side());
