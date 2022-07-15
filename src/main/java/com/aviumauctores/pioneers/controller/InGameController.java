@@ -992,7 +992,7 @@ public class InGameController extends LoggedInController {
 
         }
 
-        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, this);
+        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, this, playerColors.get(userID));
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getX() + 240, ingamePane.getWidth() - newValue.getWidth()));

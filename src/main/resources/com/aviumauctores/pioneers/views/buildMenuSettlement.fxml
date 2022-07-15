@@ -11,10 +11,15 @@
    <padding>
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
-   <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
-      <Image url="@buildings/settlementImage.png" />
-   </ImageView>
-   <Label text="%settlement" />
+   <Button id="buildButton" fx:id="buildButton" disable="true" mnemonicParsing="false" onAction="#build" prefHeight="47.0" prefWidth="47.0">
+      <graphic>
+         <ImageView fitHeight="16" fitWidth="16" pickOnBounds="true" preserveRatio="true">
+            <Image url="@buildings/settlement.png" />
+         </ImageView>
+      </graphic>
+      <VBox.margin>
+         <Insets bottom="6.0" />
+      </VBox.margin></Button>
    <Label text="1">
       <graphic>
          <ImageView fitHeight="20" fitWidth="21" pickOnBounds="true" preserveRatio="true">
@@ -43,5 +48,4 @@
          </ImageView>
       </graphic>
    </Label>
-   <Button fx:id="buildButton" disable="true" mnemonicParsing="false" onAction="#build" text="%build" />
 </VBox>
