@@ -299,7 +299,7 @@ public class ChatController extends PlayerListController {
                     chatTabsByUserID.put(selectedUser._id(), tab);
                     showOldMessages("groups", tab.getId(), LocalDateTime.now().toString(), 100);
                     ScrollPane pane = (ScrollPane) tab.getContent();
-                    pane.setVvalue(1.0);;
+                    pane.setVvalue(1.0);
                 }, errorService::handleError));
     }
 

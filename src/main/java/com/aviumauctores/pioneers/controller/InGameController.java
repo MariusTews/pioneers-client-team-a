@@ -55,11 +55,6 @@ public class InGameController extends LoggedInController {
     public Label playerWantTradeLabel;
     public HBox vpHbox;
     public Pane vpPane;
-    public Label resourceLabel;
-    public Text soundSliderLabelTop;
-    public Text soundSliderLabelRight;
-    public Label lastRollPlayerLabelPart2;
-    public Text soundSliderLabelLeft;
     private Player player;
 
     private final EventListener eventListener;

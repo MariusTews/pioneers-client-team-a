@@ -4,15 +4,14 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.UserService;
-import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;

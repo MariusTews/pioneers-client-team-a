@@ -2,15 +2,13 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Building;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import retrofit2.HttpException;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
