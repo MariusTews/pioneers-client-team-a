@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -52,6 +53,11 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
+    public Label resourceLabel;
+    public Text soundSliderLabelTop;
+    public Text soundSliderLabelRight;
+    public Label lastRollPlayerLabelPart2;
+    public Text soundSliderLabelLeft;
     private Player player;
 
     private final EventListener eventListener;
@@ -60,14 +66,16 @@ public class InGameController extends LoggedInController {
     private Timer timer;
     private Label[] resourceLabels;
 
-    @FXML
-    public Label timeLabel;
+
     @FXML
     public Label numSheepLabel;
+
     @FXML
     public ImageView arrowOnDice;
     @FXML
     public Label yourTurnLabel;
+    @FXML
+    Label timeLabel;
 
     @FXML
     public BorderPane ingamePane;
