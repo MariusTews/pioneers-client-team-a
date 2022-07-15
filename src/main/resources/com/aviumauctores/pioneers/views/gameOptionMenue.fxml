@@ -9,22 +9,22 @@
 <Pane fx:id="paneOption" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.GameOptionController">
-   <Button fx:id="cancelButton" layoutX="40.0" layoutY="255.0" mnemonicParsing="false" onAction="#leaveOption"
-           prefHeight="29.0" prefWidth="95.0" text="%cancel"/>
-   <Button fx:id="takeOverButton" layoutX="172.0" layoutY="255.0" mnemonicParsing="false" onAction="#takeOverOption"
-           prefHeight="29.0" prefWidth="95.0" text="%takeOver">
-      <opaqueInsets>
-         <Insets/>
-      </opaqueInsets>
-   </Button>
-   <Spinner fx:id="mapSize" layoutX="73.0" layoutY="155.0" prefHeight="25.0" prefWidth="76.0"/>
-   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="118.0" layoutY="28.0" nodeOrientation="LEFT_TO_RIGHT"
-          text="%gameoption">
-      <opaqueInsets>
-         <Insets/>
-      </opaqueInsets>
-   </Label>
-   <Spinner fx:id="victoryPoints" layoutX="74.0" layoutY="113.0" prefHeight="25.0" prefWidth="76.0"/>
-   <Label layoutX="155.0" layoutY="117.0" text="%victoryPoints"/>
-   <Label layoutX="154.0" layoutY="157.0" text="%mapSize"/>
+    <Button fx:id="cancelButton" layoutX="40.0" layoutY="255.0" mnemonicParsing="false" onAction="#leaveOption"
+            prefHeight="29.0" prefWidth="95.0" text="%cancel"/>
+    <Button fx:id="takeOverButton" layoutX="172.0" layoutY="255.0" mnemonicParsing="false" onAction="#takeOverOption"
+            prefHeight="29.0" prefWidth="95.0" text="%takeOver">
+        <opaqueInsets>
+            <Insets/>
+        </opaqueInsets>
+    </Button>
+    <Spinner fx:id="mapSize" layoutX="73.0" layoutY="155.0" prefHeight="25.0" prefWidth="76.0"/>
+    <Label alignment="CENTER" contentDisplay="CENTER" layoutX="118.0" layoutY="28.0" nodeOrientation="LEFT_TO_RIGHT"
+           text="%gameoption">
+        <opaqueInsets>
+            <Insets/>
+        </opaqueInsets>
+    </Label>
+    <Spinner fx:id="victoryPoints" layoutX="74.0" layoutY="113.0" prefHeight="25.0" prefWidth="76.0"/>
+    <Label layoutX="155.0" layoutY="117.0" text="%victoryPoints"/>
+    <Label layoutX="154.0" layoutY="157.0" text="%mapSize"/>
 </Pane>

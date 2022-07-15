@@ -5,6 +5,8 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.AchievementsService;
+import com.aviumauctores.pioneers.model.Achievement;
+import com.aviumauctores.pioneers.service.AchievementsService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -25,18 +27,20 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 import static com.aviumauctores.pioneers.Constants.RANKING;
+import static com.aviumauctores.pioneers.Constants.*;
 
 public class AchievementsController extends PlayerListController {
 
     private final App app;
     private final ResourceBundle bundle;
-    private AchievementsService achievementsService;
+    private final AchievementsService achievementsService;
 
     @FXML
     public Button friendsButton;
@@ -112,6 +116,8 @@ public class AchievementsController extends PlayerListController {
         this.achievementsService = achievementsService;
 
         defaultColor = Color.rgb(255, 255, 255);
+
+
     }
 
     @Override
@@ -123,6 +129,38 @@ public class AchievementsController extends PlayerListController {
         } else {
             hoverColor = Color.rgb(174, 229, 143);
         }
+        achievementsService.init();
+        disposables.add(achievementsService.listUserAchievements().observeOn(FX_SCHEDULER).subscribe(achievements -> {
+            for (Achievement achievement : achievements) {
+                if (achievement.unlockedAt() != null) {
+
+                    switch (achievement.id()) {
+                        case (ACHIEVEMENT_SETTLEMENTS) -> setBackground(aM1, Color.FORESTGREEN);
+                        case (ACHIEVEMENT_ROADS) -> setBackground(aM2, Color.FORESTGREEN);
+                        case (ACHIEVEMENT_CITIES) -> setBackground(aM3, Color.FORESTGREEN);
+                        case (ACHIEVEMENT_ALL) -> setBackground(aM4, Color.FORESTGREEN);
+                        case (ACHIEVEMENT_WIN) -> setBackground(aM5, Color.FORESTGREEN);
+                        case (ACHIEVEMENTS_WIN_LONGEST) -> setBackground(aM6, Color.FORESTGREEN);
+                        case (ACHIEVEMENT_RESOURCES) -> setBackground(aM7, Color.FORESTGREEN);
+                        case (ACHIEVEMENT_TRADE) -> setBackground(aM7, Color.FORESTGREEN);
+                        default -> {
+                        }
+                    }
+                }
+            }
+        }));
+
+        disposables.add(achievementsService.getUserAchievement(userService.getCurrentUserID(), RANKING)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(success -> {
+                    for (Achievement achievement : success) {
+
+                        if (Objects.equals(achievement.id(), RANKING)) {
+                            rankingPointsLabel.setText(achievement.progress()+" "+ bundle.getString("ranking.points"));
+                        }
+                    }
+                }, error -> rankingPointsLabel.setText("0"+ " " + bundle.getString("ranking.points"))));
+
 
     }
 
@@ -137,10 +175,10 @@ public class AchievementsController extends PlayerListController {
             return null;
         }
         friendsButton.setOnAction(this::onFriends);
-
         disposables.add(userService.getUserName(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(name -> playerLabel2.setText(name + "")));
+
 
         return parent;
     }
@@ -213,87 +251,150 @@ public class AchievementsController extends PlayerListController {
 
     }
 
-    public void halloaM1(MouseEvent mouseEvent) {
-        setBackground(aM1, hoverColor);
+    public void helloaM1(MouseEvent mouseEvent) {
+        if (aM1.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(settlementsALabel, bundle.getString("build-settlements"));
+        } else
+            setBackground(aM1, hoverColor);
         setTooltip(settlementsALabel, bundle.getString("build-settlements"));
-
     }
 
     public void byeaM1(MouseEvent mouseEvent) {
-        setBackground(aM1, defaultColor);
+        if (aM1.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(settlementsALabel);
+        } else
+            setBackground(aM1, defaultColor);
         deleteTooltip(settlementsALabel);
     }
 
-    public void halloaM2(MouseEvent mouseEvent) {
-        setBackground(aM2, hoverColor);
-        setTooltip(roadMasterLabel, bundle.getString("build-roads"));
+    public void helloaM2(MouseEvent mouseEvent) {
+
+        if (aM2.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(roadMasterLabel, bundle.getString("build-roads"));
+        } else {
+            setBackground(aM2, hoverColor);
+            setTooltip(roadMasterLabel, bundle.getString("build-roads"));
+        }
+
     }
 
     public void byeaM2(MouseEvent mouseEvent) {
-        setBackground(aM2, defaultColor);
-        deleteTooltip(roadMasterLabel);
+        if (aM2.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(roadMasterLabel);
+        } else {
+            setBackground(aM2, defaultColor);
+            deleteTooltip(roadMasterLabel);
+        }
     }
 
-    public void halloaM3(MouseEvent mouseEvent) {
-        setBackground(aM3, hoverColor);
-        setTooltip(cityMasterLabel, bundle.getString("build-cities"));
+    public void helloaM3(MouseEvent mouseEvent) {
+        if (aM3.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(cityMasterLabel, bundle.getString("build-cities"));
+        } else {
+            setBackground(aM3, hoverColor);
+            setTooltip(cityMasterLabel, bundle.getString("build-cities"));
+        }
     }
 
     public void byeaM3(MouseEvent mouseEvent) {
-        setBackground(aM3, defaultColor);
-        deleteTooltip(cityMasterLabel);
+        if (aM3.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(cityMasterLabel);
+        } else {
+            setBackground(aM3, defaultColor);
+            deleteTooltip(cityMasterLabel);
+        }
     }
 
-    public void halloaM4(MouseEvent mouseEvent) {
-        setBackground(aM4, hoverColor);
-        setTooltip(workaholicLabel, bundle.getString("workaholic"));
+    public void helloaM4(MouseEvent mouseEvent) {
+        if (aM4.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(workaholicLabel, bundle.getString("workaholic"));
+        } else {
+            setBackground(aM4, hoverColor);
+            setTooltip(workaholicLabel, bundle.getString("workaholic"));
+        }
     }
 
     public void byeaM4(MouseEvent mouseEvent) {
-        setBackground(aM4, defaultColor);
-        deleteTooltip(workaholicLabel);
+        if (aM4.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(workaholicLabel);
+        } else {
+            setBackground(aM4, defaultColor);
+            deleteTooltip(workaholicLabel);
+        }
     }
 
-    public void halloaM5(MouseEvent mouseEvent) {
-        setBackground(aM5, hoverColor);
-        setTooltip(winnerLabel, bundle.getString("winner"));
+    public void helloaM5(MouseEvent mouseEvent) {
+        if (aM5.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(winnerLabel, bundle.getString("winner"));
+        } else {
+            setBackground(aM5, hoverColor);
+            setTooltip(winnerLabel, bundle.getString("winner"));
+        }
     }
 
     public void byeaM5(MouseEvent mouseEvent) {
-        setBackground(aM5, defaultColor);
-        deleteTooltip(winnerLabel);
+        if (aM5.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(winnerLabel);
+        } else {
+            setBackground(aM5, defaultColor);
+            deleteTooltip(winnerLabel);
+        }
     }
 
-    public void halloaM6(MouseEvent mouseEvent) {
-        setBackground(aM6, hoverColor);
-        setTooltip(longestRoadLabel, bundle.getString("longestRoad"));
+    public void helloaM6(MouseEvent mouseEvent) {
+        if (aM6.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(longestRoadLabel, bundle.getString("longestRoad"));
+        } else {
+            setBackground(aM6, hoverColor);
+            setTooltip(longestRoadLabel, bundle.getString("longestRoad"));
+        }
     }
 
     public void byeaM6(MouseEvent mouseEvent) {
-        setBackground(aM6, defaultColor);
-        deleteTooltip(longestRoadLabel);
+        if (aM6.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(longestRoadLabel);
+        } else {
+            setBackground(aM6, defaultColor);
+            deleteTooltip(longestRoadLabel);
+        }
     }
 
-    public void halloaM7(MouseEvent mouseEvent) {
-        setBackground(aM7, hoverColor);
-        setTooltip(marcoPolo, bundle.getString("marcoPolo"));
+    public void helloaM7(MouseEvent mouseEvent) {
+        if (aM7.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(marcoPolo, bundle.getString("marcoPolo"));
+        } else {
+            setBackground(aM7, hoverColor);
+            setTooltip(marcoPolo, bundle.getString("marcoPolo"));
+        }
     }
 
     public void byeaM7(MouseEvent mouseEvent) {
-        setBackground(aM7, defaultColor);
-        deleteTooltip(marcoPolo);
+        if (aM7.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(marcoPolo);
+        } else {
+            setBackground(aM7, defaultColor);
+            deleteTooltip(marcoPolo);
+        }
     }
 
-    public void halloaM11(MouseEvent mouseEvent) {
-        setBackground(aM11, hoverColor);
-        setTooltip(capitalistLabel, bundle.getString("capitalist"));
+    public void helloaM11(MouseEvent mouseEvent) {
+        if (aM4.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            setTooltip(capitalistLabel, bundle.getString("capitalist"));
+
+        } else {
+            setBackground(aM11, hoverColor);
+            setTooltip(capitalistLabel, bundle.getString("capitalist"));
+        }
     }
 
     public void byeaM11(MouseEvent mouseEvent) {
-        setBackground(aM11, defaultColor);
-        deleteTooltip(capitalistLabel);
+        if (aM11.getBackground().equals(Background.fill(Color.FORESTGREEN))) {
+            deleteTooltip(capitalistLabel);
+        } else {
+            setBackground(aM11, defaultColor);
+            deleteTooltip(capitalistLabel);
+        }
     }
-
 
     public void setBackground(VBox vbox, Color color) {
         BackgroundFill bf = new BackgroundFill(color, new CornerRadii(1), null);

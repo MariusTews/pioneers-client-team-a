@@ -1,8 +1,4 @@
-@font-face {
-    font-family: 'VT323';
-    font-weight: 400;
-    src: url('../fonts/VT323-Regular.TTF') format('truetype');
-}
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 .root {
     -fx-background-color: #00331a;
@@ -17,9 +13,8 @@
 
 .text-field {
     -fx-font-size: 14;
-    -fx-background-radius: 8px;
-    -fx-background-color: #333333;
-    -fx-text-fill: #eee;
+    -fx-text-fill: black;
+    -fx-background-color: white;
 }
 
 #aM1 {
@@ -141,22 +136,14 @@
 }
 
 #gameNameLabel {
-    -fx-font-size: 24;
+    -fx-font-size: 30;
     -fx-background-radius: 8px;
-    -fx-text-fill: #eee;
-}
-
-#nameLabel {
-    -fx-font-size: 12;
-    -fx-background-radius: 8px;
-    -fx-background-color: #333333;
     -fx-text-fill: #eee;
 }
 
 .button {
     -fx-background-color: #97d077;
     -fx-text-fill: #ffffff;
-    -fx-background-radius: 15px;
     -fx-font-size: 14;
 }
 
@@ -305,13 +292,52 @@
 }
 
 #paneOption {
-    -fx-background-color: rgb(0, 1, 17);
+    -fx-background-color: #333333;
     -fx-border-color: #97d077;
-    -fx-border-width: 5;
+    -fx-border-width: 5;;
+    -fx-text-fill: black;
 }
 
 .spinner .increment-arrow-button,
 .spinner .decrement-arrow-button {
     -fx-body-color: #97d077;
 }
+
+#loginLabel {
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+}
+
+#hintLabel {
+    -fx-font-size: 12;
+}
+
+#mapsize.titled-pane {
+    -fx-text-fill: black;
+    -fx-background-color: white
+}
+
+#createGame {
+    -fx-font-size: 32;
+}
+
+#usernameInput, #passwordInput, #gameNameInput, #messageTextField, #chatTextField, #gamePasswordInput,
+#gamePasswordText, #textfieldUsername, #textfieldPassword, #textfieldPassword_show {
+    -fx-font-family: "VT323";
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+#register {
+    -fx-font-size: 32;
+    -fx-text-fill: white;
+}
+#gridPane{
+    -fx-background-color: #333333;
+}
+
+
+
+
+
 

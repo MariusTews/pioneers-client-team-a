@@ -9,9 +9,6 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 import javax.inject.Inject;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,10 +21,6 @@ public class AchievementsService {
     private final UserService userService;
 
     private final HashMap<String, Integer> achievementsProgress = new HashMap<>();
-
-    private final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-    private final Calendar calender = Calendar.getInstance();
 
     @Inject
     public AchievementsService(AchievementsApiService achievementsApiService, UserService userService) {
@@ -58,6 +51,11 @@ public class AchievementsService {
         return achievementList;
     }
 
+    public Observable<List<Achievement>> listUserAchievements() {
+        Observable<List<Achievement>> achievementList = achievementsApiService.listUserAchievements(userService.getCurrentUserID());
+        return achievementList;
+    }
+
     public void dispose(){
         if (disposables != null) {
             disposables.dispose();
@@ -77,7 +75,7 @@ public class AchievementsService {
                 progress = achievementsProgress.get(id);
             }
             if (achievementsProgress.get(id) < ACHIEVEMENT_UNLOCK_VALUES.get(id) && progress >= ACHIEVEMENT_UNLOCK_VALUES.get(id)) {
-                unlocked = dateFormat.format(calender.getTime());
+                unlocked = java.time.LocalDate.now().toString();
                 achievementsProgress.replace(id, progress);
                 putAchievement(ACHIEVEMENT_ALL, 1).observeOn(FX_SCHEDULER).subscribe();
             }

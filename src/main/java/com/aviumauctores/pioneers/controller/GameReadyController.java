@@ -62,9 +62,6 @@ public class GameReadyController extends PlayerListController {
     public Label gameNameLabel;
 
     @FXML
-    public Label nameLabel;
-
-    @FXML
     public Button sendMessageButton;
 
     @FXML
@@ -356,10 +353,6 @@ public class GameReadyController extends PlayerListController {
                         gameOptionButton.setDisable(true);
                     }
                 }));
-
-        disposables.add(userService.getUserName(userService.getCurrentUserID())
-                .observeOn(FX_SCHEDULER)
-                .subscribe(name -> nameLabel.setText(bundle.getString("welcome") + " " + name)));
 
         //press esc to leave
         leaveGameButton.setCancelButton(true);

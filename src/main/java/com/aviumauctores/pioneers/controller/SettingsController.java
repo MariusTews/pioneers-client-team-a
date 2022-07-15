@@ -115,6 +115,7 @@ public class SettingsController implements Controller {
             e.printStackTrace();
             return null;
         }
+
         changeNameButton.setOnAction(this::onPencilClicked);
         changePasswordButton.setOnAction(this::onPencilClicked);
         changeAvatarButton.setOnAction(this::onPencilClicked);
@@ -188,13 +189,11 @@ public class SettingsController implements Controller {
             return;
         }
         errorService.setErrorCodesUsers();
-        userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(r -> {
-                    currentNameLabel.setText(r.name());
-                    currentUser = r;
-                    closeWindow();
-                }, errorService::handleError);
+        userService.updateUser(currentUser._id(), new UpdateUserDto(newName, null, null, null, null)).observeOn(FX_SCHEDULER).subscribe(r -> {
+            currentNameLabel.setText(r.name());
+            currentUser = r;
+            closeWindow();
+        }, errorService::handleError);
     }
 
     public void changePassword(ActionEvent event) {
@@ -212,15 +211,13 @@ public class SettingsController implements Controller {
             if (newPassword.isBlank()) {
                 return;
             }
-            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null))
-                    .observeOn(FX_SCHEDULER)
-                    .subscribe(r -> {
-                        closeWindow();
-                        currentUser = r;
-                    }, throwable -> {
-                        errorService.setErrorCodesUsers();
-                        errorService.handleError(throwable);
-                    });
+            userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, null, newPassword, null)).observeOn(FX_SCHEDULER).subscribe(r -> {
+                closeWindow();
+                currentUser = r;
+            }, throwable -> {
+                errorService.setErrorCodesUsers();
+                errorService.handleError(throwable);
+            });
         }, throwable -> {
             errorService.setErrorCodesLogin();
             errorService.handleError(throwable);
@@ -231,18 +228,16 @@ public class SettingsController implements Controller {
         //change the avatar to the new Parameter
         String avatarUrl = newParameterField.getText();
         errorService.setErrorCodesUsers();
-        userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null))
-                .observeOn(FX_SCHEDULER)
-                .subscribe(r -> {
-                    try {
-                        Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
-                        avatarView.setImage(avatar);
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                    }
-                    currentUser = r;
-                    closeWindow();
-                }, errorService::handleError);
+        userService.updateUser(currentUser._id(), new UpdateUserDto(null, null, avatarUrl, null, null)).observeOn(FX_SCHEDULER).subscribe(r -> {
+            try {
+                Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
+                avatarView.setImage(avatar);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+            currentUser = r;
+            closeWindow();
+        }, errorService::handleError);
     }
 
     public void closeWindow() {
