@@ -2,6 +2,7 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.dto.events.EventDto;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
@@ -137,6 +138,9 @@ public class InGameControllerTest extends ApplicationTest {
         when(userService.getCurrentUserID()).thenReturn("1");
         when(gameMemberService.getMember("1")).thenReturn(Observable.just(new Member("", "", "12", "1", true, Color.GREEN, false)));
         when(gameService.getCurrentGameID()).thenReturn("12");
+        when(userService.updateUser(anyString(), any()))
+                .thenReturn(Observable.just(new User("1", "user", "false", "avatar", null)));
+        when(userService.getUserByID(anyString())).thenReturn(Observable.just(new User("1", "user", "false", "avatar", null)));
         Player player = new Player("12", "1", "#008000", true,
                 2, new HashMap<>(), new HashMap<>(), 0, 0);
         when(pioneerService.getState()).thenReturn(Observable.just(new State("", "12",
@@ -150,7 +154,7 @@ public class InGameControllerTest extends ApplicationTest {
                 "420", "12", "1", "founding-roll", 2, null, null, null, null)));
         when(pioneerService.getMap()).thenReturn(Observable.just(new Map("12", List.of(new Tile(0, 0, 0, "desert", 10)), List.of(new Harbor(0, 0, 0, "lumber", 1)))));
         when(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)).thenReturn(stateUpdates);
-        when(pioneerService.listPlayers()).thenReturn(Observable.empty());
+        when(pioneerService.listPlayers()).thenReturn(Observable.just(List.of(player)));
         when(achievementsService.getUserAchievements()).thenReturn(Observable.empty());
         new App(inGameController).start(stage);
     }
@@ -181,6 +185,7 @@ public class InGameControllerTest extends ApplicationTest {
         crossingPane.setVisible(true);
         // Open the build menu
         clickOn("#buildingX0Y0Z0R0");
+        WaitForAsyncUtils.waitForFxEvents();
         Optional<Node> settlementLabel = lookup("Settlement").tryQuery();
         assertThat(settlementLabel).isPresent();
     }

@@ -3,6 +3,9 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Achievement;
+import com.aviumauctores.pioneers.model.User;
+import com.aviumauctores.pioneers.service.AchievementsService;
+import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.service.AchievementsService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
@@ -13,12 +16,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -27,16 +28,18 @@ import javax.inject.Provider;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
+import static com.aviumauctores.pioneers.Constants.RANKING;
 import static com.aviumauctores.pioneers.Constants.*;
 
 public class AchievementsController extends PlayerListController {
 
     private final App app;
     private final ResourceBundle bundle;
-
     private final AchievementsService achievementsService;
 
     @FXML
@@ -92,19 +95,20 @@ public class AchievementsController extends PlayerListController {
     public VBox aM13;
     public VBox aM14;
     public VBox aM15;
+    public Pane achievementsPane;
 
 
     private Color hoverColor;
 
     private final Color defaultColor;
+    private ListView<HBox> friendsList;
 
     @Inject
     public AchievementsController(App app,
                                   Provider<LobbyController> lobbyController,
                                   ResourceBundle bundle,
                                   LoginService loginService,
-                                  UserService userService,
-                                  AchievementsService achievementsService) {
+                                  UserService userService, AchievementsService achievementsService) {
         super(loginService, userService);
         this.lobbyController = lobbyController;
         this.app = app;
@@ -198,6 +202,42 @@ public class AchievementsController extends PlayerListController {
     }
 
     public void onFriends(ActionEvent actionEvent) {
+        // init friendsList
+        friendsList = new ListView<>();
+        friendsList.setMaxSize(200, 300);
+
+        // setup header
+        HBox headerHbox = new HBox();
+        Label headerLabel = new Label(bundle.getString("friends"));
+        headerLabel.setStyle("-fx-font-size: 20px");
+        headerHbox.getChildren().add(headerLabel);
+        HBox empty = new HBox(new Label());
+        friendsList.getItems().addAll(headerHbox, empty);
+
+        // add friends
+        User myUser = userService.getUserByID(userService.getCurrentUserID()).blockingFirst();
+        List<String> friends = myUser.friends();
+        for (String friend : friends) {
+            StringBuilder name = new StringBuilder(userService.getUserName(friend).blockingFirst());
+            int length = name.length();
+            name.append(" ".repeat(Math.max(0, 24 - length)));
+            HBox friendsHbox = new HBox(new Label(name.toString()));
+            disposables.add(achievementsService.getUserAchievement(friend, RANKING)
+                    .observeOn(FX_SCHEDULER).
+                    subscribe(success -> {
+                        for (Achievement achievement : success) {
+                            if (Objects.equals(achievement.id(), RANKING)) {
+                                friendsHbox.getChildren().add(new Label(" RP: " + achievement.progress()));
+                            }
+                        }
+                    }, error -> friendsHbox.getChildren().add(new Label(" RP: 0"))));
+            friendsList.getItems().add(friendsHbox);
+        }
+        friendsList.setLayoutX(friendsButton.getLayoutX()+270);
+        friendsList.setLayoutY(friendsButton.getLayoutY());
+
+        achievementsPane.getChildren().add(friendsList);
+
     }
 
     public void leaveAchievments(MouseEvent mouseEvent) {
@@ -355,7 +395,7 @@ public class AchievementsController extends PlayerListController {
             deleteTooltip(capitalistLabel);
         }
     }
-    
+
     public void setBackground(VBox vbox, Color color) {
         BackgroundFill bf = new BackgroundFill(color, new CornerRadii(1), null);
         vbox.setBackground(new Background(bf));
@@ -370,5 +410,12 @@ public class AchievementsController extends PlayerListController {
 
     public void deleteTooltip(Label achievmentsLabel) {
         achievmentsLabel.setTooltip(null);
+    }
+
+    public void onAchievementsPaneClicked(MouseEvent mouseEvent) {
+        if (friendsList != null) {
+            achievementsPane.getChildren().remove(friendsList);
+            friendsList = null;
+        }
     }
 }

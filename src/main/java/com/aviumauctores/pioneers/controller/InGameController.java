@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.dto.events.EventDto;
 import com.aviumauctores.pioneers.dto.rob.RobDto;
+import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.*;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameMusic;
@@ -52,6 +53,13 @@ public class InGameController extends LoggedInController {
     public VBox tradeRequestPopup;
     public Button viewRequestButton;
     public Label playerWantTradeLabel;
+    public HBox vpHbox;
+    public Pane vpPane;
+    public Label resourceLabel;
+    public Text soundSliderLabelTop;
+    public Text soundSliderLabelRight;
+    public Label lastRollPlayerLabelPart2;
+    public Text soundSliderLabelLeft;
     private Player player;
 
     private final EventListener eventListener;
@@ -135,7 +143,6 @@ public class InGameController extends LoggedInController {
     private final Map<String, Boolean> enableButtons = new HashMap<>();
     private int requiredPoints;
 
-
     // These are the Sound-Icons
     Image muteImage;
     Image unmuteImage;
@@ -157,7 +164,7 @@ public class InGameController extends LoggedInController {
     //for tradingController
     private final TradeService tradeService;
     private String desertTileId;
-    private HashMap<String, Integer> tradeRessources;
+    private HashMap<String, Integer> tradeResources;
     private String tradePartner;
     private String tradePartnerAvatarUrl;
     private String tradePartnerColor;
@@ -167,6 +174,8 @@ public class InGameController extends LoggedInController {
     private HashMap<String, List<String>> nextHarbors;
     private boolean rejoin = false;
     private final HashMap<String, String> playerColors = new HashMap<>();
+    private boolean longestRoad;
+    private HashMap<String, Integer> resourceRatio;
 
 
     @Inject
@@ -214,6 +223,7 @@ public class InGameController extends LoggedInController {
     public void init() {
         disposables = new CompositeDisposable();
         memberVP = 0;
+        longestRoad = false;
         resourceNames = new String[]{RESOURCE_BRICK, RESOURCE_GRAIN, RESOURCE_LUMBER, RESOURCE_ORE, RESOURCE_WOOL};
         enableButtons.put(BUILDING_TYPE_CITY, false);
         enableButtons.put(BUILDING_TYPE_SETTLEMENT, false);
@@ -236,7 +246,33 @@ public class InGameController extends LoggedInController {
                     }
                 }));
 
-        // Initialize these objects here because else the tests would fail
+        //add friends and update user
+        List<Player> newFriends = pioneerService.listPlayers().blockingFirst();
+        User myUser = userService.getUserByID(userID).blockingFirst();
+        List<String> actFriends = myUser.friends();
+        //check != null for the test
+        if (actFriends != null) {
+            for (Player newPlayers : newFriends) {
+                if (!actFriends.contains(newPlayers.userId()) && !newPlayers.userId().equals(myUser._id())) {
+                    actFriends.add(newPlayers.userId());
+                }
+            }
+        }
+        errorService.setErrorCodesUsers();
+        disposables.add(userService.updateUser(userID, new UpdateUserDto(null, null, null, null, actFriends))
+                .observeOn(FX_SCHEDULER)
+                .subscribe(success -> {
+                }, errorService::handleError));
+
+        // init resourceRatio Hashmap
+        resourceRatio = new HashMap<>();
+        resourceRatio.put(RESOURCE_LUMBER, 4);
+        resourceRatio.put(RESOURCE_BRICK, 4);
+        resourceRatio.put(RESOURCE_GRAIN, 4);
+        resourceRatio.put(RESOURCE_ORE, 4);
+        resourceRatio.put(RESOURCE_WOOL, 4);
+
+
         gameSound = soundService.createGameMusic(Objects.requireNonNull(Main.class.getResource("sounds/GameMusik.mp3")));
         muteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/mute.png")).toString());
         unmuteImage = new Image(Objects.requireNonNull(Main.class.getResource("soundImages/unmute.png")).toString());
@@ -310,9 +346,16 @@ public class InGameController extends LoggedInController {
                                 crossingPane = controller.getCrossingPane();
                                 robberPane = controller.getRobberPane();
                                 vpCircles = new ArrayList<>();
-                                for (Node vpCircle : controller.getVpBox().getChildren()) {
-                                    vpCircles.add((Circle) vpCircle);
+                                for (int i = 0; i < gameService.getVictoryPoints(); i++) {
+                                    Circle vpCircle = new Circle();
+                                    vpCircle.setRadius(10);
+                                    vpCircle.setFill(Color.GRAY);
+                                    vpCircle.setStroke(Color.BLACK);
+                                    vpCircle.setStrokeWidth(1);
+                                    vpCircles.add(vpCircle);
+                                    vpHbox.getChildren().add(vpCircle);
                                 }
+                                vpPane.toFront();
                                 //put robber on desert tile
                                 desertTileId = controller.getDesertTileId();
                                 String desertRobberImageId = desertTileId.replace("hexagon", "robber");
@@ -419,54 +462,97 @@ public class InGameController extends LoggedInController {
     }
 
     private void onBuildEvent(EventDto<Building> buildingEventDto) {
-        if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-            //listen to new and updated buildings, and load the image
-            Building b = buildingEventDto.data();
-            statService.onBuildingBuilt(b.owner(), b.type());
-            buildService.setPlayerId(b.owner());
-            buildService.setBuildingType(b.type());
-            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
-            buildService.setSelectedField(position);
-            buildService.loadBuildingImage();
-            String buildingImageId = position.getId().split("#")[0];
-            enableBuildingColor(buildingImageId, b.owner(), b.type());
-            if (b.owner().equals(userID)) {
-                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
-                    gainVP(1);
+                                        if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
+                                            //listen to new and updatedbuildings, and load the image
+                                            Building b = buildingEventDto.data();
+                                            statService.onBuildingBuilt(b.owner(), b.type());buildService.setPlayerId(b.owner());
+                                            buildService.setBuildingType(b.type());
+                                            ImageView position = getView(b.x(), b.y(), b.z(), b.side());
+                                            buildService.setSelectedField(position);
+                                            buildService.loadBuildingImage();
+                                            String buildingImageId = position.getId().split("#")[0];
+                                            enableBuildingColor(buildingImageId, b.owner(), b.type());
+                                            if (b.owner().equals(userID)) {
+                                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT) || b.type().equals(BUILDING_TYPE_CITY)) {
+                                                    gainVP(1);
+                                                }
+                                                if (b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                                    String field = "building" + "X" + b.x() + "Y" + b.y() + "Z" + b.z() + "R" + b.side();
+                                                    this.checkNewResourceRatio(nextHarbors, field);
+                                                }
+                                            }
+                                            if (!roadAndCrossingPane.getChildren().contains(position)) {
+                                                position.setVisible(true);
+                                                roadAndCrossingPane.getChildren().add(position);
+                                            }if (!rejoin) {
+                                            if (soundImage.getImage() == muteImage) {
+                                                GameSounds buildSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
+                                                if (buildSound != null) {
+                                                    buildSound.play();
+
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
+                                                GameSounds roadSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
+                                                if (roadSound != null) {
+                                                    roadSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
+                                                GameSounds settlementSound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
+                                                if (settlementSound != null) {
+                                                    settlementSound.play();
+                                                }
+                                            }
+                                            if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
+                                                GameSounds citySound = soundService
+                                                        .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
+                                                if (citySound != null) {
+                                                    citySound.play();
+                                                }
+                                            }
+                                        }
+                                    }
+    }
+
+    private void checkNewResourceRatio(HashMap<String, List<String>> harborCrossings, String field) {
+        for (String crossing : harborCrossings.get(null)) {
+            if (Objects.equals(crossing, field)) {
+                if (resourceRatio.get(RESOURCE_BRICK) > 3) {
+                    resourceRatio.put(RESOURCE_BRICK, 3);
                 }
+                if (resourceRatio.get(RESOURCE_ORE) > 3) {
+                    resourceRatio.put(RESOURCE_ORE, 3);
+                }
+                if (resourceRatio.get(RESOURCE_GRAIN) > 3) {
+                    resourceRatio.put(RESOURCE_GRAIN, 3);
+                }
+                if (resourceRatio.get(RESOURCE_LUMBER) > 3) {
+                    resourceRatio.put(RESOURCE_LUMBER, 3);
+                }
+                if (resourceRatio.get(RESOURCE_WOOL) > 3) {
+                    resourceRatio.put(RESOURCE_WOOL, 3);
+                }
+                break;
             }
-            if (!roadAndCrossingPane.getChildren().contains(position)) {
-                position.setVisible(true);
-                roadAndCrossingPane.getChildren().add(position);
-            }
-            if (!rejoin) {
-                if (soundImage.getImage() == muteImage) {
-                    GameSounds buildSound = soundService
-                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/Hammer.mp3")));
-                    if (buildSound != null) {
-                        buildSound.play();
-                    }
-                }
-                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_ROAD)) {
-                    GameSounds roadSound = soundService
-                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/road.mp3")));
-                    if (roadSound != null) {
-                        roadSound.play();
-                    }
-                }
-                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_SETTLEMENT)) {
-                    GameSounds settlementSound = soundService
-                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/settlement.mp3")));
-                    if (settlementSound != null) {
-                        settlementSound.play();
-                    }
-                }
-                if (soundImage.getImage() == muteImage && b.type().equals(BUILDING_TYPE_CITY)) {
-                    GameSounds citySound = soundService
-                            .createGameSounds(Objects.requireNonNull(Main.class.getResource("sounds/city.mp3")));
-                    if (citySound != null) {
-                        citySound.play();
-                    }
+        }
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_BRICK, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_GRAIN, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_LUMBER, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_ORE, field);
+        this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_WOOL, field);
+
+    }
+
+    private void checkTradingRatioTwotoOne(HashMap<String, List<String>> harborCrossings, String resource, String field) {
+        for (String crossing : harborCrossings.get(resource)) {
+            if (Objects.equals(crossing, field)) {
+                if (resourceRatio.get(resource) > 2) {
+                    resourceRatio.put(resource, 2);
+                    break;
                 }
             }
         }
@@ -501,7 +587,6 @@ public class InGameController extends LoggedInController {
                 this.tradingController.handleRequest(move.resources(), move.userId());
             }
         }
-
         //declined trade
         if (move.resources() == null) {
             if (move.action().equals("offer") && this.tradingController != null) {
@@ -750,8 +835,30 @@ public class InGameController extends LoggedInController {
                 tradingController.updatePlayer(updatedPlayer);
             }
         }
+        if (updatedPlayer.longestRoad() != 0) {
+            playerResourceListController.setLongestRoad(updatedPlayer);
+            if (longestRoad && !Objects.equals(updatedPlayer.userId(), userID)) {
+                longestRoad = false;
+                this.deleteVP(2);
+            } else if (!longestRoad && Objects.equals(updatedPlayer.userId(), userID)) {
+                longestRoad = true;
+                this.gainVP(2);
+
+            }
+        }
         playerResourceListController.updatePlayerLabel(updatedPlayer);
         statService.updatePlayerStats(updatedPlayer);
+    }
+
+    private void deleteVP(int vpLoss) {
+        for (int i = memberVP - 1; i > memberVP - vpLoss - 1; i--) {
+            if (vpCircles.get(i).getFill() == Color.GOLD) {
+                vpCircles.get(i).setFill(Color.GRAY);
+            }
+        }
+        memberVP -= vpLoss;
+
+
     }
 
     public void finishMove(ActionEvent actionEvent) {
@@ -763,7 +870,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void build(ActionEvent event) {
-        buildService.build(nextHarbors);
+        buildService.build();
     }
 
     //enables the circle/rectangle behind buildings and fills it with color
@@ -878,13 +985,13 @@ public class InGameController extends LoggedInController {
         buildService.setBuildingType(sideType);
         if (currentAction != null) {
             if (currentAction.startsWith("founding")) {
-                buildService.build(nextHarbors);
+                buildService.build();
                 return;
             }
 
         }
 
-        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, nextHarbors, this);
+        buildMenuController = new BuildMenuController(enableButtons.get(sideType), buildService, bundle, sideType, this);
         buildMenu = buildMenuController.render();
         buildMenu.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             buildMenu.setLayoutX(Math.min(source.getX() + 240, ingamePane.getWidth() - newValue.getWidth()));
@@ -1303,7 +1410,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void trade(ActionEvent actionEvent) {
-        tradingController = new TradingController(this, bundle, achievementsService, userService, pioneerService, colorService, errorService, player, buildService.getResourceRatio(), tradeService);
+        tradingController = new TradingController(this, bundle, achievementsService, userService, pioneerService, colorService, errorService, player, resourceRatio, tradeService);
         tradingController.init();
         tradingMenu = tradingController.render();
         tradingMenu.setLayoutX(255);
@@ -1317,7 +1424,7 @@ public class InGameController extends LoggedInController {
 
     // trade with the bank or another player
     public void showTradeRequest(HashMap<String, Integer> resources, String partner) {
-        tradeRessources = resources;
+        tradeResources = resources;
         viewRequestButton.setDisable(false);
         tradeRequestPopup.setStyle("-fx-background-color: #ffffff");
         viewRequestButton.setStyle("-fx-background-color: " + player.color());
@@ -1333,7 +1440,7 @@ public class InGameController extends LoggedInController {
     }
 
     public void viewRequest(ActionEvent actionEvent) {
-        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeRessources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
+        tradeRequestController = new TradeRequestController(this, bundle, pioneerService, errorService, tradeResources, tradePartner, tradePartnerAvatarUrl, tradePartnerColor, colorService.getColor(player.color()), player, tradeService);
         tradeRequestController.init();
         requestMenu = tradeRequestController.render();
         requestMenu.setLayoutX(255);

@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.dto.achievements.CreateAchievementDto;
 import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.model.AchievementSummary;
+import dagger.Provides;
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.*;
 

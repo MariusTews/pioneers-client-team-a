@@ -49,6 +49,7 @@ public class PlayerRequestsListController implements Controller {
             tradingController.setSumRequest(0);
             tradingController.initSpinnersPrivateTrade();
             tradingController.enableButtons();
+            tradingController.setAllBorderColorTransparent();
         });
     }
 
