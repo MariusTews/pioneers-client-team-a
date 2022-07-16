@@ -68,7 +68,7 @@
             </Button>
         </HBox>
         <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="260.0" spacing="30.0">
-            <ImageView fx:id="achievementsButton" fitHeight="31.0" fitWidth="33.0" onMouseClicked="#inToAchievement" pickOnBounds="true"
+            <ImageView id="achievementsButton" fitHeight="31.0" fitWidth="33.0" onMouseClicked="#inToAchievement" pickOnBounds="true"
                        preserveRatio="true">
                 <HBox.margin>
                     <Insets left="15.0"/>
