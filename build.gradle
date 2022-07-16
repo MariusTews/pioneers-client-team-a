@@ -80,7 +80,7 @@ test {
         showStackTraces = true
     }
 
-    systemProperties = [
+    /*systemProperties = [
             'java.awt.headless': 'true',
             'testfx.robot'     : 'glass',
             'testfx.headless'  : 'true',
@@ -88,7 +88,7 @@ test {
             'monocle.platform' : 'Headless',
             'prism.order'      : 'sw',
             'prism.text'       : 't2k',
-    ]
+    ]*/
 
     jvmArgs += [
             '-Xmx2g',

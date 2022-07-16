@@ -11,7 +11,7 @@
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.GameOptionController">
     <Button layoutX="40.0" layoutY="255.0" mnemonicParsing="false" onAction="#leaveOption"
             prefHeight="29.0" prefWidth="95.0" text="%cancel"/>
-    <Button layoutX="172.0" layoutY="255.0" mnemonicParsing="false" onAction="#takeOverOption"
+    <Button id="takeOverButton" layoutX="172.0" layoutY="255.0" mnemonicParsing="false" onAction="#takeOverOption"
             prefHeight="29.0" prefWidth="95.0" text="%takeOver">
         <opaqueInsets>
             <Insets/>

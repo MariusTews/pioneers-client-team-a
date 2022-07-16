@@ -117,6 +117,7 @@ class AppTest extends ApplicationTest {
         clickOn("#gameOptionButton");
         Spinner<Integer> vpSpinner = lookup("#victoryPoints").query();
         vpSpinner.increment();
+        WaitForAsyncUtils.waitForFxEvents();
         clickOn("#takeOverButton");
         clickOn("#startGameButton");
         WaitForAsyncUtils.waitForFxEvents();
