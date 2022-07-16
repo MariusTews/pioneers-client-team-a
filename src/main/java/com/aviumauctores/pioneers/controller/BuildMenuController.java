@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 
 public class BuildMenuController implements Controller {
     private final InGameController inGameController;
+    private final String playerColor;
     private final BuildService buildService;
     private final ResourceBundle bundle;
     private final String buildingType;
@@ -22,12 +23,13 @@ public class BuildMenuController implements Controller {
     @FXML
     private Button buildButton;
 
-    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, InGameController inGameController) {
+    public BuildMenuController(Boolean enableButton, BuildService buildService, ResourceBundle bundle, String buildingType, InGameController inGameController, String playerColor) {
         this.buildService = buildService;
         this.bundle = bundle;
         this.buildingType = buildingType;
         this.enableButton = enableButton;
         this.inGameController = inGameController;
+        this.playerColor = playerColor;
     }
 
     @Override
@@ -56,6 +58,7 @@ public class BuildMenuController implements Controller {
         }
 
         buildButton.setDisable(!enableButton);
+        buildButton.setStyle("-fx-background-radius: 47; -fx-background-color: " + playerColor);
 
         PannableCanvas canvas = new PannableCanvas();
         canvas.getChildren().add(parent);

@@ -76,7 +76,9 @@ public class PlayerRequestsListController implements Controller {
     }
 
     public void showRequest(String playerID) {
-        listItems.get(playerID).showRequest();
+        if (listItems.getOrDefault(playerID, null) != null) {
+            listItems.get(playerID).showRequest();
+        }
 
     }
 
