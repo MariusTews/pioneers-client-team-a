@@ -99,6 +99,14 @@ class AppTest extends ApplicationTest {
         clickOn("#leaveButton");
 
         screenAsserts.assertLobbyScreen();
+        // Go to achievements
+        clickOn("#achievementsButton");
+
+        screenAsserts.assertAchievementsScreen();
+        // Go back to lobby
+        clickOn("#leaveButton");
+
+        screenAsserts.assertLobbyScreen();
         // Join a game
         clickOn("Join");
         // Wait for CI
@@ -124,7 +132,8 @@ class AppTest extends ApplicationTest {
 
 
         screenAsserts.assertIngameScreen();
-        sleep(10000);
+        clickOn("#tradeButton");
+        clickOn("#cancelTradeButton");
         // Go back to game ready screen
         clickOn("#leaveGameButton");
 

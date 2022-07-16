@@ -175,6 +175,10 @@ public class AchievementsController extends PlayerListController {
             return null;
         }
         friendsButton.setOnAction(this::onFriends);
+        // init friendsList
+        friendsList = new ListView<>();
+        friendsList.setMaxSize(200, 300);
+        friendsList.setId("friendsList");
         disposables.add(userService.getUserName(userService.getCurrentUserID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(name -> playerLabel2.setText(name + "")));
@@ -202,41 +206,43 @@ public class AchievementsController extends PlayerListController {
     }
 
     public void onFriends(ActionEvent actionEvent) {
-        // init friendsList
-        friendsList = new ListView<>();
-        friendsList.setMaxSize(200, 300);
+        if (friendsList.getItems().size() > 0) {
+            achievementsPane.getChildren().remove(friendsList);
+            friendsList.getItems().clear();
+        } else {
 
-        // setup header
-        HBox headerHbox = new HBox();
-        Label headerLabel = new Label(bundle.getString("friends"));
-        headerLabel.setStyle("-fx-font-size: 20px");
-        headerHbox.getChildren().add(headerLabel);
-        HBox empty = new HBox(new Label());
-        friendsList.getItems().addAll(headerHbox, empty);
+            // setup header
+            HBox headerHbox = new HBox();
+            Label headerLabel = new Label(bundle.getString("friends"));
+            headerLabel.setStyle("-fx-font-size: 20px");
+            headerHbox.getChildren().add(headerLabel);
+            HBox empty = new HBox(new Label());
+            friendsList.getItems().addAll(headerHbox, empty);
 
-        // add friends
-        User myUser = userService.getUserByID(userService.getCurrentUserID()).blockingFirst();
-        List<String> friends = myUser.friends();
-        for (String friend : friends) {
-            StringBuilder name = new StringBuilder(userService.getUserName(friend).blockingFirst());
-            int length = name.length();
-            name.append(" ".repeat(Math.max(0, 24 - length)));
-            HBox friendsHbox = new HBox(new Label(name.toString()));
-            disposables.add(achievementsService.getUserAchievement(friend, RANKING)
-                    .observeOn(FX_SCHEDULER).
-                    subscribe(success -> {
-                        for (Achievement achievement : success) {
-                            if (Objects.equals(achievement.id(), RANKING)) {
-                                friendsHbox.getChildren().add(new Label(" RP: " + achievement.progress()));
+            // add friends
+            User myUser = userService.getUserByID(userService.getCurrentUserID()).blockingFirst();
+            List<String> friends = myUser.friends();
+            for (String friend : friends) {
+                StringBuilder name = new StringBuilder(userService.getUserName(friend).blockingFirst());
+                int length = name.length();
+                name.append(" ".repeat(Math.max(0, 24 - length)));
+                HBox friendsHbox = new HBox(new Label(name.toString()));
+                disposables.add(achievementsService.getUserAchievement(friend, RANKING)
+                        .observeOn(FX_SCHEDULER).
+                        subscribe(success -> {
+                            for (Achievement achievement : success) {
+                                if (Objects.equals(achievement.id(), RANKING)) {
+                                    friendsHbox.getChildren().add(new Label(" RP: " + achievement.progress()));
+                                }
                             }
-                        }
-                    }, error -> friendsHbox.getChildren().add(new Label(" RP: 0"))));
-            friendsList.getItems().add(friendsHbox);
-        }
-        friendsList.setLayoutX(friendsButton.getLayoutX()+270);
-        friendsList.setLayoutY(friendsButton.getLayoutY());
+                        }, error -> friendsHbox.getChildren().add(new Label(" RP: 0"))));
+                friendsList.getItems().add(friendsHbox);
+            }
+            friendsList.setLayoutX(friendsButton.getLayoutX()+270);
+            friendsList.setLayoutY(friendsButton.getLayoutY());
 
-        achievementsPane.getChildren().add(friendsList);
+            achievementsPane.getChildren().add(friendsList);
+        }
 
     }
 
@@ -415,7 +421,7 @@ public class AchievementsController extends PlayerListController {
     public void onAchievementsPaneClicked(MouseEvent mouseEvent) {
         if (friendsList != null) {
             achievementsPane.getChildren().remove(friendsList);
-            friendsList = null;
+            friendsList.getItems().clear();
         }
     }
 }
