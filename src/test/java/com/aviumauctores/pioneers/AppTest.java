@@ -1,6 +1,7 @@
 package com.aviumauctores.pioneers;
 
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -111,12 +112,19 @@ class AppTest extends ApplicationTest {
         type(KeyCode.KP_DOWN);
         sleep(200);
         type(KeyCode.ESCAPE);
+        clickOn("#onButton");
+        clickOn("#offButton");
+        clickOn("#gameOptionButton");
+        Spinner<Integer> vpSpinner = lookup("#victoryPoints").query();
+        vpSpinner.increment();
+        clickOn("#takeOverButton");
         clickOn("#startGameButton");
         WaitForAsyncUtils.waitForFxEvents();
         sleep(500);
 
 
         screenAsserts.assertIngameScreen();
+        sleep(10000);
         // Go back to game ready screen
         clickOn("#leaveGameButton");
 
