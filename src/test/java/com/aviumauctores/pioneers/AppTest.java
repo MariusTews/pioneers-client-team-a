@@ -4,12 +4,14 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.testfx.assertions.api.Assertions.assertThat;
 
 class AppTest extends ApplicationTest {
@@ -71,7 +73,7 @@ class AppTest extends ApplicationTest {
         screenAsserts.assertLobbyScreen();
         clickOn("#achievementsIcon");
 
-        screenAsserts.asserAchievementScreen();
+        screenAsserts.assertAchievementsScreen();
         clickOn("#leaveButton");
 
         screenAsserts.assertLobbyScreen();
@@ -123,7 +125,7 @@ class AppTest extends ApplicationTest {
         clickOn("#offButton");
         clickOn("#gameOptionButton");
         Spinner<Integer> vpSpinner = lookup("#victoryPoints").query();
-        vpSpinner.increment();
+        vpSpinner.getValueFactory().setValue(3);
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#takeOverButton");
         clickOn("#startGameButton");
@@ -132,14 +134,32 @@ class AppTest extends ApplicationTest {
 
 
         screenAsserts.assertIngameScreen();
-        sleep(10000);
-        // Go back to game ready screen
-        clickOn("#leaveGameButton");
+        HBox vpBox = lookup("#vpHbox").query();
+        assertEquals(vpBox.getChildren().size(), 3);
+        // founding 1
+        clickOn("#buildingX0Y0Z0R0");
+        clickOn("#buildingX0Y0Z0R11");
+        // founding 2
+        clickOn("#buildingX0Y2Z_2R6");
+        clickOn("#buildingX0Y1Z_1R11");
+        clickOn("#rollButton");
+        // build street
+        clickOn("#buildingX_1Y1Z0R3");
+        clickOn("#buildButton");
+        // build settlement
+        clickOn("#buildingX_1Y0Z1R0");
+        clickOn("#buildButton");
 
-        screenAsserts.assertGameReadyScreen();
-        // Go back to lobby
-        clickOn("#leaveGameButton");
-        clickOn("OK");
+        WaitForAsyncUtils.waitForFxEvents();
+        screenAsserts.assertPostGameScreen();
+        clickOn("#showStatsButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        screenAsserts.assertStatsScreen();
+        clickOn("#leaveButton");
+
+        screenAsserts.assertPostGameScreen();
+        clickOn("#returnButton");
 
         screenAsserts.assertLobbyScreen();
         // Logout
