@@ -359,7 +359,7 @@ public class TestModule {
             @Override
             public Observable<Game> getGame(String id) {
                 return Observable.just(new Game(
-                        "", "", id, "Game" + id, "1", false, 1, new GameSettings(2, 10)
+                        "", "", id, "Game" + id, "1", false, 1, new GameSettings(2, 3)
                 ));
             }
 
@@ -367,7 +367,7 @@ public class TestModule {
             public Observable<Game> updateGame(String id, UpdateGameDto updateGameDto) {
                 String name = updateGameDto.name() != null ? updateGameDto.name() : "Game" + id;
                 String owner = updateGameDto.owner() != null ? updateGameDto.owner() : "1";
-                Game game = new Game("", "", id, name, owner, updateGameDto.started(), 1, new GameSettings(2, 10));
+                Game game = new Game("", "", id, name, owner, updateGameDto.started(), 1, new GameSettings(2, 3));
                 testEventListener.fireEvent("games.101.*", new EventDto<>("games.101.updated", game));
                 return Observable.just(game);
             }
