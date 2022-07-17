@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -187,7 +186,7 @@ public class MapController implements Controller {
             for (int yIterator = 0; yIterator < -1 * radius; yIterator++) {
                 double tileX = middleX - (0.75 * radius * fitWidthHexagon) - (0.75 * yIterator * fitWidthHexagon);
                 double tileY = middleY - (0.5 * radius * fitHeightHexagon) + (0.5 * yIterator * fitHeightHexagon);
-                String position = coordinatesToString(radius, yIterator, (radius + yIterator));
+                String position = coordinatesToString(radius, yIterator, -1 * (radius + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
                 if (yIterator != 0) {
@@ -374,11 +373,13 @@ public class MapController implements Controller {
     }
 
     public void createHarborLabels(double coordinateX, double coordinateY, double size, String resource, String labelFontSize) {
-        if (resource != null && !resource.equals("")) {
-            createLabel(coordinateX, coordinateY, bundle.getString(resource), labelFontSize);
-            createLabel(coordinateX, coordinateY + size, "2:1", labelFontSize);
-        } else {
-            createLabel(coordinateX, coordinateY, "3:1", labelFontSize);
+        if (bundle != null) {
+            if (resource != null && !resource.equals("")) {
+                createLabel(coordinateX, coordinateY, bundle.getString(resource), labelFontSize);
+                createLabel(coordinateX, coordinateY + size, "2:1", labelFontSize);
+            } else {
+                createLabel(coordinateX, coordinateY, "3:1", labelFontSize);
+            }
         }
     }
 

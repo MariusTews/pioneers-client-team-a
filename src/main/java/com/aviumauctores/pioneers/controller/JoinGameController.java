@@ -23,7 +23,6 @@ import javafx.scene.image.ImageView;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -62,8 +61,6 @@ public class JoinGameController extends LoggedInController {
     Image show;
     Image hide;
 
-
-    private final HashMap<String, String> errorCodes = new HashMap<>();
 
     @Inject
     public JoinGameController(App app,

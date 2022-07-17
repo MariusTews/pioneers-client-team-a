@@ -147,8 +147,10 @@ public class CreateGameController extends LoggedInController {
             alert.setHeaderText(null);
             alert.setContentText(bundle.getString("invalid.game.length"));
             Optional<ButtonType> res = alert.showAndWait();
-            if (res.get() == ButtonType.OK) {
-                alert.close();
+            if (res.isPresent()) {
+                if (res.get() == ButtonType.OK) {
+                    alert.close();
+                }
             }
             return;
         }

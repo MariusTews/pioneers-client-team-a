@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import static com.aviumauctores.pioneers.Constants.*;
 
@@ -85,7 +86,7 @@ public class PostGameController extends  LoggedInController {
                 container[i].setVisible(false);
             }else {
                 String playerID = ranking.get(i).userId();
-                if (playerID == ownName) {
+                if (Objects.equals(playerID, ownName)) {
                     disposables.add(achievementsService.putAchievement(RANKING, 100 - i * 25)
                             .observeOn(FX_SCHEDULER)
                             .subscribe());

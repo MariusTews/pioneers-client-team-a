@@ -332,7 +332,9 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(gameService.getCurrentGame().blockingFirst().settings().mapRadius());
+                                GameSettings settings = gameService.getCurrentGame().blockingFirst().settings();
+                                controller.setMapRadius(settings.mapRadius());
+                                requiredPoints = settings.victoryPoints();
                                 Pane pane = (Pane) controller.render();
                                 ingamePane.setCenter(pane);
                                 ingamePane.getRight().toFront();
@@ -902,7 +904,7 @@ public class InGameController extends LoggedInController {
             return;
         }
         String color = playerColors.get(owner);
-        //circles are behind settlements and cities
+        // circles are behind settlements and cities
         if (node instanceof Circle circle) {
             if (circle.getFill().equals(Color.TRANSPARENT)) {
                 circle.setFill(Color.web(color));
@@ -1284,7 +1286,7 @@ public class InGameController extends LoggedInController {
         if (count == 0) {
             changeRobberPositionAndRobTarget(robberFieldId, null);
         }
-        //otherwise enable the player to click on the building images to choose a rob target
+        //otherwise enable the player to click on the building images to choose a target to rob
         else {
             robberPane.setDisable(true);
             roadAndCrossingPane.setDisable(false);
@@ -1342,14 +1344,14 @@ public class InGameController extends LoggedInController {
     }
 
 
-    //this method is called when you click on a rob target (building of another player)
+    // this method is called when you click on a robbing-target (building of another player)
     private void initiateRob(MouseEvent mouseEvent) {
         String robberFieldId = selectedRobberFieldId;
         String target = ((Node) mouseEvent.getSource()).getId().split("#")[2];
         changeRobberPositionAndRobTarget(robberFieldId, target);
     }
 
-    //sends a rob move to the server with the new position and the rob target
+    // sends a robbing-move to the server with the new position and the robbing-target
     private void changeRobberPositionAndRobTarget(String newRobberPosition, String target) {
         Point3D p = Point3D.readCoordinatesFromID(newRobberPosition);
 
@@ -1387,7 +1389,7 @@ public class InGameController extends LoggedInController {
 
     //this method is called after a successful rob move for cleaning up
     private void cleanupRobberMove() {
-        //reset all changes made to the rob targets (buildings of other players)
+        //reset all changes made to the robbing-targets (buildings of other players)
         for (Node n : robTargets) {
             n.setOnMouseClicked(this::onFieldClicked);
             n.setDisable(true);

@@ -1,13 +1,11 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Message;
 import com.aviumauctores.pioneers.service.*;
 import com.aviumauctores.pioneers.sounds.GameSounds;
 import com.aviumauctores.pioneers.ws.EventListener;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import javafx.css.StyleClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,7 +29,6 @@ import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;
 
 public class InGameChatController implements Controller {
 
-    private final App app;
     private final UserService userService;
     private final GameService gameService;
     private final GameMemberService gameMemberService;
@@ -40,7 +37,6 @@ public class InGameChatController implements Controller {
     private final ErrorService errorService;
     private final ResourceBundle bundle;
     private final MessageService messageService;
-    private final ColorService colorService;
 
     @FXML
     public TabPane tabPane;
@@ -50,8 +46,6 @@ public class InGameChatController implements Controller {
     public TextField messageTextField;
     @FXML
     public Tab allChatTab;
-    @FXML
-    public ScrollPane chatPane;
     @FXML
     public Button sendMessageButton;
 
@@ -66,14 +60,11 @@ public class InGameChatController implements Controller {
     private String userID;
 
     @Inject
-    public InGameChatController(App app, UserService userService, GameService gameService, GameMemberService gameMemberService,
+    public InGameChatController(UserService userService, GameService gameService, GameMemberService gameMemberService,
                                 SoundService soundService,
                                 EventListener eventListener, ErrorService errorService,
-                                ResourceBundle bundle, MessageService messageService,
-                                ColorService colorService
+                                ResourceBundle bundle, MessageService messageService
     ) {
-
-        this.app = app;
         this.userService = userService;
         this.gameService = gameService;
         this.gameMemberService = gameMemberService;
@@ -82,8 +73,6 @@ public class InGameChatController implements Controller {
         this.errorService = errorService;
         this.bundle = bundle;
         this.messageService = messageService;
-
-        this.colorService = colorService;
     }
 
     public void init() {
@@ -165,7 +154,7 @@ public class InGameChatController implements Controller {
             return;
         }
         messageTextField.clear();
-        messageService.sendGameMessage(message, gameService.getCurrentGameID())
+        disposables.add(messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     ownMessageIds.add(result._id());
@@ -173,7 +162,7 @@ public class InGameChatController implements Controller {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
                     ((ScrollPane) this.allChatTab.getContent()).setVvalue(1.0);
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
     public HBox createMessageLabel(Message message) {
@@ -186,11 +175,11 @@ public class InGameChatController implements Controller {
         avatarView.setFitHeight(20.0);
         HBox playerBox =new HBox(5, avatarView);
 
-       gameMemberService.getMember(message.sender()).observeOn(FX_SCHEDULER).subscribe(
+       disposables.add(gameMemberService.getMember(message.sender()).observeOn(FX_SCHEDULER).subscribe(
                member->{
                   if(member.spectator()){
                       errorService.setErrorCodesUsers();
-                      userService.getUserByID(message.sender())
+                      disposables.add(userService.getUserByID(message.sender())
                               .observeOn(FX_SCHEDULER)
                               .subscribe(
                                       result -> {
@@ -199,7 +188,7 @@ public class InGameChatController implements Controller {
                                           Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
                                           avatarView.setImage(avatar);
                                       }, errorService::handleError
-                              );
+                              ));
                       playerBox.getChildren().add(msgSpectatorLabel);
                       playerBox.setOnMouseClicked(this::onMessageClicked);
                       playerBox.setId(message._id());
@@ -207,7 +196,7 @@ public class InGameChatController implements Controller {
 
                   }else{
                       errorService.setErrorCodesUsers();
-                      userService.getUserByID(message.sender())
+                      disposables.add(userService.getUserByID(message.sender())
                               .observeOn(FX_SCHEDULER)
                               .subscribe(
                                       result -> {
@@ -216,13 +205,13 @@ public class InGameChatController implements Controller {
                                           Image avatar = avatarUrl == null ? null : new Image(avatarUrl);
                                           avatarView.setImage(avatar);
                                       }, errorService::handleError
-                              );
+                              ));
 
                       playerBox.getChildren().add(msgLabel);
                       playerBox.setOnMouseClicked(this::onMessageClicked);
                       playerBox.setId(message._id());
                   }
-               });
+               }));
 
 
          return playerBox;
@@ -239,21 +228,23 @@ public class InGameChatController implements Controller {
             alert.setHeaderText(null);
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
-            if (res.get() == proceedButton) {
-                this.deleteHBox = messageHBox;
-                delete(this.deleteHBox.getId());
-                alert.close();
-            } else {
-                alert.close();
+            if (res.isPresent()) {
+                if (res.get() == proceedButton) {
+                    this.deleteHBox = messageHBox;
+                    delete(this.deleteHBox.getId());
+                    alert.close();
+                } else {
+                    alert.close();
+                }
             }
         }
     }
 
     public void delete(String messageId) {
-        messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
+        disposables.add(messageService.deleteGameMessage(messageId, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
     @Override

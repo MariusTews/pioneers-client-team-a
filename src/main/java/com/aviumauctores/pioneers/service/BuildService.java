@@ -2,15 +2,13 @@ package com.aviumauctores.pioneers.service;
 
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Building;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import retrofit2.HttpException;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -21,13 +19,9 @@ public class BuildService {
     protected CompositeDisposable disposables;
 
     private final PioneerService pioneerService;
-    private final GameMemberService gameMemberService;
     private final GameService gameService;
 
     private final AchievementsService achievementsService;
-    private final ErrorService errorService;
-    private final UserService userService;
-    private final ColorService colorService;
     private ImageView selectedField;
     private String currentAction;
     private final String userID;
@@ -36,16 +30,12 @@ public class BuildService {
     private String buildingType;
     private String selectedFieldCoordinates;
     @Inject
-    public BuildService(PioneerService pioneerService, GameMemberService gameMemberService, GameService gameService, AchievementsService achievementsService, ErrorService errorService,
-                        UserService userService, ColorService colorService, ResourceBundle bundle) {
+    public BuildService(PioneerService pioneerService, GameService gameService, AchievementsService achievementsService,
+                        UserService userService, ResourceBundle bundle) {
 
         this.pioneerService = pioneerService;
-        this.gameMemberService = gameMemberService;
         this.gameService = gameService;
         this.achievementsService = achievementsService;
-        this.errorService = errorService;
-        this.userService = userService;
-        this.colorService = colorService;
         this.userID = userService.getCurrentUserID();
         this.bundle = bundle;
     }
@@ -61,7 +51,7 @@ public class BuildService {
         }
         Building b = Building.readCoordinatesFromID(selectedField.getId());
         if (b != null) {
-            pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), null, buildingType,
+            disposables.add(pioneerService.createMove(currentAction, new Building(b.x(), b.y(), b.z(), b.side(), null, buildingType,
                             gameService.getCurrentGameID(), userID), null, null, null)
                     .observeOn(FX_SCHEDULER)
                     .subscribe(move -> {
@@ -73,7 +63,7 @@ public class BuildService {
                                     alert.setContentText(content);
                                     alert.showAndWait();
                                 }
-                            });
+                            }));
 
         }
 

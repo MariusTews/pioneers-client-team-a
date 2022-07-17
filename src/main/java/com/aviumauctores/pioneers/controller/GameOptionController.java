@@ -1,13 +1,10 @@
 package com.aviumauctores.pioneers.controller;
 
-import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.service.BuildService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
@@ -23,10 +20,6 @@ public class GameOptionController implements Controller {
     private Spinner<Integer> victoryPoints;
     @FXML
     private Spinner<Integer> mapSize;
-    @FXML
-    private Button cancelButton;
-    @FXML
-    private Button takeOverButton;
 
     private final GameReadyController gameReadyController;
 
