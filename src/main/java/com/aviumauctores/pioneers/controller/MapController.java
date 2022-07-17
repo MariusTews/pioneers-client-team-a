@@ -187,7 +187,7 @@ public class MapController implements Controller {
             for (int yIterator = 0; yIterator < -1 * radius; yIterator++) {
                 double tileX = middleX - (0.75 * radius * fitWidthHexagon) - (0.75 * yIterator * fitWidthHexagon);
                 double tileY = middleY - (0.5 * radius * fitHeightHexagon) + (0.5 * yIterator * fitHeightHexagon);
-                String position = coordinatesToString(radius, yIterator, (radius + yIterator));
+                String position = coordinatesToString(radius, yIterator, -1 * (radius + yIterator));
                 position = position.replace("-", "_");
                 createCrossing(position + "R0", tileX - offsetCrossing, (tileY + 0.5 * fitHeightHexagon) - offsetCrossing, fitSizeCrossing);
                 if (yIterator != 0) {
