@@ -61,4 +61,8 @@ public class ScreenAsserts {
         Optional<Node> mainPane = test.lookup("#ingamePane").tryQuery();
         assertThat(mainPane).isPresent();
     }
+
+    void asserAchievementScreen(){
+        Optional<Node> leaveButton =test.lookup("#leaveButton").tryQuery();
+        assertThat(leaveButton).isPresent();}
 }

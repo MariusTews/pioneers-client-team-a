@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
@@ -32,6 +33,7 @@ public class LobbyController extends PlayerListController {
 
     private final App app;
     public VBox mainVbox;
+    public ImageView achievementsIcon;
 
     private User user = null;
     private final GameService gameService;

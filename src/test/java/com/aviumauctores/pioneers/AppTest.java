@@ -67,6 +67,13 @@ class AppTest extends ApplicationTest {
         // Go back to lobby
         clickOn("#cancelButton");
 
+        //Go to achievement screen
+        screenAsserts.assertLobbyScreen();
+        clickOn("#achievementsIcon");
+
+        screenAsserts.asserAchievementScreen();
+        clickOn("#leaveButton");
+
         screenAsserts.assertLobbyScreen();
         // Go to create game screen again
         clickOn("#createGameButton");
