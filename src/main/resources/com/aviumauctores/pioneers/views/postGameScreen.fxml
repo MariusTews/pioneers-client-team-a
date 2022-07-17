@@ -11,135 +11,126 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.PostGameController">
-   <children>
-      <VBox layoutY="-4.0" prefHeight="406.0" prefWidth="600.0">
-         <children>
-            <VBox fx:id="winnerContainer" prefHeight="153.0" prefWidth="600.0">
-               <children>
-                  <Label fx:id="winnerHeader" alignment="CENTER" contentDisplay="RIGHT" prefHeight="88.0" prefWidth="601.0" text="Gewinner:" textFill="#dacc08">
-                     <font>
-                        <Font name="System Font" size="36.0" />
-                     </font>
-                  </Label>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <Label fx:id="winnerName" alignment="CENTER_RIGHT" prefHeight="98.0" prefWidth="332.0" text="winnerName" />
-                        <Label alignment="CENTER" prefHeight="98.0" prefWidth="124.0" text="+100RP" textFill="#219e3a">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-            <HBox prefHeight="191.0" prefWidth="600.0">
-               <children>
-                  <VBox prefHeight="144.0" prefWidth="600.0">
-                     <children>
-                        <HBox fx:id="secondPlayerContainer" prefHeight="102.0" prefWidth="454.0">
-                           <children>
-                              <Label fx:id="secondPlayerName" alignment="CENTER" prefHeight="69.0" prefWidth="417.0" text="playerName1">
-                                 <graphic>
-                                    <Label alignment="CENTER" prefHeight="52.0" prefWidth="97.0" text="#2">
-                                       <font>
-                                          <Font size="24.0" />
-                                       </font>
-                                       <textFill>
-                                          <LinearGradient startX="0.052256532066508314" startY="0.33729216152019004">
-                                             <stops>
-                                                <Stop>
-                                                   <color>
-                                                      <Color />
-                                                   </color>
-                                                </Stop>
-                                                <Stop offset="1.0">
-                                                   <color>
-                                                      <Color red="1.0" green="1.0" blue="1.0" />
-                                                   </color>
-                                                </Stop>
-                                             </stops>
-                                          </LinearGradient>
-                                       </textFill>
-                                    </Label>
-                                 </graphic>
-                              </Label>
-                              <Label prefHeight="77.0" prefWidth="184.0" text="+75RP" textFill="#219e3a">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox fx:id="thirdPlayerContainer" prefHeight="93.0" prefWidth="600.0">
-                           <children>
-                              <Label fx:id="thirdPlayerName" alignment="CENTER" prefHeight="60.0" prefWidth="417.0" text="playerName2">
-                                 <graphic>
-                                    <Label alignment="CENTER" prefHeight="52.0" prefWidth="97.0" text="#3">
-                                       <font>
-                                          <Font size="24.0" />
-                                       </font>
-                                       <textFill>
-                                          <LinearGradient startX="0.37054631828978624" startY="0.33729216152019004">
-                                             <stops>
-                                                <Stop>
-                                                   <color>
-                                                      <Color />
-                                                   </color>
-                                                </Stop>
-                                                <Stop offset="0.23170731707317074">
-                                                   <color>
-                                                      <Color red="0.7599999904632568" green="0.3569466769695282" blue="0.10639999806880951" />
-                                                   </color>
-                                                </Stop>
-                                                <Stop offset="1.0">
-                                                   <color>
-                                                      <Color red="1.0" green="1.0" blue="1.0" />
-                                                   </color>
-                                                </Stop>
-                                             </stops>
-                                          </LinearGradient>
-                                       </textFill>
-                                    </Label>
-                                 </graphic>
-                              </Label>
-                              <Label prefHeight="77.0" prefWidth="184.0" text="+50RP" textFill="#219e3a">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox fx:id="fourthPlayerContainer" prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <Label fx:id="fourthPlayerName" alignment="CENTER" prefHeight="69.0" prefWidth="417.0" text="playerName3">
-                                 <graphic>
-                                    <Label alignment="CENTER" prefHeight="52.0" prefWidth="97.0" text="#4">
-                                       <font>
-                                          <Font size="24.0" />
-                                       </font>
-                                    </Label>
-                                 </graphic>
-                              </Label>
-                              <Label prefHeight="77.0" prefWidth="184.0" text="+25RP" textFill="#219e3a">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-            <ButtonBar fx:id="buttonBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="60.0" prefWidth="600.0">
-               <buttons>
-                  <Button fx:id="returnButton" mnemonicParsing="false" onAction="#toLobby" text="%leave" translateX="-450.0" />
-                  <Button fx:id="showStatsButton" mnemonicParsing="false" onAction="#toStatScreen" text="%show.stats" />
-               </buttons>
-            </ButtonBar>
-         </children>
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.aviumauctores.pioneers.controller.PostGameController">
+   <VBox layoutY="-4.0" prefHeight="406.0" prefWidth="600.0">
+      <VBox fx:id="winnerContainer" prefHeight="153.0" prefWidth="600.0">
+         <Label fx:id="winnerHeader" alignment="CENTER" contentDisplay="RIGHT" prefHeight="88.0" prefWidth="601.0"
+                text="Gewinner:" textFill="#dacc08">
+            <font>
+               <Font name="System Font" size="36.0"/>
+            </font>
+         </Label>
+         <HBox prefHeight="100.0" prefWidth="200.0">
+            <Label fx:id="winnerName" alignment="CENTER_RIGHT" prefHeight="98.0" prefWidth="332.0"
+                   text="winnerName"/>
+            <Label alignment="CENTER" prefHeight="98.0" prefWidth="124.0" text="+100RP" textFill="#219e3a">
+               <font>
+                  <Font size="18.0"/>
+               </font>
+            </Label>
+         </HBox>
       </VBox>
-   </children>
+      <HBox prefHeight="191.0" prefWidth="600.0">
+         <VBox prefHeight="144.0" prefWidth="600.0">
+            <HBox fx:id="secondPlayerContainer" prefHeight="102.0" prefWidth="454.0">
+               <Label fx:id="secondPlayerName" alignment="CENTER" prefHeight="69.0" prefWidth="417.0"
+                      text="playerName1">
+                  <graphic>
+                     <Label alignment="CENTER" prefHeight="52.0" prefWidth="97.0" text="#2">
+                        <font>
+                           <Font size="24.0"/>
+                        </font>
+                        <textFill>
+                           <LinearGradient startX="0.052256532066508314" startY="0.33729216152019004">
+                              <stops>
+                                 <Stop>
+                                    <color>
+                                       <Color/>
+                                    </color>
+                                 </Stop>
+                                 <Stop offset="1.0">
+                                    <color>
+                                       <Color red="1.0" green="1.0" blue="1.0"/>
+                                    </color>
+                                 </Stop>
+                              </stops>
+                           </LinearGradient>
+                        </textFill>
+                     </Label>
+                  </graphic>
+               </Label>
+               <Label prefHeight="77.0" prefWidth="184.0" text="+75RP" textFill="#219e3a">
+                  <font>
+                     <Font size="18.0"/>
+                  </font>
+               </Label>
+            </HBox>
+            <HBox fx:id="thirdPlayerContainer" prefHeight="93.0" prefWidth="600.0">
+               <Label fx:id="thirdPlayerName" alignment="CENTER" prefHeight="60.0" prefWidth="417.0"
+                      text="playerName2">
+                  <graphic>
+                     <Label alignment="CENTER" prefHeight="52.0" prefWidth="97.0" text="#3">
+                        <font>
+                           <Font size="24.0"/>
+                        </font>
+                        <textFill>
+                           <LinearGradient startX="0.37054631828978624" startY="0.33729216152019004">
+                              <stops>
+                                 <Stop>
+                                    <color>
+                                       <Color/>
+                                    </color>
+                                 </Stop>
+                                 <Stop offset="0.23170731707317074">
+                                    <color>
+                                       <Color red="0.7599999904632568" green="0.3569466769695282"
+                                              blue="0.10639999806880951"/>
+                                    </color>
+                                 </Stop>
+                                 <Stop offset="1.0">
+                                    <color>
+                                       <Color red="1.0" green="1.0" blue="1.0"/>
+                                    </color>
+                                 </Stop>
+                              </stops>
+                           </LinearGradient>
+                        </textFill>
+                     </Label>
+                  </graphic>
+               </Label>
+               <Label prefHeight="77.0" prefWidth="184.0" text="+50RP" textFill="#219e3a">
+                  <font>
+                     <Font size="18.0"/>
+                  </font>
+               </Label>
+            </HBox>
+            <HBox fx:id="fourthPlayerContainer" prefHeight="100.0" prefWidth="200.0">
+               <Label fx:id="fourthPlayerName" alignment="CENTER" prefHeight="69.0" prefWidth="417.0"
+                      text="playerName3">
+                  <graphic>
+                     <Label alignment="CENTER" prefHeight="52.0" prefWidth="97.0" text="#4">
+                        <font>
+                           <Font size="24.0"/>
+                        </font>
+                     </Label>
+                  </graphic>
+               </Label>
+               <Label prefHeight="77.0" prefWidth="184.0" text="+25RP" textFill="#219e3a">
+                  <font>
+                     <Font size="18.0"/>
+                  </font>
+               </Label>
+            </HBox>
+         </VBox>
+      </HBox>
+      <ButtonBar fx:id="buttonBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="60.0" prefWidth="600.0">
+         <buttons>
+            <Button fx:id="returnButton" mnemonicParsing="false" onAction="#toLobby" text="%leave"
+                    translateX="-450.0"/>
+            <Button fx:id="showStatsButton" mnemonicParsing="false" onAction="#toStatScreen" text="%show.stats"/>
+         </buttons>
+      </ButtonBar>
+   </VBox>
 </Pane>

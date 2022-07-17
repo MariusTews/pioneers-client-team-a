@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -374,11 +373,13 @@ public class MapController implements Controller {
     }
 
     public void createHarborLabels(double coordinateX, double coordinateY, double size, String resource, String labelFontSize) {
-        if (resource != null && !resource.equals("")) {
-            createLabel(coordinateX, coordinateY, bundle.getString(resource), labelFontSize);
-            createLabel(coordinateX, coordinateY + size, "2:1", labelFontSize);
-        } else {
-            createLabel(coordinateX, coordinateY, "3:1", labelFontSize);
+        if (bundle != null) {
+            if (resource != null && !resource.equals("")) {
+                createLabel(coordinateX, coordinateY, bundle.getString(resource), labelFontSize);
+                createLabel(coordinateX, coordinateY + size, "2:1", labelFontSize);
+            } else {
+                createLabel(coordinateX, coordinateY, "3:1", labelFontSize);
+            }
         }
     }
 

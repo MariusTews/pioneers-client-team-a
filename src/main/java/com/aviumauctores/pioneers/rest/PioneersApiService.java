@@ -1,7 +1,5 @@
 package com.aviumauctores.pioneers.rest;
 
-import com.aviumauctores.pioneers.dto.gamemembers.UpdateMemberDto;
-import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
 import com.aviumauctores.pioneers.dto.players.UpdatePlayerDto;
 import com.aviumauctores.pioneers.model.*;

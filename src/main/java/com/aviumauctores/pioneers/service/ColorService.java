@@ -31,16 +31,6 @@ public class ColorService {
         return colors.get((color));
     }
 
-    public String getColorCode(String color) {
-        String[] keys = colors.keySet().toArray(new String[COLOR_AMOUNT]);
-        for (String s : keys) {
-            if (colors.get(s).equals(color)) {
-                return color;
-            }
-        }
-        return "COLOR NOT FOUND";
-    }
-
     public String getColor(Color color) {
         String colorFormat = String.format("#%02x%02x%02x",
                 (int) (color.getRed() * 255),

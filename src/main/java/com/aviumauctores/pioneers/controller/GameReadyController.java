@@ -266,7 +266,7 @@ public class GameReadyController extends PlayerListController {
             for (Color colour : colourIsTaken.keySet()) {
                 // if they are assigned to this user
                 if (Objects.equals(colourIsTaken.get(colour), memberID)) {
-                    // unassign the colour
+                    // reset the colour
                     colourIsTaken.replace(colour, "");
                 }
             }
@@ -463,7 +463,7 @@ public class GameReadyController extends PlayerListController {
         disposables.add(gameService.startGame()
                 .observeOn(FX_SCHEDULER)
                 .subscribe(game -> {
-                    // do nothing, the switch to ingame screen happens with the websocket event
+                    // do nothing, the switch to in-game-screen happens with the websocket event
                 }, throwable -> {
                     if (throwable instanceof HttpException ex) {
                         ErrorResponse response = errorService.readErrorMessage(ex);
@@ -476,7 +476,7 @@ public class GameReadyController extends PlayerListController {
     }
 
     public void gameReady(ActionEvent actionEvent) {
-        gameMemberService.updateMember(userService.getCurrentUserID()) //maybe null is not correct
+        disposables.add(gameMemberService.updateMember(userService.getCurrentUserID()) //maybe null is not correct
                 .observeOn(FX_SCHEDULER)
                 .subscribe(member -> {
                             String buttonText = member.ready() ? bundle.getString("ready") : bundle.getString("not.ready");
@@ -490,7 +490,7 @@ public class GameReadyController extends PlayerListController {
                             } else {
                                 app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                             }
-                        });
+                        }));
 
     }
 
@@ -502,13 +502,15 @@ public class GameReadyController extends PlayerListController {
             ownerAlert.setTitle(bundle.getString("warning"));
             ownerAlert.setHeaderText(null);
             Optional<ButtonType> result = ownerAlert.showAndWait();
-            if (result.get() == proceedButton) {
-                gameService.deleteGame()
-                        .observeOn(FX_SCHEDULER)
-                        .subscribe();
-            } else {
-                ownerAlert.close();
-                return;
+            if (result.isPresent()) {
+                if (result.get() == proceedButton) {
+                    gameService.deleteGame()
+                            .observeOn(FX_SCHEDULER)
+                            .subscribe();
+                } else {
+                    ownerAlert.close();
+                    return;
+                }
             }
         } else {
             ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
@@ -541,7 +543,7 @@ public class GameReadyController extends PlayerListController {
             return;
         }
         messageTextField.clear();
-        messageService.sendGameMessage(message, gameService.getCurrentGameID())
+        disposables.add(messageService.sendGameMessage(message, gameService.getCurrentGameID())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     ownMessageIds.add(result._id());
@@ -549,7 +551,7 @@ public class GameReadyController extends PlayerListController {
                     VBox chatBox = (VBox) ((ScrollPane) this.allChatTab.getContent()).getContent();
                     chatBox.getChildren().add(msgLabel);
                     ((ScrollPane) this.allChatTab.getContent()).setVvalue(1.0);
-                });
+                }));
     }
 
     public void changeColour(ActionEvent actionEvent) {
@@ -562,10 +564,10 @@ public class GameReadyController extends PlayerListController {
                 pickColourMenu.setValue(chosenColour);
                 // ...and free
             } else {
-                // the hexcode is created
+                // the hex-code is created
                 String colour = "#" + pickColourMenu.getValue().toString().substring(2, 8);
                 // send to the server
-                gameMemberService.updateColour(userService.getCurrentUserID(), colour)
+                disposables.add(gameMemberService.updateColour(userService.getCurrentUserID(), colour)
                         .observeOn(FX_SCHEDULER)
                         .subscribe(member -> {
                                     // and stored locally
@@ -579,18 +581,18 @@ public class GameReadyController extends PlayerListController {
                                     } else {
                                         app.showErrorDialog(bundle.getString("smth.went.wrong"), bundle.getString("limit.reached"));
                                     }
-                                });
+                                }));
             }
         }
     }
 
     public Label createMessageLabel(Message message) {
         Label msgLabel = new Label();
-        userService.getUserName(message.sender())
+        disposables.add(userService.getUserName(message.sender())
                 .observeOn(FX_SCHEDULER)
                 .subscribe(
                         result -> msgLabel.setText(result + ": " + message.body())
-                );
+                ));
         msgLabel.setOnMouseClicked(this::onMessageClicked);
         msgLabel.setId(message._id());
         return msgLabel;
@@ -607,9 +609,11 @@ public class GameReadyController extends PlayerListController {
             alert.setHeaderText(null);
             Optional<ButtonType> res = alert.showAndWait();
             // delete if "Ok" is clicked
-            if (res.get() == proceedButton) {
-                this.deleteLabel = label;
-                delete(this.deleteLabel.getId());
+            if (res.isPresent()) {
+                if (res.get() == proceedButton) {
+                    this.deleteLabel = label;
+                    delete(this.deleteLabel.getId());
+                }
             }
             alert.close();
         }
@@ -657,9 +661,9 @@ public class GameReadyController extends PlayerListController {
 
     }
 
-    public void closeGameOptionMenu(boolean menueClosed) {
+    public void closeGameOptionMenu(boolean menuClosed) {
         if (gameOptionController != null) {
-            gameOptionController.destroy(menueClosed);
+            gameOptionController.destroy(menuClosed);
             gameOptionController = null;
         }
         if (gameOption != null) {

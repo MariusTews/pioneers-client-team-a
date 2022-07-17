@@ -36,12 +36,6 @@ public class StatService {
         return service.getAllStats();
     }
 
-    public int getSingleStat(String playerID, String statName){
-        PlayerStatService service = playerServices.get(playerID);
-        return service.getSingleStat(statName);
-    }
-
-
     public void updatePlayerStats(Player player){
         String id = player.userId();
         updateResourceStat(id);

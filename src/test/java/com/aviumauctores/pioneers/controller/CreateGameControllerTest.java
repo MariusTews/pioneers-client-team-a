@@ -90,7 +90,6 @@ public class CreateGameControllerTest extends ApplicationTest {
     void createGame() {
         TextField gameName = lookup("#gameNameInput").query();
         PasswordField password = lookup("#gamePasswordInput").query();
-        TextField showPassword = lookup("#gamePasswordText").query();
         FxAssert.verifyThat("#createGameButton", NodeMatchers.isDisabled());
 
         clickOn(gameName);

@@ -4,7 +4,6 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.util.PannableCanvas;
 import com.aviumauctores.pioneers.util.SceneGestures;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
@@ -18,7 +17,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 
 import java.io.IOException;
 import java.util.HashMap;
