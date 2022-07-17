@@ -10,8 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="mainVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-      prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+<VBox fx:id="mainVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.aviumauctores.pioneers.controller.LobbyController">
     <HBox prefHeight="32.0" prefWidth="600.0">
         <ImageView id="britishFlag" fitHeight="28.0" fitWidth="38.0" onMouseClicked="#setEnglish" pickOnBounds="true"
@@ -68,8 +68,8 @@
             </Button>
         </HBox>
         <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="260.0" spacing="30.0">
-            <ImageView id="achievementsButton" fitHeight="31.0" fitWidth="33.0" onMouseClicked="#inToAchievement" pickOnBounds="true"
-                       preserveRatio="true">
+            <ImageView fx:id="achievementsIcon" fitHeight="31.0" fitWidth="33.0" onMouseClicked="#inToAchievement"
+                       pickOnBounds="true" preserveRatio="true">
                 <HBox.margin>
                     <Insets left="15.0"/>
                 </HBox.margin>

@@ -35,6 +35,7 @@ public class LobbyController extends PlayerListController {
 
     private final App app;
     public VBox mainVbox;
+    public ImageView achievementsIcon;
 
     private User user = null;
     private final GameService gameService;
