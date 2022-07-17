@@ -32,10 +32,6 @@ public class GameSounds {
         }
     }
 
-    public void pause() {
-        this.mediaPlayer.pause();
-    }
-
     public boolean isRunning() {
         if (mediaPlayer == null) {
             return false;

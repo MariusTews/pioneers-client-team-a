@@ -1,7 +1,6 @@
 package com.aviumauctores.pioneers.rest;
 
 import com.aviumauctores.pioneers.dto.messages.CreateMessageDto;
-import com.aviumauctores.pioneers.dto.messages.UpdateMessageDto;
 import com.aviumauctores.pioneers.model.Message;
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.*;
@@ -26,12 +25,6 @@ public interface MessagesApiService {
     @GET(GET_MESSAGE_URL)
     Observable<Message> getMessage(
             @Path(PATH_NAMESPACE) String namespace, @Path(PATH_PARENT) String parent, @Path(PATH_ID) String id
-    );
-
-    @PATCH(UPDATE_MESSAGE_URL)
-    Observable<Message> updateMessage(
-            @Path(PATH_NAMESPACE) String namespace, @Path(PATH_PARENT) String parent, @Path(PATH_ID) String id,
-            @Body UpdateMessageDto updateMessageDto
     );
 
     @DELETE(DELETE_MESSAGE_URL)

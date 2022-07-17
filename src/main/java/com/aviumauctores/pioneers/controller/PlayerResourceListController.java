@@ -32,7 +32,6 @@ public class PlayerResourceListController {
     private final HashMap<String, PlayerResourceListItemController> listItems = new HashMap<>();
     private Player player;
     private Player longestRoadPlayer;
-    private Member member;
 
     @Inject
     public PlayerResourceListController(UserService userService, PioneerService pioneerService, ColorService colorService, ResourceBundle bundle, GameMemberService gameMemberService) {

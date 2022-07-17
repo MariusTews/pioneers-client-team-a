@@ -4,6 +4,7 @@ import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Player;
 import com.aviumauctores.pioneers.service.*;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -63,6 +64,7 @@ public class PostGameController extends  LoggedInController {
 
     @Override
     public void init() {
+        disposables = new CompositeDisposable();
     }
 
     @Override
@@ -77,7 +79,6 @@ public class PostGameController extends  LoggedInController {
             return null;
         }
         Node[] container = new Node[]{winnerContainer, secondPlayerContainer, thirdPlayerContainer, fourthPlayerContainer};
-        String ownName = userService.getUserName(userService.getCurrentUserID()).toString();
         Label[] labels = new Label[]{winnerName, secondPlayerName, thirdPlayerName, fourthPlayerName};
         HashMap<Integer, Player> ranking = rankingService.createRanking();
         int numPlayers = ranking.size();
@@ -86,7 +87,7 @@ public class PostGameController extends  LoggedInController {
                 container[i].setVisible(false);
             }else {
                 String playerID = ranking.get(i).userId();
-                if (Objects.equals(playerID, ownName)) {
+                if (Objects.equals(playerID, userService.getCurrentUserID())) {
                     disposables.add(achievementsService.putAchievement(RANKING, 100 - i * 25)
                             .observeOn(FX_SCHEDULER)
                             .subscribe());
