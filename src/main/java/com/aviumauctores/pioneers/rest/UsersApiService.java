@@ -23,9 +23,6 @@ public interface UsersApiService {
     @PATCH(UPDATE_USER_URL)
     Observable<User> updateUser(@Path(PATH_ID) String id, @Body UpdateUserDto updateUserDto);
 
-    @DELETE(DELETE_USER_URL)
-    Observable<User> deleteUser(@Path(PATH_ID) String id);
-
     @GET("users")
     Observable<List<User>> findAll();
 }

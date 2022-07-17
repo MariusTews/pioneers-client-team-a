@@ -17,12 +17,7 @@ public interface GroupsApiService {
     @POST(CREATE_GROUP_URL)
     Observable<Group> createGroup(@Body CreateGroupDto createGroupDto);
 
-    @GET(GET_GROUP_URL)
-    Observable<Group> getGroup(@Path(PATH_ID) String id);
-
     @PATCH(UPDATE_GROUP_URL)
     Observable<Group> updateGroup(@Path(PATH_ID) String id, @Body UpdateGroupDto updateGroupDto);
 
-    @DELETE(DELETE_GROUP_URL)
-    Observable<Group> deleteGroup(@Path(PATH_ID) String id);
 }

@@ -1,7 +1,6 @@
 package com.aviumauctores.pioneers;
 
 import com.aviumauctores.pioneers.dto.achievements.CreateAchievementDto;
-import com.aviumauctores.pioneers.dto.achievements.UpdateAchievementDto;
 import com.aviumauctores.pioneers.dto.auth.LoginDto;
 import com.aviumauctores.pioneers.dto.auth.LoginResult;
 import com.aviumauctores.pioneers.dto.auth.RefreshDto;
@@ -14,10 +13,7 @@ import com.aviumauctores.pioneers.dto.games.UpdateGameDto;
 import com.aviumauctores.pioneers.dto.groups.CreateGroupDto;
 import com.aviumauctores.pioneers.dto.groups.UpdateGroupDto;
 import com.aviumauctores.pioneers.dto.messages.CreateMessageDto;
-import com.aviumauctores.pioneers.dto.messages.UpdateMessageDto;
 import com.aviumauctores.pioneers.dto.pioneers.CreateMoveDto;
-import com.aviumauctores.pioneers.dto.players.UpdatePlayerDto;
-import com.aviumauctores.pioneers.dto.rob.RobDto;
 import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.Map;
@@ -213,11 +209,6 @@ public class TestModule {
             }
 
             @Override
-            public Observable<User> deleteUser(String id) {
-                return Observable.just(new User(id, "User" + id, "online", null, null));
-            }
-
-            @Override
             public Observable<List<User>> findAll() {
                 return listUsers(null, null);
             }
@@ -239,19 +230,10 @@ public class TestModule {
             }
 
             @Override
-            public Observable<Group> getGroup(String id) {
-                return Observable.empty();
-            }
-
-            @Override
             public Observable<Group> updateGroup(String id, UpdateGroupDto updateGroupDto) {
                 return Observable.empty();
             }
 
-            @Override
-            public Observable<Group> deleteGroup(String id) {
-                return Observable.empty();
-            }
         };
     }
 
@@ -275,14 +257,6 @@ public class TestModule {
             public Observable<Message> getMessage(String namespace, String parent, String id) {
                 return Observable.just(new Message(
                         "", "", id, "1", "Message" + id
-                ));
-            }
-
-            @Override
-            public Observable<Message> updateMessage(String namespace, String parent, String id, UpdateMessageDto updateMessageDto) {
-                String body = updateMessageDto.body() != null ? updateMessageDto.body() : "Message" + id;
-                return Observable.just(new Message(
-                        "", "", id, "1", body
                 ));
             }
 
@@ -394,11 +368,6 @@ public class TestModule {
             }
 
             @Override
-            public Observable<Building> getBuilding(String gameId, String buildingId) {
-                return Observable.empty();
-            }
-
-            @Override
             public Observable<Map> getMap(String id) {
                 List<Tile> tileList = new ArrayList<>();
                 tileList.add(new Tile(0, 0, 0, "desert", 10));
@@ -457,25 +426,6 @@ public class TestModule {
                                 new ExpectedMove("roll", List.of("1"))
                         ), new Point3D(1, 1, 1))
                 );
-            }
-
-            @Override
-            public Observable<List<Move>> getMoves(String gameId, String userId) {
-                return Observable.just(List.of());
-            }
-
-            @Override
-            public Observable<Move> getMoveId(String gameId, String userId) {
-                return Observable.just(
-                        new Move("", "", gameId, userId, "action", 1, "", new RobDto(1, 2, 3, ""), new HashMap<>(), "")
-                );
-            }
-
-            @Override
-            public Observable<Player> updatePlayer(String gameId, String userId, UpdatePlayerDto updatePlayerDto) {
-                return Observable.just(new Player(
-                        "", "", null, true, 1, new HashMap<>(), new HashMap<>(), 0, 0
-                ));
             }
 
 
@@ -606,15 +556,6 @@ public class TestModule {
     @Singleton
     AchievementsApiService achievementsApiService() {
         return new AchievementsApiService() {
-            @Override
-            public Observable<List<AchievementSummary>> listAchievements() {
-                return Observable.just(List.of());
-            }
-
-            @Override
-            public Observable<AchievementSummary> getAchievement(String id) {
-                return Observable.just(new AchievementSummary("test", 0, 0, 0));
-            }
 
             @Override
             public Observable<List<Achievement>> listUserAchievements(String id) {
@@ -631,15 +572,6 @@ public class TestModule {
                 return Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
             }
 
-            @Override
-            public Observable<Achievement> updateAchievement(String userId, String id, UpdateAchievementDto updateAchievementDto) {
-                return Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
-            }
-
-            @Override
-            public Observable<Achievement> deleteAchievement(String userId, String id) {
-                return Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
-            }
         };
     }
 }
