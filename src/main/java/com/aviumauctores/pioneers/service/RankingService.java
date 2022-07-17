@@ -19,7 +19,6 @@ public class RankingService {
     }
     public HashMap<Integer, Player> createRanking(){
         List<Player> players = pioneerService.listPlayers().blockingFirst();
-        System.out.println(players);
         players.sort(Comparator.comparing(Player::victoryPoints));
         for (int i = players.size() - 1; i >= 0; i--){
             ranking.put(players.size() - i - 1, players.get(i));

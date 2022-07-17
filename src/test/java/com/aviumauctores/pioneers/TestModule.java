@@ -22,10 +22,8 @@ import com.aviumauctores.pioneers.dto.users.CreateUserDto;
 import com.aviumauctores.pioneers.dto.users.UpdateUserDto;
 import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.model.*;
-import com.aviumauctores.pioneers.model.Map;
 import com.aviumauctores.pioneers.rest.*;
 import com.aviumauctores.pioneers.service.ErrorService;
-import com.aviumauctores.pioneers.service.PioneerService;
 import com.aviumauctores.pioneers.service.PreferenceService;
 import com.aviumauctores.pioneers.service.SoundService;
 import com.aviumauctores.pioneers.service.TokenStorage;
@@ -35,10 +33,8 @@ import com.aviumauctores.pioneers.ws.EventListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dagger.Module;
 import dagger.Provides;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.Observer;
 import javafx.scene.paint.Color;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -46,8 +42,8 @@ import okio.BufferedSource;
 import retrofit2.HttpException;
 
 import javax.inject.Singleton;
-import java.util.*;
 import java.net.URL;
+import java.util.*;
 
 @Module
 public class TestModule {
@@ -385,8 +381,13 @@ public class TestModule {
 
     @Provides
     @Singleton
-    PioneersApiService pioneersApiService() {
+    PioneersApiService pioneersApiService(EventListener eventListener) {
+
+
         return new PioneersApiService() {
+
+            private final TestEventListener testEventListener = (TestEventListener) eventListener;
+
             @Override
             public Observable<List<Building>> listBuildings(String gameId) {
                 return Observable.just(List.of());
@@ -399,14 +400,43 @@ public class TestModule {
 
             @Override
             public Observable<Map> getMap(String id) {
-                return Observable.empty();
+                List<Tile> tileList = new ArrayList<>();
+                tileList.add(new Tile(0, 0, 0, "desert", 10));
+
+                tileList.add(new Tile(1, -1, 0, "fields", 2));
+                tileList.add(new Tile(-1, 0, 1, "hills", 3));
+                tileList.add(new Tile(-1, 1, 0, "mountains", 4));
+                tileList.add(new Tile(0, 1, -1, "forest", 5));
+                tileList.add(new Tile(1, 0, -1, "pasture", 6));
+                tileList.add(new Tile(0, -1, 1, "fields", 7));
+
+                tileList.add(new Tile(2, -2, 0, "fields", 8));
+                tileList.add(new Tile(1, -2, -1, "hills", 9));
+                tileList.add(new Tile(0, -2, 2, "mountains", 10));
+                tileList.add(new Tile(-1, -1, 2, "pasture", 11));
+                tileList.add(new Tile(-2, 0, 2, "forest", 12));
+                tileList.add(new Tile(-2, 1, 1, "pasture", 2));
+                tileList.add(new Tile(-2, 2, 0, "hills", 3));
+                tileList.add(new Tile(-1, 2, -1, "fields", 4));
+                tileList.add(new Tile(0, 2, -2, "mountains", 5));
+                tileList.add(new Tile(1, 1, -2, "forest", 6));
+                tileList.add(new Tile(2, 0, -2, "pasture", 7));
+                tileList.add(new Tile(2, -1, -1, "mountains", 8));
+
+
+                List<Harbor> harborList = new ArrayList<>();
+                harborList.add(new Harbor(2, -2, 0, "lumber", 3));
+                harborList.add(new Harbor(0, 2, -2, "brick", 1));
+                harborList.add(new Harbor(-2, 0, 2, "ore", 5));
+
+                return Observable.just(new Map("12", tileList, harborList));
             }
 
             @Override
             public Observable<List<Player>> listMembers(String gameId) {
-                return Observable.just(List.of(
-                        new Player(gameId, "1", "#008000", true, 3, new HashMap<>(), new HashMap<>(), 0, 0)
-                ));
+                List<Player> players = new ArrayList<>();
+                players.add(new Player(gameId, "1", "#008000", true, 3, new HashMap<>(), new HashMap<>(), 0, 0));
+                return Observable.just(players);
             }
 
             @Override
@@ -451,6 +481,122 @@ public class TestModule {
 
             @Override
             public Observable<Move> createMove(String gameId, CreateMoveDto createMoveDto) {
+                if (createMoveDto.building() != null) {
+                    Building building = createMoveDto.building();
+                    testEventListener.fireEvent("games.101.buildings.*.*", new EventDto<>("games.101.updated", building));
+                    State state;
+                    Player player;
+                    HashMap<String, Integer> resources = new HashMap<>();
+                    HashMap<String, Integer> remainingBuildings = new HashMap<>();
+                    switch (createMoveDto.action()) {
+                        case "founding-settlement-1" -> {
+                            state = new State("", gameId, List.of(
+                                    new ExpectedMove("founding-road-1", List.of("1")),
+                                    new ExpectedMove("founding-settlement-2", List.of("1")),
+                                    new ExpectedMove("founding-road-2", List.of("1")),
+                                    new ExpectedMove("roll", List.of("1"))
+                            ), new Point3D(1, 1, 1));
+                            resources.put("lumber", 10);
+                            resources.put("ore", 10);
+                            resources.put("grain", 10);
+                            resources.put("brick", 10);
+                            resources.put("wool", 10);
+                            remainingBuildings.put("road", 15);
+                            remainingBuildings.put("settlement", 4);
+                            remainingBuildings.put("city", 4);
+                            player = new Player(gameId, "1", null, true, 1, resources, remainingBuildings, 1, 0);
+                        }
+                        case "founding-road-1" -> {
+                            state = new State("", gameId, List.of(
+                                    new ExpectedMove("founding-settlement-2", List.of("1")),
+                                    new ExpectedMove("founding-road-2", List.of("1")),
+                                    new ExpectedMove("roll", List.of("1"))
+                            ), new Point3D(1, 1, 1));
+                            resources.put("lumber", 10);
+                            resources.put("ore", 10);
+                            resources.put("grain", 10);
+                            resources.put("brick", 10);
+                            resources.put("wool", 10);
+                            remainingBuildings.put("road", 14);
+                            remainingBuildings.put("settlement", 4);
+                            remainingBuildings.put("city", 4);
+                            player = new Player(gameId, "1", null, true, 1, resources, remainingBuildings, 1, 0);
+                        }
+                        case "founding-settlement-2" -> {
+                            state = new State("", gameId, List.of(
+                                    new ExpectedMove("founding-road-2", List.of("1")),
+                                    new ExpectedMove("roll", List.of("1"))
+                            ), new Point3D(1, 1, 1));
+                            resources.put("lumber", 10);
+                            resources.put("ore", 10);
+                            resources.put("grain", 10);
+                            resources.put("brick", 10);
+                            resources.put("wool", 10);
+                            remainingBuildings.put("road", 14);
+                            remainingBuildings.put("settlement", 3);
+                            remainingBuildings.put("city", 4);
+                            player = new Player(gameId, "1", null, true, 1, resources, remainingBuildings, 2, 0);
+                        }
+                        case "founding-road-2" -> {
+                            state = new State("", gameId, List.of(
+                                    new ExpectedMove("roll", List.of("1"))
+                            ), new Point3D(1, 1, 1));
+                            resources.put("lumber", 10);
+                            resources.put("ore", 10);
+                            resources.put("grain", 10);
+                            resources.put("brick", 10);
+                            resources.put("wool", 10);
+                            remainingBuildings.put("road", 13);
+                            remainingBuildings.put("settlement", 3);
+                            remainingBuildings.put("city", 4);
+                            player = new Player(gameId, "1", null, true, 1, resources, remainingBuildings, 2, 0);
+                        }
+                        default -> {
+                            state = new State("", gameId, List.of(
+                                    new ExpectedMove("build", List.of("1"))
+                            ), new Point3D(1, 1, 1));
+
+                            if (createMoveDto.building().type().equals("settlement")) {
+                                resources.put("lumber", 10);
+                                resources.put("ore", 10);
+                                resources.put("grain", 10);
+                                resources.put("brick", 10);
+                                resources.put("wool", 10);
+                                remainingBuildings.put("road", 12);
+                                remainingBuildings.put("settlement", 2);
+                                remainingBuildings.put("city", 4);
+                                player = new Player(gameId, "1", null, true, 1, resources, remainingBuildings, 3, 0);
+                            }
+                            else {
+                                resources.put("lumber", 10);
+                                resources.put("ore", 10);
+                                resources.put("grain", 10);
+                                resources.put("brick", 10);
+                                resources.put("wool", 10);
+                                remainingBuildings.put("road", 12);
+                                remainingBuildings.put("settlement", 3);
+                                remainingBuildings.put("city", 4);
+                                player = new Player(gameId, "1", null, true, 1, resources, remainingBuildings, 2, 0);
+                            }
+                        }
+
+                    }
+                    testEventListener.fireEvent("games.101.state.*", new EventDto<>("games.101.updated", state));
+                    testEventListener.fireEvent("games.101.players.*.updated", new EventDto<>("games.101.updated", player));
+
+                    return Observable.just(new Move("1", "2", gameId, "1", "build", 3, "building", null, null, null));
+                } else if (Objects.equals(createMoveDto.action(), "roll")) {
+                    State state = new State("", gameId, List.of(
+                            new ExpectedMove("build", List.of("1"))
+                    ), new Point3D(1, 1, 1));
+                    testEventListener.fireEvent("games.101.state.*", new EventDto<>("games.101.updated", state));
+                    testEventListener.fireEvent("games.101.moves.*.*", new EventDto<>("games.101.updated", new Move("1", "2", gameId, "1", "roll", 3, null, null, null, null)));
+                } else if (Objects.equals(createMoveDto.action(), "build")) {
+                    State state = new State("", gameId, List.of(
+                            new ExpectedMove("roll", List.of("1"))
+                    ), new Point3D(1, 1, 1));
+                    testEventListener.fireEvent("games.101.state.*", new EventDto<>("games.101.updated", state));
+                }
                 return Observable.empty();
             }
         };
@@ -487,12 +633,12 @@ public class TestModule {
 
             @Override
             public Observable<Achievement> updateAchievement(String userId, String id, UpdateAchievementDto updateAchievementDto) {
-                return  Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
+                return Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
             }
 
             @Override
             public Observable<Achievement> deleteAchievement(String userId, String id) {
-                return  Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
+                return Observable.just(new Achievement("mount doom", "nothing", "12", "42", "the door", 5));
             }
         };
     }

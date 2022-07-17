@@ -20,7 +20,9 @@ public class GameSounds {
     }
 
     public void play() {
-        this.mediaPlayer.play();
+        if (mediaPlayer != null) {
+            this.mediaPlayer.play();
+        }
     }
 
     public void stop() {

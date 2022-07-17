@@ -26,6 +26,11 @@ public class ScreenAsserts {
         assertThat(gameListView).isPresent();
     }
 
+    void assertPostGameScreen() {
+        Optional<Node> showStatsButton = test.lookup("#showStatsButton").tryQuery();
+        assertThat(showStatsButton).isPresent();
+    }
+
     void assertSettingsScreen() {
         Optional<Node> changeNameButton = test.lookup("#changeNameButton").tryQuery();
         assertThat(changeNameButton).isPresent();
@@ -65,5 +70,10 @@ public class ScreenAsserts {
     public void assertAchievementsScreen() {
         Optional<Node> friendsButton = test.lookup("#friendsButton").tryQuery();
         assertThat(friendsButton).isPresent();
+    }
+
+    public void assertStatsScreen() {
+        Optional<Node> statNameContainer = test.lookup("#statNameContainer").tryQuery();
+        assertThat(statNameContainer).isPresent();
     }
 }
