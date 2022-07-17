@@ -73,7 +73,7 @@ class AppTest extends ApplicationTest {
         screenAsserts.assertLobbyScreen();
         clickOn("#achievementsIcon");
 
-        screenAsserts.asserAchievementScreen();
+        screenAsserts.assertAchievementsScreen();
         clickOn("#leaveButton");
 
         screenAsserts.assertLobbyScreen();
@@ -104,14 +104,6 @@ class AppTest extends ApplicationTest {
         clickOn("#settingsButton");
 
         screenAsserts.assertSettingsScreen();
-        // Go back to lobby
-        clickOn("#leaveButton");
-
-        screenAsserts.assertLobbyScreen();
-        // Go to achievements
-        clickOn("#achievementsButton");
-
-        screenAsserts.assertAchievementsScreen();
         // Go back to lobby
         clickOn("#leaveButton");
 
