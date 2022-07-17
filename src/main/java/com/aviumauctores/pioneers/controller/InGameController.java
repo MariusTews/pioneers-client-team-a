@@ -328,7 +328,9 @@ public class InGameController extends LoggedInController {
                                 controller.init();
                                 controller.setInGameController(this);
                                 controller.setGameMap(map);
-                                controller.setMapRadius(gameService.getCurrentGame().blockingFirst().settings().mapRadius());
+                                GameSettings settings = gameService.getCurrentGame().blockingFirst().settings();
+                                controller.setMapRadius(settings.mapRadius());
+                                requiredPoints = settings.victoryPoints();
                                 Pane pane = (Pane) controller.render();
                                 ingamePane.setCenter(pane);
                                 ingamePane.getRight().toFront();

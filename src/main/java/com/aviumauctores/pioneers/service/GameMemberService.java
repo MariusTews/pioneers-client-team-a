@@ -1,6 +1,5 @@
 package com.aviumauctores.pioneers.service;
 
-import com.aviumauctores.pioneers.dto.gamemembers.CreateMemberDto;
 import com.aviumauctores.pioneers.dto.gamemembers.UpdateMemberDto;
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.rest.GameMembersApiService;
@@ -28,10 +27,6 @@ public class GameMemberService {
         this.gameService = gameService;
         this.gameMembersApiService = gameMembersApiService;
         this.gameID = gameService.getCurrentGameID();
-    }
-
-    public Observable<Member> createMember() {
-        return gameMembersApiService.createMember(gameID, new CreateMemberDto(false, null, gameService.password, false));
     }
 
     public Observable<List<Member>> listCurrentGameMembers() {

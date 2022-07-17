@@ -51,9 +51,6 @@ public class LobbyController extends PlayerListController {
     public Label gameLabel;
 
     @FXML
-    public Button friendsButton;
-
-    @FXML
     public ListView<Parent> gameListView;
 
     @FXML
