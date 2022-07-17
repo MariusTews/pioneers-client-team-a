@@ -359,8 +359,10 @@ public class InGameController extends LoggedInController {
                                 vpPane.toFront();
                                 //put robber on desert tile
                                 desertTileId = controller.getDesertTileId();
-                                String desertRobberImageId = desertTileId.replace("hexagon", "robber");
-                                moveRobber(desertRobberImageId);
+                                if (desertTileId != null) {
+                                    String desertRobberImageId = desertTileId.replace("hexagon", "robber");
+                                    moveRobber(desertRobberImageId);
+                                }
                                 runTimer();
                             }
 
@@ -464,7 +466,7 @@ public class InGameController extends LoggedInController {
 
     private void onBuildEvent(EventDto<Building> buildingEventDto) {
         if (buildingEventDto.event().endsWith(".created") || buildingEventDto.event().endsWith(".updated")) {
-            //listen to new and updatedbuildings, and load the image
+            //listen to new and updated buildings, and load the image
             Building b = buildingEventDto.data();
             statService.onBuildingBuilt(b.owner(), b.type());
             buildService.setPlayerId(b.owner());
@@ -522,24 +524,26 @@ public class InGameController extends LoggedInController {
     }
 
     private void checkNewResourceRatio(HashMap<String, List<String>> harborCrossings, String field) {
-        for (String crossing : harborCrossings.get(null)) {
-            if (Objects.equals(crossing, field)) {
-                if (resourceRatio.get(RESOURCE_BRICK) > 3) {
-                    resourceRatio.put(RESOURCE_BRICK, 3);
+        if (harborCrossings.containsKey(null)) {
+            for (String crossing : harborCrossings.get(null)) {
+                if (Objects.equals(crossing, field)) {
+                    if (resourceRatio.get(RESOURCE_BRICK) > 3) {
+                        resourceRatio.put(RESOURCE_BRICK, 3);
+                    }
+                    if (resourceRatio.get(RESOURCE_ORE) > 3) {
+                        resourceRatio.put(RESOURCE_ORE, 3);
+                    }
+                    if (resourceRatio.get(RESOURCE_GRAIN) > 3) {
+                        resourceRatio.put(RESOURCE_GRAIN, 3);
+                    }
+                    if (resourceRatio.get(RESOURCE_LUMBER) > 3) {
+                        resourceRatio.put(RESOURCE_LUMBER, 3);
+                    }
+                    if (resourceRatio.get(RESOURCE_WOOL) > 3) {
+                        resourceRatio.put(RESOURCE_WOOL, 3);
+                    }
+                    break;
                 }
-                if (resourceRatio.get(RESOURCE_ORE) > 3) {
-                    resourceRatio.put(RESOURCE_ORE, 3);
-                }
-                if (resourceRatio.get(RESOURCE_GRAIN) > 3) {
-                    resourceRatio.put(RESOURCE_GRAIN, 3);
-                }
-                if (resourceRatio.get(RESOURCE_LUMBER) > 3) {
-                    resourceRatio.put(RESOURCE_LUMBER, 3);
-                }
-                if (resourceRatio.get(RESOURCE_WOOL) > 3) {
-                    resourceRatio.put(RESOURCE_WOOL, 3);
-                }
-                break;
             }
         }
         this.checkTradingRatioTwotoOne(harborCrossings, RESOURCE_BRICK, field);
@@ -551,11 +555,13 @@ public class InGameController extends LoggedInController {
     }
 
     private void checkTradingRatioTwotoOne(HashMap<String, List<String>> harborCrossings, String resource, String field) {
-        for (String crossing : harborCrossings.get(resource)) {
-            if (Objects.equals(crossing, field)) {
-                if (resourceRatio.get(resource) > 2) {
-                    resourceRatio.put(resource, 2);
-                    break;
+        if (harborCrossings.containsKey(resource)) {
+            for (String crossing : harborCrossings.get(resource)) {
+                if (Objects.equals(crossing, field)) {
+                    if (resourceRatio.get(resource) > 2) {
+                        resourceRatio.put(resource, 2);
+                        break;
+                    }
                 }
             }
         }
@@ -711,14 +717,6 @@ public class InGameController extends LoggedInController {
     }
 
     private void updateVisuals() {
-        if (rejoin) {
-            Point3D point = stateService.getRobberPosition();
-            if (point != null) {
-                String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
-                id = id.replace("-", "_");
-                moveRobber(id);
-            }
-        }
         if (!fieldsMovedAlready) {
             if (!currentAction.startsWith("founding")) {
                 fieldsIntoOnePane();
@@ -733,6 +731,15 @@ public class InGameController extends LoggedInController {
         }
         //update visuals, depending on current action and current player
         if (currentPlayerID.equals(userID)) {
+            //check for rejoin here, because the robber is anyway moved if current player is another player
+            if (rejoin) {
+                Point3D point = stateService.getRobberPosition();
+                if (point != null) {
+                    String id = "robberX" + point.x() + "Y" + point.y() + "Z" + point.z();
+                    id = id.replace("-", "_");
+                    moveRobber(id);
+                }
+            }
             yourTurnLabel.setVisible(true);
             if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
@@ -784,7 +791,14 @@ public class InGameController extends LoggedInController {
                         finishMoveButton.setDisable(true);
                         tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
-                        if (!(stateService.getOldAction().equals(MOVE_ROB))) {
+                        //rejoin case
+                        if (stateService.getOldAction() == null) {
+                            enableRobberFields();
+                        }
+                        //normal case
+                        //the server sends another state with action "rob" after successful rob move, this time it should
+                        //not enable the robber fields again
+                        else if (!(stateService.getOldAction().equals(MOVE_ROB))) {
                             enableRobberFields();
                         }
                     }
