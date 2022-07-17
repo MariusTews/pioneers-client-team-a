@@ -3,7 +3,6 @@ package com.aviumauctores.pioneers.service;
 import com.aviumauctores.pioneers.model.Player;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +28,6 @@ public class RankingService {
 
     public void clear(){
         ranking.clear();
-    }
-    public HashMap<Integer, Player> getRanking(){
-        return ranking;
     }
 
 }

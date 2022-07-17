@@ -487,7 +487,7 @@ public class TradingController implements Controller {
         }
     }
 
-    //get counterpropasal
+    //get counter-proposal
     public void handleRequest(HashMap<String, Integer> resources, String userId) {
         HashMap<String, Integer> sendResourcesInverse = sendResources;
         for (Map.Entry<String, Integer> entry : sendResourcesInverse.entrySet()) {

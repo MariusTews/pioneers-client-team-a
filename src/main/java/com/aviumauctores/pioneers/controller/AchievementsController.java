@@ -5,8 +5,6 @@ import com.aviumauctores.pioneers.Main;
 import com.aviumauctores.pioneers.model.Achievement;
 import com.aviumauctores.pioneers.model.User;
 import com.aviumauctores.pioneers.service.AchievementsService;
-import com.aviumauctores.pioneers.model.Achievement;
-import com.aviumauctores.pioneers.service.AchievementsService;
 import com.aviumauctores.pioneers.service.LoginService;
 import com.aviumauctores.pioneers.service.UserService;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -29,7 +27,6 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.aviumauctores.pioneers.Constants.FX_SCHEDULER;

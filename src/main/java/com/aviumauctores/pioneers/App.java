@@ -3,13 +3,10 @@ package com.aviumauctores.pioneers;
 import com.aviumauctores.pioneers.controller.*;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -80,7 +77,7 @@ public class App extends Application {
         final double initHeight = stage.getScene().getHeight();
         final double ratio = initWidth / initHeight;
 
-        // add a new ScenSizeListener -> listen if stage is maximized or minimized
+        // add a new SceneSizeListener -> listen if stage is maximized or minimized
         sizeListener = new SceneSizeChangeListener(stage.getScene(), ratio, initHeight, initWidth, contentPane);
         stage.getScene().widthProperty().addListener(sizeListener);
         stage.getScene().heightProperty().addListener(sizeListener);
@@ -159,8 +156,8 @@ public class App extends Application {
         cleanup(false);
         this.controller = controller;
 
-        /*if controller is a logincontroller and remember me is enabled then try to login with the refresh token
-        if this is not implemented here but in the logincontroller, then the login controller will show shortly
+        /*if controller is a loginController and remember me is enabled then try to log in with the refresh token
+        if this is not implemented here but in the loginController, then the login controller will show shortly
         before a successful token login leads to the lobby screen*/
         if ((controller instanceof LoginController loginController) && loginController.getRememberMeStatus()) {
             disposable = loginController.tryTokenLogin().subscribeOn(FX_SCHEDULER)
@@ -177,7 +174,7 @@ public class App extends Application {
                             }
                     );
         }
-        //if controller is not a logincontroller or remember me is not set then do a normal controller init and render
+        //if controller is not a loginController or remember me is not set then do a normal controller init and render
         else {
             controller.init();
             stage.getScene().setRoot(controller.render());

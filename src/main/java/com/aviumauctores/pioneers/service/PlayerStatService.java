@@ -29,10 +29,6 @@ public class PlayerStatService {
         stats.put(statName, newAmount);
     }
 
-    public int getSingleStat(String statName) {
-        return stats.getOrDefault(statName, 0);
-    }
-
     public HashMap<String, Integer> getAllStats() {
         return stats;
     }

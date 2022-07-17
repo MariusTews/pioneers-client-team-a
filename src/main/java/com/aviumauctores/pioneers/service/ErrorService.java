@@ -120,16 +120,6 @@ public class ErrorService {
         errorCodes.put("429", bundle.getString("limit.reached"));
     }
 
-    public void setErrorCodesPioneersGet() {
-        errorCodes.clear();
-        errorCodes.put("400", bundle.getString("validation.failed"));
-        errorCodes.put("401", bundle.getString("invalid.token"));
-        errorCodes.put("403", bundle.getString("not.member.of.game"));
-        errorCodes.put("404", bundle.getString("not.found"));
-        errorCodes.put("409", bundle.getString("game.started.error"));
-        errorCodes.put("429", bundle.getString("limit.reached"));
-    }
-
     public void setErrorCodesPioneersPost() {
         errorCodes.clear();
         errorCodes.put("400", bundle.getString("validation.failed"));

@@ -32,10 +32,6 @@ public class PlayerListItemController implements Controller {
 
     private final ObservableList<Parent> playerItems;
 
-    public PlayerListItemController(PlayerListController parentController, User user, ObservableList<Parent> playerItems) {
-        this(parentController, user, null, playerItems);
-    }
-
     public PlayerListItemController(PlayerListController parentController, User user, Member gameMember, ObservableList<Parent> playerItems) {
         this.parentController = parentController;
         this.user = user;

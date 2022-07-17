@@ -118,7 +118,7 @@ public class RegisterController implements Controller {
             textfieldPassword.setText("");
         }
 
-        //disable createAccountButton when one or both textfields are empty
+        //disable createAccountButton when one or both text-fields are empty
         createAccountButton.disableProperty().bind(Bindings.createBooleanBinding(() -> textfieldUsername.getText().trim().isEmpty(), textfieldUsername.textProperty()).or(Bindings.createBooleanBinding(() -> textfieldPassword.getText().trim().isEmpty(), textfieldPassword.textProperty())));
 
         return parent;
@@ -145,7 +145,7 @@ public class RegisterController implements Controller {
     }
 
     public void leave(ActionEvent event) {
-        // back to login
+        // go back to the login-screen
         final LoginController controller = loginController.get();
         app.show(controller);
 

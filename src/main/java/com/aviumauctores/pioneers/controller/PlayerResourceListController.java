@@ -2,16 +2,19 @@ package com.aviumauctores.pioneers.controller;
 
 import com.aviumauctores.pioneers.model.Member;
 import com.aviumauctores.pioneers.model.Player;
-import com.aviumauctores.pioneers.service.*;
+import com.aviumauctores.pioneers.service.ColorService;
+import com.aviumauctores.pioneers.service.GameMemberService;
+import com.aviumauctores.pioneers.service.PioneerService;
+import com.aviumauctores.pioneers.service.UserService;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 
 @Singleton
@@ -21,6 +24,8 @@ public class PlayerResourceListController {
     private final PioneerService pioneerService;
     private final ColorService colorService;
     private final ResourceBundle bundle;
+
+
     private final GameMemberService gameMemberService;
     public ListView<HBox> playerList;
     private String currentPlayerID;
@@ -148,9 +153,6 @@ public class PlayerResourceListController {
         return listItems.get(playerId).getPreviousResources();
     }
 
-    public int getLastGain(String id) {
-        return  0;
-    }
 }
 
 

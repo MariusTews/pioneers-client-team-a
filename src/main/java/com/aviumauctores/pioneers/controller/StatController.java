@@ -133,21 +133,6 @@ public class StatController extends LoggedInController{
         }
     }
 
-    public void loadStatsTest(String playerID, VBox container){
-        HashMap<String, Integer> stats = statService.getStats(playerID);
-        int x = 0;
-        for (Node node : container.getChildren()) {
-            Label label = (Label) node;
-            if (label.getText().startsWith("player")) {
-                label.setText("player");
-                continue;
-            }
-            label.setText(Integer.toString(stats.get(ALL_STAT_NAMES[x])));
-            x++;
-        }
-    }
-
-
     public void leave(ActionEvent event) {
         app.show(postGameController.get());
     }

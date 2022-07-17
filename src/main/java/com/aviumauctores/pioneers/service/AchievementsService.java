@@ -52,8 +52,7 @@ public class AchievementsService {
     }
 
     public Observable<List<Achievement>> listUserAchievements() {
-        Observable<List<Achievement>> achievementList = achievementsApiService.listUserAchievements(userService.getCurrentUserID());
-        return achievementList;
+        return achievementsApiService.listUserAchievements(userService.getCurrentUserID());
     }
 
     public void dispose(){

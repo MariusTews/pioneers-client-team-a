@@ -43,8 +43,6 @@ public class ChatController extends PlayerListController {
 
     private final ObservableList<User> users = FXCollections.observableArrayList();
 
-    private List<User> onlineUsers = new ArrayList<>();
-
     private List<User> allUsers = new ArrayList<>();
 
     private List<String> usersIdList = new ArrayList<>();
@@ -101,10 +99,10 @@ public class ChatController extends PlayerListController {
         errorService.setErrorCodesMessages();
         disposables = new CompositeDisposable();
         //get all users for the usernames of the old messages
-        userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
+        disposables.add(userService.findAll().observeOn(FX_SCHEDULER).subscribe(res -> {
             allUsers = res;
             showOldMessages("global", ALLCHAT_ID, LocalDateTime.now().toString(), 100);
-        });
+        }, errorService::handleError));
 
 
         disposables.add(userService.listOnlineUsers().observeOn(FX_SCHEDULER)
@@ -184,7 +182,7 @@ public class ChatController extends PlayerListController {
                 leave();
             }
         });
-        //Tabstructure
+        // Tab-structure
         allTab.setId(ALLCHAT_ID);
         allTab.setOnSelectionChanged(event -> {
             if (event.getTarget().equals(allTab)) {
@@ -220,10 +218,10 @@ public class ChatController extends PlayerListController {
             namespace = "global";
         }
         // send the message
-        messageService.sendGroupMessage(namespace, message, groupId)
+        disposables.add(messageService.sendGroupMessage(namespace, message, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
 
@@ -233,10 +231,10 @@ public class ChatController extends PlayerListController {
         if (groupId.equals(ALLCHAT_ID)) {
             namespace = "global";
         }
-        messageService.deleteMessage(namespace, messageId, groupId)
+        disposables.add(messageService.deleteMessage(namespace, messageId, groupId)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(r -> {
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
 
@@ -301,7 +299,7 @@ public class ChatController extends PlayerListController {
                     chatTabsByUserID.put(selectedUser._id(), tab);
                     showOldMessages("groups", tab.getId(), LocalDateTime.now().toString(), 100);
                     ScrollPane pane = (ScrollPane) tab.getContent();
-                    pane.setVvalue(1.0);;
+                    pane.setVvalue(1.0);
                 }, errorService::handleError));
     }
 
@@ -331,7 +329,7 @@ public class ChatController extends PlayerListController {
 
     public void showOldMessages(String namespace, String pathId, String createdBefore, int limit) {
         errorService.setErrorCodesMessages();
-        messageService.listMessages(namespace, pathId, createdBefore, limit)
+        disposables.add(messageService.listMessages(namespace, pathId, createdBefore, limit)
                 .observeOn(FX_SCHEDULER)
                 .subscribe(result -> {
                     for (Message m : result) {
@@ -344,39 +342,43 @@ public class ChatController extends PlayerListController {
                     }
                     ScrollPane pane = (ScrollPane) this.selectedTab.getContent();
                     pane.setVvalue(1.0);
-                }, errorService::handleError);
+                }, errorService::handleError));
     }
 
 
     public void onMessageClicked(MouseEvent event) {
         errorService.setErrorCodesMessages();
         if (event.getButton() == MouseButton.SECONDARY) {
-            // Alert for the delete, only if you click on your message
+            // Alert for removal of a message, only if you click on your own message
             Label msg = (Label) event.getSource();
             String namespace = "groups";
             if (selectedTab.getId().equals(ALLCHAT_ID)) {
                 namespace = "global";
             }
-            messageService.getMessage(namespace, selectedTab.getId(), msg.getId()).observeOn(FX_SCHEDULER).subscribe(res -> {
-                deleteMessage = res;
-                if (!userService.getCurrentUserID().equals(deleteMessage.sender())) {
-                    return;
-                }
-                ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-                ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.question"), proceedButton, cancelButton);
-                alert.setTitle(bundle.getString("delete"));
-                alert.setHeaderText(null);
-                Optional<ButtonType> result = alert.showAndWait();
-                // delete if "Ok" is clicked
-                if (result.get() == proceedButton) {
-                    this.deleteLabel = (Label) event.getSource();
-                    delete(this.deleteLabel.getId(), this.selectedTab.getId());
-                    alert.close();
-                } else {
-                    alert.close();
-                }
-            }, errorService::handleError);
+            disposables.add(messageService.getMessage(namespace, selectedTab.getId(), msg.getId())
+                    .observeOn(FX_SCHEDULER)
+                    .subscribe(res -> {
+                        deleteMessage = res;
+                        if (!userService.getCurrentUserID().equals(deleteMessage.sender())) {
+                            return;
+                        }
+                        ButtonType proceedButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+                        ButtonType cancelButton = new ButtonType(bundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, bundle.getString("delete.question"), proceedButton, cancelButton);
+                        alert.setTitle(bundle.getString("delete"));
+                        alert.setHeaderText(null);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        // delete if "Ok" is clicked
+                        if (result.isPresent()) {
+                            if (result.get() == proceedButton) {
+                                this.deleteLabel = (Label) event.getSource();
+                                delete(this.deleteLabel.getId(), this.selectedTab.getId());
+                                alert.close();
+                            } else {
+                                alert.close();
+                            }
+                        }
+                    }, errorService::handleError));
         }
 
     }
