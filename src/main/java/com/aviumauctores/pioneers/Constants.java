@@ -13,7 +13,12 @@ public class Constants {
 
     public static final String GAME_TITLE = "Pioneers";
 
-    public static final String BASE_URL = "https://pioneers.uniks.de/api/v3/";
+    public static final String URL = "192.168.178.55:61170";
+
+    public static final String BASE_URL = "https://" + URL + "/api/v3/";
+
+    public static final String WS_EVENTS_URL = "wss://" + URL + "/ws/v3/events";
+    public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
 
     // URL params
     public static final String HEADER_AUTH = "Authorization";
@@ -88,10 +93,6 @@ public class Constants {
     public static final String LIST_BUILDINGS_URL = "games/{gameId}/buildings";
 
     public static final String CREATE_MOVE_URL = "games/{gameId}/moves";
-
-
-    public static final String WS_EVENTS_URL = "wss://pioneers.uniks.de/ws/v3/events";
-    public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
 
     public static final String JSON_EVENT = "event";
     public static final String JSON_EVENT_SUBSCRIBE = "subscribe";
