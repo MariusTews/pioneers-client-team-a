@@ -15,9 +15,9 @@ public class Constants {
 
     public static final String URL = "192.168.178.55:61170";
 
-    public static final String BASE_URL = "https://" + URL + "/api/v3/";
+    public static final String BASE_URL = "http://" + URL + "/api/v3/";
 
-    public static final String WS_EVENTS_URL = "wss://" + URL + "/ws/v3/events";
+    public static final String WS_EVENTS_URL = "ws://" + URL + "/ws/v3/events";
     public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
 
     // URL params
