@@ -54,7 +54,6 @@ public class InGameController extends LoggedInController {
     public HBox vpHbox;
     public Pane vpPane;
     public Label resourceLabel;
-    public Text soundSliderLabelTop;
     public Text soundSliderLabelRight;
     public Label lastRollPlayerLabelPart2;
     public Text soundSliderLabelLeft;
@@ -396,9 +395,6 @@ public class InGameController extends LoggedInController {
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(this::onBuildEvent, errorService::handleError));
 
-                            diceImage1.setImage(dice1);
-                            diceImage2.setImage(dice1);
-                            this.soundImage.setImage(muteImage);
                             playerResourceListController.init(playerList, currentPlayerID);
 
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
@@ -422,9 +418,11 @@ public class InGameController extends LoggedInController {
                             State firstState = pioneerService.getState().blockingFirst();
                             onStateUpdate(new EventDto<>(".created", firstState));
 
+                            soundImage.setImage(unmuteImage);
+                            diceImage1.setImage(dice1);
+                            diceImage2.setImage(dice1);
                             arrowOnDice.setFitHeight(40.0);
                             arrowOnDice.setFitWidth(40.0);
-                            soundImage.setImage(muteImage);
                             loadChat();
 
                             if (rejoin) {
