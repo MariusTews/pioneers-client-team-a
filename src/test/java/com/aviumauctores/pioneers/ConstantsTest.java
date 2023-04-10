@@ -11,6 +11,6 @@ class ConstantsTest {
         assertEquals(SCREEN_WIDTH, 640);
         assertEquals(SCREEN_HEIGHT, 480);
         assertEquals(GAME_TITLE, "Pioneers");
-        assertEquals(BASE_URL, "http://192.168.178.55:61170/api/v3/");
+        assertEquals(BASE_URL, "http://192.168.178.161:61170/api/v3/");
     }
 }
