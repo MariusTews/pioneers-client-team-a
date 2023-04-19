@@ -211,7 +211,8 @@ public class InGameControllerTest extends ApplicationTest {
         when(stateService.getCurrentAction()).thenReturn(MOVE_ROLL);
         stateUpdates.onNext(new EventDto<>("created", new State("2", "12", List.of(new ExpectedMove("roll", List.of("1"))), null)));
         when(pioneerService.createMove("roll", null, null, null, null)).thenReturn(Observable.just(new Move("42", "MountDoom", "12", "1", "roll", 5, null, null, null, null)));
-        when(soundService.createGameSounds(any())).thenReturn(null);
+        //throws 'unnecessary stubbing detected'
+        //when(soundService.createGameSounds(any())).thenReturn(null);
         clickOn("#rollButton");
         verify(pioneerService).createMove("roll", null, null, null, null);
     }

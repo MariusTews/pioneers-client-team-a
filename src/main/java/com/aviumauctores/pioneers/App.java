@@ -35,7 +35,7 @@ public class App extends Application {
 
     public App() {
         final MainComponent mainComponent = DaggerMainComponent.builder().mainApp(this).build();
-        controller = mainComponent.loginController();
+        controller = mainComponent.addressInputScreenController();
     }
 
     public App(Controller controller) {

@@ -17,8 +17,7 @@ public class GameMusic {
         this.filePath = url;
         Media media = new Media(filePath.toString());
         this.mediaPlayer = new MediaPlayer(media);
-
-
+        this.mediaPlayer.setVolume(0);
     }
 
     public void play() {
