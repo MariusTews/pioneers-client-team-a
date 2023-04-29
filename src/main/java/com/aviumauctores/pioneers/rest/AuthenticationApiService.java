@@ -6,6 +6,7 @@ import com.aviumauctores.pioneers.dto.auth.RefreshDto;
 import io.reactivex.rxjava3.core.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 import static com.aviumauctores.pioneers.Constants.*;
@@ -19,4 +20,7 @@ public interface AuthenticationApiService {
 
     @POST(LOGOUT_URL)
     Observable<ResponseBody> logout();
+
+    @GET(CHECK_URL)
+    Observable<Object> checkConnection();
 }

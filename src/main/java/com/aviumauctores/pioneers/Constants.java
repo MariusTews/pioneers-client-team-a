@@ -18,8 +18,8 @@ public class Constants {
         WS_EVENTS_URL = "ws://" + URL + "/ws/v3/events";
     }
 
-    public static String BASE_URL = "";
-    public static String WS_EVENTS_URL = "";
+    public static String BASE_URL = "http://placeholder/";
+    public static String WS_EVENTS_URL = "ws://placeholder/";
     public static final String WS_QUERY_AUTH_TOKEN = "?authToken=";
 
     // URL params
@@ -42,6 +42,7 @@ public class Constants {
     public static final String LOGIN_URL = "auth/login";
     public static final String REFRESH_URL = "auth/refresh";
     public static final String LOGOUT_URL = "auth/logout";
+    public static final String CHECK_URL = "auth/check";
 
     // Users API URLs
     public static final String LIST_USERS_URL = "users";
