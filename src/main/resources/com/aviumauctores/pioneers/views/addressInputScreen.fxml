@@ -13,7 +13,7 @@
                <font>
                   <Font size="14.0" />
                </font></Label>
-            <TextField fx:id="addressTextField" prefWidth="200.0">
+            <TextField fx:id="addressTextField" prefWidth="200.0" text="localhost:27015">
                <font>
                   <Font size="14.0" />
                </font>

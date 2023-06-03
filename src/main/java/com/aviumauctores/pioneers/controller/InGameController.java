@@ -55,7 +55,6 @@ public class InGameController extends LoggedInController {
     public Pane vpPane;
     public Label resourceLabel;
     public Text soundSliderLabelRight;
-    public Label lastRollPlayerLabelPart2;
     public Text soundSliderLabelLeft;
     public GridPane gridPane;
     private Player player;
@@ -70,8 +69,6 @@ public class InGameController extends LoggedInController {
     @FXML
     public Label numSheepLabel;
 
-    @FXML
-    public ImageView arrowOnDice;
     @FXML
     public Label currentActionLabel;
     @FXML
@@ -96,7 +93,6 @@ public class InGameController extends LoggedInController {
     public Button finishMoveButton;
     public Button rollButton;
     public Button leaveGameButton;
-    public Label lastRollPlayerLabel;
     @FXML
     public ListView<HBox> playerList;
     private String currentPlayerID;
@@ -115,8 +111,6 @@ public class InGameController extends LoggedInController {
     public List<Circle> vpCircles;
 
     public int memberVP;
-    @FXML
-    public Label rollSum;
     @FXML
     public ImageView diceImage1;
     @FXML
@@ -368,8 +362,6 @@ public class InGameController extends LoggedInController {
                             }
 
                             resourceLabels = new Label[]{numBricksLabel, numWheatLabel, numWoodLabel, numOreLabel, numSheepLabel};
-                            arrowOnDice.setFitHeight(40.0);
-                            arrowOnDice.setFitWidth(40.0);
                             errorService.setErrorCodesGameMembersPost();
                             nextHarbors = Objects.requireNonNull(controller).getHarborCrossings();
 
@@ -385,12 +377,7 @@ public class InGameController extends LoggedInController {
                                         tradeButton.setStyle(colourString);
                                         diceImage1.setStyle(colourString);
                                         diceImage2.setStyle(colourString);
-                                        try {
-                                            Image arrowIcon = new Image(Objects.requireNonNull(Main.class.getResource("icons/arrow_" + colourName + ".png")).toString());
-                                            arrowOnDice.setImage(arrowIcon);
-                                        } catch (NullPointerException e) {
-                                            e.printStackTrace();
-                                        }
+                                        currentActionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-border-color: black; -fx-border-width: 2px; "+ colourString);
                                     }, errorService::handleError));
 
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
@@ -423,8 +410,6 @@ public class InGameController extends LoggedInController {
                             soundImage.setImage(unmuteImage);
                             diceImage1.setImage(dice1);
                             diceImage2.setImage(dice1);
-                            arrowOnDice.setFitHeight(40.0);
-                            arrowOnDice.setFitWidth(40.0);
                             loadChat();
 
                             if (rejoin) {
@@ -578,9 +563,6 @@ public class InGameController extends LoggedInController {
                     throw new RuntimeException(e);
                 }
             }).start();
-            lastRollPlayerLabel.setText(bundle.getString("rolled1"));
-            rollSum.setText(" " + rolled + " ");
-            lastRollPlayerLabelPart2.setText(bundle.getString("rolled2"));
         } else if (move.rob() != null && move.rob().target() != null) {
             statService.playerRobbed(move.rob().target());
         }
@@ -744,7 +726,6 @@ public class InGameController extends LoggedInController {
             currentActionLabel.setText(actions.get(currentAction));
             if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
-                arrowOnDice.setVisible(false);
                 finishMoveButton.setDisable(true);
                 tradeButton.setDisable(true);
                 switch (currentAction) {
@@ -762,7 +743,6 @@ public class InGameController extends LoggedInController {
                 switch (currentAction) {
                     case MOVE_BUILD -> {
                         rollButton.setDisable(true);
-                        arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(false);
                         tradeButton.setDisable(false);
                         updateFields(true, roadAndCrossingPane);
@@ -771,7 +751,6 @@ public class InGameController extends LoggedInController {
                     case MOVE_ROLL -> {
                         freeFieldVisibility(false);
                         rollButton.setDisable(false);
-                        arrowOnDice.setVisible(true);
                         finishMoveButton.setDisable(true);
                         tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
@@ -779,7 +758,6 @@ public class InGameController extends LoggedInController {
                     case MOVE_DROP -> {
                         freeFieldVisibility(false);
                         rollButton.setDisable(true);
-                        arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(true);
                         tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
@@ -788,7 +766,6 @@ public class InGameController extends LoggedInController {
                     case MOVE_ROB -> {
                         freeFieldVisibility(false);
                         rollButton.setDisable(true);
-                        arrowOnDice.setVisible(false);
                         finishMoveButton.setDisable(true);
                         tradeButton.setDisable(true);
                         roadAndCrossingPane.setDisable(true);
@@ -806,7 +783,6 @@ public class InGameController extends LoggedInController {
                 }
             }
         } else {
-            arrowOnDice.setVisible(false);
             currentActionLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
@@ -877,8 +853,6 @@ public class InGameController extends LoggedInController {
             }
         }
         memberVP -= vpLoss;
-
-
     }
 
     public void finishMove(ActionEvent actionEvent) {
