@@ -115,11 +115,11 @@
             </bottom>
             <center>
                 <VBox alignment="CENTER" prefHeight="195.0" prefWidth="249.0" BorderPane.alignment="CENTER">
-                    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
+                    <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0">
                         <VBox.margin>
                             <Insets top="5.0" />
                         </VBox.margin>
-                        <Label fx:id="yourTurnLabel" prefHeight="24.0" prefWidth="163.0" text="%your.turn" />
+                        <Label fx:id="currentActionLabel" prefHeight="50.0" prefWidth="200.0" text="%your.turn" wrapText="true" />
                     </HBox>
                     <HBox prefHeight="52.0" prefWidth="249.0">
                         <VBox prefHeight="200.0" prefWidth="100.0">

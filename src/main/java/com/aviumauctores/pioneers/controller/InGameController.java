@@ -73,7 +73,7 @@ public class InGameController extends LoggedInController {
     @FXML
     public ImageView arrowOnDice;
     @FXML
-    public Label yourTurnLabel;
+    public Label currentActionLabel;
     @FXML
     Label timeLabel;
 
@@ -174,6 +174,7 @@ public class InGameController extends LoggedInController {
     private final HashMap<String, String> playerColors = new HashMap<>();
     private boolean longestRoad;
     private HashMap<String, Integer> resourceRatio;
+    private HashMap<String, String> actions;
 
 
     @Inject
@@ -227,6 +228,7 @@ public class InGameController extends LoggedInController {
         enableButtons.put(BUILDING_TYPE_SETTLEMENT, false);
         enableButtons.put(BUILDING_TYPE_ROAD, false);
 
+        fillActions();
 
         userID = userService.getCurrentUserID();
 
@@ -738,7 +740,8 @@ public class InGameController extends LoggedInController {
                     moveRobber(id);
                 }
             }
-            yourTurnLabel.setVisible(true);
+            currentActionLabel.setVisible(true);
+            currentActionLabel.setText(actions.get(currentAction));
             if (currentAction.startsWith("founding")) {
                 rollButton.setDisable(true);
                 arrowOnDice.setVisible(false);
@@ -804,7 +807,7 @@ public class InGameController extends LoggedInController {
             }
         } else {
             arrowOnDice.setVisible(false);
-            yourTurnLabel.setVisible(false);
+            currentActionLabel.setVisible(false);
             rollButton.setDisable(true);
             finishMoveButton.setDisable(true);
             tradeButton.setDisable(true);
@@ -1284,8 +1287,9 @@ public class InGameController extends LoggedInController {
         if (count == 0) {
             changeRobberPositionAndRobTarget(robberFieldId, null);
         }
-        //otherwise enable the player to click on the building images to choose a target to rob
+        //otherwise, enable the player to click on the building images to choose a target to rob
         else {
+            currentActionLabel.setText(bundle.getString("action.rob.player"));
             robberPane.setDisable(true);
             roadAndCrossingPane.setDisable(false);
         }
@@ -1493,5 +1497,17 @@ public class InGameController extends LoggedInController {
 
     public void setRejoin(boolean rejoin) {
         this.rejoin = rejoin;
+    }
+
+    private void fillActions() {
+        this.actions = new HashMap<>();
+        this.actions.put(MOVE_FOUNDING_SETTLEMENT + "1", this.bundle.getString("action.founding.settlement.1"));
+        this.actions.put(MOVE_FOUNDING_SETTLEMENT + "2", this.bundle.getString("action.founding.settlement.2"));
+        this.actions.put(MOVE_FOUNDING_ROAD + "1", this.bundle.getString("action.founding.road.1"));
+        this.actions.put(MOVE_FOUNDING_ROAD + "2", this.bundle.getString("action.founding.road.2"));
+        this.actions.put(MOVE_ROLL, this.bundle.getString("action.roll"));
+        this.actions.put(MOVE_BUILD, this.bundle.getString("action.build"));
+        this.actions.put(MOVE_DROP, this.bundle.getString("action.drop"));
+        this.actions.put(MOVE_ROB, this.bundle.getString("action.rob"));
     }
 }
