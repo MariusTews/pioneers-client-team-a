@@ -7,12 +7,12 @@
 }
 
 .label {
-    -fx-font-size: 15;
+    -fx-font-size: 18;
     -fx-text-fill: #eee;
 }
 
 .text-field {
-    -fx-font-size: 14;
+    -fx-font-size: 18;
     -fx-text-fill: black;
     -fx-background-color: white;
 }
@@ -144,7 +144,7 @@
 .button {
     -fx-background-color: #97d077;
     -fx-text-fill: #ffffff;
-    -fx-font-size: 14;
+    -fx-font-size: 18;
 }
 
 .button:hover {
@@ -322,7 +322,7 @@
 }
 
 #usernameInput, #passwordInput, #gameNameInput, #messageTextField, #chatTextField, #gamePasswordInput,
-#gamePasswordText, #textfieldUsername, #textfieldPassword, #textfieldPassword_show {
+#gamePasswordText, #textfieldUsername, #textfieldPassword, #textfieldPassword_show, #addressTextField {
     -fx-font-family: "VT323";
     -fx-background-color: #333333;
     -fx-text-fill: white;
