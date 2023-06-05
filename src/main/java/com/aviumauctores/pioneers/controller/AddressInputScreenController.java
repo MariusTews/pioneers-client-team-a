@@ -7,8 +7,10 @@ import com.aviumauctores.pioneers.service.LoginService;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -26,6 +28,7 @@ public class AddressInputScreenController implements Controller{
     private final Provider<LoginController> loginController;
     private final Provider<AddressInputScreenController> addressInputScreenController;
     public TextField addressTextField;
+    public Button setAddressButton;
     private Disposable disposable;
 
     @Inject
@@ -61,6 +64,9 @@ public class AddressInputScreenController implements Controller{
             e.printStackTrace();
             return null;
         }
+
+        setAddressButton.setDefaultButton(true);
+
         return parent;
     }
 

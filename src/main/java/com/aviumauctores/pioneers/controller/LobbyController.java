@@ -17,6 +17,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
@@ -211,11 +213,21 @@ public class LobbyController extends PlayerListController {
             return null;
         }
 
-
         gameListView.setItems(gameItems);
         updateGameLabel();
         playerListView.setItems(playerItems);
         updatePlayerLabel();
+
+        //if enter is pressed, instead of focusing the first listview item it will fire the join button
+        gameListView.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                if (gameListView.getEditingIndex() == -1) {
+                    gameListItemControllers.values().stream().toList().get(0).getJoinButton().fire();
+                }
+                keyEvent.consume();
+            }
+        });
+
         return parent;
     }
 

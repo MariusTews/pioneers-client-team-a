@@ -20,7 +20,7 @@
                <HBox.margin>
                   <Insets left="12.0" right="24.0" />
                </HBox.margin></TextField>
-            <Button mnemonicParsing="false" onAction="#setAddress" prefWidth="70.0" text="%connect">
+            <Button fx:id="setAddressButton" mnemonicParsing="false" onAction="#setAddress" prefWidth="70.0" text="%connect">
                <font>
                   <Font size="14.0" />
                </font>

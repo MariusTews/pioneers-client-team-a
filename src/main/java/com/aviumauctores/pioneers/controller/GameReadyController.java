@@ -356,6 +356,9 @@ public class GameReadyController extends PlayerListController {
 
         //press esc to leave
         leaveGameButton.setCancelButton(true);
+        //press enter to join
+        startGameButton.setDefaultButton(true);
+
         playerList.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 leaveGame(new ActionEvent());

@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import retrofit2.HttpException;
 
@@ -120,7 +121,7 @@ public class LoginController implements Controller {
         return preferenceService.getRememberMe();
     }
 
-    public void login(ActionEvent event) {
+    public void login() {
         String username = usernameInput.getText();
         String password = passwordInput.getText();
 
