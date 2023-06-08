@@ -76,8 +76,4 @@ public class LoginService {
     public Observable<LoginResult> checkPasswordLogin(String username, String password) {
         return authenticationApiService.login(new LoginDto(username, password));
     }
-
-    public Observable<Object> checkConnection() {
-        return authenticationApiService.checkConnection();
-    }
 }

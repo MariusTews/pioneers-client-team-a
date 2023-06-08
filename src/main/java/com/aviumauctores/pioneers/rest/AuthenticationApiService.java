@@ -20,7 +20,4 @@ public interface AuthenticationApiService {
 
     @POST(LOGOUT_URL)
     Observable<ResponseBody> logout();
-
-    @GET(CHECK_URL)
-    Observable<Object> checkConnection();
 }

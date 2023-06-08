@@ -3,14 +3,12 @@ package com.aviumauctores.pioneers.controller;
 import com.aviumauctores.pioneers.App;
 import com.aviumauctores.pioneers.Constants;
 import com.aviumauctores.pioneers.Main;
-import com.aviumauctores.pioneers.service.LoginService;
+import com.aviumauctores.pioneers.service.CheckConnectionService;
 import io.reactivex.rxjava3.disposables.Disposable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -24,7 +22,7 @@ public class AddressInputScreenController implements Controller{
 
     private final App app;
     private final ResourceBundle bundle;
-    private final Provider<LoginService> loginService;
+    private final Provider<CheckConnectionService> checkConnectionService;
     private final Provider<LoginController> loginController;
     private final Provider<AddressInputScreenController> addressInputScreenController;
     public TextField addressTextField;
@@ -32,11 +30,11 @@ public class AddressInputScreenController implements Controller{
     private Disposable disposable;
 
     @Inject
-    public AddressInputScreenController(App app, ResourceBundle bundle, Provider<LoginService> loginService,
+    public AddressInputScreenController(App app, ResourceBundle bundle, Provider<CheckConnectionService> checkConnectionService,
                                         Provider<LoginController> loginController, Provider<AddressInputScreenController> addressInputScreenController) {
         this.app = app;
         this.bundle = bundle;
-        this.loginService = loginService;
+        this.checkConnectionService = checkConnectionService;
         this.loginController = loginController;
         this.addressInputScreenController = addressInputScreenController;
     }
@@ -73,7 +71,7 @@ public class AddressInputScreenController implements Controller{
 
     public void setAddress() {
         Constants.setURL(this.addressTextField.getText());
-        disposable = this.loginService.get().checkConnection().observeOn(FX_SCHEDULER).subscribe(
+        disposable = this.checkConnectionService.get().checkConnection().observeOn(FX_SCHEDULER).subscribe(
                 success -> {
                     this.app.show(this.loginController.get());
                 },
