@@ -102,6 +102,10 @@
 
 /******* specific styling *******/
 
+#gridPane {
+    -fx-background-color: #333333;
+}
+
 #settlementsALabel {
     -fx-text-fill: black;
 }
@@ -233,9 +237,7 @@
     -fx-text-fill: white;
 }
 
-#gridPane{
-    -fx-background-color: #333333;
-}
+
 
 
 

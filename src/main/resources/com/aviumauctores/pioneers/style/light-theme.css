@@ -86,6 +86,10 @@
 
 /******* specific styling *******/
 
+#gridPane{
+    -fx-background-color: white;
+}
+
 #changeWindowVBox {
     -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
@@ -116,10 +120,6 @@
 
 #register {
     -fx-font-size: 32;
-}
-
-#gridPane{
-    -fx-background-color: white;
 }
 
 #playerLabel2 {

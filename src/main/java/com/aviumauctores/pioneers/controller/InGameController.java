@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -57,6 +58,7 @@ public class InGameController extends LoggedInController {
     public Text soundSliderLabelRight;
     public Text soundSliderLabelLeft;
     public GridPane gridPane;
+    public BorderPane inGameLeftBorderPane;
     private Player player;
 
     private final EventListener eventListener;
@@ -94,7 +96,7 @@ public class InGameController extends LoggedInController {
     public Button rollButton;
     public Button leaveGameButton;
     @FXML
-    public ListView<HBox> playerList;
+    public ListView<HBox> inGamePlayerList;
     private String currentPlayerID;
     private String userID;
     private String currentAction;
@@ -365,26 +367,13 @@ public class InGameController extends LoggedInController {
                             errorService.setErrorCodesGameMembersPost();
                             nextHarbors = Objects.requireNonNull(controller).getHarborCrossings();
 
-                            disposables.add(gameMemberService.getMember(userID)
-                                    .observeOn(FX_SCHEDULER)
-                                    .subscribe(member -> {
-                                        Color colour = member.color();
-                                        String colourString = "-fx-background-color: #" + colour.toString().substring(2, 8);
-                                        String colourName = colorService.getColor("#" + colour.toString().substring(2, 8));
-                                        rollButton.setStyle(colourString);
-                                        leaveGameButton.setStyle(colourString);
-                                        finishMoveButton.setStyle(colourString);
-                                        tradeButton.setStyle(colourString);
-                                        diceImage1.setStyle(colourString);
-                                        diceImage2.setStyle(colourString);
-                                        currentActionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-border-color: black; -fx-border-width: 2px; "+ colourString);
-                                    }, errorService::handleError));
+                            this.applyColor();
 
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".buildings.*.*", Building.class)
                                     .observeOn(FX_SCHEDULER)
                                     .subscribe(this::onBuildEvent, errorService::handleError));
 
-                            playerResourceListController.init(playerList, currentPlayerID);
+                            playerResourceListController.init(inGamePlayerList, currentPlayerID);
 
                             disposables.add(eventListener.listen("games." + gameService.getCurrentGameID() + ".state.*", State.class)
                                     .observeOn(FX_SCHEDULER)
@@ -1483,5 +1472,25 @@ public class InGameController extends LoggedInController {
         this.actions.put(MOVE_BUILD, this.bundle.getString("action.build"));
         this.actions.put(MOVE_DROP, this.bundle.getString("action.drop"));
         this.actions.put(MOVE_ROB, this.bundle.getString("action.rob"));
+    }
+
+    private void applyColor() {
+        disposables.add(gameMemberService.getMember(userID)
+                .observeOn(FX_SCHEDULER)
+                .subscribe(member -> {
+                    Color _color = member.color();
+                    String colorString = _color.toString().substring(2, 8);
+                    String styleString = "-fx-background-color: #" + colorString;
+                    rollButton.setStyle(styleString);
+                    leaveGameButton.setStyle(styleString);
+                    finishMoveButton.setStyle(styleString);
+                    tradeButton.setStyle(styleString);
+                    diceImage1.setStyle(styleString);
+                    diceImage2.setStyle(styleString);
+                    currentActionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-border-width: 2px; -fx-border-color: #" + colorString);
+                    inGamePlayerList.setStyle("-fx-border-width: 2px; -fx-border-radius: 0px; -fx-border-color: #" + colorString);
+                    inGameLeftBorderPane.setStyle("-fx-border-width: 2px; -fx-background-color: white; -fx-border-color: #" + colorString);
+                    gridPane.setStyle("-fx-border-width: 2px; -fx-border-color: #" + colorString);
+                }, errorService::handleError));
     }
 }

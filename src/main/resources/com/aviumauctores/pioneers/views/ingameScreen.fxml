@@ -13,8 +13,8 @@
     <right>
         <BorderPane onMouseClicked="#onMainPaneClicked" prefHeight="680.0" prefWidth="230.0" BorderPane.alignment="CENTER">
             <center>
-                <VBox alignment="TOP_CENTER" prefHeight="618.0" prefWidth="230.0" spacing="80.0" BorderPane.alignment="CENTER">
-                    <ListView fx:id="playerList" prefHeight="281.0" prefWidth="230.0" />
+                <VBox alignment="TOP_CENTER" prefHeight="630.0" prefWidth="230.0" spacing="20.0" BorderPane.alignment="CENTER">
+                    <ListView fx:id="inGamePlayerList" prefHeight="300.0" prefWidth="230.0" />
                     <VBox prefHeight="270.0" prefWidth="230.0">
                         <HBox alignment="CENTER" prefHeight="270.0" prefWidth="230.0">
                             <GridPane fx:id="gridPane" alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="230.0">
@@ -86,7 +86,7 @@
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
     <left>
-        <BorderPane onMouseClicked="#onMainPaneClicked" prefHeight="580.0" prefWidth="236.0" BorderPane.alignment="CENTER">
+        <BorderPane fx:id="inGameLeftBorderPane" onMouseClicked="#onMainPaneClicked" prefHeight="650.0" prefWidth="260.0" BorderPane.alignment="CENTER">
             <bottom>
                 <VBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="249.0" spacing="20.0" BorderPane.alignment="CENTER">
                     <HBox prefHeight="70.0" prefWidth="200.0">
@@ -142,7 +142,7 @@
                     <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0">
                         <Button fx:id="tradeButton" mnemonicParsing="false" onAction="#trade" prefHeight="40.0" prefWidth="120.0" text="%trading" />
                   <VBox.margin>
-                     <Insets top="30.0" />
+                     <Insets top="20.0" />
                   </VBox.margin>
                     </HBox>
                     <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0">
@@ -154,8 +154,11 @@
                 </VBox>
             </center>
             <top>
-                <VBox fx:id="insertChat" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+                <VBox fx:id="insertChat" prefHeight="200.0" prefWidth="240.0" BorderPane.alignment="CENTER" />
             </top>
+         <padding>
+            <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+         </padding>
         </BorderPane>
     </left>
     <bottom>

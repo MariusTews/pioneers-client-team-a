@@ -54,7 +54,6 @@ public class PlayerResourceListController {
                 createSpectatorBox(m);
             }
         }
-        playerList.setPadding(new Insets(10, 0, 10, 0));
     }
 
     public void createPlayerBox(Player player) {
