@@ -1,0 +1,167 @@
+.root {
+    -fx-background-color: rgb(213, 232, 212);
+}
+
+.label {
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: #006600;
+}
+
+.button:hover {
+    -fx-background-color: #3fbd3f;
+}
+
+.scroll-bar {
+    -fx-background-color: #006600;
+}
+
+.scroll-pane {
+    -fx-background-color: #ffffff;
+}
+
+.tab-pane {
+    -fx-background-color: #FFFFFF;
+}
+
+.list-view {
+    -fx-background-color: #ffffff;
+}
+
+.list-cell {
+    -fx-background-color: #ffffff;
+}
+
+.list-cell:selected {
+    -fx-background-color: rgb(208, 208, 208);
+}
+
+.tab {
+    -fx-background-color: rgb(147, 147, 147);
+}
+
+.tab:selected {
+    -fx-background-color: #ffffff;
+}
+
+.tab-header-background {
+    -fx-background-color: #006600;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #006600;
+}
+
+.titled-pane > *.content {
+    -fx-background-color: #ffffff;
+}
+
+.tooltip {
+    -fx-background-color: #006600;
+}
+
+.build-menu {
+    -fx-background-color: #f0f0f0;
+}
+
+.drop-menu {
+    -fx-background-color: #f0f0f0;
+}
+
+.trade-menu {
+    -fx-background-color: #f0f0f0;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-body-color: #006600;
+}
+
+.combo-box {
+    -fx-background-color: #006600;
+}
+
+
+/******* specific styling *******/
+
+#changeWindowVBox {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+}
+
+#paneOption {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #006600;
+    -fx-border-width: 5;
+}
+
+#loginLabel {
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+}
+
+#usernameInput, #textfieldUsername, #textfieldPassword_show, #addressTextField {
+    -fx-font-family: "VT323";
+}
+
+#hintLabel {
+    -fx-font-size: 12;
+}
+
+#createGame {
+    -fx-font-size: 32;
+}
+
+#register {
+    -fx-font-size: 32;
+}
+
+#gridPane{
+    -fx-background-color: white;
+}
+
+#playerLabel2 {
+    -fx-font-size: 24;
+}
+
+#achievementsLabel {
+    -fx-font-size: 20;
+}
+
+#rankingPointsLabel {
+    -fx-text-fill: #006600;
+    -fx-font-size: 24;
+}
+
+#spectatorText {
+    -fx-font-size: 11;
+    -fx-background-radius: 8px;
+}
+
+#msgSpectatorLabel {
+    -fx-text-fill: gray;
+}
+
+#gameNameLabel {
+    -fx-font-size: 30;
+    -fx-text-fill: black;
+}
+
+#passwordErrorLabel {
+    -fx-font-size: 11;
+}
+
+#usernameErrorLabel {
+    -fx-font-size: 11;
+}
+
+#chatpane {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0 0 8 8;
+    -fx-border-color: transparent;
+}
+
+
+
