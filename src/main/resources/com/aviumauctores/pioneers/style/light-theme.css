@@ -86,7 +86,11 @@
 
 /******* specific styling *******/
 
-#gridPane{
+#inGameLeftBorderPane {
+    -fx-background-color: white;
+}
+
+#gridPane {
     -fx-background-color: white;
 }
 

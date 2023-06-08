@@ -102,6 +102,10 @@
 
 /******* specific styling *******/
 
+#inGameLeftBorderPane {
+    -fx-background-color: #333333;
+}
+
 #gridPane {
     -fx-background-color: #333333;
 }

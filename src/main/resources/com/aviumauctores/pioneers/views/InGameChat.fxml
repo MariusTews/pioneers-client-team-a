@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="254.0" prefWidth="246.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameChatController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="254.0" prefWidth="246.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameChatController">
    <VBox spacing="10.0">
       <TabPane fx:id="tabPane" prefHeight="194.0" prefWidth="246.0" tabClosingPolicy="UNAVAILABLE">
          <Tab fx:id="allChatTab" text="%all">

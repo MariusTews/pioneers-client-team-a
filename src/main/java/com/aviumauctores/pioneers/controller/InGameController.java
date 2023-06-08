@@ -1489,7 +1489,7 @@ public class InGameController extends LoggedInController {
                     diceImage2.setStyle(styleString);
                     currentActionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-border-width: 2px; -fx-border-color: #" + colorString);
                     inGamePlayerList.setStyle("-fx-border-width: 2px; -fx-border-radius: 0px; -fx-border-color: #" + colorString);
-                    inGameLeftBorderPane.setStyle("-fx-border-width: 2px; -fx-background-color: white; -fx-border-color: #" + colorString);
+                    inGameLeftBorderPane.setStyle("-fx-border-width: 2px; -fx-border-color: #" + colorString);
                     gridPane.setStyle("-fx-border-width: 2px; -fx-border-color: #" + colorString);
                 }, errorService::handleError));
     }
