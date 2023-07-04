@@ -110,8 +110,8 @@ public class MapController implements Controller {
             double fitHeightHexagon = HEIGHT_HEXAGON / factor;
             double fitSizeCrossing = WIDTH_HEIGHT_BUILDING / factor;
             double fitSizeRobber = (WIDTH_HEIGHT_BUILDING / factor) * 1.5;
-            double middleX = MAIN_PAIN_MIDDLE_X - (fitWidthHexagon / 2);
-            double middleY = MAIN_PAIN_MIDDLE_Y - (fitHeightHexagon / 2);
+            double middleX = MAIN_PANE_MIDDLE_X - (fitWidthHexagon / 2);
+            double middleY = MAIN_PANE_MIDDLE_Y - (fitHeightHexagon / 2);
             double fitWidthRoad = WIDTH_ROAD / factor;
             double fitHeightRoad = HEIGHT_ROAD / factor;
             double offsetCrossing = 0.5 * fitSizeCrossing;

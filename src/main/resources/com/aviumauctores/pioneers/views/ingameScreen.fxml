@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="ingamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
+<BorderPane fx:id="ingamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aviumauctores.pioneers.controller.InGameController">
     <center>
 
     </center>
@@ -162,11 +162,11 @@
         </BorderPane>
     </left>
     <bottom>
-        <Label fx:id="timeLabel" prefHeight="17.0" prefWidth="143.0" text="Label" BorderPane.alignment="CENTER" />
+        <Label fx:id="timeLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="143.0" text="Label" BorderPane.alignment="CENTER" />
     </bottom>
     <top>
-        <Pane fx:id="vpPane" prefHeight="26.0" prefWidth="1080.0" BorderPane.alignment="CENTER">
-            <HBox fx:id="vpHbox" alignment="CENTER" prefHeight="25.0" prefWidth="1080.0" />
+        <Pane fx:id="vpPane" prefHeight="26.0" BorderPane.alignment="CENTER">
+            <HBox fx:id="vpHbox" alignment="CENTER" prefHeight="25.0" />
         </Pane>
     </top>
 </BorderPane>

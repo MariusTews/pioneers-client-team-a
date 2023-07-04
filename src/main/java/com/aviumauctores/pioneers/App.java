@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
@@ -65,12 +67,21 @@ public class App extends Application {
 
         setAppIcon(stage);
         setTaskBarIcon();
+        bindFullscreen();
 
         primaryStage.show();
 
         if (controller != null) {
             show(controller);
         }
+    }
+
+    private void bindFullscreen() {
+        this.stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.F11) {
+                this.stage.setFullScreen(!this.stage.isFullScreen());
+            }
+        });
     }
 
     public void letterbox(final Pane contentPane) {
@@ -179,8 +190,10 @@ public class App extends Application {
         else {
             controller.init();
             stage.getScene().setRoot(controller.render());
-            if (controller instanceof InGameController || controller instanceof LobbyController) {
+            if (controller instanceof LobbyController) {
                 stage.sizeToScene();
+            } else if (controller instanceof InGameController) {
+                stage.setFullScreen(true);
             } else {
                 Pane root = (Pane) stage.getScene().getRoot();
                 this.setWindow(root);
