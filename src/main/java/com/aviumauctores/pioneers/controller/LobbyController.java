@@ -222,7 +222,9 @@ public class LobbyController extends PlayerListController {
         gameListView.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 if (gameListView.getEditingIndex() == -1) {
-                    gameListItemControllers.values().stream().toList().get(0).getJoinButton().fire();
+                    if (gameListItemControllers.size() > 0) {
+                        gameListItemControllers.values().stream().toList().get(0).getJoinButton().fire();
+                    }
                 }
                 keyEvent.consume();
             }
