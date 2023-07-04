@@ -8,7 +8,9 @@ import com.aviumauctores.pioneers.util.PannableCanvas;
 import com.aviumauctores.pioneers.util.SceneGestures;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -338,9 +341,13 @@ public class MapController implements Controller {
         Label label = new Label();
         label.setText(text);
         String fontSizeStyle = "-fx-font-size: "+ labelFontSize;
-        label.setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #00000f; " + fontSizeStyle);
+        label.setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #00000f; -fx-min-width: 30px; -fx-border-color: black; -fx-border-width: 2px;" +
+                "-fx-background-radius: 30; -fx-border-radius: 30; -fx-padding: 3 3 3 3;" + fontSizeStyle);
         label.setLayoutX(coordinateX);
         label.setLayoutY(coordinateY);
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setContentDisplay(ContentDisplay.CENTER);
+        label.setAlignment(Pos.CENTER);
         tileLabelPane.getChildren().add(label);
     }
 
